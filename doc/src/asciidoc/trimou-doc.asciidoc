@@ -1,0 +1,520 @@
+= Trimou Documentation
+:toc:
+//:toc-title:
+:stylesheet: style.css
+:source-highlighter: highlightjs
+:numbered:
+
+[[intro]]
+== What is Trimou?
+
+Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. It's goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. So far there are two ready-to-use extensions, <<cdi,trimou-extension-cdi>> and <<servlets,trimou-extension-servlet>>. Both provide (among others) a special <<resolver,resolver>> to extend the set of resolvable objects for your templates, or lookup CDI beans and Servlet request wrapper respectively.
+
+NOTE: Trimou is available under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache License 2.0].
+
+[[features]]
+== Features
+
+The basic features of every Mustache implementation are defined in https://github.com/mustache/spec[the Mustache spec]. Trimou passes all the tests (version 1.1.2), except *"Section - Alternate Delimiters"* from lambdas optional module.
+
+The most notable enhancements are:
+
+* Template caching
+* Extended processing of lambdas
+* Template inheritance
+* Very basic i18n support
+* Extension points (template locators, resolvers, text support, ...)
+
+[[variables]]
+=== Variables, interpolation tags
+
+*Spec description*: https://github.com/mustache/spec/blob/master/specs/interpolation.yml
+
+NOTE: The interpolation tag's content is called *a key* hereafter. The key consists of one or more dot-separated parts (+"foo"+, +"."+, +"foo.bar.name"+). The current object the key part is resolved against is called *a context object* hereafter.
+
+In general Trimou interpolation works very similar to the spec description - walk the context object stack from top to bottom, and resolve the value for the given part of the key (first part againts the context stack, other parts against the result from the former resolution).
+
+However there are some differences:
+
+* it's possible to use +this+ keyword to reference the object atop the context object stack; the spec only allows +.+,
+* if the context object is an instance of a +java.util.Map+, value of the entry with the given key is resolved,
+* for any context object Trimou tries to find and invoke a read method (public, non-static, with no params) with name +key+, +getKey+ or +isKey+ defined on the context object's class and its superclasses (except +java.lang.Object+),
+* +java.util.List+ and array elements can be accessed via index (the key must be unsigned integer),
+* +iterIndex+ and +iterHasNext+ keywords can be used inside iteration block,
+* Trimou allows you to define a resolver that does not handle the context object stack at all (e.g. looks up a <<cdi,CDI bean>>).
+
+.Examples:
+
+----
+{{foo}} <1>
+
+{{foo.bar}} <2>
+
+{{list.0}} <3>
+
+{{array.5}} <4>
+
+{{#items}}
+  {{iterIndex}} <5>
+  {{name}} <6>
+  {{iterHasNext}} <7>
+{{/items}}
+----
+
+<1> Try to get a value of key "foo" from supplied data map
+<2> If "foo" is an instance of Map, get the value of key "bar"; otherwise try to invoke bar(), getBar() or isBar() on the "foo" instance
+<3> Get the first element
+<4> Get the sixth element
+<5> The current index of the iteration block
+<6> "name" is resolved against the context object stack (iteration element, supplied data map)
+<7> true if the iteration has more elements
+
+NOTE: The set of resolvers may be extended - so in fact the above mentioned applies to the default set of resolvers only.
+
+[[escaping_hml]]
+==== Escaping HTML
+
+The interpolated value is escaped unless +&+ is used. The spec only tests the basic escaping (+&+, +"+, +<+, +>+). Trimou also escapes all ISO-8859-1 characters by default.
+
+.Examples:
+
+----
+{{foo}} <1>
+
+{{& foo}} <2>
+
+{{{foo}}} <3>
+----
+
+<1> Escape foo
+<2> Do not escape foo
+<3> Do not escape foo; works only for default delimiters!
+
+TIP: You can implement your own escaping logic, e.g. to improve escaping performance - see <<configure_engine,Configure the engine>> and <<text_support,TextSupport>> sections.
+
+[[sections]]
+=== Sections
+
+*Spec description*: https://github.com/mustache/spec/blob/master/specs/sections.yml
+
+The section content is rendered one or more times if there is an object found for the given key. If the found object is:
+
+* non-empty +Iterable+ or array, the content is rendered for each element,
+* a +Boolean+ of value +true+, the content is rendered once,
+* an instance of +Lambda+, the content is processed according to the <<lambdas,lambda's specification>>,
+* any other non-null object represents a nested context.
+
+The section content is not rendered if there is no object found, or the found object is:
+
+* a +Boolean+ of value +false+,
+* an +Iterable+ with no elements,
+* an empty array.
+
+.Examples:
+
+----
+{{#boolean}}
+   This line will be rendered only if "boolean" key resolves to java.lang.Boolean#TRUE, or true
+{{/boolean}}
+
+{{#iterable_or_array}}
+  This line will be rendered for each element, and the element is pushed on the context object stack
+{{/iterable_or_array}}
+----
+
+[[inverted_sections]]
+=== Inverted sections
+
+*Spec description*: https://github.com/mustache/spec/blob/master/specs/inverted.yml
+
+The content is rendered if there is no object found in the context, or is a +Boolean+ of value +false+, or is an +Iterable+ with no elements, or is an empty array.
+
+.Examples:
+
+----
+{{#iterable}}
+  This line will be rendered if the resolved iterable has no elements
+{{/iterable}}
+----
+
+[[partials]]
+=== Partials
+
+*Spec description*: https://github.com/mustache/spec/blob/master/specs/partials.yml
+
+Partials only work if at least one template locator is in action. Otherwise the template cache is not used and there is no way to locate the required partial (template). See <<configure_engine,Configure the engine>> and <<template_locator,Template locator>> sections for more info.
+
+.Examples:
+
+----
+{{#items}}
+  {{>item_detail}} - process the template with name "item_detail" for each iteration element
+{{/items}}
+----
+
+[[delimiters]]
+=== Delimiters
+
+*Spec description*: https://github.com/mustache/spec/blob/master/specs/delimiters.yml
+
+.Examples:
+
+----
+{{=%% %%=}} - from now on use custom delimiters
+
+%%foo.name%% - interpolate "foo.name"
+
+%%={{ }}=%% - switch back to default values
+----
+
+TIP: It's also possible to change the delimiters globally, see <<configuration,Configuration>>.
+
+[[lambdas]]
+=== Lambdas
+
+*Spec description*: https://github.com/mustache/spec/blob/master/specs/lambdas.yml
+
+You can implement +org.trimou.api.Lambda+ interface in order to define a lambda/callable object. Predefined abstract +org.trimou.lambda.SpecCompliantLambda+ follows the behaviour defined by the spec:
+
+[source,java]
+----
+Lambda makeMeBold = new SpecCompliantLambda() {
+  @Override
+  public String invoke(String text) {
+    return "<b>" + text + "</b>";
+  }
+}
+----
+and template
+
+----
+{{#makeMeBold}}
+  Any text...{{name}}
+{{/makeMeBold}}
+----
+results in:
+
+----
+  <b>Any text...{{name}}</b>
+-> the variable is not interpolated
+----
+
+However this might be a little bit more useful:
+[source,java]
+----
+Lambda makeMeUppercase = new InputProcessingLambda() {
+  @Override
+  public String invoke(String text) {
+    return text.toUpperCase();
+  }
+  @Override
+  public boolean isReturnValueInterpolated() {
+    return false;
+  }
+}
+----
+and template
+
+----
+{{#makeMeUppercase}}
+  Any text...{{name}}
+{{/makeMeUppercase}}
+----
+results in:
+
+----
+  ANY TEXT...EDGAR
+-> the variable is interpolated before the lambda invoke() method is invoked
+----
+
+See +org.trimou.api.Lambda+ API javadoc for more info.
+
+[[extend]]
+=== Extending templates
+
+This feature is not supported in the spec. Trimou basically follows the way https://github.com/spullara/mustache.java[mustache.java] implements the template inheritance. In the extended template, the sections to extend are defined - use +$+ to identify such sections. In extending templates, the extending sections are defined - again, use +$+ to identify such sections. Sections to extend may define the default content.
+
+Following template with name "super":
+
+----
+This a template to extend
+{{$header}} -> section to extend
+  The default header
+{{/header}}
+In between...
+{{$content}} -> section to extend
+  The default content
+{{/content}}
+&copy; 2013
+----
+
+can be extended in this way:
+
+----
+Hello world!
+{{<super}}
+  {{$header}} -> extending section
+    My own header
+  {{/header}}
+  Only extending sections are considered...
+{{/super}}
+Lalala...
+----
+
+and the result is:
+
+----
+Hello world!
+This a template to extend <1>
+    My own header <2>
+In between...
+  The default content <3>
+&copy; 2013 <4>
+Lalala...
+----
+<1> "super start
+<2> section "header" is extended
+<3> section "content" has the default content
+<4> "super" end
+
+[[how_to_use]]
+== How to use
+
+[[get_started]]
+=== Get started
+
+First, get the +trimou-core.jar+ and its dependencies (+guava+,+slf4j-api+ and +commons-lang3+ at the moment).
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-core</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+And now for something completely different...
+
+[[simple_scenario]]
+==== The simplest possible scenario
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder.newBuilder().build(); <1>
+Mustache mustache = engine.compile("myTemplateName", "{{! empty template}}"); <2>
+String output = mustache.render(null); <3>
+
+<1> <2> <3>
+String output = MustacheEngineBuilder
+                  .newBuilder()
+                  .build()
+                  .compile("myTemplateName", "{{! empty template}}")
+                  .render(null);
+----
+<1> Build the engine
+<2> Compile the template
+<3> Render the text
+
+
+==== Provide your own Writer
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+Mustache mustache = engine.compile("fooTemplate", "{{foo}}");
+
+StringWriter writer = new StringWriter();
+
+mustache.render(writer, ImmutableMap.<String, Object> of("foo", "bar"));
+// writer.toString() -> "bar"
+----
+
+[[configure_engine]]
+==== Configure the engine
+
+You may want to:
+
+* Add template locators; see <<use_template_locator,why>>
+* Add global lambdas/callable objects; see <<lambdas,why>>
+* Add custom resolvers; see <<resolver,why>>
+* Set custom +TextSupport+ implementation; see <<text_support,why>>
+* Set configuration properties; see <<configuration,why>>
+
+Simply use appropriate +MustacheEngineBuilder+ methods, e.g.:
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+                            .newBuilder()
+                            .addGlobalLambda(mySuperUsefulLambdaInstance)
+                            .build();
+----
+
+[[configuration]]
+==== Configuration properties
+
+Trimou engine properties can be configured through *system properties*, *trimou.properties* file or the property may be manually set via: +MustacheEngineBuilder.setProperty(String, Object)+. Manually set properties have hihger priority than system properties which have higher priority than properties from trimou.properties file. Global configuration properties are defined and described in +EngineConfigurationKey+ enum.
+
+[[use_template_locator]]
+=== Make use of template cache and template locators
+
+Template locators automatically load the template contents for the given template name. So that it's not necessary to supply the template contents every time the template is compiled. Moreover the compiled template is automatically put in the template cache (no compilation happens the next time the template is requested).
+
+NOTE: Template cache is required for <<partials,partials>>!
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+                           .newBuilder()
+                           .addTemplateLocator(new FilesystemTemplateLocator(1, "txt", "/home/trimou/resources")) <1>
+                           .build();
+Mustache mustache = engine.get("foo"); <2>
+String output = mustache.render(null);
+----
+<1> Add a filesystem-based template locator with priority 1, root path "/home/trim/resources", template files have suffix "txt"
+<2> Get the template with name "foo" from the template cache, compile it if not compiled before
+
+There may be more than one template locators registered with the engine. Locators with *higher priority* are called *first*.
+
+TIP: Use +MustacheEngine#invalidateTemplateCache()+ to invalidate all template cache entries and force recompilation.
+
+See also <<template_locator, TemplateLocator SPI>>.
+
+[[i18n]]
+=== Basic i18n support
+
+Trimou has a very basic i18n support. Basically it provides three optional resolvers: +org.trimou.engine.resolver.i18n.NumberFormatResolver+, +org.trimou.engine.resolver.i18n.DateTimeFormatResolver+, +org.trimou.engine.resolver.i18n.ResourceBundleResolver+ and one optional lambda: +org.trimou.lambda.i18n.ResourceBundleLambda+. All these components rely  on +org.trimou.spi.engine.LocaleSupport+ implementation to get the current +Locale+. See javadoc for more info.
+
+==== DateTimeFormatResolver example
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+                           .newBuilder()
+                           .setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY, "DD-MM-YYYY HH:mm") <1>
+                           .addResolver(new DateTimeFormatResolver()) <2>
+                           .build();
+Mustache mustache = engine.get("foo");
+String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date()));
+----
+<1> DateTimeFormatResolver also supports custom formatting pattern
+<2> Manually add resolver
+
+.foo.html
+----
+Now: {{now.formatCustom}}
+----
+results in something similar:
+----
+Now: 03-05-2013 22:05
+----
+
+[[how_to_extend]]
+== How to extend
+
+[[resolver]]
+=== Resolver
+
+SPI: +org.trimou.spi.engine.Resolver+
+
+Resolvers define the set of resolvable objects for your templates. The built-in set of resolvers should satisfy most of the basic requirements.
+
+==== Custom resolvers
+
+WARNING: Implementing/adding a custom resolver may have serious impact on the engine functionality and performance.
+
+All resolvers have a priority and resolvers with *higher priority* are called *first*. Keep in mind that all resolvers must be thread-safe. There are two ways to extend the basic set of resolvers. Trimou utilizes JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Simply create a file with name +org.trimou.spi.engine.Resolver+, write down FCQN of your resolver (one per line) and place the file into +META-INF/services+ folder and the listed resolvers are loaded automatically. This way of loading resolvers may be disabled per engine, see also +MustacheEngineBuilder.omitServiceLoaderResolvers()+.
+You can also use +MustacheEngineBuilder.addResolver()+ method - this approach is suitable if you need to customize the way the resolver instance is created.
+
+TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup normal-scoped CDI beans with name. <<servlets,trimou-extension-servlet>> extension provides +HttpServletRequestResolver+ to get the current Servlet request wrapper.
+
+[[template_locator]]
+=== TemplateLocator
+
+SPI: +org.trimou.spi.engine.TemplateLocator+
+
+Template locators automatically load the template contents for the given template name. There are three built-in implementations. +org.trimou.engine.locator.FilesystemTemplateLocator+ loads templates from the given root directory on the filesystem (watch out, this wouldn't be likely portable across various operating systems). +org.trimou.engine.locator.ClassPathTemplateLocator+ makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. +org.trimou.engine.locator.MapTemplateLocator+ is backed by a +Map+.
+
+TIP: Locators with *higher priority* are called *first*.
+
+TIP: <<servlets,trimou-extension-servlet>> extension provides +org.trimou.servlet.locator.ServletContextTemplateLocator+ to be used in web apps deployed to a servlet container.
+
+[[text_support]]
+=== TextSupport
+
+SPI: +org.trimou.spi.engine.TextSupport+
+
+So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance.
+
+[[locale_support]]
+=== LocaleSupport
+
+SPI: +org.trimou.spi.engine.LocaleSupport+
+
+Allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+.
+
+[[extensions]]
+== Extensions
+
+[[cdi]]
+=== CDI
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-cdi</artifactId>
+  <version>${version.trim}</version>
+</dependency>
+----
+
+==== CDIBeanResolver
+
+Tries to lookup a normal-scoped CDI bean with the given name (key).
+
+NOTE: At the moment only built-in normal scopes are supported.
+
+==== RenderedInterceptor
+
+WARNING: This functionality is experimental!
+
+Intercepts CDI bean business method invocation and returns the rendered template. The method return type must be of type +java.lang.Object+. If the method code returns an instance of +java.util.Map+, the return value is passed to the compiled template.
+
+[source,java]
+----
+  @Rendered(template = "foo.html") <1>
+  public Object ping(String value) {
+    return ImmutableMap.<String, Object> of("foo", value); <2>
+  }
+----
+<1> Use @Rendered interceptor binding to associate RenderedInterceptor and specify the template name
+<2> This return value is passed to the compiled template
+
+[[servlets]]
+=== Servlets
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-servlet</artifactId>
+  <version>${version.trim}</version>
+</dependency>
+----
+
+==== ServletContextTemplateLocator
+
+Locates the template anywhere in the web app. The root path must begin with a +/+ and is interpreted as relative to the current context root, or relative to the +/META-INF/resources+ directory of a JAR file inside the web application's +/WEB-INF/lib+ directory.
+
+==== HttpServletRequestResolver
+
+Resolves a key of value *request* to +HttpServletRequestWrapper+. Why the wrapper? Well, we just don't think it's the right thing to call the request object directly.
+
+==== RequestLocaleSupport
+
+Obtains the current locate from the current servlet request.
+
+'''
