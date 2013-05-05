@@ -23,7 +23,7 @@ public class ClassPathTemplateLocatorTest {
 
 		TemplateLocator locator = new ClassPathTemplateLocator(1, "foo", "locator/file");
 
-		Set<String> names = locator.getAll();
+		Set<String> names = locator.getAllAvailableNames();
 		assertEquals(2, names.size());
 		assertTrue(names.contains("index"));
 		assertTrue(names.contains("home"));

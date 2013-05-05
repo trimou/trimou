@@ -75,7 +75,7 @@ public class ServletContextTemplateLocatorTest {
 		assertNotNull(bar);
 		assertEquals("<html/>", bar.render(null));
 
-		Set<String> locator1Names = locator1.getAll();
+		Set<String> locator1Names = locator1.getAllAvailableNames();
 		assertEquals(2, locator1Names.size());
 		assertTrue(locator1Names.contains("foo"));
 		assertTrue(locator1Names.contains("qux"));

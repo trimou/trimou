@@ -22,7 +22,7 @@ import org.trimou.api.engine.Configuration;
 import org.trimou.spi.WithPriority;
 
 /**
- * Automatically loads template contents for the given template name.
+ * Automatically locate the template contents for the given template name.
  *
  * Implementation must be thread-safe.
  *
@@ -35,8 +35,9 @@ public interface TemplateLocator extends WithPriority {
 	/**
 	 * @param templateName
 	 *            The template name
-	 * @return the reader object for a template with the given name or <code>null</code> if no
-	 *         template with the given name exists
+	 * @return the reader object for a template with the given name or
+	 *         <code>null</code> if no available template with the given name
+	 *         exists
 	 */
 	public Reader locate(String templateName);
 
@@ -45,6 +46,6 @@ public interface TemplateLocator extends WithPriority {
 	 * @return the set of names of all available templates
 	 * @see Configuration#isPrecompileAllTemplates()
 	 */
-	public Set<String> getAll();
+	public Set<String> getAllAvailableNames();
 
 }

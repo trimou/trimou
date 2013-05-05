@@ -23,7 +23,7 @@ public class FilesystemTemplateLocatorTest {
 
 		TemplateLocator locator = new FilesystemTemplateLocator(1, "foo", "src/test/resources/locator/file");
 
-		Set<String> names = locator.getAll();
+		Set<String> names = locator.getAllAvailableNames();
 		assertEquals(2, names.size());
 		assertTrue(names.contains("index"));
 		assertTrue(names.contains("home"));

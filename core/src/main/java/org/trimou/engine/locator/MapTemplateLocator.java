@@ -64,7 +64,7 @@ public class MapTemplateLocator implements TemplateLocator {
 	}
 
 	@Override
-	public Set<String> getAll() {
+	public Set<String> getAllAvailableNames() {
 		return templates.keySet();
 	}
 

@@ -73,7 +73,7 @@ public class FilesystemTemplateLocator extends AbstractPathTemplateLocator {
 	}
 
 	@Override
-	public Set<String> getAll() {
+	public Set<String> getAllAvailableNames() {
 
 		File rootDir = new File(getRootPathname());
 		File[] files = rootDir.listFiles(new FilenameFilter() {

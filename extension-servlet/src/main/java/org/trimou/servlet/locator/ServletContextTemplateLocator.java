@@ -50,7 +50,7 @@ public class ServletContextTemplateLocator extends AbstractPathTemplateLocator {
 	}
 
 	@Override
-	public Set<String> getAll() {
+	public Set<String> getAllAvailableNames() {
 
 		Set<String> names = new HashSet<String>();
 		Set<String> resources = RequestHolder.getCurrentRequest()

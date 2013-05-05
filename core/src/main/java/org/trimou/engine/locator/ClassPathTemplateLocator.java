@@ -77,7 +77,7 @@ public class ClassPathTemplateLocator extends AbstractPathTemplateLocator {
 	}
 
 	@Override
-	public Set<String> getAll() {
+	public Set<String> getAllAvailableNames() {
 
 		Set<String> names = new HashSet<String>();
 
