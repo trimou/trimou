@@ -74,12 +74,12 @@ public abstract class AbstractSegment implements Segment {
 								: Strings.EMPTY, getSegmentName());
 	}
 
-	protected boolean isTemplateReadyToUse() {
-		return template != null ? template.isTemplateReadyToUse() : false;
+	protected boolean isReadOnly() {
+		return template.isReadOnly();
 	}
 
 	protected MustacheEngine getEngine() {
-		return template != null ? template.getEngine() : null;
+		return template.getEngine();
 	}
 
 	protected Configuration getEngineConfiguration() {

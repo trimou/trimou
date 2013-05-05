@@ -39,7 +39,7 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 
 	private MustacheEngine engine;
 
-	private boolean readyToUse = false;
+	private boolean readOnly = false;
 
 	public TemplateSegment(String name, MustacheEngine engine) {
 		super(name, null);
@@ -48,7 +48,7 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 
 	@Override
 	public void render(Writer writer, Map<String, Object> data) {
-		if (!isReadyToUse()) {
+		if (!isReadOnly()) {
 			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY);
 		}
 		super.execute(writer, newExecutionContext(data));
@@ -73,17 +73,17 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 	}
 
 	/**
-	 * Make the template ready to use.
+	 * Make the template read only.
 	 */
-	public void setReadyToUse() {
-		this.readyToUse = true;
+	public void setReadOnly() {
+		this.readOnly = true;
 	}
 
 	/**
-	 * @return <code>true</code> if ready to use, <code>false</code> otherwise
+	 * @return <code>true</code> if read only, <code>false</code> otherwise
 	 */
-	public boolean isReadyToUse() {
-		return readyToUse;
+	public boolean isReadOnly() {
+		return readOnly;
 	}
 
 	protected MustacheEngine getEngine() {

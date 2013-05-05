@@ -90,7 +90,7 @@ public class DefaultHandler implements Handler {
 
 		validate();
 		performPostProcessing();
-		template.setReadyToUse();
+		template.setReadOnly();
 
 		logger.info("Compilation of {} finished [time: {} ms, segments: {}]",
 				new Object[] { template.getText(),
@@ -153,7 +153,7 @@ public class DefaultHandler implements Handler {
 	 *             If not finished yet
 	 */
 	public TemplateSegment getCompiledTemplate() {
-		if (!template.isReadyToUse()) {
+		if (!template.isReadOnly()) {
 			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY);
 		}
 		return template;

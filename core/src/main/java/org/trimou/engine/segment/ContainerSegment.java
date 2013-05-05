@@ -70,7 +70,7 @@ public abstract class ContainerSegment extends AbstractSegment implements
 	 * @param segment
 	 */
 	public void addSegment(Segment segment) {
-		if (isTemplateReadyToUse()) {
+		if (isReadOnly()) {
 			throw new MustacheException(
 					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
 		}
@@ -79,15 +79,14 @@ public abstract class ContainerSegment extends AbstractSegment implements
 
 	@Override
 	public Iterator<Segment> iterator() {
-		return isTemplateReadyToUse() ? ImmutableList.copyOf(segments)
-				.iterator() : segments.iterator();
+		return getSegments().iterator();
 	}
 
 	/**
 	 * @return
 	 */
 	public List<Segment> getSegments() {
-		return isTemplateReadyToUse() ? ImmutableList.copyOf(segments)
+		return isReadOnly() ? ImmutableList.copyOf(segments)
 				: segments;
 	}
 

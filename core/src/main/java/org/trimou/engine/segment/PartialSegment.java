@@ -79,7 +79,7 @@ public class PartialSegment extends AbstractSegment {
 	}
 
 	public void setIndentation(String indentation) {
-		if (isTemplateReadyToUse()) {
+		if (getTemplate().isReadOnly()) {
 			throw new MustacheException(
 					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
 		}
