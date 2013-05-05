@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.resolver.i18n;
 
+import java.util.Locale;
+
 import org.trimou.api.engine.Configuration;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.spi.engine.LocaleSupport;
@@ -30,6 +32,10 @@ public abstract class LocaleAwareResolver extends AbstractResolver {
 	@Override
 	public void init(Configuration configuration) {
 		localeSupport = configuration.getLocaleSupport();
+	}
+
+	protected Locale getCurrentLocale() {
+		return localeSupport.getCurrentLocale();
 	}
 
 }
