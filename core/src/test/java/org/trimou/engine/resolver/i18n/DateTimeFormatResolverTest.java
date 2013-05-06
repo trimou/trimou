@@ -27,7 +27,7 @@ public class DateTimeFormatResolverTest extends AbstractTest {
 		engine = MustacheEngineBuilder
 				.newBuilder()
 				.setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY,
-						"DD-MM-YYYY HH:mm")
+						"DD-MM-yyyy HH:mm")
 				.setLocaleSupport(new LocaleSupport() {
 
 					@Override

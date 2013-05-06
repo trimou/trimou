@@ -1,4 +1,4 @@
-package org.trimou.cdi.interceptor;
+package org.trimou.tests.cdi.interceptor;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;

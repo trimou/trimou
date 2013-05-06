@@ -1,6 +1,7 @@
 package org.trimou.prettytime.resolver;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.Locale;
@@ -18,6 +19,13 @@ import com.google.common.collect.ImmutableMap;
  * @author Martin Kouba
  */
 public class PrettyTimeResolverTest {
+
+	@Test
+	public void testOnlyDateIsResolved() {
+		PrettyTimeResolver resolver = new PrettyTimeResolver();
+		assertNull(resolver.resolve(null, "prettyTime"));
+		assertNull(resolver.resolve("foo", "prettyTime"));
+	}
 
 	@Test
 	public void testInterpolation() {

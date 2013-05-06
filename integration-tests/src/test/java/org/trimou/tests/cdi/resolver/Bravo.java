@@ -1,4 +1,4 @@
-package org.trimou.cdi.resolver;
+package org.trimou.tests.cdi.resolver;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

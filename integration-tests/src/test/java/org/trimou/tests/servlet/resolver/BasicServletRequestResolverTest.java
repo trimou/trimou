@@ -1,4 +1,4 @@
-package org.trimou.servlet.resolver;
+package org.trimou.tests.servlet.resolver;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,7 +34,7 @@ public class BasicServletRequestResolverTest {
 				.create(WebArchive.class)
 				.addPackage(HttpServletRequestResolver.class.getPackage())
 				.addAsLibraries(
-						resolver.artifact("org.knir.trim:trim-core")
+						resolver.artifact("org.trimou:trimou-core")
 								.resolveAsFiles())
 				.addAsServiceProvider(Resolver.class,
 						HttpServletRequestResolver.class);

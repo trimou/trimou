@@ -1,4 +1,4 @@
-package org.trimou.cdi.resolver;
+package org.trimou.tests.cdi.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -7,9 +7,10 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import javax.enterprise.inject.spi.Extension;
-import javax.inject.Inject;
+import javax.naming.spi.Resolver;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -22,7 +23,6 @@ import org.trimou.api.Mustache;
 import org.trimou.cdi.resolver.CDIBeanResolver;
 import org.trimou.cdi.resolver.CDIBeanResolverExtension;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.spi.engine.Resolver;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -45,7 +45,7 @@ public class BasicCDIBeanResolverTest {
 				.addClasses(Alpha.class, Bravo.class, Charlie.class, BeanWithId.class)
 				.addPackage(CDIBeanResolver.class.getPackage())
 				.addAsLibraries(
-						resolver.artifact("org.knir.trim:trim-core")
+						resolver.artifact("org.trimou:trimou-core")
 								.resolveAsFiles())
 				.addAsServiceProvider(Extension.class,
 						CDIBeanResolverExtension.class)

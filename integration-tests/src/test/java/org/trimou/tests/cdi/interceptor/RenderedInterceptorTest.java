@@ -1,11 +1,10 @@
-package org.trimou.cdi.interceptor;
+package org.trimou.tests.cdi.interceptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import javax.inject.Inject;
-
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -42,7 +41,7 @@ public class RenderedInterceptorTest {
 				.addClasses(Foo.class)
 				.addPackage(RenderedInterceptor.class.getPackage())
 				.addAsLibraries(
-						resolver.artifact("org.knir.trim:trim-core")
+						resolver.artifact("org.trimou:trimou-core")
 								.resolveAsFiles());
 	}
 

@@ -1,4 +1,4 @@
-package org.trimou.cdi.interceptor;
+package org.trimou.tests.cdi.interceptor;
 
 import org.trimou.cdi.interceptor.Rendered;
 

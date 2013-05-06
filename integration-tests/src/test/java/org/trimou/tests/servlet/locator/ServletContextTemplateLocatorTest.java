@@ -1,4 +1,4 @@
-package org.trimou.servlet.locator;
+package org.trimou.tests.servlet.locator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,7 +48,7 @@ public class ServletContextTemplateLocatorTest {
 				.addAsWebResource(new StringAsset("<html/>"),
 						"templates/bar.html")
 				.addAsLibraries(
-						resolver.artifact("org.knir.trim:trim-core")
+						resolver.artifact("org.trimou:trimou-core")
 								.artifact(
 										"org.apache.commons:commons-lang3:3.1")
 								.resolveAsFiles());

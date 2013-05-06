@@ -11,11 +11,15 @@ import org.trimou.engine.MustacheEngineBuilder;
  */
 public abstract class AbstractTest {
 
+	private static final String SLF4J_DEFAULT_LOG_LEVEL_KEY = "org.slf4j.simpleLogger.defaultLogLevel";
+
 	protected MustacheEngine engine;
 
 	@BeforeClass
 	public static void setLogLevel() {
-		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+		if(System.getProperty(SLF4J_DEFAULT_LOG_LEVEL_KEY) == null) {
+			System.setProperty(SLF4J_DEFAULT_LOG_LEVEL_KEY, "debug");
+		}
 	}
 
 	@Before

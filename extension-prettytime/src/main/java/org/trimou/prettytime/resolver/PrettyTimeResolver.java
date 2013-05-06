@@ -15,7 +15,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * TODO
+ * PrettyTime resolver.
  *
  * @author Martin Kouba
  */

@@ -9,13 +9,12 @@
 	</parent>
 
 	<artifactId>trimou-extension-prettytime</artifactId>
-	<name>extension-prettytime</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.trimou</groupId>
 			<artifactId>trimou-core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ocpsoft.prettytime</groupId>
