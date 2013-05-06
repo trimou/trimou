@@ -82,7 +82,7 @@ public class DefaultHandler implements Handler {
 		containerStack.addFirst(template);
 
 		start = System.currentTimeMillis();
-		logger.info("Start compilation of {}", new Object[] { name });
+		logger.debug("Start compilation of {}", new Object[] { name });
 	}
 
 	@Override
