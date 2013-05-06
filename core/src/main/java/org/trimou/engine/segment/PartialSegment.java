@@ -65,8 +65,8 @@ public class PartialSegment extends AbstractSegment {
 				line.add(0, indent);
 			}
 
-			for (List<Segment> list : partialLines) {
-				for (Segment segment : list) {
+			for (List<Segment> line : partialLines) {
+				for (Segment segment : line) {
 					segment.execute(writer, context);
 				}
 			}
@@ -79,10 +79,7 @@ public class PartialSegment extends AbstractSegment {
 	}
 
 	public void setIndentation(String indentation) {
-		if (getTemplate().isReadOnly()) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
-		}
+		checkModificationAllowed();
 		this.indentation = indentation;
 	}
 

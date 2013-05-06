@@ -122,4 +122,11 @@ public abstract class AbstractSegment implements Segment {
 		}
 	}
 
+	protected void checkModificationAllowed() {
+		if (isReadOnly()) {
+			throw new MustacheException(
+					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED, toString());
+		}
+	}
+
 }

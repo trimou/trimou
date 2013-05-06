@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
 import org.trimou.engine.context.ExecutionContext;
 
 import com.google.common.collect.ImmutableList;
@@ -70,10 +68,7 @@ public abstract class ContainerSegment extends AbstractSegment implements
 	 * @param segment
 	 */
 	public void addSegment(Segment segment) {
-		if (isReadOnly()) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
-		}
+		checkModificationAllowed();
 		segments.add(segment);
 	}
 
