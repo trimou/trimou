@@ -1,4 +1,4 @@
-package org.trimou.cdi.resolver;
+package org.trimou.cdi;
 
 import java.lang.reflect.Method;
 
@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kouba
  */
-public class BeanManagerLookup {
+public class BeanManagerLocator {
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(BeanManagerLookup.class);
+			.getLogger(BeanManagerLocator.class);
 
 	private static final String CDI_CLASS_NAME = "javax.enterprise.inject.spi.CDI";
 
@@ -23,7 +23,7 @@ public class BeanManagerLookup {
 	 *
 	 * @return {@link BeanManager} instance or <code>null</code>
 	 */
-	public static BeanManager lookup() {
+	public static BeanManager locate() {
 
 		BeanManager beanManager = null;
 		ClassLoader classLoader = Thread.currentThread()
@@ -49,7 +49,7 @@ public class BeanManagerLookup {
 		}
 
 		if (beanManager == null) {
-			beanManager = CDIBeanResolverExtension.providedBeanManager;
+			beanManager = BeanManagerLocatorExtension.providedBeanManager;
 			if (beanManager != null) {
 				logger.info("CDI 1.0 detected - using extension to obtain BeanManager instance");
 			}

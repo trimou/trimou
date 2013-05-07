@@ -59,6 +59,12 @@ public class DefaultMustacheEngine implements MustacheEngine {
 	private Parser parser;
 
 	/**
+	 * Make a type proxyable (CDI) so that it's possible to produce application scoped CDI bean
+	 */
+	DefaultMustacheEngine() {
+	}
+
+	/**
 	 *
 	 * @param builder
 	 */

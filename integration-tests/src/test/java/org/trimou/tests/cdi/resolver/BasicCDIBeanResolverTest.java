@@ -2,27 +2,21 @@ package org.trimou.tests.cdi.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.trimou.tests.IntegrationTestUtils.createCDITestArchiveBase;
+import static org.trimou.tests.IntegrationTestUtils.getResolver;
 
-import java.io.StringWriter;
 import java.util.Map;
 
-import javax.enterprise.inject.spi.Extension;
-import javax.naming.spi.Resolver;
+import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.trimou.api.Mustache;
-import org.trimou.cdi.resolver.CDIBeanResolver;
-import org.trimou.cdi.resolver.CDIBeanResolverExtension;
-import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.api.engine.MustacheEngine;
+import org.trimou.tests.cdi.MustacheEngineProducer;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -35,21 +29,12 @@ public class BasicCDIBeanResolverTest {
 
 	@Deployment
 	public static WebArchive createTestArchive() {
-
-		MavenDependencyResolver resolver = DependencyResolvers.use(
-				MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
-
-		return ShrinkWrap
-				.create(WebArchive.class)
-				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-				.addClasses(Alpha.class, Bravo.class, Charlie.class, BeanWithId.class)
-				.addPackage(CDIBeanResolver.class.getPackage())
+		return createCDITestArchiveBase().addClasses(Alpha.class, Bravo.class,
+				Charlie.class, BeanWithId.class, MustacheEngineProducer.class)
 				.addAsLibraries(
-						resolver.artifact("org.trimou:trimou-core")
-								.resolveAsFiles())
-				.addAsServiceProvider(Extension.class,
-						CDIBeanResolverExtension.class)
-				.addAsServiceProvider(Resolver.class, CDIBeanResolver.class);
+						getResolver().artifact(
+								"org.trimou:trimou-extension-cdi")
+								.resolveAsFiles());
 	}
 
 	@Inject
@@ -61,28 +46,29 @@ public class BasicCDIBeanResolverTest {
 	@Inject
 	Charlie charlie;
 
+	@Inject
+	MustacheEngine engine;
+
 	@Test
-	public void testResolution() {
+	public void testInterpolation() {
 
 		assertNotNull(alpha);
 		assertNotNull(bravo);
 		assertNotNull(charlie);
+		assertNotNull(engine);
 
-		Mustache mustache = MustacheEngineBuilder
-				.newBuilder()
-				.build()
-				.compile("cdi_bean_resolver_test",
+		Mustache mustache = engine
+				.compile(
+						"cdi_bean_resolver_test",
 						"{{hello}}: {{#alpha}}{{id}} {{bravo.age}}{{/alpha}} {{bravo.id}} {{charlie.id}}{{neverExisted}}");
 
-		String result = String.format("Hello: %s 78 %s %s", alpha.getId(), bravo.getId(), charlie.getId());
-		Map<String, Object> data = ImmutableMap.<String, Object>of("hello", "Hello");
+		String result = String.format("Hello: %s 78 %s %s", alpha.getId(),
+				bravo.getId(), charlie.getId());
+		Map<String, Object> data = ImmutableMap.<String, Object> of("hello",
+				"Hello");
 
-		StringWriter writer = new StringWriter();
-		mustache.render(writer, data);
-		assertEquals(result, writer.toString());
-		writer = new StringWriter();
-		mustache.render(writer, data);
-		assertEquals(result, writer.toString());
+		assertEquals(result, mustache.render(data));
+		assertEquals(result, mustache.render(data));
 	}
 
 }

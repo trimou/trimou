@@ -1,4 +1,4 @@
-package org.trimou.cdi.resolver;
+package org.trimou.cdi;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
@@ -10,7 +10,7 @@ import javax.enterprise.inject.spi.Extension;
  *
  * @author Martin Kouba
  */
-public class CDIBeanResolverExtension implements Extension {
+public class BeanManagerLocatorExtension implements Extension {
 
 	static BeanManager providedBeanManager = null;
 

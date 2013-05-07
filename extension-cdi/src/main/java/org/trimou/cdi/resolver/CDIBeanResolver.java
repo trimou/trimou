@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.api.engine.Configuration;
 import org.trimou.api.engine.ConfigurationKey;
+import org.trimou.cdi.BeanManagerLocator;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.util.Priorities;
 
@@ -73,7 +74,7 @@ public class CDIBeanResolver extends AbstractResolver {
 	public void init(Configuration configuration) {
 
 		// Init BeanManager
-		beanManager = BeanManagerLookup.lookup();
+		beanManager = BeanManagerLocator.locate();
 		if (beanManager == null) {
 			throw new IllegalStateException(
 					"BeanManager not set - invalid resolver configuration");

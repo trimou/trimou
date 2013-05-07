@@ -3,6 +3,7 @@ package org.trimou.tests.servlet.locator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.trimou.tests.IntegrationTestUtils.getResolver;
 
 import java.util.Set;
 
@@ -11,15 +12,11 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.trimou.api.Mustache;
 import org.trimou.api.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.servlet.RequestHolder;
-import org.trimou.servlet.RequestListener;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
 /**
@@ -32,13 +29,8 @@ public class ServletContextTemplateLocatorTest {
 	@Deployment
 	public static WebArchive createTestArchive() {
 
-		MavenDependencyResolver resolver = DependencyResolvers.use(
-				MavenDependencyResolver.class).loadMetadataFromPom("pom.xml");
-
 		return ShrinkWrap
 				.create(WebArchive.class)
-				.addClasses(RequestHolder.class, RequestListener.class)
-				.addPackage(ServletContextTemplateLocator.class.getPackage())
 				// WEB-INF/templates/foo.html
 				.addAsWebInfResource(new StringAsset("<html/>"),
 						"templates/foo.html")
@@ -48,9 +40,7 @@ public class ServletContextTemplateLocatorTest {
 				.addAsWebResource(new StringAsset("<html/>"),
 						"templates/bar.html")
 				.addAsLibraries(
-						resolver.artifact("org.trimou:trimou-core")
-								.artifact(
-										"org.apache.commons:commons-lang3:3.1")
+						getResolver().artifact("org.trimou:trimou-extension-servlet")
 								.resolveAsFiles());
 	}
 
