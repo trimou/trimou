@@ -39,7 +39,7 @@ public class BasicServletRequestResolverTest {
 		Mustache mustache = MustacheEngineBuilder
 				.newBuilder()
 				.build()
-				.compile("servlet_request_resolver_test",
+				.compileMustache("servlet_request_resolver_test",
 						"{{request.serverPort}}");
 
 		String result = String.format("8080");

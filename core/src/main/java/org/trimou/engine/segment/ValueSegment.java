@@ -85,7 +85,7 @@ public class ValueSegment extends AbstractSegment {
 		if (lambda.isReturnValueInterpolated()) {
 			// Parse and interpolate the return value
 			StringWriter interpolated = new StringWriter();
-			TemplateSegment temp = (TemplateSegment) getEngine().compile(
+			TemplateSegment temp = (TemplateSegment) getEngine().compileMustache(
 					lambda.getClass() + "_" + System.nanoTime(), returnValue);
 			temp.execute(interpolated, context);
 			writeValue(writer, interpolated.toString());

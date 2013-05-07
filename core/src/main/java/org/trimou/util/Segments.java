@@ -15,14 +15,18 @@
  */
 package org.trimou.util;
 
+import static org.trimou.util.Strings.LINE_SEPARATOR;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.trimou.engine.segment.ContainerSegment;
 import org.trimou.engine.segment.Segment;
 import org.trimou.engine.segment.SegmentType;
 
 /**
+ * {@link Segment} utils.
  *
  * @author Martin Kouba
  */
@@ -106,6 +110,51 @@ public final class Segments {
 			currentLine.add(container);
 		}
 		return currentLine;
+	}
+
+	/**
+	 *
+	 * @param container
+	 * @return simple tree vizualization, for debug purpose only
+	 */
+	public static String getSegmentTree(ContainerSegment container) {
+		return getSegmentTreeInternal(1, container);
+	}
+
+	private static String getSegmentTreeInternal(int level,
+			ContainerSegment container) {
+
+		StringBuilder tree = new StringBuilder();
+		tree.append(LINE_SEPARATOR);
+		if (level > 1) {
+			tree.append(StringUtils.repeat(" ", level - 1));
+		}
+		tree.append("+");
+		if (!SegmentType.TEMPLATE.equals(container.getType())) {
+			tree.append(container.getTemplate().getText());
+			tree.append(":");
+		}
+		tree.append(container.getType());
+		tree.append(":");
+		tree.append(container.getText());
+		for (Segment segment : container.getSegments()) {
+			if (segment instanceof ContainerSegment) {
+				tree.append(getSegmentTreeInternal(level + 1,
+						(ContainerSegment) segment));
+			} else {
+				tree.append(LINE_SEPARATOR);
+				tree.append(StringUtils.repeat(" ", level));
+				tree.append("-");
+				tree.append(segment.getTemplate().getText());
+				tree.append(":");
+				tree.append(segment.getType());
+				if (segment.getType().hasName()) {
+					tree.append(":");
+					tree.append(segment.getText());
+				}
+			}
+		}
+		return tree.toString();
 	}
 
 }

@@ -33,7 +33,7 @@ public class ResourceBundleResolverTest extends AbstractTest {
 	public void testInterpolation() {
 
 		String templateContents = "{{messages.echo_one}}";
-		Mustache mustache = engine.compile("bundle", templateContents);
+		Mustache mustache = engine.compileMustache("bundle", templateContents);
 
 		assertEquals("Hello", mustache.render(null));
 	}

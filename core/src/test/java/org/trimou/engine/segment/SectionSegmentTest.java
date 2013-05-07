@@ -25,7 +25,7 @@ public class SectionSegmentTest extends AbstractTest {
 	public void testBoolean() {
 
 		String templateContents = "{{#Boolean}}-{{/Boolean}}{{#boolean}}-{{/boolean}}!";
-		Mustache mustache = engine.compile("boolean", templateContents);
+		Mustache mustache = engine.compileMustache("boolean", templateContents);
 
 		assertEquals("--!", mustache.render(ImmutableMap.<String, Object> of(
 				"boolean", true, "Boolean", Boolean.TRUE, "true", "true")));
@@ -37,7 +37,7 @@ public class SectionSegmentTest extends AbstractTest {
 	public void testIterable() {
 
 		String templateContents = "{{#numbers}}la{{iterIndex}}{{iterHasNext}}|{{/numbers}}";
-		Mustache mustache = engine.compile("iterable", templateContents);
+		Mustache mustache = engine.compileMustache("iterable", templateContents);
 
 		assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
 				"numbers", Collections.emptyList())));
@@ -49,7 +49,7 @@ public class SectionSegmentTest extends AbstractTest {
 	public void testArray() {
 
 		String templateContents = "{{#numbers}}la{{iterIndex}}{{iterHasNext}}|{{/numbers}}";
-		Mustache mustache = engine.compile("array", templateContents);
+		Mustache mustache = engine.compileMustache("array", templateContents);
 
 		assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
 				"numbers", new Integer[] {})));
@@ -87,7 +87,7 @@ public class SectionSegmentTest extends AbstractTest {
 		};
 
 		String templateContents = "{{#lambda}}{{foo}}{{/lambda}}";
-		Mustache mustache = engine.compile("lambda", templateContents);
+		Mustache mustache = engine.compileMustache("lambda", templateContents);
 
 		assertEquals("prefix_{{foo}}", mustache.render(ImmutableMap
 				.<String, Object> of("foo", "Mine", "lambda", literal)));
@@ -99,7 +99,7 @@ public class SectionSegmentTest extends AbstractTest {
 	public void testNestedContext() {
 
 		String templateContents = "Hello {{#test}}{{name}}{{/test}}!";
-		Mustache mustache = engine.compile("nested", templateContents);
+		Mustache mustache = engine.compileMustache("nested", templateContents);
 
 		assertEquals("Hello Edgar!", mustache.render(ImmutableMap
 				.<String, Object> of("test", new Hammer())));

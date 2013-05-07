@@ -40,7 +40,7 @@ public class ResourceBundleLambdaTest extends AbstractTest {
 	public void testInterpolation() {
 
 		String templateContents = "{{#bundle}}{{key}}{{/bundle}}";
-		Mustache mustache = engine.compile("bundle_lambda", templateContents);
+		Mustache mustache = engine.compileMustache("bundle_lambda", templateContents);
 
 		assertEquals("Hello", mustache.render(ImmutableMap.<String, Object> of(
 				"key", "echo_one")));

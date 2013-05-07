@@ -41,7 +41,7 @@ public class PrettyTimeResolverTest {
 
 		assertEquals(
 				new Resources_en().getString("JustNowPastPrefix"),
-				engine.compile("pretty", "{{now.prettyTime}}").render(
+				engine.compileMustache("pretty", "{{now.prettyTime}}").render(
 						ImmutableMap.<String, Object> of("now", new Date())));
 	}
 

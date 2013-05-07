@@ -23,7 +23,7 @@ public class SimpleTest extends AbstractTest {
 		Map<String, Object> data = ImmutableMap.<String, Object>of("foo", "me", "bar", new Hammer());
 		String templateContents = "Hello {{foo}} and {{bar.name}}!";
 
-		engine.compile("foo", templateContents).render(writer, data);
+		engine.compileMustache("foo", templateContents).render(writer, data);
 
 		assertEquals("Hello me and Edgar!", writer.toString());
 	}

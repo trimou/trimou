@@ -72,7 +72,7 @@ public final class SpecUtils {
 
 					assertEquals(
 							definition.getExpected(),
-							factory.compile(definition.getName(),
+							factory.compileMustache(definition.getName(),
 									definition.getTemplate()).render(
 									definition.getData()));
 

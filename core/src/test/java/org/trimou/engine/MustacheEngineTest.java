@@ -56,7 +56,7 @@ public class MustacheEngineTest extends AbstractTest {
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
 				.addGlobalLambda(bold, "bold")
 				.addGlobalLambda(italic, "italic").build()
-				.compile("global_lambda", templateContents);
+				.compileMustache("global_lambda", templateContents);
 
 		StringWriter writer = new StringWriter();
 		mustache.render(writer, null);

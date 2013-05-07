@@ -35,6 +35,7 @@ import org.trimou.engine.parser.DefaultParser;
 import org.trimou.engine.parser.Parser;
 import org.trimou.engine.segment.TemplateSegment;
 import org.trimou.spi.engine.TemplateLocator;
+import org.trimou.util.Segments;
 import org.trimou.util.Strings;
 
 import com.google.common.base.Optional;
@@ -59,7 +60,7 @@ public class DefaultMustacheEngine implements MustacheEngine {
 	private Parser parser;
 
 	/**
-	 * Make a type proxyable (CDI) so that it's possible to produce application scoped CDI bean
+	 * Make this type proxyable (CDI) so that it's possible to produce application scoped CDI bean
 	 */
 	DefaultMustacheEngine() {
 	}
@@ -122,12 +123,12 @@ public class DefaultMustacheEngine implements MustacheEngine {
 		}
 	}
 
-	public Mustache get(String templateName) {
+	public Mustache getMustache(String templateName) {
 		checkArgumentNullOrEmpty(templateName);
 		return getTemplateFromCache(templateName);
 	}
 
-	public Mustache compile(String templateName, String templateContent) {
+	public Mustache compileMustache(String templateName, String templateContent) {
 		checkArgumentNullOrEmpty(templateName);
 		checkArgumentNullOrEmpty(templateContent);
 		return parse(templateName, new StringReader(templateContent));
@@ -165,9 +166,8 @@ public class DefaultMustacheEngine implements MustacheEngine {
 		DefaultHandler handler = new DefaultHandler();
 		parser.parse(templateName, reader, handler);
 		TemplateSegment template = handler.getCompiledTemplate();
-		// Log level check for performance reasons
 		if (logger.isTraceEnabled()) {
-			logger.trace(template.getSegmentTreeAsString());
+			logger.trace(Segments.getSegmentTree(template));
 		}
 		return template;
 	}

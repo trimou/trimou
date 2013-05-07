@@ -46,7 +46,7 @@ public class ExtendSegment extends ContainerSegment {
 	public void execute(Writer writer, ExecutionContext context) {
 
 		TemplateSegment extended = (TemplateSegment) getEngine()
-				.get(getText());
+				.getMustache(getText());
 
 		if (extended == null) {
 			throw new MustacheException(MustacheProblem.RENDER_INVALID_EXTEND_KEY);

@@ -58,7 +58,7 @@ public class BasicCDIBeanResolverTest {
 		assertNotNull(engine);
 
 		Mustache mustache = engine
-				.compile(
+				.compileMustache(
 						"cdi_bean_resolver_test",
 						"{{hello}}: {{#alpha}}{{id}} {{bravo.age}}{{/alpha}} {{bravo.id}} {{charlie.id}}{{neverExisted}}");
 

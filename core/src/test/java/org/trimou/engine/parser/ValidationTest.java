@@ -37,7 +37,7 @@ public class ValidationTest extends AbstractTest {
 	private void testInvalidTemplate(MustacheEngine factory, String template,
 			MustacheProblem expectedProblem, String description) {
 		try {
-			factory.compile("validation_" + description, template);
+			factory.compileMustache("validation_" + description, template);
 			fail();
 		} catch (MustacheException e) {
 			if (!expectedProblem.equals(e.getCode())) {

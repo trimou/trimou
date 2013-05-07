@@ -16,6 +16,7 @@
 package org.trimou.api.engine;
 
 import org.trimou.api.Mustache;
+import org.trimou.spi.engine.TemplateLocator;
 
 /**
  * Mustache engine.
@@ -36,8 +37,9 @@ public interface MustacheEngine {
 	 * @param templateName
 	 * @return the compiled template with the given name or <code>null</code> if
 	 *         no such template exists
+	 * @see TemplateLocator
 	 */
-	public Mustache get(String templateName);
+	public Mustache getMustache(String templateName);
 
 	/**
 	 * Compile the given template. The compiled template is not cached and so
@@ -47,7 +49,7 @@ public interface MustacheEngine {
 	 * @param templateContent
 	 * @return the compiled template
 	 */
-	public Mustache compile(String templateName, String templateContent);
+	public Mustache compileMustache(String templateName, String templateContent);
 
 	/**
 	 * @return the engine configuration

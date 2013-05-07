@@ -45,7 +45,7 @@ public class PartialSegment extends AbstractSegment {
 	@Override
 	public void execute(Writer writer, ExecutionContext context) {
 
-		TemplateSegment partialTemplate = (TemplateSegment) getEngine().get(
+		TemplateSegment partialTemplate = (TemplateSegment) getEngine().getMustache(
 				getText());
 
 		if (partialTemplate == null) {

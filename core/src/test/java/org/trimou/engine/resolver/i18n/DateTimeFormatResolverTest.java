@@ -61,23 +61,23 @@ public class DateTimeFormatResolverTest extends AbstractTest {
 
 		assertEquals(
 				StringUtils.repeat(expectedMedium, "|", 3),
-				engine.compile("date_time_medium",
+				engine.compileMustache("date_time_medium",
 						"{{calendar.format}}|{{date.format}}|{{milis.format}}")
 						.render(data));
 		assertEquals(
 				StringUtils.repeat(expectedShort, "|", 3),
-				engine.compile("date_time_short",
+				engine.compileMustache("date_time_short",
 						"{{calendar.formatShort}}|{{date.formatShort}}|{{milis.formatShort}}")
 						.render(data));
 		assertEquals(
 				StringUtils.repeat(expectedCustom, "|", 3),
-				engine.compile("date_time_custom",
+				engine.compileMustache("date_time_custom",
 						"{{calendar.formatCustom}}|{{date.formatCustom}}|{{milis.formatCustom}}")
 						.render(data));
 
 		assertEquals(
 				StringUtils.repeat(expectedDate, "|", 3),
-				engine.compile("date_only",
+				engine.compileMustache("date_only",
 						"{{calendar.formatDate}}|{{date.formatDate}}|{{milis.formatDate}}")
 						.render(data));
 	}

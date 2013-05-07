@@ -34,7 +34,7 @@ public class ExtendSegmentTest extends AbstractTest {
 								"And now... {{<super}} {{$insert}}{{name}}{{/insert}} {{/super}}!"));
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator).build();
-		Mustache sub = engine.get("sub");
+		Mustache sub = engine.getMustache("sub");
 
 		assertEquals("And now... Hello Edgar!",
 				sub.render(ImmutableMap.<String, Object> of("name", "Edgar")));
@@ -53,7 +53,7 @@ public class ExtendSegmentTest extends AbstractTest {
 								"{{<sub}} {{$insert2}}completely{{/insert2}} {{/sub}}"));
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator).build();
-		Mustache sub = engine.get("subsub");
+		Mustache sub = engine.getMustache("subsub");
 
 		StringWriter writer = new StringWriter();
 		sub.render(writer, null);
@@ -70,7 +70,7 @@ public class ExtendSegmentTest extends AbstractTest {
 				"{{<sub}} {{$insert}}true{{/insert}} {{/sub}}"));
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator).build();
-		Mustache sub = engine.get("subsub");
+		Mustache sub = engine.getMustache("subsub");
 
 		StringWriter writer = new StringWriter();
 		sub.render(writer, null);

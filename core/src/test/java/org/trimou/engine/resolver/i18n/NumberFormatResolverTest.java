@@ -38,7 +38,7 @@ public class NumberFormatResolverTest extends AbstractTest {
 	public void testInterpolation() {
 
 		String templateContents = "{{number.format}}|{{number.formatPercent}}";
-		Mustache mustache = engine.compile("number", templateContents);
+		Mustache mustache = engine.compileMustache("number", templateContents);
 
 		assertEquals("1,5|150%", mustache.render(ImmutableMap.<String, Object> of(
 				"number", new BigDecimal("1.5"))));

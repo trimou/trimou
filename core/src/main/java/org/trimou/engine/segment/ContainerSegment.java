@@ -15,14 +15,11 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.util.Strings.LINE_SEPARATOR;
-
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.trimou.engine.context.ExecutionContext;
 
 import com.google.common.collect.ImmutableList;
@@ -78,7 +75,7 @@ public abstract class ContainerSegment extends AbstractSegment implements
 	}
 
 	/**
-	 * @return
+	 * @return the list of contained segments
 	 */
 	public List<Segment> getSegments() {
 		return isReadOnly() ? ImmutableList.copyOf(segments)
@@ -101,52 +98,9 @@ public abstract class ContainerSegment extends AbstractSegment implements
 		return literal.toString();
 	}
 
-	/**
-	 *
-	 * @return simple tree vizualization, for debug purpose only
-	 */
-	public String getSegmentTreeAsString() {
-		return getTreeAsStringInternal(1);
-	}
-
 	@Override
 	protected String getSegmentName() {
 		return getText();
-	}
-
-	protected String getTreeAsStringInternal(int level) {
-
-		StringBuilder tree = new StringBuilder();
-		tree.append(LINE_SEPARATOR);
-		if (level > 1) {
-			tree.append(StringUtils.repeat(" ", level - 1));
-		}
-		tree.append("+");
-		if (!SegmentType.TEMPLATE.equals(getType())) {
-			tree.append(getTemplate().getText());
-			tree.append(":");
-		}
-		tree.append(getType());
-		tree.append(":");
-		tree.append(getText());
-		for (Segment segment : segments) {
-			if (segment instanceof ContainerSegment) {
-				tree.append(((ContainerSegment) segment)
-						.getTreeAsStringInternal(level + 1));
-			} else {
-				tree.append(LINE_SEPARATOR);
-				tree.append(StringUtils.repeat(" ", level));
-				tree.append("-");
-				tree.append(segment.getTemplate().getText());
-				tree.append(":");
-				tree.append(segment.getType());
-				if (segment.getType().hasName()) {
-					tree.append(":");
-					tree.append(segment.getText());
-				}
-			}
-		}
-		return tree.toString();
 	}
 
 }

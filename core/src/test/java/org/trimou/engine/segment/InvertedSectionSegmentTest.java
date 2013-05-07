@@ -20,7 +20,7 @@ public class InvertedSectionSegmentTest extends AbstractTest {
 	@Test
 	public void testBoolean() {
 		String templateContents = "Hello {{^test}}me{{/test}}!";
-		Mustache mustache = engine.compile("boolean", templateContents);
+		Mustache mustache = engine.compileMustache("boolean", templateContents);
 		assertEquals("Hello me!", mustache.render(ImmutableMap
 				.<String, Object> of("test", false)));
 		assertEquals("Hello !",
@@ -30,7 +30,7 @@ public class InvertedSectionSegmentTest extends AbstractTest {
 	@Test
 	public void testIterable() {
 		String templateContents = "{{^numbers}}Hey!{{/numbers}}";
-		Mustache mustache = engine.compile("iterable", templateContents);
+		Mustache mustache = engine.compileMustache("iterable", templateContents);
 		assertEquals("Hey!", mustache.render(ImmutableMap.<String, Object> of(
 				"numbers", Collections.emptyList())));
 		assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
@@ -40,7 +40,7 @@ public class InvertedSectionSegmentTest extends AbstractTest {
 	@Test
 	public void testArray() {
 		String templateContents = "{{^numbers}}Hey!{{/numbers}}";
-		Mustache mustache = engine.compile("iterable", templateContents);
+		Mustache mustache = engine.compileMustache("iterable", templateContents);
 		assertEquals("Hey!", mustache.render(ImmutableMap.<String, Object> of(
 				"numbers", new Object[] {})));
 		assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
@@ -50,7 +50,7 @@ public class InvertedSectionSegmentTest extends AbstractTest {
 	@Test
 	public void testNestedContext() {
 		String templateContents = "Hello {{^test}}ping{{/test}}!";
-		Mustache mustache = engine.compile("nested", templateContents);
+		Mustache mustache = engine.compileMustache("nested", templateContents);
 		assertEquals("Hello !", mustache.render(ImmutableMap
 				.<String, Object> of("test", new Hammer())));
 		assertEquals("Hello ping!",

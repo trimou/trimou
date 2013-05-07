@@ -24,7 +24,7 @@ public class BeanResolverTest extends AbstractTest {
 		String templateContents = "Hello {{hammer.name}} of age {{hammer.age}}, persistent: {{hammer.persistent}} and {{hammer.invalidName}}!";
 
 		assertEquals("Hello Edgar of age 10, persistent: false and !", engine
-				.compile("bean_resolver", templateContents).render(data));
+				.compileMustache("bean_resolver", templateContents).render(data));
 	}
 
 }

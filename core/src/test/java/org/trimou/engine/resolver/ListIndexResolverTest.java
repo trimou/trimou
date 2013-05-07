@@ -25,7 +25,7 @@ public class ListIndexResolverTest extends AbstractTest {
 		Map<String, Object> data = ImmutableMap.<String, Object> of("list",
 				list);
 		String templateContents = "{{list.0}},{{list.1}},{{list.10}},{{list.a}}!";
-		assertEquals("foo,bar,,!", engine.compile("list", templateContents)
+		assertEquals("foo,bar,,!", engine.compileMustache("list", templateContents)
 				.render(data));
 	}
 

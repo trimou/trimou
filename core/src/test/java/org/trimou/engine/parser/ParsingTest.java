@@ -23,7 +23,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testVariable() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_variable", "Hello {{foo}} and {{& me}}!");
 
 		List<Segment> segments = template.getSegments();
@@ -38,7 +38,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testComment() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_comment", "{{! ignore}}{{me}}");
 
 		List<Segment> segments = template.getSegments();
@@ -49,7 +49,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testSection() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_section",
 				"This is a {{#section}} jupi {{mustache}} {{/section}}");
 
@@ -65,7 +65,7 @@ public class ParsingTest extends AbstractTest {
 	public void testInvertedSection() {
 
 		TemplateSegment template = (TemplateSegment) engine
-				.compile("parse_inv_section",
+				.compileMustache("parse_inv_section",
 						"This is a {{^section}} jupi {{/section}}");
 
 		List<Segment> segments = template.getSegments();
@@ -79,7 +79,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testDelimiters() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_delimiters",
 				"This {{=%% %%=}} is a %%foo%% jupi %%={{ }}=%% {{bar}}");
 
@@ -96,7 +96,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testPartials() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_partial", "START{{>partial}}END");
 
 		List<Segment> segments = template.getSegments();
@@ -109,7 +109,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testLineSeparator() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_line_sep", "\nHello {{foo}}\r\n\n and {{& me}}!\n");
 
 		List<Segment> segments = template.getSegments();
@@ -129,7 +129,7 @@ public class ParsingTest extends AbstractTest {
 	public void testStandaloneLines() {
 
 		TemplateSegment template = (TemplateSegment) engine
-				.compile("parse_standalone_line",
+				.compileMustache("parse_standalone_line",
 						"\nHello {{foo}}\n{{! Standalone}}\n and {{& me}}!\n{{#test}}\nyes\n{{/test}}");
 
 		List<Segment> segments = template.getSegments();
@@ -148,7 +148,7 @@ public class ParsingTest extends AbstractTest {
 	@Test
 	public void testExtendSegments() {
 
-		TemplateSegment template = (TemplateSegment) engine.compile(
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
 				"parse_extend_super",
 				"Hello {{$insert}}default content{{/insert}}!");
 
@@ -163,7 +163,7 @@ public class ParsingTest extends AbstractTest {
 		assertEquals(SegmentType.TEXT, segments.get(0).getType());
 
 		template = (TemplateSegment) engine
-				.compile(
+				.compileMustache(
 						"parse_extend_sub",
 						"Intro... {{<super}} skip {{$insert}}default content{{/insert}} skip! {{/super}} ...outro");
 

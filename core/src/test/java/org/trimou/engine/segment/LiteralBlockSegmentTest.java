@@ -53,7 +53,7 @@ public class LiteralBlockSegmentTest extends AbstractTest {
 		String template = "{{#foo}}{{! My comment}}|{{bar}}|/n|{{=%% %%=}}|Hello%%/foo%%";
 		assertEquals(
 				"|true|/n||Hello",
-				engine.compile("literal_block_basic", template).render(
+				engine.compileMustache("literal_block_basic", template).render(
 						ImmutableMap.<String, Object> of("bar", true)));
 		assertEquals("{{! My comment}}|{{bar}}|/n|{{=%% %%=}}|Hello", textParam);
 	}
@@ -65,7 +65,7 @@ public class LiteralBlockSegmentTest extends AbstractTest {
 		String template = "{{#foo}} {{#section}}0{{/section}} {{^inverted}}1{{/inverted}} {{/foo}}";
 		assertEquals(
 				" 0 1 ",
-				engine.compile("literal_block_section", template).render(
+				engine.compileMustache("literal_block_section", template).render(
 						ImmutableMap.<String, Object> of("section", true,
 								"inverted", false)));
 		assertEquals(" {{#section}}0{{/section}} {{^inverted}}1{{/inverted}} ",
@@ -75,7 +75,7 @@ public class LiteralBlockSegmentTest extends AbstractTest {
 	@Test
 	public void testPartial() {
 		String template = "{{#foo}}|{{>partial}}|{{/foo}}";
-		assertEquals("||", engine.compile("literal_block_partial", template)
+		assertEquals("||", engine.compileMustache("literal_block_partial", template)
 				.render(null));
 		assertEquals("|{{>partial}}|", textParam);
 	}
@@ -84,7 +84,7 @@ public class LiteralBlockSegmentTest extends AbstractTest {
 	public void testExtend() {
 		String template = "{{#foo}}|{{<super}}{{/super}}|{{/foo}}";
 		assertEquals("|Hello|",
-				engine.compile("literal_block_partial", template).render(null));
+				engine.compileMustache("literal_block_partial", template).render(null));
 		assertEquals("|{{<super}}{{/super}}|", textParam);
 	}
 

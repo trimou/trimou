@@ -23,7 +23,7 @@ public class ArrayIndexResolverTest extends AbstractTest {
 				"stringArray", stringArray, "intArray", intArray);
 		String templateContents = "{{stringArray.0}},{{stringArray.1}},{{stringArray.10}},{{stringArray.a}}:{{intArray.0}},{{intArray.1}},{{intArray.10}},{{intArray.-2}}";
 		assertEquals("foo,bar,,:1,3,,", engine
-				.compile("list", templateContents).render(data));
+				.compileMustache("list", templateContents).render(data));
 	}
 
 }

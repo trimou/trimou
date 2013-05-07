@@ -19,7 +19,7 @@ public class SegmentImmutabilityTest extends AbstractTest {
 	@Test
 	public void testReadonlySegments() {
 
-		Mustache mustache = engine.compile("immutable",
+		Mustache mustache = engine.compileMustache("immutable",
 				"{{#section}}|{{/section}}");
 		TemplateSegment template = (TemplateSegment) mustache;
 		assertTrue(template.isReadOnly());

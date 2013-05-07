@@ -57,11 +57,11 @@ public class ServletContextTemplateLocatorTest {
 				.addTemplateLocator(locator1).addTemplateLocator(locator2)
 				.build();
 
-		Mustache foo = factory.get("foo");
+		Mustache foo = factory.getMustache("foo");
 		assertNotNull(foo);
 		assertEquals("<html/>", foo.render(null));
 
-		Mustache bar = factory.get("bar");
+		Mustache bar = factory.getMustache("bar");
 		assertNotNull(bar);
 		assertEquals("<html/>", bar.render(null));
 

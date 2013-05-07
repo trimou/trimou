@@ -165,7 +165,7 @@ public class SectionSegment extends ContainerSegment {
 
 		if (lambda.isReturnValueInterpolated()) {
 			// Parse and interpolate the return value
-			TemplateSegment temp = (TemplateSegment) getEngine().compile(
+			TemplateSegment temp = (TemplateSegment) getEngine().compileMustache(
 					getTemplate().getName() + "_" + System.nanoTime(),
 					returnValue);
 			temp.execute(writer, context);

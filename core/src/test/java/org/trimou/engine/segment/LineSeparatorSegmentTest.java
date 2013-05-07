@@ -15,7 +15,7 @@ public class LineSeparatorSegmentTest extends AbstractTest {
 	@Test
 	public void testLineSeparators() {
 		String templateContents = "\nHello\r\n\n!";
-		Mustache mustache = engine.compile("line_sep", templateContents);
+		Mustache mustache = engine.compileMustache("line_sep", templateContents);
 		assertEquals("\nHello\r\n\n!", mustache.render(null));
 	}
 
