@@ -9,7 +9,7 @@
 
     <name>trimou</name>
     <description>Mustache template engine implementation written in Java.</description>
-    <url></url>
+    <url>http://www.trimou.org</url>
 
     <licenses>
         <license>
@@ -20,8 +20,8 @@
     </licenses>
 
     <scm>
-        <connection></connection>
-        <url></url>
+        <connection>scm:git:git://github.com/trimou/trimou.git</connection>
+        <url>https://github.com/trimou/trimou</url>
     </scm>
 
     <developers>
