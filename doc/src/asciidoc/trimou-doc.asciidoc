@@ -8,7 +8,7 @@
 [[intro]]
 == What is Trimou?
 
-Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. It's goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. So far there are two ready-to-use extensions, <<cdi,trimou-extension-cdi>> and <<servlets,trimou-extension-servlet>>. Both provide (among others) a special <<resolver,resolver>> to extend the set of resolvable objects for your templates, or lookup CDI beans and Servlet request wrapper respectively.
+Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. It's goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. So far there are three ready-to-use extensions  which provide integration with http://www.cdi-spec.org/[CDI], Servlets and http://ocpsoft.org/prettytime/[PrettyTime] (see <<extensions,Extensions>> section for more info).
 
 NOTE: Trimou is available under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache License 2.0].
 
@@ -30,7 +30,7 @@ The most notable enhancements are:
 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/interpolation.yml
 
-NOTE: The interpolation tag's content is called *a key* hereafter. The key consists of one or more dot-separated parts (+"foo"+, +"."+, +"foo.bar.name"+). The current object the key part is resolved against is called *a context object* hereafter.
+NOTE: The interpolation tag's content is called a *key* hereafter. The key consists of one or more dot-separated parts (+"foo"+, +"."+, +"foo.bar.name"+). The current object the key part is resolved against is called a *context object* hereafter.
 
 In general Trimou interpolation works very similar to the spec description - walk the context object stack from top to bottom, and resolve the value for the given part of the key (first part againts the context stack, other parts against the result from the former resolution).
 
@@ -174,7 +174,7 @@ TIP: It's also possible to change the delimiters globally, see <<configuration,C
 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/lambdas.yml
 
-You can implement +org.trimou.api.Lambda+ interface in order to define a lambda/callable object. Predefined abstract +org.trimou.lambda.SpecCompliantLambda+ follows the behaviour defined by the spec:
+You can implement +org.trimou.lambda.Lambda+ interface in order to define a lambda/callable object. Predefined abstract +org.trimou.lambda.SpecCompliantLambda+ follows the behaviour defined by the spec:
 
 [source,java]
 ----
@@ -227,7 +227,7 @@ results in:
 -> the variable is interpolated before the lambda invoke() method is invoked
 ----
 
-See +org.trimou.api.Lambda+ API javadoc for more info.
+See +org.trimou.lambda.Lambda+ API javadoc for more info.
 
 [[extend]]
 === Extending templates
@@ -302,14 +302,14 @@ And now for something completely different...
 [source,java]
 ----
 MustacheEngine engine = MustacheEngineBuilder.newBuilder().build(); <1>
-Mustache mustache = engine.compile("myTemplateName", "{{! empty template}}"); <2>
+Mustache mustache = engine.compileMustache("myTemplateName", "{{! empty template}}"); <2>
 String output = mustache.render(null); <3>
 
 <1> <2> <3>
 String output = MustacheEngineBuilder
                   .newBuilder()
                   .build()
-                  .compile("myTemplateName", "{{! empty template}}")
+                  .compileMustache("myTemplateName", "{{! empty template}}")
                   .render(null);
 ----
 <1> Build the engine
@@ -322,7 +322,7 @@ String output = MustacheEngineBuilder
 [source,java]
 ----
 MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
-Mustache mustache = engine.compile("fooTemplate", "{{foo}}");
+Mustache mustache = engine.compileMustache("fooTemplate", "{{foo}}");
 
 StringWriter writer = new StringWriter();
 
@@ -336,7 +336,7 @@ mustache.render(writer, ImmutableMap.<String, Object> of("foo", "bar"));
 You may want to:
 
 * Add template locators; see <<use_template_locator,why>>
-* Add global lambdas/callable objects; see <<lambdas,why>>
+* Add global data objects (available during execution of all templates)
 * Add custom resolvers; see <<resolver,why>>
 * Set custom +TextSupport+ implementation; see <<text_support,why>>
 * Set configuration properties; see <<configuration,why>>
@@ -347,7 +347,7 @@ Simply use appropriate +MustacheEngineBuilder+ methods, e.g.:
 ----
 MustacheEngine engine = MustacheEngineBuilder
                             .newBuilder()
-                            .addGlobalLambda(mySuperUsefulLambdaInstance)
+                            .addGlobalData("fooLambda", mySuperUsefulLambdaInstance)
                             .build();
 ----
 
@@ -369,7 +369,7 @@ MustacheEngine engine = MustacheEngineBuilder
                            .newBuilder()
                            .addTemplateLocator(new FilesystemTemplateLocator(1, "txt", "/home/trimou/resources")) <1>
                            .build();
-Mustache mustache = engine.get("foo"); <2>
+Mustache mustache = engine.getMustache("foo"); <2>
 String output = mustache.render(null);
 ----
 <1> Add a filesystem-based template locator with priority 1, root path "/home/trim/resources", template files have suffix "txt"
@@ -384,7 +384,7 @@ See also <<template_locator, TemplateLocator SPI>>.
 [[i18n]]
 === Basic i18n support
 
-Trimou has a very basic i18n support. Basically it provides three optional resolvers: +org.trimou.engine.resolver.i18n.NumberFormatResolver+, +org.trimou.engine.resolver.i18n.DateTimeFormatResolver+, +org.trimou.engine.resolver.i18n.ResourceBundleResolver+ and one optional lambda: +org.trimou.lambda.i18n.ResourceBundleLambda+. All these components rely  on +org.trimou.spi.engine.LocaleSupport+ implementation to get the current +Locale+. See javadoc for more info.
+Trimou has a very basic i18n support. Basically it provides three optional resolvers: +org.trimou.engine.resolver.i18n.NumberFormatResolver+, +org.trimou.engine.resolver.i18n.DateTimeFormatResolver+, +org.trimou.engine.resolver.i18n.ResourceBundleResolver+ and one optional lambda: +org.trimou.lambda.i18n.ResourceBundleLambda+. All these components rely  on +org.trimou.engine.locale.LocaleSupport+ implementation to get the current +Locale+. See javadoc for more info.
 
 ==== DateTimeFormatResolver example
 
@@ -395,7 +395,7 @@ MustacheEngine engine = MustacheEngineBuilder
                            .setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY, "DD-MM-YYYY HH:mm") <1>
                            .addResolver(new DateTimeFormatResolver()) <2>
                            .build();
-Mustache mustache = engine.get("foo");
+Mustache mustache = engine.getMustache("foo");
 String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date()));
 ----
 <1> DateTimeFormatResolver also supports custom formatting pattern
@@ -416,7 +416,7 @@ Now: 03-05-2013 22:05
 [[resolver]]
 === Resolver
 
-SPI: +org.trimou.spi.engine.Resolver+
+SPI: +org.trimou.engine.resolver.Resolver+
 
 Resolvers define the set of resolvable objects for your templates. The built-in set of resolvers should satisfy most of the basic requirements.
 
@@ -424,7 +424,7 @@ Resolvers define the set of resolvable objects for your templates. The built-in 
 
 WARNING: Implementing/adding a custom resolver may have serious impact on the engine functionality and performance.
 
-All resolvers have a priority and resolvers with *higher priority* are called *first*. Keep in mind that all resolvers must be thread-safe. There are two ways to extend the basic set of resolvers. Trimou utilizes JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Simply create a file with name +org.trimou.spi.engine.Resolver+, write down FCQN of your resolver (one per line) and place the file into +META-INF/services+ folder and the listed resolvers are loaded automatically. This way of loading resolvers may be disabled per engine, see also +MustacheEngineBuilder.omitServiceLoaderResolvers()+.
+All resolvers have a priority and resolvers with *higher priority* are called *first*. Keep in mind that all resolvers must be thread-safe. There are two ways to extend the basic set of resolvers. Trimou utilizes JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Simply create a file with name +org.trimou.engine.resolver.Resolver+, write down FCQN of your resolver (one per line) and place the file into +META-INF/services+ folder and the listed resolvers are loaded automatically. This way of loading resolvers may be disabled per engine, see also +MustacheEngineBuilder.omitServiceLoaderResolvers()+.
 You can also use +MustacheEngineBuilder.addResolver()+ method - this approach is suitable if you need to customize the way the resolver instance is created.
 
 TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup normal-scoped CDI beans with name. <<servlets,trimou-extension-servlet>> extension provides +HttpServletRequestResolver+ to get the current Servlet request wrapper.
@@ -432,7 +432,7 @@ TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup
 [[template_locator]]
 === TemplateLocator
 
-SPI: +org.trimou.spi.engine.TemplateLocator+
+SPI: +org.trimou.engine.locator.TemplateLocator+
 
 Template locators automatically load the template contents for the given template name. There are three built-in implementations. +org.trimou.engine.locator.FilesystemTemplateLocator+ loads templates from the given root directory on the filesystem (watch out, this wouldn't be likely portable across various operating systems). +org.trimou.engine.locator.ClassPathTemplateLocator+ makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. +org.trimou.engine.locator.MapTemplateLocator+ is backed by a +Map+.
 
@@ -443,14 +443,14 @@ TIP: <<servlets,trimou-extension-servlet>> extension provides +org.trimou.servle
 [[text_support]]
 === TextSupport
 
-SPI: +org.trimou.spi.engine.TextSupport+
+SPI: +org.trimou.engine.text.TextSupport+
 
 So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance.
 
 [[locale_support]]
 === LocaleSupport
 
-SPI: +org.trimou.spi.engine.LocaleSupport+
+SPI: +org.trimou.engine.locale.LocaleSupport+
 
 Allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+.
 
@@ -476,22 +476,6 @@ Tries to lookup a normal-scoped CDI bean with the given name (key).
 
 NOTE: At the moment only built-in normal scopes are supported.
 
-==== RenderedInterceptor
-
-WARNING: This functionality is experimental!
-
-Intercepts CDI bean business method invocation and returns the rendered template. The method return type must be of type +java.lang.Object+. If the method code returns an instance of +java.util.Map+, the return value is passed to the compiled template.
-
-[source,java]
-----
-  @Rendered(template = "foo.html") <1>
-  public Object ping(String value) {
-    return ImmutableMap.<String, Object> of("foo", value); <2>
-  }
-----
-<1> Use @Rendered interceptor binding to associate RenderedInterceptor and specify the template name
-<2> This return value is passed to the compiled template
-
 [[servlets]]
 === Servlets
 
@@ -516,5 +500,34 @@ Resolves a key of value *request* to +HttpServletRequestWrapper+. Why the wrappe
 ==== RequestLocaleSupport
 
 Obtains the current locate from the current servlet request.
+
+[[prettytime]]
+=== PrettyTime
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-prettytime</artifactId>
+  <version>${version.trim}</version>
+</dependency>
+----
+
+==== PrettyTimeResolver
+
+This resolver allows you to use http://ocpsoft.org/prettytime[PrettyTime] date-formatting in your templates.
+
+[source,java]
+----
+// The PrettyTimeResolver is automatically loaded if you place the extension jar on the classpath
+MustacheEngine engine = MustacheEngineBuilder
+                             .newBuilder()
+                             .build();
+Mustache mustache = engine.compileMustache("prettyTime","{{now.prettyTime}}");
+String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date()));
+// Renderds something similar:
+// moments from now
+----
 
 '''
