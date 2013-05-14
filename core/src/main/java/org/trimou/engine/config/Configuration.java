@@ -40,7 +40,7 @@ public interface Configuration {
 	 * @return the immutable map of global values, or <code>null</code> if no
 	 *         global values defined
 	 */
-	public Map<String, Object> getGlobalValues();
+	public Map<String, Object> getGlobalData();
 
 	/**
 	 * @return an ordered immutable list of template locators, or <code>null</code> if

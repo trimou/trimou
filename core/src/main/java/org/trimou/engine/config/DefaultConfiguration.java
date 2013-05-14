@@ -52,7 +52,7 @@ public class DefaultConfiguration implements Configuration {
 
 	private List<Resolver> resolvers = null;
 
-	private Map<String, Object> globalValues = null;
+	private Map<String, Object> globalData = null;
 
 	private TextSupport textSupport;
 
@@ -69,7 +69,7 @@ public class DefaultConfiguration implements Configuration {
 		initializeTextSupport(builder);
 		initializeLocaleSupport(builder);
 		initializeTemplateLocators(builder);
-		initializeGlobalValues(builder);
+		initializeGlobalData(builder);
 		initializeProperties(builder);
 		initializeResolvers();
 	}
@@ -80,8 +80,8 @@ public class DefaultConfiguration implements Configuration {
 	}
 
 	@Override
-	public Map<String, Object> getGlobalValues() {
-		return globalValues;
+	public Map<String, Object> getGlobalData() {
+		return globalData;
 	}
 
 	@Override
@@ -287,10 +287,10 @@ public class DefaultConfiguration implements Configuration {
 		}
 	}
 
-	private void initializeGlobalValues(MustacheEngineBuilder builder) {
-		if (builder.getGlobalValues() != null) {
-			this.globalValues = ImmutableMap
-					.copyOf(builder.getGlobalValues());
+	private void initializeGlobalData(MustacheEngineBuilder builder) {
+		if (builder.getGlobalData() != null) {
+			this.globalData = ImmutableMap
+					.copyOf(builder.getGlobalData());
 		}
 
 	}

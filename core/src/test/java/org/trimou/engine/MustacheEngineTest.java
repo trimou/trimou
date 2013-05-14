@@ -20,7 +20,7 @@ public class MustacheEngineTest extends AbstractTest {
 	}
 
 	@Test
-	public void testGlobalValues() {
+	public void testGlobalData() {
 
 		Lambda bold = new SpecCompliantLambda() {
 
@@ -51,10 +51,10 @@ public class MustacheEngineTest extends AbstractTest {
 
 		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!";
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
-				.addGlobalValue("foo", true)
-				.addGlobalValue("bold", bold)
-				.addGlobalValue("italic", italic).build()
-				.compileMustache("global_value", templateContents);
+				.addGlobalData("foo", true)
+				.addGlobalData("bold", bold)
+				.addGlobalData("italic", italic).build()
+				.compileMustache("global_data", templateContents);
 
 		assertEquals("true| <b>Hello</b> <i>world</i>!", mustache.render(null));
 	}

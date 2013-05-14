@@ -49,7 +49,7 @@ public class MustacheEngineBuilder {
 
 	private Set<TemplateLocator> templateLocators = null;
 
-	private Map<String, Object> globalValues = null;
+	private Map<String, Object> globalData = null;
 
 	private TextSupport textSupport = null;
 
@@ -93,11 +93,11 @@ public class MustacheEngineBuilder {
 	 * @param name
 	 * @return self
 	 */
-	public MustacheEngineBuilder addGlobalValue(String name, Object value) {
-		if (this.globalValues == null) {
-			this.globalValues = new HashMap<String, Object>();
+	public MustacheEngineBuilder addGlobalData(String name, Object value) {
+		if (this.globalData == null) {
+			this.globalData = new HashMap<String, Object>();
 		}
-		this.globalValues.put(name, value);
+		this.globalData.put(name, value);
 		return this;
 	}
 
@@ -220,8 +220,8 @@ public class MustacheEngineBuilder {
 		return resolvers;
 	}
 
-	public Map<String, Object> getGlobalValues() {
-		return globalValues;
+	public Map<String, Object> getGlobalData() {
+		return globalData;
 	}
 
 	public TextSupport getTextSupport() {
@@ -244,7 +244,7 @@ public class MustacheEngineBuilder {
 		this.omitServiceLoaderResolvers = false;
 		this.resolvers = null;
 		this.templateLocators = null;
-		this.globalValues = null;
+		this.globalData = null;
 		this.textSupport = null;
 		this.localeSupport = null;
 		this.properties.clear();

@@ -40,7 +40,7 @@ public class LiteralBlockSegmentTest extends AbstractTest {
 
 		engine = MustacheEngineBuilder
 				.newBuilder()
-				.addGlobalValue("foo", foo)
+				.addGlobalData("foo", foo)
 				.addTemplateLocator(locator)
 				.setProperty(
 						EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS,

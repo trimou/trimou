@@ -32,7 +32,7 @@ public class ResourceBundleLambdaTest extends AbstractTest {
 					public Locale getCurrentLocale() {
 						return new Locale("en");
 					}
-				}).addGlobalValue("bundle", resourceBundleLambda)
+				}).addGlobalData("bundle", resourceBundleLambda)
 				.registerCallback(resourceBundleLambda).build();
 	}
 

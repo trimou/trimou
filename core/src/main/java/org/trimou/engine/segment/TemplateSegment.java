@@ -105,8 +105,8 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 
 		Map<String, Object> contextData = new HashMap<String, Object>();
 
-		if (engine.getConfiguration().getGlobalValues() != null) {
-			contextData.putAll(engine.getConfiguration().getGlobalValues());
+		if (engine.getConfiguration().getGlobalData() != null) {
+			contextData.putAll(engine.getConfiguration().getGlobalData());
 		}
 		if (data != null) {
 			contextData.putAll(data);
