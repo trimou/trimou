@@ -1,4 +1,4 @@
-org.trimou.engine.resolver.BeanResolver
+org.trimou.engine.resolver.ReflectionResolver
 org.trimou.engine.resolver.ThisResolver
 org.trimou.engine.resolver.MapResolver
 org.trimou.engine.resolver.ListIndexResolver

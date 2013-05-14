@@ -47,20 +47,20 @@ import com.google.common.cache.RemovalNotification;
  * @see Reflections#getReadMethod(Class, String)
  * @see Reflections#isReadMethod(Method)
  */
-public class BeanResolver extends AbstractResolver implements
+public class ReflectionResolver extends AbstractResolver implements
 		RemovalListener<ReadMethodKey, Optional<Method>> {
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(BeanResolver.class);
+			.getLogger(ReflectionResolver.class);
 
-	public static final int BEAN_RESOLVER_PRIORITY = before(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+	public static final int REFLECTION_RESOLVER_PRIORITY = before(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
 	/**
 	 * Limit the size of the cache (e.g. to avoid problems when dynamic class
 	 * compilation is involved).
 	 */
 	public static final ConfigurationKey READ_METHODS_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-			BeanResolver.class.getName() + ".readMethodsCacheMaxSize", 5000l);
+			ReflectionResolver.class.getName() + ".readMethodsCacheMaxSize", 5000l);
 
 	/**
 	 * Lazy loading cache of read methods for already requested types
@@ -91,7 +91,7 @@ public class BeanResolver extends AbstractResolver implements
 
 	@Override
 	public int getPriority() {
-		return BEAN_RESOLVER_PRIORITY;
+		return REFLECTION_RESOLVER_PRIORITY;
 	}
 
 	@Override
