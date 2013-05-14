@@ -12,30 +12,27 @@ import org.junit.Test;
  *
  * @author Martin Kouba
  */
-public class ClassPathTemplateLocatorTest extends PathTemplateLocatorTest {
+public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
 
 	@Test
 	public void testLocator() throws IOException {
 
-		TemplateLocator locator = new ClassPathTemplateLocator(1, "locator/file", "foo");
+		TemplateLocator locator = new FileSystemTemplateLocator(1, "src/test/resources/locator/file", "foo");
 
 		Set<String> names = locator.getAllAvailableNames();
 		assertEquals(2, names.size());
 		assertTrue(names.contains("index"));
 		assertTrue(names.contains("home"));
 
-		String index = read(locator.locate("index"));
-		assertEquals("{{foo}}", index);
-
-		String home = read(locator.locate("home"));
-		assertEquals("bar", home);
+		assertEquals("{{foo}}", read(locator.locate("index")));
+		assertEquals("bar", read(locator.locate("home")));
 	}
 
 	@Test
 	public void testLocatorNoSuffix() throws IOException {
 
-		TemplateLocator locator = new ClassPathTemplateLocator(1,
-				"locator/file");
+		TemplateLocator locator = new FileSystemTemplateLocator(1,
+				"src/test/resources/locator/file");
 
 		Set<String> names = locator.getAllAvailableNames();
 		assertEquals(3, names.size());

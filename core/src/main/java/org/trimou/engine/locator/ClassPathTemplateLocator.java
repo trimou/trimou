@@ -37,9 +37,19 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class ClassPathTemplateLocator extends AbstractPathTemplateLocator {
+public class ClassPathTemplateLocator extends PathTemplateLocator {
 
 	private ClassLoader classLoader;
+
+	/**
+	 *
+	 * @param priority
+	 * @param rootPathname
+	 */
+	public ClassPathTemplateLocator(int priority, String rootPath) {
+		super(priority, rootPath);
+		this.classLoader = Thread.currentThread().getContextClassLoader();
+	}
 
 	/**
 	 *
@@ -47,9 +57,8 @@ public class ClassPathTemplateLocator extends AbstractPathTemplateLocator {
 	 * @param suffix
 	 * @param rootPathname
 	 */
-	public ClassPathTemplateLocator(int priority, String suffix,
-			String rootPathname) {
-		super(priority, suffix, rootPathname);
+	public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
+		super(priority, rootPath, suffix);
 		this.classLoader = Thread.currentThread().getContextClassLoader();
 	}
 
@@ -60,15 +69,27 @@ public class ClassPathTemplateLocator extends AbstractPathTemplateLocator {
 	 * @param rootPathname
 	 * @param classLoader
 	 */
-	private ClassPathTemplateLocator(int priority, String suffix,
-			String rootPathname, ClassLoader classLoader) {
-		super(priority, suffix, rootPathname);
+	private ClassPathTemplateLocator(int priority, String rootPath,
+			String suffix, ClassLoader classLoader) {
+		super(priority, rootPath, suffix);
+		this.classLoader = classLoader;
+	}
+
+	/**
+	 *
+	 * @param priority
+	 * @param rootPathname
+	 * @param classLoader
+	 */
+	private ClassPathTemplateLocator(int priority, String rootPath,
+			ClassLoader classLoader) {
+		super(priority, rootPath);
 		this.classLoader = classLoader;
 	}
 
 	@Override
 	public Reader locate(String templateName) {
-		InputStream in = classLoader.getResourceAsStream(getRootPathname()
+		InputStream in = classLoader.getResourceAsStream(getRootPath()
 				+ addSuffix(templateName));
 		if (in == null) {
 			return null;
@@ -84,7 +105,7 @@ public class ClassPathTemplateLocator extends AbstractPathTemplateLocator {
 		try {
 
 			Enumeration<URL> resources = classLoader
-					.getResources(getRootPathname());
+					.getResources(getRootPath());
 
 			while (resources.hasMoreElements()) {
 				URL url = resources.nextElement();
@@ -100,15 +121,22 @@ public class ClassPathTemplateLocator extends AbstractPathTemplateLocator {
 
 				if (file.isDirectory()) {
 					for (File found : file.listFiles()) {
-						if (found.getName().endsWith(getSuffix())) {
-							names.add(stripSuffix(found.getName()));
+
+						if (found.isFile()) {
+							if (getSuffix() != null) {
+								if (found.getName().endsWith(getSuffix())) {
+									names.add(stripSuffix(found.getName()));
+								}
+							} else {
+								names.add(found.getName());
+							}
 						}
 					}
 				}
 			}
 		} catch (IOException e) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_LOADING_ERROR, e);
+			throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+					e);
 		}
 		return names;
 	}

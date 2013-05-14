@@ -33,7 +33,17 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
-public class FilesystemTemplateLocator extends AbstractPathTemplateLocator {
+public class FileSystemTemplateLocator extends PathTemplateLocator {
+
+	/**
+	 *
+	 * @param priority
+	 * @param rootPath
+	 */
+	public FileSystemTemplateLocator(int priority, String rootPath) {
+		super(priority, rootPath);
+		checkRootDir();
+	}
 
 	/**
 	 *
@@ -41,24 +51,16 @@ public class FilesystemTemplateLocator extends AbstractPathTemplateLocator {
 	 * @param suffix
 	 * @param rootPathname
 	 */
-	public FilesystemTemplateLocator(int priority, String suffix,
-			String rootPathname) {
-		super(priority, suffix, rootPathname);
-
-		File rootDir = new File(rootPathname);
-
-		if (!rootDir.exists() || !rootDir.canRead() || !rootDir.isDirectory()) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-					"Invalid root dir: " + rootDir);
-		}
+	public FileSystemTemplateLocator(int priority, String rootPath, String suffix) {
+		super(priority, rootPath, suffix);
+		checkRootDir();
 	}
 
 	@Override
 	public Reader locate(String templateName) {
 		try {
 
-			File templateFile = new File(new File(getRootPathname()),
+			File templateFile = new File(new File(getRootPath()),
 					addSuffix(templateName));
 
 			if (!templateFile.exists() || !templateFile.canRead()
@@ -75,14 +77,20 @@ public class FilesystemTemplateLocator extends AbstractPathTemplateLocator {
 	@Override
 	public Set<String> getAllAvailableNames() {
 
-		File rootDir = new File(getRootPathname());
-		File[] files = rootDir.listFiles(new FilenameFilter() {
+		File rootDir = new File(getRootPath());
+		File[] files = null;
 
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(getSuffix());
-			}
-		});
+		if (getSuffix() != null) {
+			files = rootDir.listFiles(new FilenameFilter() {
+
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith(getSuffix());
+				}
+			});
+		} else {
+			files = rootDir.listFiles();
+		}
 
 		if (files == null || files.length < 1) {
 			return Collections.emptySet();
@@ -100,6 +108,18 @@ public class FilesystemTemplateLocator extends AbstractPathTemplateLocator {
 	@Override
 	protected String getPathSeparator() {
 		return Strings.FILE_SEPARATOR;
+	}
+
+
+	private void checkRootDir() {
+
+		File rootDir = new File(getRootPath());
+
+		if (!rootDir.exists() || !rootDir.canRead() || !rootDir.isDirectory()) {
+			throw new MustacheException(
+					MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
+					"Invalid root dir: " + rootDir);
+		}
 	}
 
 }

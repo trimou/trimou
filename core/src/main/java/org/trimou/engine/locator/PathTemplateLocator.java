@@ -22,7 +22,7 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
-public abstract class AbstractPathTemplateLocator implements TemplateLocator {
+public abstract class PathTemplateLocator implements TemplateLocator {
 
 	private String pathSeparator;
 
@@ -32,12 +32,35 @@ public abstract class AbstractPathTemplateLocator implements TemplateLocator {
 
 	private String rootPath;
 
-	public AbstractPathTemplateLocator(int priority, String suffix,
-			String rootPath) {
+	/**
+	 *
+	 * @param priority
+	 * @param rootPath
+	 */
+	public PathTemplateLocator(int priority, String rootPath) {
+		super();
+		this.pathSeparator = getPathSeparator();
+		this.priority = priority;
+		this.suffix = null;
+		initRootPath(rootPath);
+	}
+
+	/**
+	 *
+	 * @param priority
+	 * @param suffix
+	 * @param rootPath
+	 */
+	public PathTemplateLocator(int priority, String rootPath,
+			String suffix) {
 		super();
 		this.pathSeparator = getPathSeparator();
 		this.priority = priority;
 		this.suffix = suffix;
+		initRootPath(rootPath);
+	}
+
+	private void initRootPath(String rootPath) {
 		this.rootPath = rootPath.endsWith(pathSeparator) ? rootPath
 				: (rootPath + pathSeparator);
 	}
@@ -51,16 +74,17 @@ public abstract class AbstractPathTemplateLocator implements TemplateLocator {
 		return suffix;
 	}
 
-	public String getRootPathname() {
+	public String getRootPath() {
 		return rootPath;
 	}
 
 	public String stripSuffix(String filename) {
-		return StringUtils.stripEnd(filename, "." + suffix);
+		return suffix != null ? StringUtils.stripEnd(filename, "." + suffix)
+				: filename;
 	}
 
 	public String addSuffix(String filename) {
-		return filename + "." + suffix;
+		return suffix != null ? (filename + "." + suffix) : filename;
 	}
 
 	protected String getPathSeparator() {
@@ -71,7 +95,7 @@ public abstract class AbstractPathTemplateLocator implements TemplateLocator {
 	public String toString() {
 		return String.format("%s [priority: %s, suffix: %s, rootPath: %s]",
 				getClass().getName(), getPriority(), getSuffix(),
-				getRootPathname());
+				getRootPath());
 	}
 
 }
