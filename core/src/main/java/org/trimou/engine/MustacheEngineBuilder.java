@@ -26,15 +26,15 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.api.Lambda;
-import org.trimou.api.engine.ConfigurationKey;
-import org.trimou.api.engine.MustacheEngine;
-import org.trimou.spi.engine.LocaleSupport;
-import org.trimou.spi.engine.Resolver;
-import org.trimou.spi.engine.TemplateLocator;
-import org.trimou.spi.engine.TextSupport;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locator.TemplateLocator;
+import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.text.TextSupport;
 
 /**
+ * Builds a {@link MustacheEngine} instance.
  *
  * @author Martin Kouba
  */
@@ -49,16 +49,16 @@ public class MustacheEngineBuilder {
 
 	private Set<TemplateLocator> templateLocators = null;
 
-	private Map<String, Lambda> globalLambdas = null;
+	private Map<String, Object> globalValues = null;
 
-	private TextSupport textSupport;
+	private TextSupport textSupport = null;
 
-	private LocaleSupport localeSupport;
+	private LocaleSupport localeSupport = null;
 
 	private Map<String, Object> properties = new HashMap<String, Object>(
 			EngineConfigurationKey.values().length);
 
-	private List<EngineBuiltCallback> engineReadyCallbacks;
+	private List<EngineBuiltCallback> engineReadyCallbacks = null;
 
 	/**
 	 * Don't create a new instance.
@@ -67,35 +67,37 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
+	 * The builder cleanup is performed after the engine is built.
 	 *
 	 * @param properties
-	 * @return
+	 * @return the built engine
 	 */
 	public MustacheEngine build() {
 		MustacheEngine engine = new DefaultMustacheEngine(this);
-		if(engineReadyCallbacks != null) {
+		if (engineReadyCallbacks != null) {
 			for (EngineBuiltCallback callback : engineReadyCallbacks) {
 				callback.engineBuilt(engine);
 			}
 		}
 		logger.info("Engine built... \n{}", engine.toString());
+		performCleanup();
 		return engine;
 	}
 
 	/**
-	 * Add globally enabled lambda, available during execution of all templates.
+	 * Add a value (e.g. Lambda) that is available during execution of all templates.
 	 *
-	 * Global lambdas have to be thread-safe.
+	 * Global values have to be thread-safe.
 	 *
-	 * @param lambda
+	 * @param value
 	 * @param name
 	 * @return self
 	 */
-	public MustacheEngineBuilder addGlobalLambda(Lambda lambda, String name) {
-		if (this.globalLambdas == null) {
-			this.globalLambdas = new HashMap<String, Lambda>();
+	public MustacheEngineBuilder addGlobalValue(String name, Object value) {
+		if (this.globalValues == null) {
+			this.globalValues = new HashMap<String, Object>();
 		}
-		this.globalLambdas.put(name, lambda);
+		this.globalValues.put(name, value);
 		return this;
 	}
 
@@ -170,7 +172,8 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * Callback is useful to configure a component instantiated before the engine is built.
+	 * Callback is useful to configure a component instantiated before the
+	 * engine is built.
 	 *
 	 * @param callback
 	 * @return self
@@ -191,34 +194,6 @@ public class MustacheEngineBuilder {
 		this.omitServiceLoaderResolvers = true;
 	}
 
-	Set<TemplateLocator> getTemplateLocators() {
-		return templateLocators;
-	}
-
-	Set<Resolver> getResolvers() {
-		return resolvers;
-	}
-
-	Map<String, Lambda> getGlobalLambdas() {
-		return globalLambdas;
-	}
-
-	TextSupport getTextSupport() {
-		return textSupport;
-	}
-
-	LocaleSupport getLocaleSupport() {
-		return localeSupport;
-	}
-
-	boolean isOmitServiceLoaderResolvers() {
-		return omitServiceLoaderResolvers;
-	}
-
-	Map<String, Object> getProperties() {
-		return properties;
-	}
-
 	/**
 	 *
 	 * @return new instance of builder
@@ -236,4 +211,44 @@ public class MustacheEngineBuilder {
 		public void engineBuilt(MustacheEngine engine);
 
 	}
+
+	public Set<TemplateLocator> getTemplateLocators() {
+		return templateLocators;
+	}
+
+	public Set<Resolver> getResolvers() {
+		return resolvers;
+	}
+
+	public Map<String, Object> getGlobalValues() {
+		return globalValues;
+	}
+
+	public TextSupport getTextSupport() {
+		return textSupport;
+	}
+
+	public LocaleSupport getLocaleSupport() {
+		return localeSupport;
+	}
+
+	public boolean isOmitServiceLoaderResolvers() {
+		return omitServiceLoaderResolvers;
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	private void performCleanup() {
+		this.omitServiceLoaderResolvers = false;
+		this.resolvers = null;
+		this.templateLocators = null;
+		this.globalValues = null;
+		this.textSupport = null;
+		this.localeSupport = null;
+		this.properties.clear();
+		this.engineReadyCallbacks = null;
+	}
+
 }

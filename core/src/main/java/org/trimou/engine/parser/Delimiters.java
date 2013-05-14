@@ -15,13 +15,13 @@
  */
 package org.trimou.engine.parser;
 
-import org.trimou.engine.EngineConfigurationKey;
+import org.trimou.engine.config.EngineConfigurationKey;
 
 /**
  *
  * @author Martin Kouba
  */
-class Delimiters {
+public class Delimiters {
 
 	private String start;
 	private String end;

@@ -15,17 +15,17 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.EngineConfigurationKey.END_DELIMITER;
-import static org.trimou.engine.EngineConfigurationKey.START_DELIMITER;
+import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
+import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.UUID;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.config.Configuration;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
 
 /**

@@ -17,9 +17,9 @@ package org.trimou.engine.resolver.i18n;
 
 import java.util.Locale;
 
-import org.trimou.api.engine.Configuration;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.AbstractResolver;
-import org.trimou.spi.engine.LocaleSupport;
 
 /**
  *

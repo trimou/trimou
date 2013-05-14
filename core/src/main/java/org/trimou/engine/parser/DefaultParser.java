@@ -15,18 +15,18 @@
  */
 package org.trimou.engine.parser;
 
-import static org.trimou.MustacheProblem.COMPILE_INVALID_TAG;
-import static org.trimou.engine.EngineConfigurationKey.END_DELIMITER;
-import static org.trimou.engine.EngineConfigurationKey.START_DELIMITER;
+import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
+import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
+import static org.trimou.exception.MustacheProblem.COMPILE_INVALID_TAG;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.engine.MustacheEngine;
-import org.trimou.engine.parser.MustacheTag.Type;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheTagType;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
 
 /**
@@ -57,7 +57,7 @@ public class DefaultParser implements Parser {
 		this.engine = engine;
 	}
 
-	public void parse(String name, Reader reader, Handler handler) {
+	public void parse(String name, Reader reader, ParsingHandler handler) {
 
 		if (name == null || reader == null || handler == null) {
 			throw new NullPointerException();
@@ -199,7 +199,7 @@ public class DefaultParser implements Parser {
 		}
 	}
 
-	private StringBuilder flushText(StringBuilder buffer, Handler handler) {
+	private StringBuilder flushText(StringBuilder buffer, ParsingHandler handler) {
 		if (buffer.length() > 0) {
 			handler.text(buffer.toString());
 			return new StringBuilder();
@@ -208,13 +208,13 @@ public class DefaultParser implements Parser {
 		}
 	}
 
-	private StringBuilder flushTag(StringBuilder buffer, Handler handler,
+	private StringBuilder flushTag(StringBuilder buffer, ParsingHandler handler,
 			Delimiters delimiters) {
 		handler.tag(deriveTag(buffer.toString(), delimiters));
 		return new StringBuilder();
 	}
 
-	private void flushLineSeparator(String separator, Handler handler) {
+	private void flushLineSeparator(String separator, ParsingHandler handler) {
 		handler.lineSeparator(separator);
 	}
 
@@ -223,13 +223,13 @@ public class DefaultParser implements Parser {
 				reader);
 	}
 
-	private MustacheTag deriveTag(String buffer, Delimiters delimiters) {
+	private ParsedTag deriveTag(String buffer, Delimiters delimiters) {
 		if (buffer.length() <= 0) {
 			throw new MustacheException(COMPILE_INVALID_TAG);
 		}
-		Type type = Type.fromBuffer(buffer, delimiters);
+		MustacheTagType type = MustacheTagType.fromBuffer(buffer, delimiters);
 		String key = type.extractContent(buffer);
-		return new MustacheTag(key, type);
+		return new ParsedTag(key, type);
 	}
 
 }

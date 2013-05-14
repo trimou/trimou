@@ -8,9 +8,9 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.i18n.Resources_en;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.spi.engine.LocaleSupport;
+import org.trimou.engine.locale.LocaleSupport;
 
 import com.google.common.collect.ImmutableMap;
 

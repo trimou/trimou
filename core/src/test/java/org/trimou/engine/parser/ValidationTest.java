@@ -4,9 +4,9 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  *

@@ -15,7 +15,6 @@
  */
 package org.trimou.lambda;
 
-import org.trimou.api.Lambda;
 
 /**
  * Spec compliant callable object.

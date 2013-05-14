@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.Map;
 

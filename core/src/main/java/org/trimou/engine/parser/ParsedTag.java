@@ -13,26 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.util;
+package org.trimou.engine.parser;
 
-import java.util.Comparator;
+import org.trimou.engine.MustacheTagType;
 
-import org.trimou.spi.WithPriority;
 
 /**
- * The highest priority wins.
  *
  * @author Martin Kouba
  */
-public class HighPriorityComparator implements Comparator<WithPriority> {
+public class ParsedTag {
 
-	@Override
-	public int compare(final WithPriority left, final WithPriority right) {
+	private String content;
 
-		if (left == null || right == null) {
-			throw new NullPointerException();
-		}
-		return ((Integer) right.getPriority()).compareTo(left.getPriority());
+	private MustacheTagType type;
+
+	public ParsedTag(String content, MustacheTagType type) {
+		super();
+		this.content = content;
+		this.type = type;
+	}
+
+	/**
+	 * @return the tag content
+	 */
+	public String getContent() {
+		return content;
+	}
+
+	/**
+	 * @return the tag type
+	 */
+	public MustacheTagType getType() {
+		return type;
 	}
 
 }

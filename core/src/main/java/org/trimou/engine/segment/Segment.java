@@ -17,8 +17,8 @@ package org.trimou.engine.segment;
 
 import java.io.Writer;
 
-import org.trimou.api.Lambda.InputType;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.lambda.Lambda.InputType;
 
 /**
  * Compiled template segment. Any segment is considered immutable once the

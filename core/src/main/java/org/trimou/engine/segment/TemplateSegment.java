@@ -15,20 +15,20 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.EngineConfigurationKey.DEBUG_MODE_ENABLED;
+import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE_ENABLED;
 
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.Mustache;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.context.DebugExecutionContext;
 import org.trimou.engine.context.DefaultExecutionContext;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * Template segment.
@@ -105,8 +105,8 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 
 		Map<String, Object> contextData = new HashMap<String, Object>();
 
-		if (engine.getConfiguration().getGlobalLambdas() != null) {
-			contextData.putAll(engine.getConfiguration().getGlobalLambdas());
+		if (engine.getConfiguration().getGlobalValues() != null) {
+			contextData.putAll(engine.getConfiguration().getGlobalValues());
 		}
 		if (data != null) {
 			contextData.putAll(data);

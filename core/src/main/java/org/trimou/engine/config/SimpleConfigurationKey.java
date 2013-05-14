@@ -13,48 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.parser;
-
-import org.trimou.api.engine.MustacheEngine;
+package org.trimou.engine.config;
 
 /**
- * Handler for parsing events.
+ *
+ * @author Martin Kouba
  */
-public interface Handler {
+public class SimpleConfigurationKey implements ConfigurationKey {
+
+	private String key;
+
+	private Object defaultValue;
 
 	/**
-	 * Parsing started.
 	 *
-	 * @param name
-	 * @param delimiters
+	 * @param key
+	 * @param defaultValue
 	 */
-	public void startTemplate(String name, Delimiters delimiters,
-			MustacheEngine engine);
+	public SimpleConfigurationKey(String key, Object defaultValue) {
+		super();
+		this.key = key;
+		this.defaultValue = defaultValue;
+	}
 
-	/**
-	 * Flush a text segment.
-	 *
-	 * @param text
-	 */
-	public void text(String text);
+	@Override
+	public String get() {
+		return key;
+	}
 
-	/**
-	 * Flush a tag.
-	 *
-	 * @param tag
-	 */
-	public void tag(MustacheTag tag);
-
-	/**
-	 * Flush a line separator.
-	 *
-	 * @param separator
-	 */
-	public void lineSeparator(String separator);
-
-	/**
-	 * Parsing ended.
-	 */
-	public void endTemplate();
+	@Override
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
 
 }

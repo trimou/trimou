@@ -18,11 +18,10 @@ package org.trimou.engine.segment;
 import java.io.Writer;
 import java.util.List;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.parser.MustacheTag;
-import org.trimou.util.Segments;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * Partial segment.
@@ -75,7 +74,7 @@ public class PartialSegment extends AbstractSegment {
 
 	@Override
 	public String getLiteralBlock() {
-		return getTagLiteral(MustacheTag.Type.PARTIAL.getCommand() + getText());
+		return getTagLiteral(MustacheTagType.PARTIAL.getCommand() + getText());
 	}
 
 	public void setIndentation(String indentation) {

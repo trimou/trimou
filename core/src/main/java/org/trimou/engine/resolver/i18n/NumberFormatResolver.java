@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver.i18n;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.text.NumberFormat;
 

@@ -14,8 +14,8 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.trimou.api.Mustache;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 

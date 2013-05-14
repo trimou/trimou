@@ -15,21 +15,46 @@
  */
 package org.trimou.engine.parser;
 
-import java.io.Reader;
+import org.trimou.engine.MustacheEngine;
 
 /**
- *
- * @author Martin Kouba
+ * Handler for parsing events.
  */
-public interface Parser {
+public interface ParsingHandler {
 
 	/**
+	 * Parsing started.
 	 *
 	 * @param name
-	 *            the template name
-	 * @param reader
-	 * @param handler
+	 * @param delimiters
 	 */
-	public void parse(String name, Reader reader, ParsingHandler handler);
+	public void startTemplate(String name, Delimiters delimiters,
+			MustacheEngine engine);
+
+	/**
+	 * Flush a text segment.
+	 *
+	 * @param text
+	 */
+	public void text(String text);
+
+	/**
+	 * Flush a tag.
+	 *
+	 * @param tag
+	 */
+	public void tag(ParsedTag tag);
+
+	/**
+	 * Flush a line separator.
+	 *
+	 * @param separator
+	 */
+	public void lineSeparator(String separator);
+
+	/**
+	 * Parsing ended.
+	 */
+	public void endTemplate();
 
 }

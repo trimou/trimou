@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver.i18n;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.ResourceBundle;
 
@@ -26,10 +26,6 @@ import org.trimou.lambda.i18n.ResourceBundleLambda;
  * {@link ResourceBundle} resolver. Unlike {@link ResourceBundleLambda} this
  * resolver is not limited to String-based values. However keep in mind that
  * resource bundle keys cannot contain dots.
- *
- * <pre>
- * {{messages.key}}
- * </pre>
  *
  * @author Martin Kouba
  * @see ResourceBundle
@@ -44,6 +40,7 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
 	/**
 	 *
 	 * @param baseName
+	 *            The base name of the resource bundle
 	 */
 	public ResourceBundleResolver(String baseName) {
 		super();
@@ -54,6 +51,7 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
 	/**
 	 *
 	 * @param baseName
+	 *            The base name of the resource bundle
 	 * @param priority
 	 */
 	public ResourceBundleResolver(String baseName, int priority) {

@@ -6,9 +6,12 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
+import org.trimou.engine.segment.SectionSegment;
+import org.trimou.engine.segment.TemplateSegment;
+import org.trimou.engine.segment.TextSegment;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  *

@@ -8,10 +8,10 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.i18n.NumberFormatResolver;
-import org.trimou.spi.engine.LocaleSupport;
 
 import com.google.common.collect.ImmutableMap;
 

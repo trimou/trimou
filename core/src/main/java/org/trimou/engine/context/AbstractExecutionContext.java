@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
-import org.trimou.spi.engine.Resolver;
 import org.trimou.util.Checker;
 import org.trimou.util.Strings;
 

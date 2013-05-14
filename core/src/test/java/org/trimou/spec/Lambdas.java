@@ -3,7 +3,7 @@ package org.trimou.spec;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.trimou.api.Lambda;
+import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
 public final class Lambdas {

@@ -17,7 +17,7 @@ package org.trimou.engine.context;
 
 import java.util.List;
 
-import org.trimou.spi.engine.Resolver;
+import org.trimou.engine.resolver.Resolver;
 
 /**
  *

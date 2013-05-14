@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.spi.engine;
+package org.trimou.engine.locator;
 
 import java.io.Reader;
 import java.util.Set;
 
-import org.trimou.api.engine.Configuration;
-import org.trimou.spi.WithPriority;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.priority.WithPriority;
 
 /**
- * Automatically locate the template contents for the given template name.
+ * Automatically locates the template contents for the given template name.
  *
  * Implementation must be thread-safe.
  *

@@ -17,10 +17,10 @@ package org.trimou.engine.segment;
 
 import java.io.Writer;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.parser.MustacheTag;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * This segment extends some template and overrides its extending sections.
@@ -71,9 +71,9 @@ public class ExtendSegment extends ContainerSegment {
 	@Override
 	public String getLiteralBlock() {
 		StringBuilder literal = new StringBuilder();
-		literal.append(getTagLiteral(MustacheTag.Type.EXTEND.getCommand() + getText()));
+		literal.append(getTagLiteral(MustacheTagType.EXTEND.getCommand() + getText()));
 		literal.append(super.getLiteralBlock());
-		literal.append(getTagLiteral(MustacheTag.Type.SECTION_END.getCommand()
+		literal.append(getTagLiteral(MustacheTagType.SECTION_END.getCommand()
 				+ getText()));
 		return literal.toString();
 	}

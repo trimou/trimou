@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.trimou.engine.locator.ClassPathTemplateLocator;
-import org.trimou.spi.engine.TemplateLocator;
+import org.trimou.engine.locator.TemplateLocator;
 
 /**
  *

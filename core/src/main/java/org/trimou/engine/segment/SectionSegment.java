@@ -20,9 +20,9 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-import org.trimou.api.Lambda;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.parser.MustacheTag;
+import org.trimou.lambda.Lambda;
 
 /**
  * Section segment.
@@ -99,10 +99,10 @@ public class SectionSegment extends ContainerSegment {
 	@Override
 	public String getLiteralBlock() {
 		StringBuilder literal = new StringBuilder();
-		literal.append(getTagLiteral(MustacheTag.Type.SECTION.getCommand()
+		literal.append(getTagLiteral(MustacheTagType.SECTION.getCommand()
 				+ getText()));
 		literal.append(super.getLiteralBlock());
-		literal.append(getTagLiteral(MustacheTag.Type.SECTION_END.getCommand()
+		literal.append(getTagLiteral(MustacheTagType.SECTION_END.getCommand()
 				+ getText()));
 		return literal.toString();
 	}

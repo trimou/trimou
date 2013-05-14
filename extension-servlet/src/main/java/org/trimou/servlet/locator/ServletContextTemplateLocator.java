@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
 import org.trimou.engine.locator.AbstractPathTemplateLocator;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.servlet.RequestHolder;
 import org.trimou.util.Strings;
 

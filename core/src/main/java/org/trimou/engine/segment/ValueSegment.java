@@ -15,15 +15,15 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM;
+import static org.trimou.engine.config.EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM;
 
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.Lambda;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
+import org.trimou.lambda.Lambda;
 
 /**
  * Value rendering segment.

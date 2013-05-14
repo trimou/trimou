@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.spi;
+package org.trimou.engine.config;
 
 /**
- * Component with priority.
  *
  * @author Martin Kouba
  */
-public interface WithPriority {
+public interface ConfigurationKey {
 
 	/**
-	 * @return the priority value
+	 *
+	 * @return the key itself
 	 */
-	public int getPriority();
+	public String get();
+
+	/**
+	 *
+	 * @return the default value
+	 */
+	public Object getDefaultValue();
 
 }

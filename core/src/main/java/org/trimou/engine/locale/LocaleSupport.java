@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.api.engine;
+package org.trimou.engine.locale;
+
+import java.util.Locale;
 
 /**
+ * Locale support. Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
-public interface ConfigurationKey {
+public interface LocaleSupport {
 
 	/**
-	 *
-	 * @return the key itself
+	 * @return the current locale
 	 */
-	public String get();
-
-	/**
-	 *
-	 * @return the default value
-	 */
-	public Object getDefaultValue();
+	public Locale getCurrentLocale();
 
 }

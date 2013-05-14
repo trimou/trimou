@@ -1,6 +1,6 @@
 package org.trimou.cdi.resolver;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -18,11 +18,11 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.ConfigurationKey;
 import org.trimou.cdi.BeanManagerLocator;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
-import org.trimou.util.Priorities;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -43,7 +43,7 @@ public class CDIBeanResolver extends AbstractResolver {
 	private static final Logger logger = LoggerFactory
 			.getLogger(CDIBeanResolver.class);
 
-	public static final int CDI_BEAN_RESOLVER_PRIORITY = after(Priorities.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+	public static final int CDI_BEAN_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
 	private BeanManager beanManager;
 

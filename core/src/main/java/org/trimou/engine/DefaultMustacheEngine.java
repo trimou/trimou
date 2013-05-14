@@ -25,17 +25,18 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.Mustache;
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.MustacheEngine;
-import org.trimou.engine.parser.DefaultHandler;
+import org.trimou.Mustache;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.DefaultConfiguration;
+import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.parser.DefaultParser;
+import org.trimou.engine.parser.DefaultParsingHandler;
 import org.trimou.engine.parser.Parser;
+import org.trimou.engine.segment.Segments;
 import org.trimou.engine.segment.TemplateSegment;
-import org.trimou.spi.engine.TemplateLocator;
-import org.trimou.util.Segments;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
 
 import com.google.common.base.Optional;
@@ -48,7 +49,7 @@ import com.google.common.cache.LoadingCache;
  *
  * @author Martin Kouba
  */
-public class DefaultMustacheEngine implements MustacheEngine {
+class DefaultMustacheEngine implements MustacheEngine {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(DefaultMustacheEngine.class);
@@ -163,7 +164,7 @@ public class DefaultMustacheEngine implements MustacheEngine {
 	 * @return
 	 */
 	private TemplateSegment parse(String templateName, Reader reader) {
-		DefaultHandler handler = new DefaultHandler();
+		DefaultParsingHandler handler = new DefaultParsingHandler();
 		parser.parse(templateName, reader, handler);
 		TemplateSegment template = handler.getCompiledTemplate();
 		if (logger.isTraceEnabled()) {

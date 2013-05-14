@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.engine.parser.DefaultHandler;
+import org.trimou.engine.parser.DefaultParsingHandler;
 import org.trimou.engine.segment.LineSeparatorSegment;
 import org.trimou.engine.segment.SectionSegment;
 import org.trimou.engine.segment.Segment;
@@ -23,7 +23,7 @@ public class DefaultHandlerTest extends AbstractTest {
 	@Test
 	public void testIsStandaloneLine() {
 
-		DefaultHandler handler = new DefaultHandler();
+		DefaultParsingHandler handler = new DefaultParsingHandler();
 		assertTrue(handler.isStandaloneLine(ImmutableList.<Segment> of(
 				new LineSeparatorSegment(Strings.LINUX_LINE_SEPARATOR, null),
 				new TextSegment(" ", null), new SectionSegment("test", null))));

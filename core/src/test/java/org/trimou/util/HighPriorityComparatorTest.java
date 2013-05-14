@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.spi.WithPriority;
-import org.trimou.util.HighPriorityComparator;
+import org.trimou.engine.priority.HighPriorityComparator;
+import org.trimou.engine.priority.WithPriority;
 
 
 /**

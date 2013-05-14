@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.util;
+package org.trimou.engine.segment;
 
 import static org.trimou.util.Strings.LINE_SEPARATOR;
 
@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.trimou.engine.segment.ContainerSegment;
-import org.trimou.engine.segment.Segment;
-import org.trimou.engine.segment.SegmentType;
 
 /**
  * {@link Segment} utils.

@@ -9,10 +9,10 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.servlet.resolver.HttpServletRequestResolver;
-import org.trimou.spi.engine.Resolver;
 
 /**
  *

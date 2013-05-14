@@ -14,8 +14,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.trimou.api.Mustache;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.tests.cdi.MustacheEngineProducer;
 
 import com.google.common.collect.ImmutableMap;

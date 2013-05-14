@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.spi.engine;
+package org.trimou.engine.resolver;
 
 import java.util.List;
 
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.ConfigurationKey;
-import org.trimou.spi.WithPriority;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.priority.WithPriority;
 
 /**
  * Context object resolver. Implementation must be thread-safe.

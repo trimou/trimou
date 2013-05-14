@@ -7,7 +7,7 @@ import java.util.Collections;
 import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.Hammer;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
 
 import com.google.common.collect.ImmutableMap;
 

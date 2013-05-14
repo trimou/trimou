@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver.i18n;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,8 +26,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.ConfigurationKey;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 
 /**
@@ -50,18 +51,7 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
 
 	public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
-	public static final ConfigurationKey CUSTOM_PATTERN_KEY = new ConfigurationKey() {
-
-		@Override
-		public String get() {
-			return DateTimeFormatResolver.class.getName() + ".customPattern";
-		}
-
-		@Override
-		public Object getDefaultValue() {
-			return "M/d/yy h:mm a";
-		}
-	};
+	public static final ConfigurationKey CUSTOM_PATTERN_KEY = new SimpleConfigurationKey(DateTimeFormatResolver.class.getName() + ".customPattern", "M/d/yy h:mm a");
 
 	private String customPattern;
 

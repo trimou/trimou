@@ -26,8 +26,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * Non-recursive classpath template locator.

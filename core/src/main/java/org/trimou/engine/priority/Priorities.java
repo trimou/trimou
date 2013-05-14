@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.util;
+package org.trimou.engine.priority;
 
 /**
  *
  * @author Martin Kouba
  */
 public final class Priorities {
-
-	public static final int BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY = 10;
-
-	public static final int BUILTIN_RESOLVERS_DEFAULT_PRIORITY = 20;
-
-	public static final int EXTENSION_RESOLVERS_DEFAULT_PRIORITY = 10;
 
 	public static int after(int priority) {
 		return priority - 1;

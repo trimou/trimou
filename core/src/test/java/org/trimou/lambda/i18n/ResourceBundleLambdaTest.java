@@ -7,9 +7,9 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.spi.engine.LocaleSupport;
+import org.trimou.engine.locale.LocaleSupport;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -32,7 +32,7 @@ public class ResourceBundleLambdaTest extends AbstractTest {
 					public Locale getCurrentLocale() {
 						return new Locale("en");
 					}
-				}).addGlobalLambda(resourceBundleLambda, "bundle")
+				}).addGlobalValue("bundle", resourceBundleLambda)
 				.registerCallback(resourceBundleLambda).build();
 	}
 

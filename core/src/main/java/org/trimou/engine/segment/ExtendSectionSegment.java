@@ -17,8 +17,8 @@ package org.trimou.engine.segment;
 
 import java.io.Writer;
 
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.parser.MustacheTag;
 
 /**
  * Either defines a section to be extended/overrided, or an extending/defining section.
@@ -39,10 +39,10 @@ public class ExtendSectionSegment extends ContainerSegment {
 	@Override
 	public String getLiteralBlock() {
 		StringBuilder literal = new StringBuilder();
-		literal.append(getTagLiteral(MustacheTag.Type.EXTEND_SECTION.getCommand()
+		literal.append(getTagLiteral(MustacheTagType.EXTEND_SECTION.getCommand()
 				+ getText()));
 		literal.append(super.getLiteralBlock());
-		literal.append(getTagLiteral(MustacheTag.Type.SECTION_END.getCommand()
+		literal.append(getTagLiteral(MustacheTagType.SECTION_END.getCommand()
 				+ getText()));
 		return literal.toString();
 	}

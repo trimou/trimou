@@ -1,12 +1,12 @@
 package org.trimou.servlet.resolver;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.servlet.RequestHolder;
-import org.trimou.util.Priorities;
 
 /**
  *
@@ -14,7 +14,7 @@ import org.trimou.util.Priorities;
  */
 public class HttpServletRequestResolver extends AbstractResolver {
 
-	public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = after(Priorities.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+	public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
 	private static final String REQUEST_KEY = "request";
 

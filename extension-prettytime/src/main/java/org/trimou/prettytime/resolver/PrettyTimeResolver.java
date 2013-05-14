@@ -1,12 +1,12 @@
 package org.trimou.prettytime.resolver;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.Date;
 import java.util.Locale;
 
 import org.ocpsoft.prettytime.PrettyTime;
-import org.trimou.api.engine.Configuration;
+import org.trimou.engine.config.Configuration;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.i18n.LocaleAwareResolver;
 

@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou;
+package org.trimou.engine.text;
 
 /**
+ * Text support. Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
-public enum MustacheProblem {
+public interface TextSupport {
 
-	// Compilation problems
-	COMPILE_INVALID_DELIMITERS,
-	COMPILE_INVALID_TAG,
-	COMPILE_INVALID_SECTION_END,
-	COMPILE_INVALID_TEMPLATE,
-	// Template related problems
-	TEMPLATE_NOT_READY,
-	TEMPLATE_MODIFICATION_NOT_ALLOWED,
-	TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-	TEMPLATE_LOADING_ERROR,
-	// Rendering problems
-	RENDER_INVALID_PARTIAL_KEY,
-	RENDER_INVALID_EXTEND_KEY,
-	RENDER_IO_ERROR,
-	RENDER_REFLECT_INVOCATION_ERROR,
-	RENDER_NO_VALUE,
+	/**
+	 * Interpolated values should be HTML escaped, if appropriate.
+	 *
+	 * @param input
+	 * @return escaped text
+	 */
+	public String escapeHtml(String input);
 
 }

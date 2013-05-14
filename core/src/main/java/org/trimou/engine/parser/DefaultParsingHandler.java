@@ -15,8 +15,8 @@
  */
 package org.trimou.engine.parser;
 
-import static org.trimou.engine.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
-import static org.trimou.engine.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
+import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
+import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -30,9 +30,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.segment.CommentSegment;
 import org.trimou.engine.segment.ContainerSegment;
 import org.trimou.engine.segment.ExtendSectionSegment;
@@ -43,11 +42,13 @@ import org.trimou.engine.segment.PartialSegment;
 import org.trimou.engine.segment.SectionSegment;
 import org.trimou.engine.segment.Segment;
 import org.trimou.engine.segment.SegmentType;
+import org.trimou.engine.segment.Segments;
 import org.trimou.engine.segment.SetDelimitersSegment;
 import org.trimou.engine.segment.TemplateSegment;
 import org.trimou.engine.segment.TextSegment;
 import org.trimou.engine.segment.ValueSegment;
-import org.trimou.util.Segments;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * The default handler implementation that compiles the template. It's not
@@ -55,10 +56,10 @@ import org.trimou.util.Segments;
  *
  * @author Martin Kouba
  */
-public class DefaultHandler implements Handler {
+public class DefaultParsingHandler implements ParsingHandler {
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(DefaultHandler.class);
+			.getLogger(DefaultParsingHandler.class);
 
 	private Deque<ContainerSegment> containerStack = new ArrayDeque<ContainerSegment>();
 
@@ -103,7 +104,7 @@ public class DefaultHandler implements Handler {
 	}
 
 	@Override
-	public void tag(MustacheTag tag) {
+	public void tag(ParsedTag tag) {
 
 		switch (tag.getType()) {
 		case VARIABLE:
@@ -175,8 +176,8 @@ public class DefaultHandler implements Handler {
 	 */
 	private void changeDelimiters(String key) {
 
-		if (key.charAt(0) != MustacheTag.Type.DELIMITER.getCommand()
-				|| key.charAt(key.length() - 1) != MustacheTag.Type.DELIMITER
+		if (key.charAt(0) != MustacheTagType.DELIMITER.getCommand()
+				|| key.charAt(key.length() - 1) != MustacheTagType.DELIMITER
 						.getCommand()) {
 			throw new MustacheException(
 					MustacheProblem.COMPILE_INVALID_DELIMITERS);
@@ -228,6 +229,8 @@ public class DefaultHandler implements Handler {
 
 	/**
 	 * Validate the compiled template.
+	 *
+	 * TODO add more validations
 	 */
 	private void validate() {
 
@@ -237,7 +240,6 @@ public class DefaultHandler implements Handler {
 					"Incorrect last container segment on the stack: "
 							+ containerStack.peekFirst().toString());
 		}
-		// TODO more validations
 	}
 
 	/**

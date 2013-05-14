@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.spi.engine;
-
-import java.util.Locale;
+package org.trimou.engine.priority;
 
 /**
- * Locale support. Implementation must be thread-safe.
+ * A component with priority.
  *
  * @author Martin Kouba
  */
-public interface LocaleSupport {
+public interface WithPriority {
+
+	public static final int BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY = 10;
+	public static final int BUILTIN_RESOLVERS_DEFAULT_PRIORITY = 20;
+	public static final int EXTENSION_RESOLVERS_DEFAULT_PRIORITY = 10;
 
 	/**
-	 * @return the current locale
+	 * @return the priority value
 	 */
-	public Locale getCurrentLocale();
+	public int getPriority();
 
 }

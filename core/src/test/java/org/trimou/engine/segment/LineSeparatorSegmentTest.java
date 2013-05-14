@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
 
 /**
  *

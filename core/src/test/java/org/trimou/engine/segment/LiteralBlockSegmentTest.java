@@ -5,10 +5,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.api.Lambda;
-import org.trimou.engine.EngineConfigurationKey;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
+import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
 import com.google.common.collect.ImmutableMap;
@@ -40,7 +40,7 @@ public class LiteralBlockSegmentTest extends AbstractTest {
 
 		engine = MustacheEngineBuilder
 				.newBuilder()
-				.addGlobalLambda(foo, "foo")
+				.addGlobalValue("foo", foo)
 				.addTemplateLocator(locator)
 				.setProperty(
 						EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS,

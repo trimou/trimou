@@ -15,9 +15,9 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.util.Priorities.after;
+import static org.trimou.engine.priority.Priorities.after;
 
-import org.trimou.util.Priorities;
+import org.trimou.engine.priority.WithPriority;
 import org.trimou.util.Strings;
 
 /**
@@ -25,7 +25,7 @@ import org.trimou.util.Strings;
  */
 public class ThisResolver extends AbstractResolver {
 
-	public static final int THIS_RESOLVER_PRIORITY = after(Priorities.BUILTIN_RESOLVERS_DEFAULT_PRIORITY);
+	public static final int THIS_RESOLVER_PRIORITY = after(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY);
 
 	@Override
 	public Object resolve(Object contextObject, String name) {

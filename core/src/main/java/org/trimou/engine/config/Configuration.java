@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.api.engine;
+package org.trimou.engine.config;
 
 import java.util.List;
 import java.util.Map;
 
-import org.trimou.api.Lambda;
-import org.trimou.spi.engine.LocaleSupport;
-import org.trimou.spi.engine.Resolver;
-import org.trimou.spi.engine.TemplateLocator;
-import org.trimou.spi.engine.TextSupport;
+import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locator.TemplateLocator;
+import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.text.TextSupport;
 
 /**
  * Mustache engine configuration.
@@ -38,10 +37,10 @@ public interface Configuration {
 	public List<Resolver> getResolvers();
 
 	/**
-	 * @return the immutable map of global lamdas, or <code>null</code> if no
-	 *         global lambdas defined
+	 * @return the immutable map of global values, or <code>null</code> if no
+	 *         global values defined
 	 */
-	public Map<String, Lambda> getGlobalLambdas();
+	public Map<String, Object> getGlobalValues();
 
 	/**
 	 * @return an ordered immutable list of template locators, or <code>null</code> if

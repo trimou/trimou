@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine;
+package org.trimou.engine.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import org.trimou.api.engine.ConfigurationKey;
 
 /**
  * Engine configuration keys.

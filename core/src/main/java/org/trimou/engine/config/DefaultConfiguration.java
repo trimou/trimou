@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine;
+package org.trimou.engine.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,16 +27,14 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
-import org.trimou.api.Lambda;
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.ConfigurationKey;
+import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.DefaultLocaleSupport;
+import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locator.TemplateLocator;
+import org.trimou.engine.priority.HighPriorityComparator;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.DefaultTextSupport;
-import org.trimou.spi.engine.LocaleSupport;
-import org.trimou.spi.engine.Resolver;
-import org.trimou.spi.engine.TemplateLocator;
-import org.trimou.spi.engine.TextSupport;
-import org.trimou.util.HighPriorityComparator;
+import org.trimou.engine.text.TextSupport;
 import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
@@ -54,7 +52,7 @@ public class DefaultConfiguration implements Configuration {
 
 	private List<Resolver> resolvers = null;
 
-	private Map<String, Lambda> globalLambdas = null;
+	private Map<String, Object> globalValues = null;
 
 	private TextSupport textSupport;
 
@@ -66,12 +64,12 @@ public class DefaultConfiguration implements Configuration {
 	 *
 	 * @param builder
 	 */
-	DefaultConfiguration(MustacheEngineBuilder builder) {
+	public DefaultConfiguration(MustacheEngineBuilder builder) {
 		loadResolvers(builder);
 		initializeTextSupport(builder);
 		initializeLocaleSupport(builder);
 		initializeTemplateLocators(builder);
-		initializeGlobalLambdas(builder);
+		initializeGlobalValues(builder);
 		initializeProperties(builder);
 		initializeResolvers();
 	}
@@ -82,8 +80,8 @@ public class DefaultConfiguration implements Configuration {
 	}
 
 	@Override
-	public Map<String, Lambda> getGlobalLambdas() {
-		return globalLambdas;
+	public Map<String, Object> getGlobalValues() {
+		return globalValues;
 	}
 
 	@Override
@@ -289,10 +287,10 @@ public class DefaultConfiguration implements Configuration {
 		}
 	}
 
-	private void initializeGlobalLambdas(MustacheEngineBuilder builder) {
-		if (builder.getGlobalLambdas() != null) {
-			this.globalLambdas = ImmutableMap
-					.copyOf(builder.getGlobalLambdas());
+	private void initializeGlobalValues(MustacheEngineBuilder builder) {
+		if (builder.getGlobalValues() != null) {
+			this.globalValues = ImmutableMap
+					.copyOf(builder.getGlobalValues());
 		}
 
 	}

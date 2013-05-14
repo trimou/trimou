@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.api.engine;
+package org.trimou.engine;
 
-import org.trimou.api.Mustache;
-import org.trimou.spi.engine.TemplateLocator;
+import org.trimou.Mustache;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.locator.TemplateLocator;
 
 /**
  * Mustache engine.

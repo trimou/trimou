@@ -2,12 +2,12 @@ package org.trimou.lambda.i18n;
 
 import java.util.ResourceBundle;
 
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.MustacheEngineBuilder.EngineBuiltCallback;
+import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.i18n.ResourceBundleResolver;
 import org.trimou.lambda.InputProcessingLambda;
-import org.trimou.spi.engine.LocaleSupport;
 import org.trimou.util.Strings;
 
 /**

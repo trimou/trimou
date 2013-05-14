@@ -7,9 +7,9 @@ import java.util.Collections;
 import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.Hammer;
-import org.trimou.api.Lambda;
-import org.trimou.api.Mustache;
+import org.trimou.Mustache;
 import org.trimou.lambda.InputProcessingLambda;
+import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
 import com.google.common.collect.ImmutableList;

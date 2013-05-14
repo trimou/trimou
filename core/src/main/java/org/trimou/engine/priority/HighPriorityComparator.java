@@ -13,36 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.resolver;
+package org.trimou.engine.priority;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Comparator;
 
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
 
 /**
- * Abstract resolver.
+ * The highest priority wins.
  *
  * @author Martin Kouba
  */
-public abstract class AbstractResolver implements Resolver {
+public class HighPriorityComparator implements Comparator<WithPriority> {
 
 	@Override
-	public void init(Configuration configuration) {
-		// No-op
-	}
+	public int compare(final WithPriority left, final WithPriority right) {
 
-	@Override
-	public List<ConfigurationKey> getConfigurationKeys() {
-		// No config keys by default
-		return Collections.emptyList();
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s [priority: %s]", getClass().getName(),
-				getPriority());
+		if (left == null || right == null) {
+			throw new NullPointerException();
+		}
+		return ((Integer) right.getPriority()).compareTo(left.getPriority());
 	}
 
 }

@@ -17,7 +17,6 @@ package org.trimou.engine.locale;
 
 import java.util.Locale;
 
-import org.trimou.spi.engine.LocaleSupport;
 
 /**
  * Always returns the default locale for this JVM.

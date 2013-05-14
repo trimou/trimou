@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.util.Priorities.before;
+import static org.trimou.engine.priority.Priorities.before;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -23,11 +23,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.MustacheException;
-import org.trimou.MustacheProblem;
-import org.trimou.api.engine.Configuration;
-import org.trimou.api.engine.ConfigurationKey;
-import org.trimou.util.Priorities;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
+import org.trimou.engine.priority.WithPriority;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Reflections;
 
 import com.google.common.base.Optional;
@@ -52,24 +53,14 @@ public class BeanResolver extends AbstractResolver implements
 	private static final Logger logger = LoggerFactory
 			.getLogger(BeanResolver.class);
 
-	public static final int BEAN_RESOLVER_PRIORITY = before(Priorities.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+	public static final int BEAN_RESOLVER_PRIORITY = before(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
 	/**
 	 * Limit the size of the cache (e.g. to avoid problems when dynamic class
 	 * compilation is involved).
 	 */
-	public static final ConfigurationKey READ_METHODS_CACHE_MAX_SIZE_KEY = new ConfigurationKey() {
-
-		@Override
-		public String get() {
-			return BeanResolver.class.getName() + ".readMethodsCacheMaxSize";
-		}
-
-		@Override
-		public Object getDefaultValue() {
-			return 5000l;
-		}
-	};
+	public static final ConfigurationKey READ_METHODS_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
+			BeanResolver.class.getName() + ".readMethodsCacheMaxSize", 5000l);
 
 	/**
 	 * Lazy loading cache of read methods for already requested types

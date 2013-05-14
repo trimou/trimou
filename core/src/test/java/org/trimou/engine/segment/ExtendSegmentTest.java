@@ -7,8 +7,8 @@ import java.io.StringWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.api.Mustache;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locator.MapTemplateLocator;
 

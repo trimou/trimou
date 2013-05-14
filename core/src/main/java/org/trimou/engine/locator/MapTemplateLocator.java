@@ -20,8 +20,7 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.Set;
 
-import org.trimou.spi.engine.TemplateLocator;
-import org.trimou.util.Priorities;
+import org.trimou.engine.priority.WithPriority;
 
 /**
  * Template locator backed by a {@link Map}.
@@ -45,7 +44,7 @@ public class MapTemplateLocator implements TemplateLocator {
 
 	public MapTemplateLocator(Map<String, String> templates) {
 		super();
-		this.priority = Priorities.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
+		this.priority = WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
 		this.templates = templates;
 	}
 

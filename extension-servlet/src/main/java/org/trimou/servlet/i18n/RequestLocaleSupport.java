@@ -2,8 +2,8 @@ package org.trimou.servlet.i18n;
 
 import java.util.Locale;
 
+import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.servlet.RequestHolder;
-import org.trimou.spi.engine.LocaleSupport;
 
 /**
  *

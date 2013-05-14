@@ -16,7 +16,6 @@
 package org.trimou.engine.locator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.trimou.spi.engine.TemplateLocator;
 import org.trimou.util.Strings;
 
 /**

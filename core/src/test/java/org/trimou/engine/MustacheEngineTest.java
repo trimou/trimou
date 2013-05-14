@@ -2,14 +2,11 @@ package org.trimou.engine;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.StringWriter;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.api.Lambda;
-import org.trimou.api.Mustache;
-import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.Mustache;
+import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
 /**
@@ -23,7 +20,7 @@ public class MustacheEngineTest extends AbstractTest {
 	}
 
 	@Test
-	public void testGlobalLambdas() {
+	public void testGlobalValues() {
 
 		Lambda bold = new SpecCompliantLambda() {
 
@@ -52,15 +49,14 @@ public class MustacheEngineTest extends AbstractTest {
 			}
 		};
 
-		String templateContents = "{{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!";
+		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!";
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
-				.addGlobalLambda(bold, "bold")
-				.addGlobalLambda(italic, "italic").build()
-				.compileMustache("global_lambda", templateContents);
+				.addGlobalValue("foo", true)
+				.addGlobalValue("bold", bold)
+				.addGlobalValue("italic", italic).build()
+				.compileMustache("global_value", templateContents);
 
-		StringWriter writer = new StringWriter();
-		mustache.render(writer, null);
-		assertEquals("<b>Hello</b> <i>world</i>!", writer.toString());
+		assertEquals("true| <b>Hello</b> <i>world</i>!", mustache.render(null));
 	}
 
 }

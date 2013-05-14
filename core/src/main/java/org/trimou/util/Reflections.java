@@ -64,18 +64,14 @@ public final class Reflections {
 				continue;
 			}
 
-			String name = method.getName();
+			String methodName = method.getName();
 
-			if (name.startsWith(GET_PREFIX)) {
-				readMethods.put(
-						Introspector.decapitalize(name.substring(3,
-								name.length())), method);
-			} else if (name.startsWith(IS_PREFIX)) {
-				readMethods.put(
-						Introspector.decapitalize(name.substring(2,
-								name.length())), method);
+			if (methodName.startsWith(GET_PREFIX)) {
+				readMethods.put(decapitalize(methodName, GET_PREFIX), method);
+			} else if (methodName.startsWith(IS_PREFIX)) {
+				readMethods.put(decapitalize(methodName, IS_PREFIX), method);
 			} else {
-				readMethods.put(name, method);
+				readMethods.put(methodName, method);
 			}
 		}
 		logger.debug(
@@ -86,13 +82,16 @@ public final class Reflections {
 	}
 
 	/**
+	 * First try to find a method with the same name. Afterwards try JavaBean
+	 * naming convention.
+	 *
 	 * If the name of the method starts with <b>get/is</b> prefix (JavaBean
 	 * naming convention), the key in the map is the name of the corresponding
 	 * property.
 	 *
 	 * @param clazz
 	 * @param name
-	 * @return
+	 * @return the found read method or <code>null</code>
 	 */
 	public static Method getReadMethod(Class<?> clazz, String name) {
 
@@ -112,16 +111,10 @@ public final class Reflections {
 			String methodName = method.getName();
 
 			if (methodName.equals(name)
-					|| (methodName.startsWith(GET_PREFIX) && Introspector
-							.decapitalize(
-									methodName.substring(3, methodName.length()))
-							.equals(name))
-					|| (methodName.startsWith(IS_PREFIX) && Introspector
-							.decapitalize(
-									methodName.substring(2, methodName.length()))
-							.equals(name))) {
-
+					|| matchesPrefix(name, methodName, GET_PREFIX)
+					|| matchesPrefix(name, methodName, IS_PREFIX)) {
 				found = method;
+				break;
 			}
 		}
 		logger.debug(
@@ -161,8 +154,19 @@ public final class Reflections {
 		if (Object.class.equals(method.getDeclaringClass())) {
 			return false;
 		}
-
 		return true;
+	}
+
+
+	private static boolean matchesPrefix(String name, String methodName,
+			String prefix) {
+		return methodName.startsWith(prefix)
+				&& decapitalize(methodName, prefix).equals(name);
+	}
+
+	private static String decapitalize(String methodName, String prefix) {
+		return Introspector.decapitalize(methodName.substring(prefix.length(),
+				methodName.length()));
 	}
 
 }

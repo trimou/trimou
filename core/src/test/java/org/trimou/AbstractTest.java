@@ -2,7 +2,7 @@ package org.trimou;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.trimou.api.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 
 /**
