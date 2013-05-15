@@ -35,7 +35,6 @@
         <module>extension-cdi</module>
         <module>extension-servlet</module>
         <module>extension-prettytime</module>
-        <module>doc</module>
     </modules>
 
     <properties>
@@ -73,6 +72,12 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>generate-doc</id>
+            <modules>
+                <module>doc</module>
+            </modules>
+        </profile>
         <profile>
             <id>integration-tests</id>
             <modules>
