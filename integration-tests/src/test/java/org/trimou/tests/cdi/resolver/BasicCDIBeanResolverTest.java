@@ -59,8 +59,8 @@ public class BasicCDIBeanResolverTest {
 
 		Mustache mustache = engine
 				.compileMustache(
-						"cdi_bean_resolver_test",
-						"{{hello}}: {{#alpha}}{{id}} {{bravo.age}}{{/alpha}} {{bravo.id}} {{charlie.id}}{{neverExisted}}");
+						"cdi_bean_resolver",
+						"{{hello}}: {{#alpha}}{{id}} {{bravo.age}}{{/alpha}} {{bravo.getId}} {{charlie.id}}{{neverExisted}}");
 
 		String result = String.format("Hello: %s 78 %s %s", alpha.getId(),
 				bravo.getId(), charlie.getId());

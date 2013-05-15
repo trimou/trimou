@@ -11,8 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.resolver.Resolver;
-import org.trimou.servlet.resolver.HttpServletRequestResolver;
 
 /**
  *
@@ -24,13 +22,9 @@ public class BasicServletRequestResolverTest {
 	@Deployment
 	public static WebArchive createTestArchive() {
 
-		return ShrinkWrap
-				.create(WebArchive.class)
-				.addAsLibraries(
-						getResolver().artifact("org.trimou:trimou-extension-servlet")
-								.resolveAsFiles())
-				.addAsServiceProvider(Resolver.class,
-						HttpServletRequestResolver.class);
+		return ShrinkWrap.create(WebArchive.class).addAsLibraries(
+				getResolver().artifact("org.trimou:trimou-extension-servlet")
+						.resolveAsFiles());
 	}
 
 	@Test
