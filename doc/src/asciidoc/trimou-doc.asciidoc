@@ -1,5 +1,6 @@
 = Trimou Documentation
 :toc:
+:toclevels: 4
 //:toc-title:
 :stylesheet: style.css
 :source-highlighter: highlightjs
@@ -57,7 +58,7 @@ However there are some differences:
 {{#items}}
   {{iterIndex}} <5>
   {{name}} <6>
-  {{iterHasNext}} <7>
+  {{iterHasNext}}, {{/iterHasNext}} <7>
 {{/items}}
 ----
 
@@ -67,7 +68,7 @@ However there are some differences:
 <4> Get the sixth element
 <5> The current index of the iteration block
 <6> "name" is resolved against the context object stack (iteration element, supplied data map)
-<7> true if the iteration has more elements
+<7> render a comma if the iteration has more elements (iterHasNext is true)
 
 NOTE: The set of resolvers may be extended - so in fact the above mentioned applies to the default set of resolvers only.
 
@@ -466,7 +467,7 @@ Allows the engine and its components (e.g. resolvers) to get the current locale 
 <dependency>
   <groupId>org.trimou</groupId>
   <artifactId>trimou-extension-cdi</artifactId>
-  <version>${version.trim}</version>
+  <version>${version.trimou}</version>
 </dependency>
 ----
 
@@ -479,13 +480,15 @@ NOTE: At the moment only built-in normal scopes are supported.
 [[servlets]]
 === Servlets
 
+At the moment only Servlet 3.0 API is supported.
+
 .Maven dependency
 [source,xml]
 ----
 <dependency>
   <groupId>org.trimou</groupId>
   <artifactId>trimou-extension-servlet</artifactId>
-  <version>${version.trim}</version>
+  <version>${version.trimou}</version>
 </dependency>
 ----
 
@@ -510,7 +513,7 @@ Obtains the current locate from the current servlet request.
 <dependency>
   <groupId>org.trimou</groupId>
   <artifactId>trimou-extension-prettytime</artifactId>
-  <version>${version.trim}</version>
+  <version>${version.trimou}</version>
 </dependency>
 ----
 
