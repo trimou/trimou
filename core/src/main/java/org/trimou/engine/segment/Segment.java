@@ -29,11 +29,6 @@ import org.trimou.lambda.Lambda.InputType;
 public interface Segment {
 
 	/**
-	 * @return the segment id (unique per engine)
-	 */
-	public String getId();
-
-	/**
 	 * @return the segment type
 	 */
 	public SegmentType getType();

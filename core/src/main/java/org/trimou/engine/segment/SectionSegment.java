@@ -57,8 +57,8 @@ import org.trimou.lambda.Lambda;
  */
 public class SectionSegment extends ContainerSegment {
 
-	public SectionSegment(String key, TemplateSegment template) {
-		super(key, template);
+	public SectionSegment(String text, TemplateSegment template) {
+		super(text, template);
 	}
 
 	public SegmentType getType() {
@@ -67,7 +67,7 @@ public class SectionSegment extends ContainerSegment {
 
 	public void execute(Writer writer, ExecutionContext context) {
 
-		Object value = context.get(getText(), getId());
+		Object value = context.get(getText());
 
 		if (value == null) {
 			return;

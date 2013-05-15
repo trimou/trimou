@@ -33,8 +33,8 @@ import org.trimou.exception.MustacheProblem;
  */
 public class ExtendSegment extends ContainerSegment {
 
-	public ExtendSegment(String name, TemplateSegment template) {
-		super(name, template);
+	public ExtendSegment(String text, TemplateSegment template) {
+		super(text, template);
 	}
 
 	@Override

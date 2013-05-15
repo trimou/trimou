@@ -30,7 +30,7 @@ public class DefaultExecutionContext extends AbstractExecutionContext {
 	}
 
 	@Override
-	public Object get(String key, String segmentId) {
+	public Object get(String key) {
 
 		Object value = null;
 

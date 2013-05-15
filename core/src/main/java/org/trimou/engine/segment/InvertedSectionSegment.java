@@ -35,8 +35,8 @@ import org.trimou.engine.context.ExecutionContext;
  */
 public class InvertedSectionSegment extends ContainerSegment {
 
-	public InvertedSectionSegment(String key, TemplateSegment template) {
-		super(key, template);
+	public InvertedSectionSegment(String text, TemplateSegment template) {
+		super(text, template);
 	}
 
 	public SegmentType getType() {
@@ -46,7 +46,7 @@ public class InvertedSectionSegment extends ContainerSegment {
 	@SuppressWarnings("rawtypes")
 	public void execute(Writer writer, ExecutionContext context) {
 
-		Object value = context.get(getText(), getId());
+		Object value = context.get(getText());
 		boolean render = false;
 
 		if (value == null) {

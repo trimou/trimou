@@ -32,8 +32,8 @@ public class PartialSegment extends AbstractSegment {
 
 	private String indentation;
 
-	public PartialSegment(String name, TemplateSegment template) {
-		super(name, template);
+	public PartialSegment(String text, TemplateSegment template) {
+		super(text, template);
 	}
 
 	@Override

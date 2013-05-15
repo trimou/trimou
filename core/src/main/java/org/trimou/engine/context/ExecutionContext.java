@@ -32,7 +32,7 @@ public interface ExecutionContext {
 	 * @return the object associated with the given key, or <code>null</code> if
 	 *         no such object exists
 	 */
-	public Object get(String key, String segmentId);
+	public Object get(String key);
 
 	/**
 	 * Push the context object on the context stack.

@@ -37,12 +37,12 @@ import org.trimou.exception.MustacheProblem;
  */
 public class TemplateSegment extends ContainerSegment implements Mustache {
 
-	private MustacheEngine engine;
+	private final MustacheEngine engine;
 
 	private boolean readOnly = false;
 
-	public TemplateSegment(String name, MustacheEngine engine) {
-		super(name, null);
+	public TemplateSegment(String text, MustacheEngine engine) {
+		super(text, null);
 		this.engine = engine;
 	}
 

@@ -20,7 +20,6 @@ import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.UUID;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.config.Configuration;
@@ -35,22 +34,19 @@ import org.trimou.util.Strings;
  */
 public abstract class AbstractSegment implements Segment {
 
-	private String id;
+	private final TemplateSegment template;
 
-	private TemplateSegment template;
+	private final String text;
 
-	private String text;
-
+	/**
+	 *
+	 * @param text
+	 * @param template
+	 */
 	public AbstractSegment(String text, TemplateSegment template) {
 		super();
 		this.text = text;
 		this.template = template;
-		// TODO something more meaningful?
-		this.id = UUID.randomUUID().toString();
-	}
-
-	public String getId() {
-		return id;
 	}
 
 	public String getText() {
@@ -125,7 +121,8 @@ public abstract class AbstractSegment implements Segment {
 	protected void checkModificationAllowed() {
 		if (isReadOnly()) {
 			throw new MustacheException(
-					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED, toString());
+					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED,
+					toString());
 		}
 	}
 

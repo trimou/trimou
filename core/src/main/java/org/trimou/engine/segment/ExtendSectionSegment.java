@@ -27,8 +27,8 @@ import org.trimou.engine.context.ExecutionContext;
  */
 public class ExtendSectionSegment extends ContainerSegment {
 
-	public ExtendSectionSegment(String name, TemplateSegment template) {
-		super(name, template);
+	public ExtendSectionSegment(String text, TemplateSegment template) {
+		super(text, template);
 	}
 
 	@Override

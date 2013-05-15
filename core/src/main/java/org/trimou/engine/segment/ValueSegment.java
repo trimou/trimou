@@ -32,10 +32,10 @@ import org.trimou.lambda.Lambda;
  */
 public class ValueSegment extends AbstractSegment {
 
-	private boolean unescape = false;
+	private final boolean unescape;
 
-	public ValueSegment(String key, TemplateSegment template, boolean unescape) {
-		super(key, template);
+	public ValueSegment(String text, TemplateSegment template, boolean unescape) {
+		super(text, template);
 		this.unescape = unescape;
 	}
 
@@ -49,7 +49,7 @@ public class ValueSegment extends AbstractSegment {
 
 	public void execute(Writer writer, ExecutionContext context) {
 
-		Object value = context.get(getText(), getId());
+		Object value = context.get(getText());
 
 		if (value != null) {
 			if (value instanceof Lambda) {
