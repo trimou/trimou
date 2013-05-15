@@ -53,6 +53,14 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
 
 	public static final ConfigurationKey CUSTOM_PATTERN_KEY = new SimpleConfigurationKey(DateTimeFormatResolver.class.getName() + ".customPattern", "M/d/yy h:mm a");
 
+	private static final String NAME_FORMAT = "format";
+
+	private static final String NAME_FORMAT_SHORT = "formatShort";
+
+	private static final String NAME_FORMAT_CUSTOM = "formatCustom";
+
+	private static final String NAME_FORMAT_DATE = "formatDate";
+
 	private String customPattern;
 
 	@Override
@@ -68,14 +76,14 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
 			return null;
 		}
 
-		if ("format".equals(name)) {
+		if (NAME_FORMAT.equals(name)) {
 			return format(DateFormat.MEDIUM, formattableObject);
-		} else if ("formatShort".equals(name)) {
+		} else if (NAME_FORMAT_SHORT.equals(name)) {
 			return format(DateFormat.SHORT, formattableObject);
-		} else if ("formatCustom".equals(name)) {
+		} else if (NAME_FORMAT_CUSTOM.equals(name)) {
 			return formatCustom(formattableObject);
 		}
-		if ("formatDate".equals(name)) {
+		if (NAME_FORMAT_DATE.equals(name)) {
 			return formatDate(DateFormat.MEDIUM, formattableObject);
 		}
 		return null;

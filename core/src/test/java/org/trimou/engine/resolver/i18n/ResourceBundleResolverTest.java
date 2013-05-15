@@ -10,9 +10,10 @@ import org.trimou.AbstractTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.LocaleSupport;
-import org.trimou.engine.resolver.i18n.ResourceBundleResolver;
 
 /**
+ *
+ * @author Martin Kouba
  */
 public class ResourceBundleResolverTest extends AbstractTest {
 

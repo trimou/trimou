@@ -11,12 +11,12 @@ import org.trimou.AbstractTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.LocaleSupport;
-import org.trimou.engine.resolver.i18n.NumberFormatResolver;
 
 import com.google.common.collect.ImmutableMap;
 
 /**
- * TODO more tests
+ *
+ * @author Martin Kouba
  */
 public class NumberFormatResolverTest extends AbstractTest {
 
@@ -28,7 +28,7 @@ public class NumberFormatResolverTest extends AbstractTest {
 
 					@Override
 					public Locale getCurrentLocale() {
-						return new Locale("cs");
+						return new Locale("cs", "CZ");
 					}
 				}).addResolver(new NumberFormatResolver()).build();
 
@@ -37,11 +37,11 @@ public class NumberFormatResolverTest extends AbstractTest {
 	@Test
 	public void testInterpolation() {
 
-		String templateContents = "{{number.format}}|{{number.formatPercent}}";
+		String templateContents = "{{number.format}}|{{number.formatPercent}}|{{number.formatCurrency}}";
 		Mustache mustache = engine.compileMustache("number", templateContents);
 
-		assertEquals("1,5|150%", mustache.render(ImmutableMap.<String, Object> of(
-				"number", new BigDecimal("1.5"))));
+		assertEquals("1,5|150%|1,5 Kč", mustache.render(ImmutableMap
+				.<String, Object> of("number", new BigDecimal("1.5"))));
 	}
 
 }

@@ -16,7 +16,7 @@ public class HttpServletRequestResolver extends AbstractResolver {
 
 	public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
-	private static final String REQUEST_KEY = "request";
+	private static final String NAME_REQUEST = "request";
 
 	@Override
 	public int getPriority() {
@@ -30,7 +30,7 @@ public class HttpServletRequestResolver extends AbstractResolver {
 			return null;
 		}
 
-		if (REQUEST_KEY.equals(name)) {
+		if (NAME_REQUEST.equals(name)) {
 			HttpServletRequest request = RequestHolder.getCurrentRequest();
 			if (request != null) {
 				return new HttpServletRequestWrapper(request);

@@ -29,6 +29,8 @@ import org.trimou.engine.resolver.ArrayIndexResolver;
  * <li>format - format number with the current locale</li>
  * <li>formatPercent - format number with the percentage pattern and the current
  * locale</li>
+ * <li>formatCurrency - format number with the currency pattern and the current
+ * locale</li>
  * </ul>
  *
  * @author Martin Kouba
@@ -37,6 +39,12 @@ public class NumberFormatResolver extends LocaleAwareResolver {
 
 	public static final int NUMBER_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
+	private static final String NAME_FORMAT = "format";
+
+	private static final String NAME_FORMAT_PERCENT = "formatPercent";
+
+	private static final String NAME_FORMAT_CURR = "formatCurrency";
+
 	@Override
 	public Object resolve(Object contextObject, String name) {
 
@@ -44,11 +52,14 @@ public class NumberFormatResolver extends LocaleAwareResolver {
 			return null;
 		}
 
-		if ("format".equals(name)) {
+		if (NAME_FORMAT.equals(name)) {
 			return NumberFormat.getNumberInstance(
 					localeSupport.getCurrentLocale()).format(contextObject);
-		} else if ("formatPercent".equals(name)) {
+		} else if (NAME_FORMAT_PERCENT.equals(name)) {
 			return NumberFormat.getPercentInstance(
+					localeSupport.getCurrentLocale()).format(contextObject);
+		} else if (NAME_FORMAT_CURR.equals(name)) {
+			return NumberFormat.getCurrencyInstance(
 					localeSupport.getCurrentLocale()).format(contextObject);
 		}
 		return null;

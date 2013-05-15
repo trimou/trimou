@@ -42,8 +42,6 @@ public final class Strings {
 
 	public static final String KEY_SEPARATOR = ".";
 
-	public static final String THIS = "this";
-
 	/**
 	 *
 	 * @param text
