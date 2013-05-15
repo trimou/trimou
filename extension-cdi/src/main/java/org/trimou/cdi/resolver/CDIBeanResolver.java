@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.trimou.cdi.BeanManagerLocator;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 
@@ -44,6 +45,9 @@ public class CDIBeanResolver extends AbstractResolver {
 			.getLogger(CDIBeanResolver.class);
 
 	public static final int CDI_BEAN_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+
+	public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
+			CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
 
 	private BeanManager beanManager;
 
@@ -81,7 +85,7 @@ public class CDIBeanResolver extends AbstractResolver {
 		}
 		// Init cache max size
 		long beanCacheMaxSize = configuration
-				.getLongPropertyValue(CDIBeanResolverConfigurationKey.BEAN_CACHE_MAX_SIZE);
+				.getLongPropertyValue(BEAN_CACHE_MAX_SIZE_KEY);
 		beanCache = CacheBuilder.newBuilder().maximumSize(beanCacheMaxSize)
 				.build(new CacheLoader<String, Optional<Bean>>() {
 
@@ -106,15 +110,14 @@ public class CDIBeanResolver extends AbstractResolver {
 						}
 					}
 				});
-		logger.info("CDIBeanResolver initialized [beanCacheMaxSize: {}]",
-				beanCacheMaxSize);
+		logger.info("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
 
 	}
 
 	@Override
 	public List<ConfigurationKey> getConfigurationKeys() {
 		return Collections
-				.<ConfigurationKey> singletonList(CDIBeanResolverConfigurationKey.BEAN_CACHE_MAX_SIZE);
+				.<ConfigurationKey> singletonList(BEAN_CACHE_MAX_SIZE_KEY);
 	}
 
 	private Object getReference(Bean<?> bean) {
@@ -132,30 +135,6 @@ public class CDIBeanResolver extends AbstractResolver {
 				|| ApplicationScoped.class.equals(scope)
 				|| ConversationScoped.class.equals(scope)
 				|| SessionScoped.class.equals(scope);
-	}
-
-	public enum CDIBeanResolverConfigurationKey implements ConfigurationKey {
-
-		BEAN_CACHE_MAX_SIZE(CDIBeanResolver.class.getName()
-				+ ".beanCacheMaxSize", 500l), ;
-
-		private String key;
-
-		private Object defaultValue;
-
-		CDIBeanResolverConfigurationKey(String key, Object defaultValue) {
-			this.key = key;
-			this.defaultValue = defaultValue;
-		}
-
-		public String get() {
-			return key;
-		}
-
-		public Object getDefaultValue() {
-			return defaultValue;
-		}
-
 	}
 
 }
