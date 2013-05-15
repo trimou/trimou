@@ -29,6 +29,8 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ServletContextTemplateLocator.class);
 
+	private ServletContext servletContext;
+
 	/**
 	 *
 	 * @param priority
@@ -36,6 +38,18 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 	 */
 	public ServletContextTemplateLocator(int priority, String rootPath) {
 		super(priority, rootPath);
+		checkRootPath();
+	}
+
+	/**
+	 *
+	 * @param priority
+	 * @param rootPath
+	 * @param servletContext
+	 */
+	public ServletContextTemplateLocator(int priority, String rootPath, ServletContext servletContext) {
+		super(priority, rootPath);
+		this.servletContext = servletContext;
 		checkRootPath();
 	}
 
@@ -51,17 +65,31 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 		checkRootPath();
 	}
 
+	/**
+	 *
+	 * @param priority
+	 * @param suffix
+	 * @param rootPath
+	 * @param servletContext
+	 */
+	public ServletContextTemplateLocator(int priority, String rootPath,
+			String suffix, ServletContext servletContext) {
+		super(priority, rootPath, suffix);
+		this.servletContext = servletContext;
+		checkRootPath();
+	}
+
 	@Override
 	public Reader locate(String templateName) {
 
-		ServletContext servletContext = getServletContext();
+		ServletContext ctx = getServletContext();
 
-		if (servletContext == null) {
+		if (ctx == null) {
 			throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
 					"Servlet context not available outside HTTP request");
 		}
 
-		InputStream in = servletContext.getResourceAsStream(getRootPath()
+		InputStream in = ctx.getResourceAsStream(getRootPath()
 				+ addSuffix(templateName));
 
 		return in != null ? new InputStreamReader(in) : null;
@@ -70,15 +98,15 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 	@Override
 	public Set<String> getAllAvailableNames() {
 
-		ServletContext servletContext = getServletContext();
+		ServletContext ctx = getServletContext();
 
-		if (servletContext == null) {
+		if (ctx == null) {
 			logger.warn("Servlet context not available - cannot get all available names");
 			return Collections.emptySet();
 		}
 
 		Set<String> names = new HashSet<String>();
-		Set<String> resources = servletContext.getResourcePaths(getRootPath());
+		Set<String> resources = ctx.getResourcePaths(getRootPath());
 
 		for (String resource : resources) {
 
@@ -104,6 +132,10 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 	}
 
 	private ServletContext getServletContext() {
+
+		if(this.servletContext != null) {
+			return this.servletContext;
+		}
 
 		HttpServletRequest httpServletRequest = RequestHolder
 				.getCurrentRequest();
