@@ -1,6 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.trimou</groupId>
     <artifactId>trimou-parent</artifactId>
@@ -21,6 +27,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/trimou/trimou.git</connection>
+        <developerConnection>scm:git:git@github.com/trimou/trimou.git</developerConnection>
         <url>https://github.com/trimou/trimou</url>
     </scm>
 
@@ -29,6 +36,11 @@
             <name>Martin Kouba</name>
         </developer>
     </developers>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/trimou/trimou/issues</url>
+    </issueManagement>
 
     <modules>
         <module>core</module>
