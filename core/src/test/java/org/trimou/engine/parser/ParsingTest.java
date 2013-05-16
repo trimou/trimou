@@ -178,4 +178,25 @@ public class ParsingTest extends AbstractTest {
 		assertEquals(SegmentType.EXTEND_SECTION, segments.get(0).getType());
 	}
 
+	@Test
+	public void testAccentedLetters() {
+
+		String text1 = "Teď testujeme";
+		String var1 = "akcentované";
+		String var2 = "ěščěšřéáíéířčžč";
+
+		TemplateSegment template = (TemplateSegment) engine.compileMustache(
+				"parse_accented_letters", text1 + "{{" + var1 + "}}{{& " + var2
+						+ "}}");
+
+		List<Segment> segments = template.getSegments();
+		assertEquals(3, segments.size());
+		assertEquals(SegmentType.TEXT, segments.get(0).getType());
+		assertEquals(text1, segments.get(0).getText());
+		assertEquals(SegmentType.VALUE, segments.get(1).getType());
+		assertEquals(var1, segments.get(1).getText());
+		assertEquals(SegmentType.VALUE, segments.get(2).getType());
+		assertEquals(var2, segments.get(2).getText());
+	}
+
 }
