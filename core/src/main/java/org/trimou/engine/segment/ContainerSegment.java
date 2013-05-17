@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,9 +53,9 @@ public abstract class ContainerSegment extends AbstractSegment implements
 		this.segments = segments;
 	}
 
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 		for (Segment segment : segments) {
-			segment.execute(writer, context);
+			segment.execute(appendable, context);
 		}
 	}
 

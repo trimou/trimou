@@ -19,7 +19,6 @@ import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
 import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.config.Configuration;
@@ -102,17 +101,9 @@ public abstract class AbstractSegment implements Segment {
 		return Strings.EMPTY;
 	}
 
-	protected void write(Writer writer, String text) {
+	protected void append(Appendable appendable, String text) {
 		try {
-			writer.write(text);
-		} catch (IOException e) {
-			throw new MustacheException(MustacheProblem.RENDER_IO_ERROR);
-		}
-	}
-
-	protected void flush(Writer writer) {
-		try {
-			writer.flush();
+			appendable.append(text);
 		} catch (IOException e) {
 			throw new MustacheException(MustacheProblem.RENDER_IO_ERROR);
 		}

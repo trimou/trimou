@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
-
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -40,7 +38,7 @@ public class SetDelimitersSegment extends AbstractSegment {
 	}
 
 	@Override
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 		// No-op
 	}
 

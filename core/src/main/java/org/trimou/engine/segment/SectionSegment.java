@@ -16,7 +16,6 @@
 package org.trimou.engine.segment;
 
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
@@ -65,7 +64,7 @@ public class SectionSegment extends ContainerSegment {
 		return SegmentType.SECTION;
 	}
 
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 
 		Object value = context.get(getText());
 
@@ -76,22 +75,22 @@ public class SectionSegment extends ContainerSegment {
 		if (value instanceof Boolean) {
 			// Boolean#TRUE, true
 			if ((Boolean) value) {
-				super.execute(writer, context);
+				super.execute(appendable, context);
 			}
 		} else if (value instanceof Iterable) {
 			// Iterable
-			processIterable(writer, context, value);
+			processIterable(appendable, context, value);
 		} else if (value.getClass().isArray()) {
 			// Array
-			processArray(writer, context, value);
+			processArray(appendable, context, value);
 			context.pop();
 		} else if (value instanceof Lambda) {
 			// Lambda
-			processLambda(writer, context, value);
+			processLambda(appendable, context, value);
 		} else {
 			// Nested context
 			context.push(value);
-			super.execute(writer, context);
+			super.execute(appendable, context);
 			context.pop();
 		}
 	}
@@ -108,7 +107,7 @@ public class SectionSegment extends ContainerSegment {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void processIterable(Writer writer, ExecutionContext context,
+	private void processIterable(Appendable appendable, ExecutionContext context,
 			Object value) {
 
 		Iterator iterator = ((Iterable) value).iterator();
@@ -116,14 +115,14 @@ public class SectionSegment extends ContainerSegment {
 		context.push(meta);
 		while (iterator.hasNext()) {
 			context.push(iterator.next());
-			super.execute(writer, context);
+			super.execute(appendable, context);
 			context.pop();
 			meta.nextIteration();
 		}
 		context.pop();
 	}
 
-	private void processArray(Writer writer, ExecutionContext context,
+	private void processArray(Appendable appendable, ExecutionContext context,
 			Object value) {
 
 		int length = Array.getLength(value);
@@ -132,7 +131,7 @@ public class SectionSegment extends ContainerSegment {
 		context.push(meta);
 		for (int i = 0; i < length; i++) {
 			context.push(Array.get(value, i));
-			super.execute(writer, context);
+			super.execute(appendable, context);
 			context.pop();
 			meta.nextIteration();
 		}
@@ -140,7 +139,7 @@ public class SectionSegment extends ContainerSegment {
 		context.pop();
 	}
 
-	private void processLambda(Writer writer, ExecutionContext context,
+	private void processLambda(Appendable appendable, ExecutionContext context,
 			Object value) {
 
 		Lambda lambda = (Lambda) value;
@@ -168,9 +167,9 @@ public class SectionSegment extends ContainerSegment {
 			TemplateSegment temp = (TemplateSegment) getEngine().compileMustache(
 					getTemplate().getName() + "_" + System.nanoTime(),
 					returnValue);
-			temp.execute(writer, context);
+			temp.execute(appendable, context);
 		} else {
-			write(writer, returnValue);
+			append(appendable, returnValue);
 		}
 	}
 

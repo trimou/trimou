@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
-
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda.InputType;
 
@@ -54,9 +52,9 @@ public interface Segment {
 	/**
 	 * Execute this segment (e.g. write down some variable value).
 	 *
-	 * @param writer
+	 * @param appendable
 	 * @param context
 	 */
-	public void execute(Writer writer, ExecutionContext context);
+	public void execute(Appendable appendable, ExecutionContext context);
 
 }

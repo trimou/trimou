@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
-
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 
@@ -48,19 +46,19 @@ public class ExtendSectionSegment extends ContainerSegment {
 	}
 
 	@Override
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 
 		ExtendSectionSegment defining = context.getDefiningSection(getText());
 
 		if (defining != null) {
-			defining.executeNoDefiningLookup(writer, context);
+			defining.executeNoDefiningLookup(appendable, context);
 		} else {
-			super.execute(writer, context);
+			super.execute(appendable, context);
 		}
 	}
 
-	protected void executeNoDefiningLookup(Writer writer, ExecutionContext context) {
-		super.execute(writer, context);
+	protected void executeNoDefiningLookup(Appendable appendable, ExecutionContext context) {
+		super.execute(appendable, context);
 	}
 
 }

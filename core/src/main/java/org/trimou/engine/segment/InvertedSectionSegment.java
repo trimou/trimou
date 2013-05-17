@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
@@ -44,7 +43,7 @@ public class InvertedSectionSegment extends ContainerSegment {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 
 		Object value = context.get(getText());
 		boolean render = false;
@@ -71,7 +70,7 @@ public class InvertedSectionSegment extends ContainerSegment {
 		}
 
 		if (render) {
-			super.execute(writer, context);
+			super.execute(appendable, context);
 		}
 	}
 

@@ -15,7 +15,6 @@
  */
 package org.trimou;
 
-import java.io.Writer;
 import java.util.Map;
 
 /**
@@ -31,20 +30,25 @@ public interface Mustache {
 	/**
 	 * Render the template.
 	 *
-	 * @param writer
-	 *            The writer to render the template to
 	 * @param data
-	 *            Optional context data (ideally immutable), may be <code>null</code>
+	 *            Optional context data (ideally immutable), may be
+	 *            <code>null</code>
+	 * @return the rendered template as string
 	 */
-	public void render(Writer writer, Map<String, Object> data);
+	public String render(Map<String, Object> data);
 
 	/**
 	 * Render the template.
 	 *
+	 * Watch out! Any appendable-specific operations (e.g. stream flushing and
+	 * closing) are not performed automatically.
+	 *
+	 * @param appendable
+	 *            The appendable to append the rendered template to
 	 * @param data
-	 *            Optional context data (ideally immutable), may be <code>null</code>
-	 * @return the rendered template as string
+	 *            Optional context data (ideally immutable), may be
+	 *            <code>null</code>
 	 */
-	public String render(Map<String, Object> data);
+	public void render(Appendable appendable, Map<String, Object> data);
 
 }

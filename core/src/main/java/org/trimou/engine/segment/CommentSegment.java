@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
-
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.util.Strings;
@@ -42,7 +40,8 @@ public class CommentSegment extends AbstractSegment {
 	}
 
 	@Override
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
+		// No-op
 	}
 
 	@Override

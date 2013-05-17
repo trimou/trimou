@@ -18,7 +18,6 @@ package org.trimou.engine.segment;
 import static org.trimou.engine.config.EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM;
 
 import java.io.StringWriter;
-import java.io.Writer;
 
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.exception.MustacheException;
@@ -47,15 +46,15 @@ public class ValueSegment extends AbstractSegment {
 		return unescape;
 	}
 
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 
 		Object value = context.get(getText());
 
 		if (value != null) {
 			if (value instanceof Lambda) {
-				processLambda(writer, context, value);
+				processLambda(appendable, context, value);
 			} else {
-				writeValue(writer, value.toString());
+				writeValue(appendable, value.toString());
 			}
 		} else {
 			// By default a variable miss returns an empty string.
@@ -70,12 +69,12 @@ public class ValueSegment extends AbstractSegment {
 		return getText();
 	}
 
-	private void writeValue(Writer writer, String text) {
-		write(writer, unescape ? text : getEngineConfiguration().getTextSupport()
+	private void writeValue(Appendable appendable, String text) {
+		append(appendable, unescape ? text : getEngineConfiguration().getTextSupport()
 				.escapeHtml(text));
 	}
 
-	private void processLambda(Writer writer, ExecutionContext context,
+	private void processLambda(Appendable appendable, ExecutionContext context,
 			Object value) {
 
 		Lambda lambda = (Lambda) value;
@@ -88,9 +87,9 @@ public class ValueSegment extends AbstractSegment {
 			TemplateSegment temp = (TemplateSegment) getEngine().compileMustache(
 					lambda.getClass() + "_" + System.nanoTime(), returnValue);
 			temp.execute(interpolated, context);
-			writeValue(writer, interpolated.toString());
+			writeValue(appendable, interpolated.toString());
 		} else {
-			writeValue(writer, returnValue);
+			writeValue(appendable, returnValue);
 		}
 	}
 

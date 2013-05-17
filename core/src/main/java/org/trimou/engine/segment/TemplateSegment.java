@@ -17,8 +17,6 @@ package org.trimou.engine.segment;
 
 import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE_ENABLED;
 
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,19 +45,18 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 	}
 
 	@Override
-	public void render(Writer writer, Map<String, Object> data) {
+	public void render(Appendable appendable, Map<String, Object> data) {
 		if (!isReadOnly()) {
 			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY);
 		}
-		super.execute(writer, newExecutionContext(data));
-		flush(writer);
+		super.execute(appendable, newExecutionContext(data));
 	}
 
 	@Override
 	public String render(Map<String, Object> data) {
-		StringWriter writer = new StringWriter();
-		render(writer, data);
-		return writer.toString();
+		StringBuilder builder = new StringBuilder();
+		render(builder, data);
+		return builder.toString();
 	}
 
 	@Override

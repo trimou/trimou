@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
 import java.util.List;
 
 import org.trimou.engine.MustacheTagType;
@@ -42,7 +41,7 @@ public class PartialSegment extends AbstractSegment {
 	}
 
 	@Override
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 
 		TemplateSegment partialTemplate = (TemplateSegment) getEngine().getMustache(
 				getText());
@@ -53,7 +52,7 @@ public class PartialSegment extends AbstractSegment {
 		}
 
 		if (indentation == null) {
-			partialTemplate.execute(writer, context);
+			partialTemplate.execute(appendable, context);
 		} else {
 			// Prepend indentation before rendering
 			List<List<Segment>> partialLines = Segments
@@ -66,7 +65,7 @@ public class PartialSegment extends AbstractSegment {
 
 			for (List<Segment> line : partialLines) {
 				for (Segment segment : line) {
-					segment.execute(writer, context);
+					segment.execute(appendable, context);
 				}
 			}
 		}

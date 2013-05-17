@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
-
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.exception.MustacheException;
@@ -43,7 +41,7 @@ public class ExtendSegment extends ContainerSegment {
 	}
 
 	@Override
-	public void execute(Writer writer, ExecutionContext context) {
+	public void execute(Appendable appendable, ExecutionContext context) {
 
 		TemplateSegment extended = (TemplateSegment) getEngine()
 				.getMustache(getText());
@@ -56,7 +54,7 @@ public class ExtendSegment extends ContainerSegment {
 			context.addDefiningSection(extendSection.getText(),
 					(ExtendSectionSegment) extendSection);
 		}
-		extended.execute(writer, context);
+		extended.execute(appendable, context);
 	}
 
 	@Override

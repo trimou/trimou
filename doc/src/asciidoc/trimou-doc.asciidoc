@@ -318,13 +318,14 @@ String output = MustacheEngineBuilder
 <3> Render the text
 
 
-==== Provide your own Writer
+==== Provide your own Appendable
 
 [source,java]
 ----
 MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
 Mustache mustache = engine.compileMustache("fooTemplate", "{{foo}}");
 
+// It's possible to pass a java.lang.Appendable impl, e.g. any java.io.Writer
 StringWriter writer = new StringWriter();
 
 mustache.render(writer, ImmutableMap.<String, Object> of("foo", "bar"));

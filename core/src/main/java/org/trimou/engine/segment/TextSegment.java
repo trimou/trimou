@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import java.io.Writer;
-
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -34,8 +32,8 @@ public class TextSegment extends AbstractSegment {
 		return SegmentType.TEXT;
 	}
 
-	public void execute(Writer writer, ExecutionContext context) {
-		write(writer, getText());
+	public void execute(Appendable appendable, ExecutionContext context) {
+		append(appendable, getText());
 	}
 
 	@Override
