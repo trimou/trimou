@@ -59,9 +59,9 @@ public enum EngineConfigurationKey implements ConfigurationKey {
 	 */
 	DEBUG_MODE_ENABLED(false),
 	/**
-	 * <code>true</code> in case of the section and inverted section literal
-	 * block should be cached (useful to optimize some lambdas processing
-	 * scenarios, but memory intensive), <code>false</code> otherwise
+	 * <code>true</code> in case of the section-based literal blocks should be
+	 * cached (useful to optimize some lambdas processing scenarios, but memory
+	 * intensive), <code>false</code> otherwise
 	 */
 	CACHE_SECTION_LITERAL_BLOCK(false), ;
 
