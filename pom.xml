@@ -27,7 +27,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/trimou/trimou.git</connection>
-        <developerConnection>scm:git:git@github.com/trimou/trimou.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:trimou/trimou.git</developerConnection>
         <url>https://github.com/trimou/trimou</url>
     </scm>
 
