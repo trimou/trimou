@@ -16,6 +16,8 @@
 package org.trimou.engine.segment;
 
 import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE_ENABLED;
+import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
+import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class TemplateSegment extends ContainerSegment implements Mustache {
+public class TemplateSegment extends AbstractContainerSegment implements Mustache {
 
 	private final MustacheEngine engine;
 
@@ -47,7 +49,7 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 	@Override
 	public void render(Appendable appendable, Map<String, Object> data) {
 		if (!isReadOnly()) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY);
+			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY, getName());
 		}
 		super.execute(appendable, newExecutionContext(data));
 	}
@@ -65,15 +67,26 @@ public class TemplateSegment extends ContainerSegment implements Mustache {
 	}
 
 	@Override
+	public String getLiteralBlock() {
+		return getContainingLiteralBlock();
+	}
+
+	@Override
 	public String getName() {
 		return getText();
 	}
 
-	/**
-	 * Make the template read only.
-	 */
-	public void setReadOnly() {
-		this.readOnly = true;
+	@Override
+	public void performPostProcessing() {
+
+		if (engine.getConfiguration().getBooleanPropertyValue(REMOVE_STANDALONE_LINES)) {
+			Segments.removeStandaloneLines(this);
+		}
+		if(engine.getConfiguration().getBooleanPropertyValue(REMOVE_UNNECESSARY_SEGMENTS)) {
+			Segments.removeUnnecessarySegments(this);
+		}
+		super.performPostProcessing();
+		readOnly = true;
 	}
 
 	/**

@@ -19,7 +19,6 @@ import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda;
 
@@ -54,7 +53,7 @@ import org.trimou.lambda.Lambda;
  * @see Lambda
  * @see InvertedSectionSegment
  */
-public class SectionSegment extends ContainerSegment {
+public class SectionSegment extends AbstractSectionSegment {
 
 	public SectionSegment(String text, TemplateSegment template) {
 		super(text, template);
@@ -93,17 +92,6 @@ public class SectionSegment extends ContainerSegment {
 			super.execute(appendable, context);
 			context.pop();
 		}
-	}
-
-	@Override
-	public String getLiteralBlock() {
-		StringBuilder literal = new StringBuilder();
-		literal.append(getTagLiteral(MustacheTagType.SECTION.getCommand()
-				+ getText()));
-		literal.append(super.getLiteralBlock());
-		literal.append(getTagLiteral(MustacheTagType.SECTION_END.getCommand()
-				+ getText()));
-		return literal.toString();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -148,7 +136,7 @@ public class SectionSegment extends ContainerSegment {
 		switch (lambda.getInputType()) {
 		case LITERAL:
 			// Try to reconstruct the original text
-			input = super.getLiteralBlock();
+			input = getContainingLiteralBlock();
 			break;
 		case PROCESSED:
 			StringWriter processed = new StringWriter();

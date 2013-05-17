@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -23,7 +22,7 @@ import org.trimou.engine.context.ExecutionContext;
  *
  * @author Martin Kouba
  */
-public class ExtendSectionSegment extends ContainerSegment {
+public class ExtendSectionSegment extends AbstractSectionSegment {
 
 	public ExtendSectionSegment(String text, TemplateSegment template) {
 		super(text, template);
@@ -32,17 +31,6 @@ public class ExtendSectionSegment extends ContainerSegment {
 	@Override
 	public SegmentType getType() {
 		return SegmentType.EXTEND_SECTION;
-	}
-
-	@Override
-	public String getLiteralBlock() {
-		StringBuilder literal = new StringBuilder();
-		literal.append(getTagLiteral(MustacheTagType.EXTEND_SECTION.getCommand()
-				+ getText()));
-		literal.append(super.getLiteralBlock());
-		literal.append(getTagLiteral(MustacheTagType.SECTION_END.getCommand()
-				+ getText()));
-		return literal.toString();
 	}
 
 	@Override

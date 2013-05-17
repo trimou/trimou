@@ -94,14 +94,16 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
 	 * context, ...), or some context and data unrelated object (e.g. CDI bean).
 	 *
 	 * @param name
-	 * @return the resolved leading base object
+	 * @return the resolved leading context object
 	 */
 	protected Object resolveLeadingContextObject(String name) {
 
 		Object leading = null;
 
 		for (Object contextObject : contextObjectStack) {
+
 			leading = resolve(contextObject, name);
+
 			if (leading != null) {
 				// Skip following
 				break;
@@ -125,7 +127,9 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
 		Object value = null;
 
 		for (Resolver resolver : resolvers) {
+
 			value = resolver.resolve(contextObject, name);
+
 			if (value != null) {
 				break;
 			}

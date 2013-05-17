@@ -57,7 +57,13 @@ public enum EngineConfigurationKey implements ConfigurationKey {
 	 * <code>true</code> in case of debug mode should be enabled,
 	 * <code>false</code> otherwise
 	 */
-	DEBUG_MODE_ENABLED(false), ;
+	DEBUG_MODE_ENABLED(false),
+	/**
+	 * <code>true</code> in case of the section and inverted section literal
+	 * block should be cached (useful to optimize some lambdas processing
+	 * scenarios, but memory intensive), <code>false</code> otherwise
+	 */
+	CACHE_SECTION_LITERAL_BLOCK(false), ;
 
 	private Object defaultValue;
 

@@ -15,24 +15,39 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.engine.MustacheTagType;
+
 /**
  * Type of segment.
  */
 public enum SegmentType {
 
-	TEMPLATE,
-	VALUE,
-	TEXT,
-	SECTION,
-	INVERTED_SECTION,
-	COMMENT,
-	LINE_SEPARATOR,
-	DELIMITERS,
-	PARTIAL,
+	TEMPLATE(null),
+	VALUE(MustacheTagType.VARIABLE),
+	TEXT(null),
+	SECTION(MustacheTagType.SECTION),
+	INVERTED_SECTION(MustacheTagType.INVERTED_SECTION),
+	COMMENT(MustacheTagType.COMMENT),
+	LINE_SEPARATOR(null),
+	DELIMITERS(MustacheTagType.DELIMITER),
+	PARTIAL(MustacheTagType.PARTIAL),
 	// Spec extensions
-	EXTEND,
-	EXTEND_SECTION
+	EXTEND(MustacheTagType.EXTEND),
+	EXTEND_SECTION(MustacheTagType.EXTEND_SECTION)
 	;
+
+	private MustacheTagType tagType;
+
+	SegmentType(MustacheTagType tagType) {
+		this.tagType = tagType;
+	}
+
+	/**
+	 * @return the corresponding tag type or <code>null</code>
+	 */
+	MustacheTagType getTagType() {
+		return tagType;
+	}
 
 	public boolean isStandaloneCandidate() {
 		return this.equals(COMMENT) || this.equals(SECTION)

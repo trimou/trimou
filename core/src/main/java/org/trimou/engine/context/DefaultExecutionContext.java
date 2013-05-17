@@ -40,6 +40,7 @@ public class DefaultExecutionContext extends AbstractExecutionContext {
 
 			// Resolve the leading context object
 			value = resolveLeadingContextObject(parts[0]);
+
 			if (value == null) {
 				// Not found - miss
 				return null;

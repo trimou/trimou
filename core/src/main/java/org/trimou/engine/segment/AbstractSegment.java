@@ -62,6 +62,11 @@ public abstract class AbstractSegment implements Segment {
 	}
 
 	@Override
+	public void performPostProcessing() {
+		// No-op by default
+	}
+
+	@Override
 	public String toString() {
 		return String
 				.format("%s [template: %s, name: %s]", getType(),

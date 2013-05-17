@@ -28,34 +28,30 @@ import com.google.common.collect.ImmutableList;
  *
  * @author Martin Kouba
  */
-public abstract class ContainerSegment extends AbstractSegment implements
+public abstract class AbstractContainerSegment extends AbstractSegment implements
 		Iterable<Segment> {
 
-	private List<Segment> segments = new ArrayList<Segment>();
+	protected List<Segment> segments = new ArrayList<Segment>();
 
 	/**
 	 *
 	 * @param name
 	 * @param template
 	 */
-	public ContainerSegment(String name, TemplateSegment template) {
+	public AbstractContainerSegment(String name, TemplateSegment template) {
 		super(name, template);
-	}
-
-	/**
-	 *
-	 * @param name
-	 * @param template
-	 * @param segments
-	 */
-	protected ContainerSegment(String name, TemplateSegment template, List<Segment> segments) {
-		super(name, template);
-		this.segments = segments;
 	}
 
 	public void execute(Appendable appendable, ExecutionContext context) {
 		for (Segment segment : segments) {
 			segment.execute(appendable, context);
+		}
+	}
+
+	@Override
+	public void performPostProcessing() {
+		for (Segment segment : segments) {
+			segment.performPostProcessing();
 		}
 	}
 
@@ -88,8 +84,7 @@ public abstract class ContainerSegment extends AbstractSegment implements
 		return segments.size();
 	}
 
-	@Override
-	public String getLiteralBlock() {
+	protected String getContainingLiteralBlock() {
 		StringBuilder literal = new StringBuilder();
 		for (Segment segment : segments) {
 			literal.append(segment.getLiteralBlock());

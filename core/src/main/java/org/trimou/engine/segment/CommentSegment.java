@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.util.Strings;
 
@@ -46,7 +45,7 @@ public class CommentSegment extends AbstractSegment {
 
 	@Override
 	public String getLiteralBlock() {
-		return getTagLiteral(MustacheTagType.COMMENT.getCommand() + Strings.GAP
+		return getTagLiteral(getType().getTagType().getCommand() + Strings.GAP
 				+ getText());
 	}
 
