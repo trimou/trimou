@@ -9,6 +9,7 @@
 	</parent>
 
 	<artifactId>trimou-doc</artifactId>
+    <packaging>pom</packaging>
 
 	<build>
 		<plugins>
