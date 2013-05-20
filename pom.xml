@@ -43,9 +43,9 @@
 
     <modules>
         <module>core</module>
-        <module>extension-cdi</module>
-        <module>extension-servlet</module>
-        <module>extension-prettytime</module>
+        <module>extensions/cdi</module>
+        <module>extensions/servlet</module>
+        <module>extensions/prettytime</module>
     </modules>
 
     <properties>

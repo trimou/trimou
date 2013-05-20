@@ -1,0 +1,13 @@
+{{<pingListLayout}}
+
+{{$title}}List pings - JAX-RS/CDI{{/title}}
+{{$header}}List pings - JAX-RS/CDI{{/header}}
+
+{{$rows}}
+	{{! PingService is a CDI bean...}}
+	{{#pingService.pings}}
+		{{> pingRow}}
+	{{/pingService.pings}}
+{{/rows}}
+
+{{/pingListLayout}}
