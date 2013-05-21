@@ -190,8 +190,9 @@ public class MustacheEngineBuilder {
 	/**
 	 * Do not use ServiceLoader to load resolvers.
 	 */
-	public void omitServiceLoaderResolvers() {
+	public MustacheEngineBuilder omitServiceLoaderResolvers() {
 		this.omitServiceLoaderResolvers = true;
+		return this;
 	}
 
 	/**
