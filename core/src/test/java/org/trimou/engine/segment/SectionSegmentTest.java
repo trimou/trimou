@@ -41,7 +41,7 @@ public class SectionSegmentTest extends AbstractTest {
 
 		assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
 				"numbers", Collections.emptyList())));
-		assertEquals("la0true|la1true|la2false|", mustache.render(ImmutableMap
+		assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
 				.<String, Object> of("numbers", ImmutableList.of(1, 2, 3))));
 	}
 
@@ -53,7 +53,7 @@ public class SectionSegmentTest extends AbstractTest {
 
 		assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
 				"numbers", new Integer[] {})));
-		assertEquals("la0true|la1true|la2false|", mustache.render(ImmutableMap
+		assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
 				.<String, Object> of("numbers", new Integer[] { 1, 2, 3 })));
 	}
 

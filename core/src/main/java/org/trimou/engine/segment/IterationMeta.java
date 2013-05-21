@@ -33,14 +33,14 @@ public final class IterationMeta {
 	IterationMeta(Iterator<?> iterator) {
 		super();
 		this.iterator = iterator;
-		this.index = 0;
+		this.index = 1;
 		this.length = 0;
 	}
 
 	IterationMeta(int length) {
 		super();
 		this.iterator = null;
-		this.index = 0;
+		this.index = 1;
 		this.length = length;
 	}
 
@@ -57,7 +57,7 @@ public final class IterationMeta {
 	 * @return
 	 */
 	public boolean getIterHasNext() {
-		return iterator != null ? iterator.hasNext() : (index < (length - 1));
+		return iterator != null ? iterator.hasNext() : (index < length);
 	}
 
 	void nextIteration() {
