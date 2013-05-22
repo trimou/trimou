@@ -77,7 +77,7 @@ public class DefaultParsingHandler implements ParsingHandler {
 	public void endTemplate() {
 		validate();
 		template.performPostProcessing();
-		logger.info("Compilation of {} finished [time: {} ms, segments: {}]",
+		logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
 				new Object[] { template.getText(),
 						System.currentTimeMillis() - start, segments });
 	}
