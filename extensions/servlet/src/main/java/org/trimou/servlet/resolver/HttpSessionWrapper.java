@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
  */
 public class HttpSessionWrapper {
 
-	private HttpSession session;
+	private final HttpSession session;
 
 	/**
 	 *
@@ -45,5 +45,12 @@ public class HttpSessionWrapper {
 	 */
 	public int getMaxInactiveInterval() {
 		return session.getMaxInactiveInterval();
+	}
+
+	/**
+	 * @return {@link HttpSession#isNew()}
+	 */
+	public boolean isNew() {
+		return session.isNew();
 	}
 }
