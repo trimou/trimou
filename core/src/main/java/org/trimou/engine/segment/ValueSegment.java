@@ -48,7 +48,7 @@ public class ValueSegment extends AbstractSegment {
 
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		Object value = context.get(getText());
+		Object value = context.getValue(getText());
 
 		if (value != null) {
 			if (value instanceof Lambda) {

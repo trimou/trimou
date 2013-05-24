@@ -30,7 +30,7 @@ public class DefaultExecutionContext extends AbstractExecutionContext {
 	}
 
 	@Override
-	public Object get(String key) {
+	public Object getValue(String key) {
 
 		Object value = null;
 

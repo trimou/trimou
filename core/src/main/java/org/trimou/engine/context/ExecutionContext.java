@@ -29,10 +29,10 @@ public interface ExecutionContext {
 
 	/**
 	 * @param key
-	 * @return the object associated with the given key, or <code>null</code> if
+	 * @return the resolved object associated with the given key, or <code>null</code> if
 	 *         no such object exists
 	 */
-	public Object get(String key);
+	public Object getValue(String key);
 
 	/**
 	 * Push the context object on the context stack.

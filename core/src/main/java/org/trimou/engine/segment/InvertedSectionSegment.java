@@ -44,7 +44,7 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
 	@SuppressWarnings("rawtypes")
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		Object value = context.get(getText());
+		Object value = context.getValue(getText());
 		boolean render = false;
 
 		if (value == null) {

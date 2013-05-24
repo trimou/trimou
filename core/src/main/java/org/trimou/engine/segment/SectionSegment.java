@@ -65,7 +65,7 @@ public class SectionSegment extends AbstractSectionSegment {
 
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		Object value = context.get(getText());
+		Object value = context.getValue(getText());
 
 		if (value == null) {
 			return;
