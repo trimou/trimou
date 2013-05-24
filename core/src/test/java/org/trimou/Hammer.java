@@ -14,4 +14,8 @@ public class Hammer {
 		return false;
 	}
 
+	public Integer getAgeForName(String name) {
+		return 20;
+	}
+
 }
