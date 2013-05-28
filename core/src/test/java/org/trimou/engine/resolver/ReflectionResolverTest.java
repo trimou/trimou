@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
+import org.trimou.ArchiveType;
 import org.trimou.Hammer;
 import org.trimou.engine.MustacheEngineBuilder;
 
@@ -39,11 +40,25 @@ public class ReflectionResolverTest extends AbstractTest {
 	public void testInterpolation() {
 
 		Map<String, Object> data = ImmutableMap.<String, Object> of("hammer",
-				new Hammer());
-		String templateContents = "Hello {{hammer.name}} of age {{hammer.age}}, persistent: {{hammer.persistent}} and {{hammer.invalidName}}!";
+				new Hammer(), "type", ArchiveType.class);
 
-		assertEquals("Hello Edgar of age 10, persistent: false and !", engine
-				.compileMustache("bean_resolver", templateContents).render(data));
+		assertEquals(
+				"Hello Edgar of age 10, persistent: false and !",
+				engine.compileMustache(
+						"reflection_resolver",
+						"Hello {{hammer.name}} of age {{hammer.age}}, persistent: {{hammer.persistent}} and {{hammer.invalidName}}!")
+						.render(data));
+
+		assertEquals(
+				"NAIL|jar",
+				engine.compileMustache("reflection_resolver_fields",
+						"{{hammer.nail}}|{{type.JAR.suffix}}").render(data));
+
+		assertEquals(
+				"jar,war,ear,",
+				engine.compileMustache("reflection_resolver_static_method",
+						"{{#type.values}}{{this.suffix}},{{/type.values}}")
+						.render(data));
 	}
 
 }

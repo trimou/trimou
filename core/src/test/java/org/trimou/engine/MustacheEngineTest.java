@@ -50,15 +50,15 @@ public class MustacheEngineTest extends AbstractTest {
 			}
 		};
 
-		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveTypes}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveTypes}}";
+		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveTypes.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveTypes.values}}|{{archiveTypes.JAR}}";
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
 				.addGlobalData("foo", true)
-				.addGlobalData("archiveTypes", ArchiveType.values())
+				.addGlobalData("archiveTypes", ArchiveType.class)
 				.addGlobalData("bold", bold)
 				.addGlobalData("italic", italic).build()
 				.compileMustache("global_data", templateContents);
 
-		assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear", mustache.render(null));
+		assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear|JAR", mustache.render(null));
 	}
 
 }

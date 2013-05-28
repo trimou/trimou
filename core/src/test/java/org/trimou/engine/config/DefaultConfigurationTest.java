@@ -35,14 +35,14 @@ public class DefaultConfigurationTest extends AbstractTest {
 				EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK.get(),
 				"true");
 		System.setProperty(
-				ReflectionResolver.READ_METHODS_CACHE_MAX_SIZE_KEY.get(),
+				ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY.get(),
 				"2000");
 		System.setProperty("test.key.bravo", "1000");
 
 		engine = MustacheEngineBuilder
 				.newBuilder()
 				.setProperty(
-						ReflectionResolver.READ_METHODS_CACHE_MAX_SIZE_KEY,
+						ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY,
 						"3000").addResolver(new AbstractResolver() {
 
 					@Override
@@ -70,8 +70,8 @@ public class DefaultConfigurationTest extends AbstractTest {
 		System.setProperty(EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK
 				.get(), EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK
 				.getDefaultValue().toString());
-		System.setProperty(ReflectionResolver.READ_METHODS_CACHE_MAX_SIZE_KEY
-				.get(), ReflectionResolver.READ_METHODS_CACHE_MAX_SIZE_KEY
+		System.setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY
+				.get(), ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY
 				.getDefaultValue().toString());
 	}
 
@@ -101,7 +101,7 @@ public class DefaultConfigurationTest extends AbstractTest {
 		assertEquals(
 				Long.valueOf(3000),
 				engine.getConfiguration().getLongPropertyValue(
-						ReflectionResolver.READ_METHODS_CACHE_MAX_SIZE_KEY));
+						ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY));
 
 		// System prop vs file prop priority
 		assertEquals(Long.valueOf(1000), engine.getConfiguration()

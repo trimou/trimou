@@ -19,7 +19,7 @@ package org.trimou.engine.resolver;
  *
  * @author Martin Kouba
  */
-final class ReadMethodKey {
+final class MemberKey {
 
 	private final Class<?> clazz;
 
@@ -33,9 +33,13 @@ final class ReadMethodKey {
 		return name;
 	}
 
-	ReadMethodKey(Class<?> clazz, String name) {
+	MemberKey(Object contextObject, String name) {
 		super();
-		this.clazz = clazz;
+		if(contextObject instanceof Class<?>) {
+			this.clazz = (Class<?>) contextObject;
+		} else {
+			this.clazz = contextObject.getClass();
+		}
 		this.name = name;
 	}
 
@@ -54,9 +58,9 @@ final class ReadMethodKey {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof ReadMethodKey))
+		if (!(obj instanceof MemberKey))
 			return false;
-		ReadMethodKey other = (ReadMethodKey) obj;
+		MemberKey other = (MemberKey) obj;
 		if (clazz == null) {
 			if (other.clazz != null)
 				return false;
@@ -68,6 +72,11 @@ final class ReadMethodKey {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("MemberKey [clazz=%s, name=%s]", clazz, name);
 	}
 
 }

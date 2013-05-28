@@ -14,25 +14,34 @@ public class ReflectionsTest {
 
 	@Test
 	public void testGetReadMethods() {
-
-		Map<String, Method> readMethods = Reflections.getReadMethods(Charlie.class);
-		assertEquals(5, readMethods.size());
-
+		Map<String, Method> readMethods = Reflections
+				.getAccesibleMethods(Charlie.class);
+		assertEquals(6, readMethods.size());
 	}
 
 	@Test
-	public void testGetReadMethod() {
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "name"));
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "old"));
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "hasSomething"));
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "getAnotherName"));
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "anotherName"));
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "isOk"));
-		assertNotNull(Reflections.getReadMethod(Charlie.class, "ok"));
-		assertNull(Reflections.getReadMethod(Charlie.class, "getPrice"));
+	public void testGetAccesibleMembers() {
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "name"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "old"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class,
+				"hasSomething"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class,
+				"getAnotherName"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class,
+				"anotherName"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "isOk"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "ok"));
+		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "info"));
+		assertNull(Reflections.getAccesibleMethod(Charlie.class, "getPrice"));
+		assertNotNull(Reflections.getAccesibleField(Charlie.class,
+				"publicField"));
+		assertNull(Reflections.getAccesibleField(Charlie.class, "privateField"));
 	}
 
 	public static class Alpha {
+
+		@SuppressWarnings("unused")
+		private String privateField;
 
 		// OK
 		public String getName() {
@@ -55,8 +64,8 @@ public class ReflectionsTest {
 			return null;
 		}
 
-		// Not read method - static
-		public static String getInfo() {
+		// OK
+		public String getInfo() {
 			return null;
 		}
 
@@ -69,6 +78,8 @@ public class ReflectionsTest {
 
 	public static class Bravo extends Alpha {
 
+		public final String publicField = "foo";
+
 		// Not read method - has param
 		public String getWithParam(String param) {
 			return null;
@@ -77,7 +88,6 @@ public class ReflectionsTest {
 		// Not read method - no return value
 		public void getNoReturnValue() {
 		}
-
 
 		// OK
 		public String getAnotherName() {

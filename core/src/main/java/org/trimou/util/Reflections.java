@@ -18,6 +18,7 @@ package org.trimou.util;
 import static org.trimou.util.Checker.checkArgumentNull;
 
 import java.beans.Introspector;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public final class Reflections {
 	 * @param clazz
 	 * @return read methods map
 	 */
-	public static Map<String, Method> getReadMethods(Class<?> clazz) {
+	public static Map<String, Method> getAccesibleMethods(Class<?> clazz) {
 
 		long start = System.currentTimeMillis();
 		checkArgumentNull(clazz);
@@ -60,7 +61,7 @@ public final class Reflections {
 
 		for (Method method : clazzMethods) {
 
-			if (!isReadMethod(method)) {
+			if (!isAccesibleMethod(method)) {
 				continue;
 			}
 
@@ -75,7 +76,7 @@ public final class Reflections {
 			}
 		}
 		logger.debug(
-				"Read methods [type: {}, found: {}, time: {} ms]",
+				"Accesible methods [type: {}, found: {}, time: {} ms]",
 				new Object[] { clazz.getName(), readMethods.size(),
 						System.currentTimeMillis() - start });
 		return readMethods;
@@ -93,18 +94,17 @@ public final class Reflections {
 	 * @param name
 	 * @return the found read method or <code>null</code>
 	 */
-	public static Method getReadMethod(Class<?> clazz, String name) {
+	public static Method getAccesibleMethod(Class<?> clazz, String name) {
 
 		long start = System.currentTimeMillis();
 		checkArgumentNull(clazz);
 		checkArgumentNull(name);
 
-		Method[] clazzMethods = clazz.getMethods();
 		Method found = null;
 
-		for (Method method : clazzMethods) {
+		for (Method method : clazz.getMethods()) {
 
-			if (!isReadMethod(method)) {
+			if (!isAccesibleMethod(method)) {
 				continue;
 			}
 
@@ -118,9 +118,32 @@ public final class Reflections {
 			}
 		}
 		logger.debug(
-				"{} read method {}found [type: {}, time: {} ms]",
+				"{} accesible method {}found [type: {}, time: {} ms]",
 				new Object[] { name, found != null ? "" : "not ",
 						clazz.getName(), System.currentTimeMillis() - start });
+		return found;
+	}
+
+	/**
+	 *
+	 * @param clazz
+	 * @param name
+	 * @return
+	 */
+	public static Field getAccesibleField(Class<?> clazz, String name) {
+
+		checkArgumentNull(clazz);
+		checkArgumentNull(name);
+
+		Field found = null;
+
+		for (Field accesibleField : clazz.getFields()) {
+			if (accesibleField.getName().equals(name)) {
+				found = accesibleField;
+			}
+		}
+		logger.debug("{} accesible field {}found [type: {}]", new Object[] {
+				name, found != null ? "" : "not ", clazz.getName() });
 		return found;
 	}
 
@@ -128,7 +151,6 @@ public final class Reflections {
 	 * A read method:
 	 * <ul>
 	 * <li>is public</li>
-	 * <li>is non-static</li>
 	 * <li>has no parameters</li>
 	 * <li>has non-void return type</li>
 	 * <li>its declaring class is not {@link Object}</li>
@@ -137,14 +159,14 @@ public final class Reflections {
 	 * @param method
 	 * @return <code>true</code> if the given method is considered a read method
 	 */
-	public static boolean isReadMethod(Method method) {
+	public static boolean isAccesibleMethod(Method method) {
 
 		if (method == null) {
 			return false;
 		}
 
 		// Skip non-static methods with no parameters and void return type
-		if (Modifier.isStatic(method.getModifiers())
+		if (!Modifier.isPublic(method.getModifiers())
 				|| method.getParameterTypes().length != 0
 				|| method.getReturnType().equals(Void.TYPE)) {
 			return false;
@@ -156,7 +178,6 @@ public final class Reflections {
 		}
 		return true;
 	}
-
 
 	private static boolean matchesPrefix(String name, String methodName,
 			String prefix) {

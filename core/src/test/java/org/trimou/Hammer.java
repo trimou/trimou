@@ -2,6 +2,8 @@ package org.trimou;
 
 public class Hammer {
 
+	public String nail = "NAIL";
+
 	public String getName() {
 		return "Edgar";
 	}
