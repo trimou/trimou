@@ -46,7 +46,7 @@ import com.google.common.collect.ImmutableMap;
  */
 public class DefaultConfiguration implements Configuration {
 
-	private static final String RESOURCE_BUNDLE = "/trimou.properties";
+	private static final String RESOURCE_FILE = "/trimou.properties";
 
 	private List<TemplateLocator> templateLocators = null;
 
@@ -221,15 +221,14 @@ public class DefaultConfiguration implements Configuration {
 
 		properties = new HashMap<String, Object>(
 				keysToProcess.size());
-		Properties resourceBundleProperties = new Properties();
+		Properties resourceProperties = new Properties();
 
 		try {
 			InputStream in = this.getClass().getResourceAsStream(
-					RESOURCE_BUNDLE);
+					RESOURCE_FILE);
 			if (in != null) {
 				try {
-
-					resourceBundleProperties.load(in);
+					resourceProperties.load(in);
 				} finally {
 					in.close();
 				}
@@ -249,8 +248,8 @@ public class DefaultConfiguration implements Configuration {
 				// System properties
 				value = System.getProperty(key);
 				if (value == null) {
-					// Resource bundle properties
-					value = resourceBundleProperties.getProperty(key);
+					// Resource properties
+					value = resourceProperties.getProperty(key);
 				}
 			}
 			properties.put(
