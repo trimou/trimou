@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractTest;
+import org.trimou.ArchiveType;
 import org.trimou.Mustache;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
@@ -49,14 +50,15 @@ public class MustacheEngineTest extends AbstractTest {
 			}
 		};
 
-		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!";
+		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveTypes}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveTypes}}";
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
 				.addGlobalData("foo", true)
+				.addGlobalData("archiveTypes", ArchiveType.values())
 				.addGlobalData("bold", bold)
 				.addGlobalData("italic", italic).build()
 				.compileMustache("global_data", templateContents);
 
-		assertEquals("true| <b>Hello</b> <i>world</i>!", mustache.render(null));
+		assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear", mustache.render(null));
 	}
 
 }
