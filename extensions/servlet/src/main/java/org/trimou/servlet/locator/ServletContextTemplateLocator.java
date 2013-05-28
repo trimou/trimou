@@ -110,7 +110,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 
 		for (String resource : resources) {
 
-			String filename = StringUtils.removeStart(resource, getRootPath());
+			String filename = StringUtils.substringAfter(resource, getRootPath());
 
 			if (getSuffix() != null) {
 				if (resource.endsWith(getSuffix())) {
