@@ -82,7 +82,6 @@ public class SectionSegment extends AbstractSectionSegment {
 		} else if (value.getClass().isArray()) {
 			// Array
 			processArray(appendable, context, value);
-			context.pop();
 		} else if (value instanceof Lambda) {
 			// Lambda
 			processLambda(appendable, context, value);
