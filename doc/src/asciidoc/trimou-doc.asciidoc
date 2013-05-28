@@ -39,7 +39,9 @@ However there are some differences:
 
 * it's possible to use +this+ keyword to reference the object atop the context object stack; the spec only allows +.+,
 * if the context object is an instance of a +java.util.Map+, value of the entry with the given key is resolved,
-* for any context object Trimou tries to find and invoke a read method (public, non-static, with no params) with name +key+, +getKey+ or +isKey+ defined on the context object's class and its superclasses (except +java.lang.Object+),
+* for any context object Trimou tries to:
+** find and invoke an accesible method (public, with no params and non-void return type) with name +key+, +getKey+ or +isKey+ defined on the context object's class and its superclasses (except for +java.lang.Object+),
+** find an accesible field (public) with name +key+ and get its value,
 * +java.util.List+ and array elements can be accessed via index (the key must be unsigned integer),
 * +iterIndex+ and +iterHasNext+ keywords can be used inside iteration block,
 * Trimou allows you to define a resolver that does not handle the context object stack at all (e.g. looks up a <<cdi,CDI bean>>).
@@ -63,7 +65,7 @@ However there are some differences:
 ----
 
 <1> Try to get a value of key "foo" from supplied data map
-<2> If "foo" is an instance of Map, get the value of key "bar"; otherwise try to invoke bar(), getBar() or isBar() on the "foo" instance
+<2> If "foo" is an instance of Map, get the value of key "bar"; otherwise try to invoke bar(), getBar() or isBar() on the "foo" instance or get the value of the field with name "bar"
 <3> Get the first element
 <4> Get the sixth element
 <5> The current index of the iteration block
