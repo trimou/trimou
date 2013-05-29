@@ -6,6 +6,7 @@
 		<groupId>org.trimou</groupId>
 		<artifactId>trimou-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>trimou-doc</artifactId>
