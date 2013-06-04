@@ -29,8 +29,8 @@ public class MustacheException extends RuntimeException {
 		this.code = code;
 	}
 
-	public MustacheException(MustacheProblem code, String message) {
-		super(message);
+	public MustacheException(MustacheProblem code, String message, Object... params) {
+		super(String.format(message, params));
 		this.code = code;
 	}
 

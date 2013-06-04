@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
  *
  * @author Martin Kouba
  */
-public class DefaultTextSupport implements TextSupport {
+class DefaultTextSupport implements TextSupport {
 
 	@Override
 	public String escapeHtml(String input) {

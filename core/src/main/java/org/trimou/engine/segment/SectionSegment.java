@@ -15,10 +15,13 @@
  */
 package org.trimou.engine.segment;
 
+import static org.trimou.engine.context.ExecutionContext.TargetStack.CONTEXT;
+
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda;
 
@@ -53,10 +56,11 @@ import org.trimou.lambda.Lambda;
  * @see Lambda
  * @see InvertedSectionSegment
  */
+@Internal
 public class SectionSegment extends AbstractSectionSegment {
 
-	public SectionSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public SectionSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	public SegmentType getType() {
@@ -87,9 +91,9 @@ public class SectionSegment extends AbstractSectionSegment {
 			processLambda(appendable, context, value);
 		} else {
 			// Nested context
-			context.push(value);
+			context.push(CONTEXT, value);
 			super.execute(appendable, context);
-			context.pop();
+			context.pop(CONTEXT);
 		}
 	}
 
@@ -99,14 +103,14 @@ public class SectionSegment extends AbstractSectionSegment {
 
 		Iterator iterator = ((Iterable) value).iterator();
 		IterationMeta meta = new IterationMeta(iterator);
-		context.push(meta);
+		context.push(CONTEXT, meta);
 		while (iterator.hasNext()) {
-			context.push(iterator.next());
+			context.push(CONTEXT, iterator.next());
 			super.execute(appendable, context);
-			context.pop();
+			context.pop(CONTEXT);
 			meta.nextIteration();
 		}
-		context.pop();
+		context.pop(CONTEXT);
 	}
 
 	private void processArray(Appendable appendable, ExecutionContext context,
@@ -115,15 +119,15 @@ public class SectionSegment extends AbstractSectionSegment {
 		int length = Array.getLength(value);
 		IterationMeta meta = new IterationMeta(length);
 		// Push iteration meta
-		context.push(meta);
+		context.push(CONTEXT, meta);
 		for (int i = 0; i < length; i++) {
-			context.push(Array.get(value, i));
+			context.push(CONTEXT, Array.get(value, i));
 			super.execute(appendable, context);
-			context.pop();
+			context.pop(CONTEXT);
 			meta.nextIteration();
 		}
 		// Pop iteration meta
-		context.pop();
+		context.pop(CONTEXT);
 	}
 
 	private void processLambda(Appendable appendable, ExecutionContext context,

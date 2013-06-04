@@ -15,8 +15,11 @@
  */
 package org.trimou.engine.segment;
 
+import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
+
 import java.util.List;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.exception.MustacheException;
@@ -27,12 +30,13 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
+@Internal
 public class PartialSegment extends AbstractSegment {
 
 	private String indentation;
 
-	public PartialSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public PartialSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	@Override
@@ -43,32 +47,23 @@ public class PartialSegment extends AbstractSegment {
 	@Override
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		TemplateSegment partialTemplate = (TemplateSegment) getEngine().getMustache(
-				getText());
+		TemplateSegment partialTemplate = (TemplateSegment) getEngine()
+				.getMustache(getText());
 
 		if (partialTemplate == null) {
 			throw new MustacheException(
-					MustacheProblem.RENDER_INVALID_PARTIAL_KEY);
+					MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
+					"No partial found for the given key: %s %s",
+					getText(), getOrigin());
 		}
 
+		context.push(TEMPLATE_INVOCATION, partialTemplate);
 		if (indentation == null) {
 			partialTemplate.execute(appendable, context);
 		} else {
-			// Prepend indentation before rendering
-			List<List<Segment>> partialLines = Segments
-					.readSegmentLinesBeforeRendering(partialTemplate);
-			TextSegment indent = new TextSegment(indentation, getTemplate());
-
-			for (List<Segment> line : partialLines) {
-				line.add(0, indent);
-			}
-
-			for (List<Segment> line : partialLines) {
-				for (Segment segment : line) {
-					segment.execute(appendable, context);
-				}
-			}
+			prependIndentation(appendable, context, partialTemplate);
 		}
+		context.pop(TEMPLATE_INVOCATION);
 	}
 
 	@Override
@@ -76,9 +71,33 @@ public class PartialSegment extends AbstractSegment {
 		return getTagLiteral(MustacheTagType.PARTIAL.getCommand() + getText());
 	}
 
+	@Override
+	protected String getSegmentName() {
+		return getText();
+	}
+
 	public void setIndentation(String indentation) {
 		checkModificationAllowed();
 		this.indentation = indentation;
+	}
+
+	private void prependIndentation(Appendable appendable,
+			ExecutionContext context, TemplateSegment partialTemplate) {
+
+		List<List<Segment>> partialLines = Segments
+				.readSegmentLinesBeforeRendering(partialTemplate);
+		TextSegment indent = new TextSegment(indentation, new Origin(
+				getTemplate()));
+
+		for (List<Segment> line : partialLines) {
+			line.add(0, indent);
+		}
+
+		for (List<Segment> line : partialLines) {
+			for (Segment segment : line) {
+				segment.execute(appendable, context);
+			}
+		}
 	}
 
 }

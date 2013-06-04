@@ -49,7 +49,7 @@ public class FileSystemTemplateLocator extends PathTemplateLocator {
 	 *
 	 * @param priority
 	 * @param suffix
-	 * @param rootPathname
+	 * @param rootPath
 	 */
 	public FileSystemTemplateLocator(int priority, String rootPath, String suffix) {
 		super(priority, rootPath, suffix);

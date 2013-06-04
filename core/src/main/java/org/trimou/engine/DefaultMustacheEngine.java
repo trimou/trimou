@@ -15,7 +15,7 @@
  */
 package org.trimou.engine;
 
-import static org.trimou.util.Checker.checkArgumentNullOrEmpty;
+import static org.trimou.util.Checker.checkArgumentNotEmpty;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -23,18 +23,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
 import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.DefaultConfiguration;
+import org.trimou.engine.config.ConfigurationFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.TemplateLocator;
-import org.trimou.engine.parser.DefaultParser;
-import org.trimou.engine.parser.DefaultParsingHandler;
 import org.trimou.engine.parser.Parser;
-import org.trimou.engine.segment.Segments;
-import org.trimou.engine.segment.TemplateSegment;
+import org.trimou.engine.parser.ParserFactory;
+import org.trimou.engine.parser.ParsingHandler;
+import org.trimou.engine.parser.ParsingHandlerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
@@ -51,17 +48,15 @@ import com.google.common.cache.LoadingCache;
  */
 class DefaultMustacheEngine implements MustacheEngine {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DefaultMustacheEngine.class);
-
-	private LoadingCache<String, Optional<TemplateSegment>> templateCache;
+	private LoadingCache<String, Optional<Mustache>> templateCache;
 
 	private Configuration configuration;
 
 	private Parser parser;
 
 	/**
-	 * Make this type proxyable (CDI) so that it's possible to produce application scoped CDI bean
+	 * Make this type proxyable (CDI) so that it's possible to produce
+	 * application scoped CDI bean
 	 */
 	DefaultMustacheEngine() {
 	}
@@ -72,14 +67,14 @@ class DefaultMustacheEngine implements MustacheEngine {
 	 */
 	DefaultMustacheEngine(MustacheEngineBuilder builder) {
 
-		configuration = new DefaultConfiguration(builder);
+		configuration = new ConfigurationFactory().createConfiguration(builder);
 
 		// Template cache
 		templateCache = CacheBuilder.newBuilder().build(
-				new CacheLoader<String, Optional<TemplateSegment>>() {
+				new CacheLoader<String, Optional<Mustache>>() {
 
 					@Override
-					public Optional<TemplateSegment> load(String key)
+					public Optional<Mustache> load(String key)
 							throws Exception {
 
 						if (configuration.getTemplateLocators() == null
@@ -106,7 +101,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 				});
 
 		// Init parser
-		parser = new DefaultParser(this);
+		parser = new ParserFactory().createParser(this);
 
 		// Precompile templates
 		if (configuration
@@ -125,13 +120,13 @@ class DefaultMustacheEngine implements MustacheEngine {
 	}
 
 	public Mustache getMustache(String templateName) {
-		checkArgumentNullOrEmpty(templateName);
+		checkArgumentNotEmpty(templateName);
 		return getTemplateFromCache(templateName);
 	}
 
 	public Mustache compileMustache(String templateName, String templateContent) {
-		checkArgumentNullOrEmpty(templateName);
-		checkArgumentNullOrEmpty(templateContent);
+		checkArgumentNotEmpty(templateName);
+		checkArgumentNotEmpty(templateContent);
 		return parse(templateName, new StringReader(templateContent));
 	}
 
@@ -153,7 +148,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 	 *
 	 * @return
 	 */
-	public LoadingCache<String, Optional<TemplateSegment>> getTemplateCache() {
+	public LoadingCache<String, Optional<Mustache>> getTemplateCache() {
 		return templateCache;
 	}
 
@@ -163,14 +158,11 @@ class DefaultMustacheEngine implements MustacheEngine {
 	 * @param reader
 	 * @return
 	 */
-	private TemplateSegment parse(String templateName, Reader reader) {
-		DefaultParsingHandler handler = new DefaultParsingHandler();
+	private Mustache parse(String templateName, Reader reader) {
+		ParsingHandler handler = new ParsingHandlerFactory()
+				.createParsingHandler();
 		parser.parse(templateName, reader, handler);
-		TemplateSegment template = handler.getCompiledTemplate();
-		if (logger.isTraceEnabled()) {
-			logger.trace(Segments.getSegmentTree(template));
-		}
-		return template;
+		return handler.getCompiledTemplate();
 	}
 
 	@Override
@@ -184,7 +176,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 		return builder.toString();
 	}
 
-	private TemplateSegment getTemplateFromCache(String templateName) {
+	private Mustache getTemplateFromCache(String templateName) {
 		try {
 			return templateCache.get(templateName).orNull();
 		} catch (ExecutionException e) {

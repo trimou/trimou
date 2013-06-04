@@ -17,10 +17,13 @@ package org.trimou.engine.parser;
 
 import java.io.Reader;
 
+import org.trimou.annotations.Internal;
+
 /**
  *
  * @author Martin Kouba
  */
+@Internal
 public interface Parser {
 
 	/**

@@ -12,7 +12,7 @@ import org.trimou.util.Strings;
 
 /**
  * Displays localized messages. It might be registered as a global lambda - see
- * {@link MustacheEngineBuilder#addGlobalLambda(org.trimou.api.Lambda, String)}.
+ * {@link MustacheEngineBuilder#addGlobalData(String, Object)}.
  *
  * <pre>
  * {{#bundle}}key{{/bundle}}

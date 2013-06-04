@@ -15,7 +15,7 @@
  */
 package org.trimou.util;
 
-import static org.trimou.util.Checker.checkArgumentNull;
+import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.beans.Introspector;
 import java.lang.reflect.Field;
@@ -26,11 +26,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.annotations.Internal;
 
 /**
  *
  * @author Martin Kouba
  */
+@Internal
 public final class Reflections {
 
 	private static final Logger logger = LoggerFactory
@@ -53,7 +55,7 @@ public final class Reflections {
 	public static Map<String, Method> getAccesibleMethods(Class<?> clazz) {
 
 		long start = System.currentTimeMillis();
-		checkArgumentNull(clazz);
+		checkArgumentNotNull(clazz);
 
 		Method[] clazzMethods = clazz.getMethods();
 		Map<String, Method> readMethods = new HashMap<String, Method>(
@@ -97,8 +99,8 @@ public final class Reflections {
 	public static Method getAccesibleMethod(Class<?> clazz, String name) {
 
 		long start = System.currentTimeMillis();
-		checkArgumentNull(clazz);
-		checkArgumentNull(name);
+		checkArgumentNotNull(clazz);
+		checkArgumentNotNull(name);
 
 		Method found = null;
 
@@ -132,8 +134,8 @@ public final class Reflections {
 	 */
 	public static Field getAccesibleField(Class<?> clazz, String name) {
 
-		checkArgumentNull(clazz);
-		checkArgumentNull(name);
+		checkArgumentNotNull(clazz);
+		checkArgumentNotNull(name);
 
 		Field found = null;
 

@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -22,10 +23,11 @@ import org.trimou.engine.context.ExecutionContext;
  *
  * @author Martin Kouba
  */
+@Internal
 public class ExtendSectionSegment extends AbstractSectionSegment {
 
-	public ExtendSectionSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public ExtendSectionSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	@Override

@@ -15,11 +15,15 @@
  */
 package org.trimou.engine.parser;
 
+import org.trimou.Mustache;
+import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheEngine;
+import org.trimou.exception.MustacheException;
 
 /**
  * Handler for parsing events.
  */
+@Internal
 public interface ParsingHandler {
 
 	/**
@@ -56,5 +60,13 @@ public interface ParsingHandler {
 	 * Parsing ended.
 	 */
 	public void endTemplate();
+
+	/**
+	 *
+	 * @return the compiled template
+	 * @throws MustacheException
+	 *             If not finished yet
+	 */
+	public Mustache getCompiledTemplate();
 
 }

@@ -19,20 +19,23 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Collection;
 
+import org.trimou.annotations.Internal;
+
 /**
  *
  * @author Martin Kouba
  */
+@Internal
 public final class Checker {
 
 	private Checker() {
 	}
 
-	public static void checkArgumentNull(Object argument) {
-		checkArgument(argument != null);
+	public static void checkArgumentNotNull(Object argument) {
+		checkArgument(argument != null, "Argument must not be null");
 	}
 
-	public static void checkArgumentNullOrEmpty(String argument) {
+	public static void checkArgumentNotEmpty(String argument) {
 		checkArgument(!com.google.common.base.Strings.isNullOrEmpty(argument));
 	}
 

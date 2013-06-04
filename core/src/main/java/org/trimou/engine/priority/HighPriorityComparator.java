@@ -17,12 +17,15 @@ package org.trimou.engine.priority;
 
 import java.util.Comparator;
 
+import org.trimou.annotations.Internal;
+
 
 /**
  * The highest priority wins.
  *
  * @author Martin Kouba
  */
+@Internal
 public class HighPriorityComparator implements Comparator<WithPriority> {
 
 	@Override

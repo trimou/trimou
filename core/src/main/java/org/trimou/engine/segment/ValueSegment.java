@@ -19,6 +19,7 @@ import static org.trimou.engine.config.EngineConfigurationKey.NO_VALUE_INDICATES
 
 import java.io.StringWriter;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -29,12 +30,13 @@ import org.trimou.lambda.Lambda;
  *
  * @author Martin Kouba
  */
+@Internal
 public class ValueSegment extends AbstractSegment {
 
 	private final boolean unescape;
 
-	public ValueSegment(String text, TemplateSegment template, boolean unescape) {
-		super(text, template);
+	public ValueSegment(String text, Origin origin, boolean unescape) {
+		super(text, origin);
 		this.unescape = unescape;
 	}
 
@@ -57,9 +59,13 @@ public class ValueSegment extends AbstractSegment {
 				writeValue(appendable, value.toString());
 			}
 		} else {
-			// By default a variable miss returns an empty string.
-			if (getEngineConfiguration().getBooleanPropertyValue(NO_VALUE_INDICATES_PROBLEM)) {
-				throw new MustacheException(MustacheProblem.RENDER_NO_VALUE);
+			// By default a variable miss returns an empty string
+			if (getEngineConfiguration().getBooleanPropertyValue(
+					NO_VALUE_INDICATES_PROBLEM)) {
+				throw new MustacheException(
+						MustacheProblem.RENDER_NO_VALUE,
+						"No value for the given key found: %s %s",
+						getText(), getOrigin());
 			}
 		}
 	}
@@ -70,8 +76,8 @@ public class ValueSegment extends AbstractSegment {
 	}
 
 	private void writeValue(Appendable appendable, String text) {
-		append(appendable, unescape ? text : getEngineConfiguration().getTextSupport()
-				.escapeHtml(text));
+		append(appendable, unescape ? text : getEngineConfiguration()
+				.getTextSupport().escapeHtml(text));
 	}
 
 	private void processLambda(Appendable appendable, ExecutionContext context,
@@ -84,8 +90,10 @@ public class ValueSegment extends AbstractSegment {
 		if (lambda.isReturnValueInterpolated()) {
 			// Parse and interpolate the return value
 			StringWriter interpolated = new StringWriter();
-			TemplateSegment temp = (TemplateSegment) getEngine().compileMustache(
-					lambda.getClass() + "_" + System.nanoTime(), returnValue);
+			TemplateSegment temp = (TemplateSegment) getEngine()
+					.compileMustache(
+							lambda.getClass() + "_" + System.nanoTime(),
+							returnValue);
 			temp.execute(interpolated, context);
 			writeValue(appendable, interpolated.toString());
 		} else {

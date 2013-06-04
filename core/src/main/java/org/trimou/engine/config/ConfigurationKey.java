@@ -16,6 +16,7 @@
 package org.trimou.engine.config;
 
 /**
+ * A configuration key.
  *
  * @author Martin Kouba
  */

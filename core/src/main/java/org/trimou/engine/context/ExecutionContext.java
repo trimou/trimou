@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.context;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
 
@@ -25,28 +26,29 @@ import org.trimou.engine.segment.ExtendSegment;
  *
  * @author Martin Kouba
  */
+@Internal
 public interface ExecutionContext {
 
 	/**
 	 * @param key
-	 * @return the resolved object associated with the given key, or <code>null</code> if
-	 *         no such object exists
+	 * @return the resolved object associated with the given key, or
+	 *         <code>null</code> if no such object exists
 	 */
 	public Object getValue(String key);
 
 	/**
-	 * Push the context object on the context stack.
+	 * Push the object on the specified stack.
 	 *
-	 * @param contextObject
+	 * @param object
 	 */
-	public void push(Object contextObject);
+	public void push(TargetStack stack, Object object);
 
 	/**
-	 * Removes the context object at the top of context stack.
+	 * Remove the object at the top of the specified stack.
 	 *
-	 * @return the removed context object
+	 * @return the removed object
 	 */
-	public Object pop();
+	public Object pop(TargetStack stack);
 
 	/**
 	 * Associate the specified defining section with the context, but only if no
@@ -65,5 +67,21 @@ public interface ExecutionContext {
 	 * @see ExtendSegment
 	 */
 	public ExtendSectionSegment getDefiningSection(String name);
+
+	/**
+	 *
+	 * @author Martin Kouba
+	 *
+	 */
+	public enum TargetStack {
+		/**
+		 * Context object stack
+		 */
+		CONTEXT,
+		/**
+		 * Template invocations stack
+		 */
+		TEMPLATE_INVOCATION,
+	}
 
 }

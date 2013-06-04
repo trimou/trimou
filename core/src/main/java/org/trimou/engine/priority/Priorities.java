@@ -15,10 +15,13 @@
  */
 package org.trimou.engine.priority;
 
+import org.trimou.annotations.Internal;
+
 /**
  *
  * @author Martin Kouba
  */
+@Internal
 public final class Priorities {
 
 	public static int after(int priority) {

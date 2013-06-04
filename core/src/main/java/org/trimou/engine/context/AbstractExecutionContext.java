@@ -22,8 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
+import org.trimou.engine.segment.TemplateSegment;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
 import org.trimou.util.Strings;
 
@@ -32,12 +37,12 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
-public abstract class AbstractExecutionContext implements ExecutionContext {
+abstract class AbstractExecutionContext implements ExecutionContext {
 
 	/**
-	 * Immutable ordered list of resolvers
+	 * Immutable engine configuration
 	 */
-	protected List<Resolver> resolvers;
+	protected Configuration configuration;
 
 	/**
 	 * LIFO stack of context objects
@@ -45,27 +50,59 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
 	protected Deque<Object> contextObjectStack = new ArrayDeque<Object>(8);
 
 	/**
+	 * LIFO stack of template invocations
+	 */
+	protected Deque<TemplateSegment> templateInvocationStack = new ArrayDeque<TemplateSegment>(
+			8);
+
+	/**
 	 * Map of defining/overriding sections
 	 */
 	protected Map<String, ExtendSectionSegment> definingSections = null;
 
 	/**
+	 * @see EngineConfigurationKey#TEMPLATE_RECURSIVE_INVOCATION_LIMIT
+	 */
+	private int templateRecursiveInvocationLimit;
+
+	/**
 	 *
 	 * @param resolvers
 	 */
-	protected AbstractExecutionContext(List<Resolver> resolvers) {
-		this.resolvers = resolvers;
+	protected AbstractExecutionContext(Configuration configuration) {
+		this.configuration = configuration;
+		this.templateRecursiveInvocationLimit = configuration
+				.getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
 	}
 
 	@Override
-	public void push(Object contextObject) {
-		Checker.checkArgumentNull(contextObject);
-		contextObjectStack.addFirst(contextObject);
+	public void push(TargetStack stack, Object object) {
+		Checker.checkArgumentNotNull(stack);
+		Checker.checkArgumentNotNull(object);
+
+		switch (stack) {
+		case CONTEXT:
+			contextObjectStack.addFirst(object);
+			break;
+		case TEMPLATE_INVOCATION:
+			pushTemplateInvocation((TemplateSegment) object);
+			break;
+		default:
+			throw new IllegalStateException("Invalid stack type");
+		}
 	}
 
 	@Override
-	public Object pop() {
-		return contextObjectStack.removeFirst();
+	public Object pop(TargetStack stack) {
+		Checker.checkArgumentNotNull(stack);
+		switch (stack) {
+		case CONTEXT:
+			return contextObjectStack.removeFirst();
+		case TEMPLATE_INVOCATION:
+			return templateInvocationStack.removeFirst();
+		default:
+			throw new IllegalStateException("Invalid stack type");
+		}
 	}
 
 	@Override
@@ -90,8 +127,9 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
 	/**
 	 * Resolve the leading context object (the first part of the key). E.g.
 	 * <code>foo</code> in <code>{{foo.bar.name}}</code> may identify a property
-	 * of some context object on the stack (passed data, section iteration, nested
-	 * context, ...), or some context and data unrelated object (e.g. CDI bean).
+	 * of some context object on the stack (passed data, section iteration,
+	 * nested context, ...), or some context and data unrelated object (e.g. CDI
+	 * bean).
 	 *
 	 * @param name
 	 * @return the resolved leading context object
@@ -123,13 +161,9 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
 	 * @return the resolved object
 	 */
 	protected Object resolve(Object contextObject, String name) {
-
 		Object value = null;
-
-		for (Resolver resolver : resolvers) {
-
+		for (Resolver resolver : resolvers()) {
 			value = resolver.resolve(contextObject, name);
-
 			if (value != null) {
 				break;
 			}
@@ -144,6 +178,33 @@ public abstract class AbstractExecutionContext implements ExecutionContext {
 
 	protected String[] splitKey(String key) {
 		return StringUtils.split(key, Strings.KEY_SEPARATOR);
+	}
+
+	protected List<Resolver> resolvers() {
+		return configuration.getResolvers();
+	}
+
+	private void pushTemplateInvocation(TemplateSegment template) {
+
+		Checker.checkArgumentNotNull(template);
+
+		if (getTemplateInvocations(template) > templateRecursiveInvocationLimit) {
+			throw new MustacheException(
+					MustacheProblem.RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
+					"Recursive invocation limit exceeded [limit: %s, stack: %s]",
+					templateRecursiveInvocationLimit, templateInvocationStack);
+		}
+		templateInvocationStack.addFirst(template);
+	}
+
+	private int getTemplateInvocations(TemplateSegment template) {
+		int invocations = 0;
+		for (TemplateSegment segment : templateInvocationStack) {
+			if (segment.equals(template)) {
+				invocations++;
+			}
+		}
+		return invocations;
 	}
 
 }

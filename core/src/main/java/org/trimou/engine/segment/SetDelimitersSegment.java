@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -26,10 +27,11 @@ import org.trimou.engine.context.ExecutionContext;
  *
  * @author Martin Kouba
  */
+@Internal
 public class SetDelimitersSegment extends AbstractSegment {
 
-	public SetDelimitersSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public SetDelimitersSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	@Override

@@ -15,10 +15,9 @@
  */
 package org.trimou.engine.context;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.engine.config.Configuration;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
 
@@ -26,28 +25,28 @@ import org.trimou.engine.segment.ExtendSectionSegment;
  *
  * @author Martin Kouba
  */
-public class DebugExecutionContext extends DefaultExecutionContext {
+class DebugExecutionContext extends DefaultExecutionContext {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(DebugExecutionContext.class);
 
-	public DebugExecutionContext(List<Resolver> resolvers) {
-		super(resolvers);
+	public DebugExecutionContext(Configuration configuration) {
+		super(configuration);
 	}
 
 	@Override
-	public void push(Object baseObject) {
-		super.push(baseObject);
+	public void push(TargetStack stack, Object baseObject) {
+		super.push(stack, baseObject);
 		logger.debug("Push [type: {}, stack: {}]", baseObject.getClass(),
 				contextObjectStack.size());
 	}
 
 	@Override
-	public Object pop() {
-		Object baseObject = super.pop();
-		logger.debug("Pop [type: {}, stack: {}]", baseObject.getClass(),
+	public Object pop(TargetStack stack) {
+		Object object = super.pop(stack);
+		logger.debug("Pop [type: {}, stack: {}]", object.getClass(),
 				contextObjectStack.size());
-		return baseObject;
+		return object;
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class DebugExecutionContext extends DefaultExecutionContext {
 
 		Object value = null;
 
-		for (Resolver resolver : resolvers) {
+		for (Resolver resolver : resolvers()) {
 			value = resolver.resolve(contextObject, key);
 			if (value != null) {
 				logger.debug("Value found [key: {}, resolver: {}]", key,

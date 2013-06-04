@@ -28,13 +28,13 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.locale.DefaultLocaleSupport;
 import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locale.LocaleSupportFactory;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
-import org.trimou.engine.text.DefaultTextSupport;
 import org.trimou.engine.text.TextSupport;
+import org.trimou.engine.text.TextSupportFactory;
 import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
@@ -44,7 +44,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class DefaultConfiguration implements Configuration {
+class DefaultConfiguration implements Configuration {
 
 	private static final String RESOURCE_FILE = "/trimou.properties";
 
@@ -64,7 +64,7 @@ public class DefaultConfiguration implements Configuration {
 	 *
 	 * @param builder
 	 */
-	public DefaultConfiguration(MustacheEngineBuilder builder) {
+	DefaultConfiguration(MustacheEngineBuilder builder) {
 		loadResolvers(builder);
 		initializeTextSupport(builder);
 		initializeLocaleSupport(builder);
@@ -106,6 +106,17 @@ public class DefaultConfiguration implements Configuration {
 
 		if (value == null) {
 			value = (Long) configurationKey.getDefaultValue();
+		}
+		return value;
+	}
+
+	@Override
+	public Integer getIntegerPropertyValue(ConfigurationKey configurationKey) {
+
+		Integer value = (Integer) properties.get(configurationKey.get());
+
+		if (value == null) {
+			value = (Integer) configurationKey.getDefaultValue();
 		}
 		return value;
 	}
@@ -180,6 +191,8 @@ public class DefaultConfiguration implements Configuration {
 			return Boolean.valueOf(suppliedValue.toString());
 		} else if (defaultValue instanceof Long) {
 			return Long.valueOf(suppliedValue.toString());
+		} else if (defaultValue instanceof Integer) {
+			return Integer.valueOf(suppliedValue.toString());
 		}
 		throw new IllegalStateException("Unknown configuration value");
 	}
@@ -198,8 +211,8 @@ public class DefaultConfiguration implements Configuration {
 			resolvers.addAll(builder.getResolvers());
 		}
 		if (!builder.isOmitServiceLoaderResolvers()) {
-			for (Iterator<Resolver> iterator = ServiceLoader.load(Resolver.class)
-					.iterator(); iterator.hasNext();) {
+			for (Iterator<Resolver> iterator = ServiceLoader.load(
+					Resolver.class).iterator(); iterator.hasNext();) {
 				resolvers.add(iterator.next());
 			}
 		}
@@ -219,13 +232,11 @@ public class DefaultConfiguration implements Configuration {
 			keysToProcess.addAll(resolver.getConfigurationKeys());
 		}
 
-		properties = new HashMap<String, Object>(
-				keysToProcess.size());
+		properties = new HashMap<String, Object>(keysToProcess.size());
 		Properties resourceProperties = new Properties();
 
 		try {
-			InputStream in = this.getClass().getResourceAsStream(
-					RESOURCE_FILE);
+			InputStream in = this.getClass().getResourceAsStream(RESOURCE_FILE);
 			if (in != null) {
 				try {
 					resourceProperties.load(in);
@@ -265,7 +276,8 @@ public class DefaultConfiguration implements Configuration {
 		if (builder.getTextSupport() != null) {
 			textSupport = builder.getTextSupport();
 		} else {
-			textSupport = new DefaultTextSupport();
+			textSupport = new TextSupportFactory()
+					.createTextSupport();
 		}
 	}
 
@@ -273,7 +285,8 @@ public class DefaultConfiguration implements Configuration {
 		if (builder.getLocaleSupport() != null) {
 			localeSupport = builder.getLocaleSupport();
 		} else {
-			localeSupport = new DefaultLocaleSupport();
+			localeSupport = new LocaleSupportFactory()
+					.createLocateSupport();
 		}
 	}
 
@@ -288,8 +301,7 @@ public class DefaultConfiguration implements Configuration {
 
 	private void initializeGlobalData(MustacheEngineBuilder builder) {
 		if (builder.getGlobalData() != null) {
-			this.globalData = ImmutableMap
-					.copyOf(builder.getGlobalData());
+			this.globalData = ImmutableMap.copyOf(builder.getGlobalData());
 		}
 
 	}

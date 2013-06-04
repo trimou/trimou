@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -22,10 +23,11 @@ import org.trimou.engine.context.ExecutionContext;
  *
  * @author Martin Kouba
  */
+@Internal
 public class TextSegment extends AbstractSegment {
 
-	public TextSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public TextSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	public SegmentType getType() {

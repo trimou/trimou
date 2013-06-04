@@ -18,11 +18,14 @@ package org.trimou.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.trimou.annotations.Internal;
+
 
 /**
  *
  * @author Martin Kouba
  */
+@Internal
 public final class Strings {
 
 	public static final String EMPTY = "";

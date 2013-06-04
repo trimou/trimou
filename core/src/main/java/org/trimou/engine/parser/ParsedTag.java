@@ -22,7 +22,7 @@ import org.trimou.engine.MustacheTagType;
  *
  * @author Martin Kouba
  */
-public class ParsedTag {
+class ParsedTag {
 
 	private String content;
 

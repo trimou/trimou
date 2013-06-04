@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Kouba
  */
-public final class Segments {
+final class Segments {
 
 	private static final Logger logger = LoggerFactory.getLogger(Segments.class);
 
@@ -230,7 +230,7 @@ public final class Segments {
 	 * @param container
 	 * @return simple tree vizualization, for debug purpose only
 	 */
-	public static String getSegmentTree(AbstractContainerSegment container) {
+	static String getSegmentTree(AbstractContainerSegment container) {
 		return getSegmentTreeInternal(1, container);
 	}
 
@@ -258,7 +258,7 @@ public final class Segments {
 				tree.append(LINE_SEPARATOR);
 				tree.append(StringUtils.repeat(" ", level));
 				tree.append("-");
-				tree.append(segment.getTemplate().getText());
+				tree.append(segment.getOrigin().getTemplateName());
 				tree.append(":");
 				tree.append(segment.getType());
 				if (segment.getType().hasName()) {

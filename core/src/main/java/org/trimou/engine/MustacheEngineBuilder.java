@@ -15,7 +15,7 @@
  */
 package org.trimou.engine;
 
-import static org.trimou.util.Checker.checkArgumentNull;
+import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +69,6 @@ public class MustacheEngineBuilder {
 	/**
 	 * The builder cleanup is performed after the engine is built.
 	 *
-	 * @param properties
 	 * @return the built engine
 	 */
 	public MustacheEngine build() {
@@ -179,7 +178,7 @@ public class MustacheEngineBuilder {
 	 * @return self
 	 */
 	public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
-		checkArgumentNull(callback);
+		checkArgumentNotNull(callback);
 		if (this.engineReadyCallbacks == null) {
 			this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
 		}

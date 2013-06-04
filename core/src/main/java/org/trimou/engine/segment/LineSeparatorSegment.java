@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
@@ -22,10 +23,11 @@ import org.trimou.engine.context.ExecutionContext;
  *
  * @author Martin Kouba
  */
+@Internal
 public class LineSeparatorSegment extends AbstractSegment {
 
-	public LineSeparatorSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public LineSeparatorSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	@Override

@@ -24,12 +24,12 @@ import org.trimou.engine.context.ExecutionContext;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Segment which contains other segments.
+ * Abstract container segment.
  *
  * @author Martin Kouba
  */
-public abstract class AbstractContainerSegment extends AbstractSegment implements
-		Iterable<Segment> {
+abstract class AbstractContainerSegment extends AbstractSegment implements
+		ContainerSegment {
 
 	protected List<Segment> segments = new ArrayList<Segment>();
 
@@ -38,8 +38,8 @@ public abstract class AbstractContainerSegment extends AbstractSegment implement
 	 * @param name
 	 * @param template
 	 */
-	public AbstractContainerSegment(String name, TemplateSegment template) {
-		super(name, template);
+	public AbstractContainerSegment(String name, Origin origin) {
+		super(name, origin);
 	}
 
 	public void execute(Appendable appendable, ExecutionContext context) {
@@ -55,10 +55,6 @@ public abstract class AbstractContainerSegment extends AbstractSegment implement
 		}
 	}
 
-	/**
-	 *
-	 * @param segment
-	 */
 	public void addSegment(Segment segment) {
 		checkModificationAllowed();
 		segments.add(segment);
@@ -69,17 +65,11 @@ public abstract class AbstractContainerSegment extends AbstractSegment implement
 		return getSegments().iterator();
 	}
 
-	/**
-	 * @return the list of contained segments
-	 */
 	public List<Segment> getSegments() {
 		return isReadOnly() ? ImmutableList.copyOf(segments)
 				: segments;
 	}
 
-	/**
-	 * @return the number of contained segments
-	 */
 	public int getSegmentsSize() {
 		return segments.size();
 	}

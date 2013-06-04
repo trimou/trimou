@@ -1,8 +1,7 @@
 package org.trimou.engine.segment;
 
 import static org.junit.Assert.assertEquals;
-
-import java.io.StringWriter;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +9,10 @@ import org.trimou.AbstractTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -26,7 +28,6 @@ public class ExtendSegmentTest extends AbstractTest {
 
 	@Test
 	public void testSimpleInheritance() {
-
 		MapTemplateLocator locator = new MapTemplateLocator(
 				ImmutableMap
 						.of("super", "Hello {{$insert}}Martin{{/insert}}",
@@ -35,14 +36,12 @@ public class ExtendSegmentTest extends AbstractTest {
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator).build();
 		Mustache sub = engine.getMustache("sub");
-
 		assertEquals("And now... Hello Edgar!",
 				sub.render(ImmutableMap.<String, Object> of("name", "Edgar")));
 	}
 
 	@Test
 	public void testMultipleInheritance() {
-
 		MapTemplateLocator locator = new MapTemplateLocator(
 				ImmutableMap
 						.of("super",
@@ -54,16 +53,12 @@ public class ExtendSegmentTest extends AbstractTest {
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator).build();
 		Mustache sub = engine.getMustache("subsub");
-
-		StringWriter writer = new StringWriter();
-		sub.render(writer, null);
 		assertEquals("And now for something completely different.",
-				writer.toString());
+				sub.render(null));
 	}
 
 	@Test
 	public void testMultipleInheritanceOverride() {
-
 		MapTemplateLocator locator = new MapTemplateLocator(ImmutableMap.of(
 				"super", "{{$insert}}{{/insert}}", "sub",
 				"{{<super}} {{$insert}}false{{/insert}} {{/super}}", "subsub",
@@ -71,10 +66,95 @@ public class ExtendSegmentTest extends AbstractTest {
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator).build();
 		Mustache sub = engine.getMustache("subsub");
-
-		StringWriter writer = new StringWriter();
-		sub.render(writer, null);
-		assertEquals("true", writer.toString());
+		assertEquals("true", sub.render(null));
 	}
+
+	@Test
+	public void testRecursiveInvocationAllowed() {
+		MapTemplateLocator locator = new MapTemplateLocator(
+				ImmutableMap
+						.of("super",
+								"{{$content}}{{<super}}{{$content}}Mooo{{/content}}{{/super}}{{/content}}"));
+		MustacheEngine engine = MustacheEngineBuilder
+				.newBuilder()
+				.addTemplateLocator(locator)
+				.setProperty(
+						EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT,
+						5).build();
+		assertEquals("Mooo", engine.getMustache("super").render(null));
+	}
+
+	@Test
+	public void testRecursiveInvocationDisabled() {
+		MapTemplateLocator locator = new MapTemplateLocator(
+				ImmutableMap
+						.of("super",
+								"{{$content}}{{<super}}{{$content}}Mooo{{/content}}{{/super}}{{/content}}"));
+		MustacheEngine engine = MustacheEngineBuilder
+				.newBuilder()
+				.addTemplateLocator(locator)
+				.setProperty(
+						EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT,
+						0).build();
+
+		try {
+			engine.getMustache("super").render(null);
+			fail("Limit exceeded and no exception thrown");
+		} catch (MustacheException e) {
+			if (!e.getCode()
+					.equals(MustacheProblem.RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED)) {
+				fail("Invalid problem");
+			}
+			System.out.println(e.getMessage());
+			// else {
+			// e.printStackTrace();
+			// }
+		}
+	}
+
+	@Test
+	public void testRecursiveInvocationLimitExceeded() {
+
+		MapTemplateLocator locator = new MapTemplateLocator(ImmutableMap.of(
+				"super", "/n{{<super}}{{/super}}"));
+		MustacheEngine engine = MustacheEngineBuilder
+				.newBuilder()
+				.addTemplateLocator(locator)
+				.setProperty(
+						EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT,
+						5).build();
+
+		try {
+			engine.getMustache("super").render(null);
+			fail("Limit exceeded and no exception thrown");
+		} catch (MustacheException e) {
+			if (!e.getCode()
+					.equals(MustacheProblem.RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED)) {
+				fail("Invalid problem");
+			}
+			System.out.println(e.getMessage());
+			// else {
+			// e.printStackTrace();
+			// }
+		}
+	}
+
+	@Test
+	public void testExtendNotFound() {
+
+		MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+
+		try {
+			engine.compileMustache("extend_not_found", "Hello,\nan attempt to extend \n\n {{<neverexisted}}{{/neverexisted}}")
+					.render(null);
+			fail("Template to extend does not exist!");
+		} catch (MustacheException e) {
+			if (!e.getCode().equals(MustacheProblem.RENDER_INVALID_EXTEND_KEY)) {
+				fail("Invalid problem");
+			}
+			System.out.println(e.getMessage());
+		}
+	}
+
 
 }

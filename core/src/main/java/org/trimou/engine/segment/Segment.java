@@ -15,17 +15,18 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda.InputType;
 
 /**
  * Compiled template segment.
  *
- * Any segment is considered immutable once the compilation is
- * finished.
+ * Any segment is considered immutable once the compilation is finished.
  *
  * @author Martin Kouba
  */
+@Internal
 public interface Segment {
 
 	/**
@@ -39,10 +40,10 @@ public interface Segment {
 	public String getText();
 
 	/**
-	 * @return the template this segment belongs to, or <code>null</code> in
-	 *         case of this segment itself is a template
+	 * @return the origin of this segment or <code>null</code> in case of this
+	 *         segment is a template
 	 */
-	public TemplateSegment getTemplate();
+	public Origin getOrigin();
 
 	/**
 	 * @return the reconstructed literal block this segment represents (original

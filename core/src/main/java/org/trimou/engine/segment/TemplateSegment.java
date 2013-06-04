@@ -15,18 +15,17 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE_ENABLED;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.trimou.Mustache;
+import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.context.DebugExecutionContext;
-import org.trimou.engine.context.DefaultExecutionContext;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.context.ExecutionContext.TargetStack;
+import org.trimou.engine.context.ExecutionContextBuilder;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
@@ -35,7 +34,9 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class TemplateSegment extends AbstractContainerSegment implements Mustache {
+@Internal
+public class TemplateSegment extends AbstractContainerSegment implements
+		Mustache {
 
 	private final MustacheEngine engine;
 
@@ -49,9 +50,13 @@ public class TemplateSegment extends AbstractContainerSegment implements Mustach
 	@Override
 	public void render(Appendable appendable, Map<String, Object> data) {
 		if (!isReadOnly()) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY, getName());
+			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
+					"Template %s is not ready", getName());
 		}
-		super.execute(appendable, newExecutionContext(data));
+		ExecutionContext context = new ExecutionContextBuilder(engine)
+				.withData(data).build();
+		context.push(TargetStack.TEMPLATE_INVOCATION, this);
+		super.execute(appendable, context);
 	}
 
 	@Override
@@ -79,10 +84,12 @@ public class TemplateSegment extends AbstractContainerSegment implements Mustach
 	@Override
 	public void performPostProcessing() {
 
-		if (engine.getConfiguration().getBooleanPropertyValue(REMOVE_STANDALONE_LINES)) {
+		if (engine.getConfiguration().getBooleanPropertyValue(
+				REMOVE_STANDALONE_LINES)) {
 			Segments.removeStandaloneLines(this);
 		}
-		if(engine.getConfiguration().getBooleanPropertyValue(REMOVE_UNNECESSARY_SEGMENTS)) {
+		if (engine.getConfiguration().getBooleanPropertyValue(
+				REMOVE_UNNECESSARY_SEGMENTS)) {
 			Segments.removeUnnecessarySegments(this);
 		}
 		super.performPostProcessing();
@@ -96,35 +103,13 @@ public class TemplateSegment extends AbstractContainerSegment implements Mustach
 		return readOnly;
 	}
 
-	protected MustacheEngine getEngine() {
-		return engine;
+	@Override
+	public String toString() {
+		return String.format("%s: %s]", getType(), getName());
 	}
 
-	private ExecutionContext newExecutionContext(Map<String, Object> data) {
-
-		ExecutionContext ctx = null;
-
-		if (engine.getConfiguration().getBooleanPropertyValue(
-				DEBUG_MODE_ENABLED)) {
-			ctx = new DebugExecutionContext(engine.getConfiguration()
-					.getResolvers());
-		} else {
-			ctx = new DefaultExecutionContext(engine.getConfiguration()
-					.getResolvers());
-		}
-
-		Map<String, Object> contextData = new HashMap<String, Object>();
-
-		if (engine.getConfiguration().getGlobalData() != null) {
-			contextData.putAll(engine.getConfiguration().getGlobalData());
-		}
-		if (data != null) {
-			contextData.putAll(data);
-		}
-		if (!contextData.isEmpty()) {
-			ctx.push(contextData);
-		}
-		return ctx;
+	protected MustacheEngine getEngine() {
+		return engine;
 	}
 
 }

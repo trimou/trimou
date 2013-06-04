@@ -15,6 +15,9 @@
  */
 package org.trimou.engine.segment;
 
+import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
+
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -23,15 +26,16 @@ import org.trimou.exception.MustacheProblem;
  * This segment extends some template and overrides its extending sections.
  *
  * <pre>
- * {{>super}} {{$insert}}Foo{{/insert}} {{/super}}
+ * {{<super}} {{$insert}}Foo{{/insert}} {{/super}}
  * </pre>
  *
  * @author Martin Kouba
  */
+@Internal
 public class ExtendSegment extends AbstractSectionSegment {
 
-	public ExtendSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public ExtendSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	@Override
@@ -42,27 +46,31 @@ public class ExtendSegment extends AbstractSectionSegment {
 	@Override
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		TemplateSegment extended = (TemplateSegment) getEngine()
-				.getMustache(getText());
+		TemplateSegment extended = (TemplateSegment) getEngine().getMustache(
+				getText());
 
 		if (extended == null) {
-			throw new MustacheException(MustacheProblem.RENDER_INVALID_EXTEND_KEY);
+			throw new MustacheException(
+					MustacheProblem.RENDER_INVALID_EXTEND_KEY,
+					"No template to extend found for the given key: %s %s",
+					getText(), getOrigin());
 		}
 
+		context.push(TEMPLATE_INVOCATION, extended);
 		for (Segment extendSection : this) {
 			context.addDefiningSection(extendSection.getText(),
 					(ExtendSectionSegment) extendSection);
 		}
 		extended.execute(appendable, context);
+		context.pop(TEMPLATE_INVOCATION);
 	}
 
 	@Override
 	public void addSegment(Segment segment) {
-		if (!SegmentType.EXTEND_SECTION.equals(segment.getType())) {
+		if (SegmentType.EXTEND_SECTION.equals(segment.getType())) {
 			// Only add extending sections
-			return;
+			super.addSegment(segment);
 		}
-		super.addSegment(segment);
 	}
 
 }

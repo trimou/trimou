@@ -15,24 +15,32 @@
  */
 package org.trimou.engine.parser;
 
+import static org.trimou.exception.MustacheProblem.COMPILE_INVALID_TAG;
+
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagType;
-import org.trimou.engine.segment.AbstractContainerSegment;
 import org.trimou.engine.segment.CommentSegment;
+import org.trimou.engine.segment.ContainerSegment;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
 import org.trimou.engine.segment.InvertedSectionSegment;
 import org.trimou.engine.segment.LineSeparatorSegment;
+import org.trimou.engine.segment.Origin;
 import org.trimou.engine.segment.PartialSegment;
 import org.trimou.engine.segment.SectionSegment;
 import org.trimou.engine.segment.Segment;
+import org.trimou.engine.segment.SegmentType;
 import org.trimou.engine.segment.SetDelimitersSegment;
 import org.trimou.engine.segment.TemplateSegment;
 import org.trimou.engine.segment.TextSegment;
@@ -46,12 +54,12 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class DefaultParsingHandler implements ParsingHandler {
+class DefaultParsingHandler implements ParsingHandler {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(DefaultParsingHandler.class);
 
-	private Deque<AbstractContainerSegment> containerStack = new ArrayDeque<AbstractContainerSegment>();
+	private Deque<ContainerSegment> containerStack = new ArrayDeque<ContainerSegment>();
 
 	private TemplateSegment template;
 
@@ -59,7 +67,9 @@ public class DefaultParsingHandler implements ParsingHandler {
 
 	private long start;
 
-	private long segments = 0;
+	private int segments = 0;
+
+	private int line = 1;
 
 	@Override
 	public void startTemplate(String name, Delimiters delimiters,
@@ -84,43 +94,53 @@ public class DefaultParsingHandler implements ParsingHandler {
 
 	@Override
 	public void text(String text) {
-		addSegment(new TextSegment(text, template));
+		addSegment(new TextSegment(text, new Origin(template, line)));
 	}
 
 	@Override
 	public void tag(ParsedTag tag) {
 
+		validateTag(tag);
+
 		switch (tag.getType()) {
 		case VARIABLE:
-			addSegment(new ValueSegment(tag.getContent(), template, false));
+			addSegment(new ValueSegment(tag.getContent(), new Origin(template,
+					line), false));
 			break;
 		case UNESCAPE_VARIABLE:
-			addSegment(new ValueSegment(tag.getContent(), template, true));
+			addSegment(new ValueSegment(tag.getContent(), new Origin(template,
+					line), true));
 			break;
 		case COMMENT:
-			addSegment(new CommentSegment(tag.getContent(), template));
+			addSegment(new CommentSegment(tag.getContent(), new Origin(
+					template, line)));
 			break;
 		case DELIMITER:
 			changeDelimiters(tag.getContent());
-			addSegment(new SetDelimitersSegment(tag.getContent(), template));
+			addSegment(new SetDelimitersSegment(tag.getContent(), new Origin(
+					template, line)));
 			break;
 		case SECTION:
-			push(new SectionSegment(tag.getContent(), template));
+			push(new SectionSegment(tag.getContent(),
+					new Origin(template, line)));
 			break;
 		case INVERTED_SECTION:
-			push(new InvertedSectionSegment(tag.getContent(), template));
+			push(new InvertedSectionSegment(tag.getContent(), new Origin(
+					template, line)));
 			break;
 		case SECTION_END:
 			endSection(tag.getContent());
 			break;
 		case PARTIAL:
-			addSegment(new PartialSegment(tag.getContent(), template));
+			addSegment(new PartialSegment(tag.getContent(), new Origin(
+					template, line)));
 			break;
 		case EXTEND:
-			push(new ExtendSegment(tag.getContent(), template));
+			push(new ExtendSegment(tag.getContent(), new Origin(template, line)));
 			break;
 		case EXTEND_SECTION:
-			push(new ExtendSectionSegment(tag.getContent(), template));
+			push(new ExtendSectionSegment(tag.getContent(), new Origin(
+					template, line)));
 			break;
 		default:
 			break;
@@ -129,26 +149,46 @@ public class DefaultParsingHandler implements ParsingHandler {
 
 	@Override
 	public void lineSeparator(String separator) {
-		addSegment(new LineSeparatorSegment(separator, template));
+		addSegment(new LineSeparatorSegment(separator, new Origin(template,
+				line)));
+		line++;
 	}
 
-	/**
-	 * @return the compiled template
-	 * @throws IllegalStateException
-	 *             If not finished yet
-	 */
-	public TemplateSegment getCompiledTemplate() {
+	public Mustache getCompiledTemplate() {
 		if (!template.isReadOnly()) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY);
+			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
+					template.getName());
 		}
 		return template;
 	}
 
+	private void validateTag(ParsedTag tag) {
+		if (StringUtils.isEmpty(tag.getContent())) {
+			throw new MustacheException(COMPILE_INVALID_TAG,
+					"Tag has no content [line: %s]", line);
+		}
+	}
+
 	private void endSection(String key) {
-		AbstractContainerSegment container = pop();
+		ContainerSegment container = pop();
 		if (container == null || !key.equals(container.getText())) {
+			StringBuilder msg = new StringBuilder();
+			List<String> params = new ArrayList<String>();
+			msg.append("Invalid section end: ");
+			if (container == null
+					|| SegmentType.TEMPLATE.equals(container.getType())) {
+				msg.append("%s has no matching section start");
+				params.add(key);
+			} else {
+				msg.append("%s is not matching section start %s");
+				params.add(key);
+				params.add(container.getText());
+			}
+			msg.append(" [line: %s]");
+			params.add("" + line);
 			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_SECTION_END);
+					MustacheProblem.COMPILE_INVALID_SECTION_END,
+					msg.toString(), params.toArray());
 		}
 		addSegment(container);
 	}
@@ -164,7 +204,8 @@ public class DefaultParsingHandler implements ParsingHandler {
 				|| key.charAt(key.length() - 1) != MustacheTagType.DELIMITER
 						.getCommand()) {
 			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_DELIMITERS);
+					MustacheProblem.COMPILE_INVALID_DELIMITERS,
+					"Invalid set delimiters tag: %s [line: %s]", key, line);
 		}
 
 		Matcher matcher = Pattern.compile("([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)")
@@ -174,7 +215,8 @@ public class DefaultParsingHandler implements ParsingHandler {
 			delimiters.setNewValues(matcher.group(1), matcher.group(3));
 		} else {
 			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_DELIMITERS);
+					MustacheProblem.COMPILE_INVALID_DELIMITERS,
+					"Invalid delimiters set: %s [line: %s]", key, line);
 		}
 	}
 
@@ -183,7 +225,7 @@ public class DefaultParsingHandler implements ParsingHandler {
 	 *
 	 * @param container
 	 */
-	private void push(AbstractContainerSegment container) {
+	private void push(ContainerSegment container) {
 		containerStack.addFirst(container);
 		logger.trace("Push {} [name: {}]", container.getType(),
 				container.getText());
@@ -193,8 +235,8 @@ public class DefaultParsingHandler implements ParsingHandler {
 	 *
 	 * @return the container removed from the stack
 	 */
-	private AbstractContainerSegment pop() {
-		AbstractContainerSegment container = containerStack.removeFirst();
+	private ContainerSegment pop() {
+		ContainerSegment container = containerStack.removeFirst();
 		logger.trace("Pop {} [name: {}]", container.getType(),
 				container.getText());
 		return container;
@@ -221,8 +263,8 @@ public class DefaultParsingHandler implements ParsingHandler {
 		if (!containerStack.peekFirst().equals(template)) {
 			throw new MustacheException(
 					MustacheProblem.COMPILE_INVALID_TEMPLATE,
-					"Incorrect last container segment on the stack: "
-							+ containerStack.peekFirst().toString());
+					"Incorrect last container segment on the stack: %s [line: %s]",
+					containerStack.peekFirst().toString(), line);
 		}
 	}
 

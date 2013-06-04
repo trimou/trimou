@@ -31,9 +31,9 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
-public abstract class AbstractSegment implements Segment {
+abstract class AbstractSegment implements Segment {
 
-	private final TemplateSegment template;
+	private final Origin origin;
 
 	private final String text;
 
@@ -42,18 +42,19 @@ public abstract class AbstractSegment implements Segment {
 	 * @param text
 	 * @param template
 	 */
-	public AbstractSegment(String text, TemplateSegment template) {
+	public AbstractSegment(String text, Origin origin) {
 		super();
 		this.text = text;
-		this.template = template;
+		this.origin = origin;
 	}
 
 	public String getText() {
 		return text;
 	}
 
-	public TemplateSegment getTemplate() {
-		return template;
+	@Override
+	public Origin getOrigin() {
+		return origin;
 	}
 
 	@Override
@@ -68,18 +69,20 @@ public abstract class AbstractSegment implements Segment {
 
 	@Override
 	public String toString() {
-		return String
-				.format("%s [template: %s, name: %s]", getType(),
-						getTemplate() != null ? getTemplate().getText()
-								: Strings.EMPTY, getSegmentName());
+		return String.format("%s:%s %s", getType(), getSegmentName(),
+				getOrigin());
+	}
+
+	public TemplateSegment getTemplate() {
+		return origin != null ? origin.getTemplate() : null;
 	}
 
 	protected boolean isReadOnly() {
-		return template.isReadOnly();
+		return getTemplate().isReadOnly();
 	}
 
 	protected MustacheEngine getEngine() {
-		return template.getEngine();
+		return getTemplate().getEngine();
 	}
 
 	protected Configuration getEngineConfiguration() {
@@ -110,7 +113,7 @@ public abstract class AbstractSegment implements Segment {
 		try {
 			appendable.append(text);
 		} catch (IOException e) {
-			throw new MustacheException(MustacheProblem.RENDER_IO_ERROR);
+			throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
 		}
 	}
 

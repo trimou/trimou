@@ -18,6 +18,7 @@ package org.trimou.engine.config;
 import java.util.List;
 import java.util.Map;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
@@ -28,6 +29,7 @@ import org.trimou.engine.text.TextSupport;
  *
  * @author Martin Kouba
  */
+@Internal
 public interface Configuration {
 
 	/**
@@ -64,6 +66,13 @@ public interface Configuration {
 	 * @return
 	 */
 	public Long getLongPropertyValue(ConfigurationKey configurationKey);
+
+	/**
+	 *
+	 * @param configurationKey
+	 * @return
+	 */
+	public Integer getIntegerPropertyValue(ConfigurationKey configurationKey);
 
 	/**
 	 *

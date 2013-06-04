@@ -17,7 +17,6 @@ package org.trimou.engine.parser;
 
 import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
 import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
-import static org.trimou.exception.MustacheProblem.COMPILE_INVALID_TAG;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +24,7 @@ import java.io.Reader;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagType;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
@@ -33,7 +33,7 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
-public class DefaultParser implements Parser {
+class DefaultParser implements Parser {
 
 	private static final int TEXT = 0;
 	// If start delim more than one char
@@ -165,7 +165,8 @@ public class DefaultParser implements Parser {
 						}
 					} else {
 						throw new MustacheException(
-								MustacheProblem.COMPILE_INVALID_TAG);
+								MustacheProblem.COMPILE_INVALID_TAG,
+								"Unexpected tag end: %s", character);
 					}
 				} else if (state == START_R) {
 					if (character == Strings.WINDOWS_LINE_SEPARATOR.charAt(1)) {
@@ -187,7 +188,8 @@ public class DefaultParser implements Parser {
 				} else {
 					throw new MustacheException(
 							MustacheProblem.COMPILE_INVALID_TEMPLATE,
-							"Remaining non-text buffer: " + buffer);
+							"Unexpected non-text buffer at the end of the document (probably unterminated tag): %s",
+							buffer);
 				}
 			}
 
@@ -208,8 +210,8 @@ public class DefaultParser implements Parser {
 		}
 	}
 
-	private StringBuilder flushTag(StringBuilder buffer, ParsingHandler handler,
-			Delimiters delimiters) {
+	private StringBuilder flushTag(StringBuilder buffer,
+			ParsingHandler handler, Delimiters delimiters) {
 		handler.tag(deriveTag(buffer.toString(), delimiters));
 		return new StringBuilder();
 	}
@@ -224,12 +226,71 @@ public class DefaultParser implements Parser {
 	}
 
 	private ParsedTag deriveTag(String buffer, Delimiters delimiters) {
-		if (buffer.length() <= 0) {
-			throw new MustacheException(COMPILE_INVALID_TAG);
-		}
-		MustacheTagType type = MustacheTagType.fromBuffer(buffer, delimiters);
-		String key = type.extractContent(buffer);
+		MustacheTagType type = fromBuffer(buffer, delimiters);
+		String key = extractContent(type, buffer);
 		return new ParsedTag(key, type);
+	}
+
+	/**
+	 * Identify the tag type (variable, comment, etc.).
+	 *
+	 * @param buffer
+	 * @param delimiters
+	 * @return the tag type
+	 */
+	private MustacheTagType fromBuffer(String buffer, Delimiters delimiters) {
+
+		if (buffer.length() == 0) {
+			return MustacheTagType.VARIABLE;
+		}
+
+		// Triple mustache is supported for default delimiters only
+		if (delimiters.hasDefaultDelimitersSet()
+				&& buffer.charAt(0) == ((String) EngineConfigurationKey.START_DELIMITER
+						.getDefaultValue()).charAt(0)
+				&& buffer.charAt(buffer.length() - 1) == ((String) EngineConfigurationKey.END_DELIMITER
+						.getDefaultValue()).charAt(0)) {
+			return MustacheTagType.UNESCAPE_VARIABLE;
+		}
+
+		Character command = buffer.charAt(0);
+
+		for (MustacheTagType type : MustacheTagType.values()) {
+			if (command.equals(type.getCommand())) {
+				return type;
+			}
+		}
+		return MustacheTagType.VARIABLE;
+	}
+
+	/**
+	 * Extract the tag content.
+	 *
+	 * @param buffer
+	 * @return
+	 */
+	private String extractContent(MustacheTagType tagType, String buffer) {
+
+		switch (tagType) {
+		case VARIABLE:
+			return buffer.trim();
+		case UNESCAPE_VARIABLE:
+			return (buffer.charAt(0) == ((String) EngineConfigurationKey.START_DELIMITER
+					.getDefaultValue()).charAt(0) ? buffer.substring(1,
+					buffer.length() - 1).trim() : buffer.substring(1).trim());
+		case SECTION:
+		case INVERTED_SECTION:
+		case PARTIAL:
+		case EXTEND:
+		case EXTEND_SECTION:
+		case SECTION_END:
+		case COMMENT:
+			return buffer.substring(1).trim();
+		case DELIMITER:
+			return buffer.trim();
+		default:
+			return null;
+		}
 	}
 
 }

@@ -15,18 +15,16 @@
  */
 package org.trimou.engine.context;
 
-import java.util.List;
-
-import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.config.Configuration;
 
 /**
  *
  * @author Martin Kouba
  */
-public class DefaultExecutionContext extends AbstractExecutionContext {
+class DefaultExecutionContext extends AbstractExecutionContext {
 
-	public DefaultExecutionContext(List<Resolver> resolvers) {
-		super(resolvers);
+	public DefaultExecutionContext(Configuration configuration) {
+		super(configuration);
 	}
 
 	@Override

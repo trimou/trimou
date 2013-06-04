@@ -44,7 +44,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator {
 	/**
 	 *
 	 * @param priority
-	 * @param rootPathname
+	 * @param rootPath
 	 */
 	public ClassPathTemplateLocator(int priority, String rootPath) {
 		super(priority, rootPath);
@@ -55,7 +55,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator {
 	 *
 	 * @param priority
 	 * @param suffix
-	 * @param rootPathname
+	 * @param rootPath
 	 */
 	public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
 		super(priority, rootPath, suffix);

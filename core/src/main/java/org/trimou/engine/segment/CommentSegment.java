@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.util.Strings;
 
@@ -27,10 +28,11 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
+@Internal
 public class CommentSegment extends AbstractSegment {
 
-	public CommentSegment(String text, TemplateSegment template) {
-		super(text, template);
+	public CommentSegment(String text, Origin origin) {
+		super(text, origin);
 	}
 
 	@Override

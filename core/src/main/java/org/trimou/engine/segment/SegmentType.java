@@ -15,11 +15,13 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 
 /**
  * Type of segment.
  */
+@Internal
 public enum SegmentType {
 
 	TEMPLATE(null),

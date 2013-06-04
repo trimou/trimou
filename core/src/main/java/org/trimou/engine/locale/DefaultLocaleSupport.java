@@ -23,7 +23,7 @@ import java.util.Locale;
  *
  * @author Martin Kouba
  */
-public class DefaultLocaleSupport implements LocaleSupport {
+class DefaultLocaleSupport implements LocaleSupport {
 
 	@Override
 	public Locale getCurrentLocale() {

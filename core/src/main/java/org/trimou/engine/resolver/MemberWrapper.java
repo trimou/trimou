@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Martin Kouba
  */
-public interface MemberWrapper {
+interface MemberWrapper {
 
 	/**
 	 *

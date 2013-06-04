@@ -9,12 +9,12 @@ import org.trimou.engine.config.EngineConfigurationKey;
  *
  * @author Martin Kouba
  */
-public abstract class AbstractSectionSegment extends AbstractContainerSegment {
+abstract class AbstractSectionSegment extends AbstractContainerSegment {
 
 	private String cachedContainingLiteralBlock = null;
 
-	public AbstractSectionSegment(String name, TemplateSegment template) {
-		super(name, template);
+	public AbstractSectionSegment(String name, Origin origin) {
+		super(name, origin);
 	}
 
 	@Override

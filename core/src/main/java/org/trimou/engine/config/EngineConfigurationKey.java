@@ -63,7 +63,12 @@ public enum EngineConfigurationKey implements ConfigurationKey {
 	 * cached (useful to optimize some lambdas processing scenarios, but memory
 	 * intensive), <code>false</code> otherwise
 	 */
-	CACHE_SECTION_LITERAL_BLOCK(false), ;
+	CACHE_SECTION_LITERAL_BLOCK(false),
+	/**
+	 * The limit of recursive template invocation; 0 - recursive invocation is forbidden
+	 */
+	TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10),
+	;
 
 	private Object defaultValue;
 
