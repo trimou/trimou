@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class ExtendSegmentTest extends AbstractTest {
+public class ExtendSegmentTest extends AbstractEngineTest {
 
 	@Before
 	public void buildEngine() {

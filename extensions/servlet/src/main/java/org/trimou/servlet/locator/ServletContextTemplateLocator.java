@@ -20,11 +20,11 @@ import org.trimou.servlet.RequestHolder;
 import org.trimou.util.Strings;
 
 /**
- * Non-recursive servlet context template locator.
+ * Servlet context template locator.
  *
  * @author Martin Kouba
  */
-public class ServletContextTemplateLocator extends PathTemplateLocator {
+public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(ServletContextTemplateLocator.class);
@@ -47,7 +47,8 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 	 * @param rootPath
 	 * @param servletContext
 	 */
-	public ServletContextTemplateLocator(int priority, String rootPath, ServletContext servletContext) {
+	public ServletContextTemplateLocator(int priority, String rootPath,
+			ServletContext servletContext) {
 		super(priority, rootPath);
 		this.servletContext = servletContext;
 		checkRootPath();
@@ -80,7 +81,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 	}
 
 	@Override
-	public Reader locate(String templateName) {
+	public Reader locate(String templatePath) {
 
 		ServletContext ctx = getServletContext();
 
@@ -90,13 +91,18 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 		}
 
 		InputStream in = ctx.getResourceAsStream(getRootPath()
-				+ addSuffix(templateName));
+				+ addSuffix(toRealPath(templatePath)));
 
-		return in != null ? new InputStreamReader(in) : null;
+		if (in == null) {
+			return null;
+		}
+		logger.debug("Template located: {}", templatePath);
+
+		return new InputStreamReader(in);
 	}
 
 	@Override
-	public Set<String> getAllAvailableNames() {
+	public Set<String> getAllIdentifiers() {
 
 		ServletContext ctx = getServletContext();
 
@@ -105,22 +111,44 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 			return Collections.emptySet();
 		}
 
+		Set<String> resources = listResources(getRootPath(), ctx);
+
+		if (resources.isEmpty()) {
+			return Collections.emptySet();
+		}
+
 		Set<String> names = new HashSet<String>();
-		Set<String> resources = ctx.getResourcePaths(getRootPath());
-
 		for (String resource : resources) {
-
-			String filename = StringUtils.substringAfter(resource, getRootPath());
-
-			if (getSuffix() != null) {
-				if (resource.endsWith(getSuffix())) {
-					names.add(stripSuffix(filename));
-				}
-			} else {
-				names.add(filename);
-			}
+			String name = stripSuffix(constructVirtualPath(resource));
+			names.add(name);
+			logger.debug("Template name available: {}", name);
 		}
 		return names;
+	}
+
+	private Set<String> listResources(String path, ServletContext ctx) {
+
+		Set<String> resources = new HashSet<String>();
+		Set<String> resourcePaths = ctx.getResourcePaths(path);
+
+		if (resources != null) {
+			for (String resourcePath : resourcePaths) {
+				if (resourcePath.endsWith(Strings.SLASH)) {
+					// Subdirectory
+					String subdirectory = getRootPath()
+							+ StringUtils.substringAfter(resourcePath,
+									getRootPath());
+					resources.addAll(listResources(subdirectory, ctx));
+				} else {
+					if (getSuffix() != null
+							&& !resourcePath.endsWith(getSuffix())) {
+						continue;
+					}
+					resources.add(resourcePath);
+				}
+			}
+		}
+		return resources;
 	}
 
 	private void checkRootPath() {
@@ -133,8 +161,8 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 
 	private ServletContext getServletContext() {
 
-		if(this.servletContext != null) {
-			return this.servletContext;
+		if (servletContext != null) {
+			return servletContext;
 		}
 
 		HttpServletRequest httpServletRequest = RequestHolder
@@ -144,6 +172,23 @@ public class ServletContextTemplateLocator extends PathTemplateLocator {
 			return httpServletRequest.getServletContext();
 		}
 		return null;
+	}
+
+	@Override
+	protected String constructVirtualPath(String source) {
+
+		String[] parts = StringUtils.split(
+				StringUtils.substringAfter(source, getRootPath()),
+				Strings.SLASH);
+
+		StringBuilder name = new StringBuilder();
+		for (int i = 0; i < parts.length; i++) {
+			name.append(parts[i]);
+			if (i + 1 < parts.length) {
+				name.append(getVirtualPathSeparator());
+			}
+		}
+		return name.toString();
 	}
 
 }

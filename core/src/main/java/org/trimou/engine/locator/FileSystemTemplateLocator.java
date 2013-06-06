@@ -18,22 +18,21 @@ package org.trimou.engine.locator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.util.Strings;
 
 /**
- * Non-recursive filesystem template locator.
+ * Filesystem template locator.
  *
  * @author Martin Kouba
  */
-public class FileSystemTemplateLocator extends PathTemplateLocator {
+public class FileSystemTemplateLocator extends FilePathTemplateLocator {
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(FileSystemTemplateLocator.class);
 
 	/**
 	 *
@@ -51,22 +50,23 @@ public class FileSystemTemplateLocator extends PathTemplateLocator {
 	 * @param suffix
 	 * @param rootPath
 	 */
-	public FileSystemTemplateLocator(int priority, String rootPath, String suffix) {
+	public FileSystemTemplateLocator(int priority, String rootPath,
+			String suffix) {
 		super(priority, rootPath, suffix);
 		checkRootDir();
 	}
 
 	@Override
-	public Reader locate(String templateName) {
+	public Reader locateRealPath(String realPath) {
 		try {
 
 			File templateFile = new File(new File(getRootPath()),
-					addSuffix(templateName));
+					addSuffix(realPath));
 
-			if (!templateFile.exists() || !templateFile.canRead()
-					|| !templateFile.isFile()) {
+			if (!isFileUsable(templateFile)) {
 				return null;
 			}
+			logger.debug("Template located: {}", realPath);
 			return new FileReader(templateFile);
 
 		} catch (FileNotFoundException e) {
@@ -75,51 +75,13 @@ public class FileSystemTemplateLocator extends PathTemplateLocator {
 	}
 
 	@Override
-	public Set<String> getAllAvailableNames() {
-
-		File rootDir = new File(getRootPath());
-		File[] files = null;
-
-		if (getSuffix() != null) {
-			files = rootDir.listFiles(new FilenameFilter() {
-
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.endsWith(getSuffix());
-				}
-			});
-		} else {
-			files = rootDir.listFiles();
-		}
-
-		if (files == null || files.length < 1) {
-			return Collections.emptySet();
-		}
-
-		Set<String> names = new HashSet<String>();
-		for (File file : files) {
-			if (file.isFile()) {
-				names.add(stripSuffix(file.getName()));
-			}
-		}
-		return names;
-	}
-
-	@Override
-	protected String getPathSeparator() {
+	protected String getRealPathSeparator() {
 		return Strings.FILE_SEPARATOR;
 	}
 
-
-	private void checkRootDir() {
-
-		File rootDir = new File(getRootPath());
-
-		if (!rootDir.exists() || !rootDir.canRead() || !rootDir.isDirectory()) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-					"Invalid root dir: " + rootDir);
-		}
+	@Override
+	protected File getRootDir() {
+		return new File(getRootPath());
 	}
 
 }

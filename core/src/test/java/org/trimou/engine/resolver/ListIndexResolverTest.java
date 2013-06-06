@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class ListIndexResolverTest extends AbstractTest {
+public class ListIndexResolverTest extends AbstractEngineTest {
 
 	@Test
 	public void testInterpolation() {

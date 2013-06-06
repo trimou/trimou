@@ -15,22 +15,42 @@
  */
 package org.trimou.engine.locator;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.util.Strings;
 
 /**
+ * Represents a template locator where the template identifier is a path.
  *
  * @author Martin Kouba
+ * @param <T>
+ *            the source of the template path (e.g. File, String,...)
  */
-public abstract class PathTemplateLocator implements TemplateLocator {
+public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
-	private String pathSeparator;
+	private static final Logger logger = LoggerFactory.getLogger(PathTemplateLocator.class);
 
-	private int priority;
+	/**
+	 * Virtual path separator
+	 */
+	public static final ConfigurationKey VIRTUAL_PATH_SEPARATOR_KEY = new SimpleConfigurationKey(
+			PathTemplateLocator.class.getName() + ".virtualPathSeparator",
+			Strings.SLASH);
 
-	private String suffix;
+	private final String suffix;
 
-	private String rootPath;
+	private final String rootPath;
+
+	private String realPathSeparator;
+
+	private String virtualPathSeparator;
 
 	/**
 	 *
@@ -38,11 +58,10 @@ public abstract class PathTemplateLocator implements TemplateLocator {
 	 * @param rootPath
 	 */
 	public PathTemplateLocator(int priority, String rootPath) {
-		super();
-		this.pathSeparator = getPathSeparator();
-		this.priority = priority;
+		super(priority);
+		this.realPathSeparator = getRealPathSeparator();
 		this.suffix = null;
-		initRootPath(rootPath);
+		this.rootPath = initRootPath(rootPath);
 	}
 
 	/**
@@ -51,23 +70,23 @@ public abstract class PathTemplateLocator implements TemplateLocator {
 	 * @param suffix
 	 * @param rootPath
 	 */
-	public PathTemplateLocator(int priority, String rootPath,
-			String suffix) {
-		super();
-		this.pathSeparator = getPathSeparator();
-		this.priority = priority;
+	public PathTemplateLocator(int priority, String rootPath, String suffix) {
+		super(priority);
+		this.realPathSeparator = getRealPathSeparator();
 		this.suffix = suffix;
-		initRootPath(rootPath);
-	}
-
-	private void initRootPath(String rootPath) {
-		this.rootPath = rootPath.endsWith(pathSeparator) ? rootPath
-				: (rootPath + pathSeparator);
+		this.rootPath = initRootPath(rootPath);
 	}
 
 	@Override
-	public int getPriority() {
-		return priority;
+	public void init(Configuration configuration) {
+		logger.info("{} initialized [virtualPathSeparator: {}]", getClass().getSimpleName(), getVirtualPathSeparator());
+		this.virtualPathSeparator = configuration
+				.getStringPropertyValue(VIRTUAL_PATH_SEPARATOR_KEY);
+	}
+
+	@Override
+	public Set<ConfigurationKey> getConfigurationKeys() {
+		return Collections.singleton(VIRTUAL_PATH_SEPARATOR_KEY);
 	}
 
 	public String getSuffix() {
@@ -78,24 +97,59 @@ public abstract class PathTemplateLocator implements TemplateLocator {
 		return rootPath;
 	}
 
-	public String stripSuffix(String filename) {
+	protected String stripSuffix(String filename) {
 		return suffix != null ? StringUtils.stripEnd(filename, "." + suffix)
 				: filename;
 	}
 
-	public String addSuffix(String filename) {
+	protected String addSuffix(String filename) {
 		return suffix != null ? (filename + "." + suffix) : filename;
 	}
 
-	protected String getPathSeparator() {
+	protected String getRealPathSeparator() {
 		return Strings.SLASH;
+	}
+
+	protected String getVirtualPathSeparator() {
+		return virtualPathSeparator;
+	}
+
+	/**
+	 * @param source
+	 * @return the virtual path of the template
+	 */
+	protected abstract String constructVirtualPath(T source);
+
+	/**
+	 *
+	 * @param virtualPath
+	 * @return the real path
+	 */
+	protected String toRealPath(String virtualPath) {
+
+		String[] parts = StringUtils.split(virtualPath, getVirtualPathSeparator());
+
+		StringBuilder realPath = new StringBuilder();
+		for (int i = 0; i < parts.length; i++) {
+			realPath.append(parts[i]);
+			if (i + 1 < parts.length) {
+				realPath.append(getRealPathSeparator());
+			}
+		}
+		return realPath.toString();
+	}
+
+	private String initRootPath(String rootPath) {
+		return rootPath.endsWith(realPathSeparator) ? rootPath
+				: (rootPath + realPathSeparator);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s [priority: %s, suffix: %s, rootPath: %s]",
-				getClass().getName(), getPriority(), getSuffix(),
-				getRootPath());
+		return String
+				.format("%s [priority: %s, suffix: %s, rootPath: %s]",
+						getClass().getName(), getPriority(), getSuffix(),
+						getRootPath());
 	}
 
 }

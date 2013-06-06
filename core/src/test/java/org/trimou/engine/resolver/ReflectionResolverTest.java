@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 import java.util.Map;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
 import org.trimou.Hammer;
 import org.trimou.engine.MustacheEngineBuilder;
@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class ReflectionResolverTest extends AbstractTest {
+public class ReflectionResolverTest extends AbstractEngineTest {
 
 	@Test
 	public void testResolution() {

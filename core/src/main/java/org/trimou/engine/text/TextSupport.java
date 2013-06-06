@@ -15,12 +15,14 @@
  */
 package org.trimou.engine.text;
 
+import org.trimou.engine.config.ConfigurationAware;
+
 /**
  * Text support. Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
-public interface TextSupport {
+public interface TextSupport extends ConfigurationAware {
 
 	/**
 	 * Interpolated values should be HTML escaped, if appropriate.

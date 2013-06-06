@@ -5,13 +5,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.MapResolver;
 
@@ -36,6 +40,13 @@ public class PrettyTimeResolverTest {
 					public Locale getCurrentLocale() {
 						return Locale.ENGLISH;
 					}
+					@Override
+					public void init(Configuration configuration) {
+					}
+					@Override
+					public Set<ConfigurationKey> getConfigurationKeys() {
+						return Collections.emptySet();
+					}
 				}).addResolver(resolver).build();
 
 		assertNull(resolver.resolve(null, "prettyTime"));
@@ -51,10 +62,16 @@ public class PrettyTimeResolverTest {
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
 				.omitServiceLoaderResolvers()
 				.setLocaleSupport(new LocaleSupport() {
-
 					@Override
 					public Locale getCurrentLocale() {
 						return Locale.ENGLISH;
+					}
+					@Override
+					public void init(Configuration configuration) {
+					}
+					@Override
+					public Set<ConfigurationKey> getConfigurationKeys() {
+						return Collections.emptySet();
 					}
 				})
 				.addResolver(new MapResolver())

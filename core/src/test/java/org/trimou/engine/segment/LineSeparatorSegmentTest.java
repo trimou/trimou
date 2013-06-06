@@ -3,14 +3,14 @@ package org.trimou.engine.segment;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 
 /**
  *
  * @author Martin Kouba
  */
-public class LineSeparatorSegmentTest extends AbstractTest {
+public class LineSeparatorSegmentTest extends AbstractEngineTest {
 
 	@Test
 	public void testLineSeparators() {

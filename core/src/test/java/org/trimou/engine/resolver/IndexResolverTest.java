@@ -4,14 +4,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.resolver.IndexResolver;
 
 /**
  *
  * @author Martin Kouba
  */
-public class IndexResolverTest extends AbstractTest {
+public class IndexResolverTest extends AbstractEngineTest {
 
 	@Test
 	public void testNotAnIndex() {

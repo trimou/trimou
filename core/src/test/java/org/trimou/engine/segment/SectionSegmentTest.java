@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
 import org.trimou.Mustache;
 import org.trimou.lambda.InputProcessingLambda;
@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class SectionSegmentTest extends AbstractTest {
+public class SectionSegmentTest extends AbstractEngineTest {
 
 	@Test
 	public void testBoolean() {

@@ -3,23 +3,26 @@ package org.trimou.engine.resolver.i18n;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
-import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
 
 import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Martin Kouba
  */
-public class DateTimeFormatResolverTest extends AbstractTest {
+public class DateTimeFormatResolverTest extends AbstractEngineTest {
 
 	@Override
 	@Before
@@ -33,6 +36,13 @@ public class DateTimeFormatResolverTest extends AbstractTest {
 					@Override
 					public Locale getCurrentLocale() {
 						return Locale.ENGLISH;
+					}
+					@Override
+					public void init(Configuration configuration) {
+					}
+					@Override
+					public Set<ConfigurationKey> getConfigurationKeys() {
+						return Collections.emptySet();
 					}
 				}).addResolver(new DateTimeFormatResolver()).build();
 	}

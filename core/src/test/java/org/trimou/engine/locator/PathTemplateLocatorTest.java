@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.trimou.AbstractTest;
+
 /**
  *
  * @author Martin Kouba
  */
-public class PathTemplateLocatorTest {
+public class PathTemplateLocatorTest extends AbstractTest {
 
 	protected String read(Reader reader) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(reader);

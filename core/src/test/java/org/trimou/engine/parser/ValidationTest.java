@@ -3,7 +3,7 @@ package org.trimou.engine.parser;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -12,7 +12,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class ValidationTest extends AbstractTest {
+public class ValidationTest extends AbstractEngineTest {
 
 	@Test
 	public void testTemplateValidation() {

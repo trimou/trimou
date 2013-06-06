@@ -4,7 +4,6 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -115,9 +114,9 @@ public class CDIBeanResolver extends AbstractResolver {
 	}
 
 	@Override
-	public List<ConfigurationKey> getConfigurationKeys() {
+	public Set<ConfigurationKey> getConfigurationKeys() {
 		return Collections
-				.<ConfigurationKey> singletonList(BEAN_CACHE_MAX_SIZE_KEY);
+				.<ConfigurationKey> singleton(BEAN_CACHE_MAX_SIZE_KEY);
 	}
 
 	private Object getReference(Bean<?> bean) {

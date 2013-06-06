@@ -4,7 +4,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
@@ -14,7 +14,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class ValueSegmentTest extends AbstractTest {
+public class ValueSegmentTest extends AbstractEngineTest {
 
 	@Before
 	public void buildEngine() {

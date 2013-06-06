@@ -13,36 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.resolver;
+package org.trimou.engine.config;
 
-import java.util.Collections;
 import java.util.Set;
 
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-
 /**
- * Abstract resolver.
  *
  * @author Martin Kouba
  */
-public abstract class AbstractResolver implements Resolver {
+public interface ConfigurationAware {
 
-	@Override
-	public void init(Configuration configuration) {
-		// No-op
-	}
+	/**
+	 * Initialize the instance.
+	 *
+	 * @param configuration
+	 */
+	public void init(Configuration configuration);
 
-	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		// No config keys by default
-		return Collections.emptySet();
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s [priority: %s]", getClass().getName(),
-				getPriority());
-	}
+	/**
+	 *
+	 * @return the set of configuration keys to discover
+	 */
+	public Set<ConfigurationKey> getConfigurationKeys();
 
 }

@@ -6,7 +6,7 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
 
 import com.google.common.collect.ImmutableMap;
@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableMap;
 /**
  * The very first passing test! :-)
  */
-public class SimpleTest extends AbstractTest {
+public class SimpleTest extends AbstractEngineTest {
 
 	@Test
 	public void testInterpolation() {

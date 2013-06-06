@@ -27,9 +27,7 @@ import org.trimou.engine.priority.WithPriority;
  *
  * @author Martin Kouba
  */
-public class MapTemplateLocator implements TemplateLocator {
-
-	private int priority;
+public class MapTemplateLocator extends AbstractTemplateLocator {
 
 	/**
 	 * Name to contents
@@ -37,20 +35,13 @@ public class MapTemplateLocator implements TemplateLocator {
 	private Map<String, String> templates;
 
 	public MapTemplateLocator(int priority, Map<String, String> templates) {
-		super();
-		this.priority = priority;
+		super(priority);
 		this.templates = templates;
 	}
 
 	public MapTemplateLocator(Map<String, String> templates) {
-		super();
-		this.priority = WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
+		super(WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY);
 		this.templates = templates;
-	}
-
-	@Override
-	public int getPriority() {
-		return priority;
 	}
 
 	@Override
@@ -63,7 +54,7 @@ public class MapTemplateLocator implements TemplateLocator {
 	}
 
 	@Override
-	public Set<String> getAllAvailableNames() {
+	public Set<String> getAllIdentifiers() {
 		return templates.keySet();
 	}
 

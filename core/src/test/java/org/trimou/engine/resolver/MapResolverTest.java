@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class MapResolverTest extends AbstractTest {
+public class MapResolverTest extends AbstractEngineTest {
 
 	@Test
 	public void testResolution() {

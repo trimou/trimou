@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +103,8 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
 	}
 
 	@Override
-	public List<ConfigurationKey> getConfigurationKeys() {
-		return Collections.singletonList(CUSTOM_PATTERN_KEY);
+	public Set<ConfigurationKey> getConfigurationKeys() {
+		return Collections.singleton(CUSTOM_PATTERN_KEY);
 	}
 
 	private Object getFormattableObject(Object contextObject) {

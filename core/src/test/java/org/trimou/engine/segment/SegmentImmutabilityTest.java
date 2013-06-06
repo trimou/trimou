@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.segment.SectionSegment;
 import org.trimou.engine.segment.TemplateSegment;
@@ -17,7 +17,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class SegmentImmutabilityTest extends AbstractTest {
+public class SegmentImmutabilityTest extends AbstractEngineTest {
 
 	@Test
 	public void testReadonlySegments() {

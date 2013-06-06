@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
 import org.trimou.Mustache;
 import org.trimou.lambda.Lambda;
@@ -14,7 +14,7 @@ import org.trimou.lambda.SpecCompliantLambda;
  *
  * @author Martin Kouba
  */
-public class MustacheEngineTest extends AbstractTest {
+public class MustacheEngineTest extends AbstractEngineTest {
 
 	@Before
 	public void buildEngine() {

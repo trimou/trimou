@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class PartialSegmentTest extends AbstractTest {
+public class PartialSegmentTest extends AbstractEngineTest {
 
 	@Before
 	public void buildEngine() {

@@ -13,36 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.resolver;
+package org.trimou.engine.locator;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
- * Abstract resolver.
  *
  * @author Martin Kouba
  */
-public abstract class AbstractResolver implements Resolver {
+public abstract class AbstractTemplateLocator extends
+		AbstractConfigurationAware implements TemplateLocator {
 
-	@Override
-	public void init(Configuration configuration) {
-		// No-op
+	private int priority;
+
+	/**
+	 *
+	 * @param priority
+	 */
+	protected AbstractTemplateLocator(int priority) {
+		super();
+		this.priority = priority;
 	}
 
 	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		// No config keys by default
-		return Collections.emptySet();
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s [priority: %s]", getClass().getName(),
-				getPriority());
+	public int getPriority() {
+		return priority;
 	}
 
 }

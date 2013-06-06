@@ -110,7 +110,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 			Set<String> templateNames = new HashSet<String>();
 
 			for (TemplateLocator locator : configuration.getTemplateLocators()) {
-				templateNames.addAll(locator.getAllAvailableNames());
+				templateNames.addAll(locator.getAllIdentifiers());
 			}
 
 			for (String templateName : templateNames) {

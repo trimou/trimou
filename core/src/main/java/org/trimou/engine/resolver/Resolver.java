@@ -15,10 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import java.util.List;
-
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.priority.WithPriority;
 
 /**
@@ -26,7 +23,7 @@ import org.trimou.engine.priority.WithPriority;
  *
  * @author Martin Kouba
  */
-public interface Resolver extends WithPriority {
+public interface Resolver extends WithPriority, ConfigurationAware {
 
 	/**
 	 * Resolve the value from specified context object and name. This method
@@ -41,18 +38,5 @@ public interface Resolver extends WithPriority {
 	 * @return the resolved object or <code>null</code>
 	 */
 	public Object resolve(Object contextObject, String name);
-
-	/**
-	 * Initialize the resolver instance.
-	 *
-	 * @param configuration
-	 */
-	public void init(Configuration configuration);
-
-	/**
-	 *
-	 * @return the list of configuration keys to discover
-	 */
-	public List<ConfigurationKey> getConfigurationKeys();
 
 }

@@ -16,12 +16,14 @@
 package org.trimou.engine.text;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
  *
  * @author Martin Kouba
  */
-class DefaultTextSupport implements TextSupport {
+class DefaultTextSupport extends AbstractConfigurationAware implements
+		TextSupport {
 
 	@Override
 	public String escapeHtml(String input) {

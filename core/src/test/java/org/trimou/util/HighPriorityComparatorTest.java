@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.priority.WithPriority;
 
@@ -16,7 +16,7 @@ import org.trimou.engine.priority.WithPriority;
  *
  * @author Martin Kouba
  */
-public class HighPriorityComparatorTest extends AbstractTest {
+public class HighPriorityComparatorTest extends AbstractEngineTest {
 
 	@Test
 	public void testComparator() {

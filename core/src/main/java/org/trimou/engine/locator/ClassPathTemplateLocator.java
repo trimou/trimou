@@ -16,28 +16,30 @@
 package org.trimou.engine.locator;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 /**
- * Non-recursive classpath template locator.
+ * Classpath template locator.
  *
  * Note that for WAR archive, the classpath root is WEB-INF/classes (other parts
  * of the archive are not available).
  *
  * @author Martin Kouba
  */
-public class ClassPathTemplateLocator extends PathTemplateLocator {
+public class ClassPathTemplateLocator extends FilePathTemplateLocator {
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(ClassPathTemplateLocator.class);
 
 	private ClassLoader classLoader;
 
@@ -47,8 +49,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator {
 	 * @param rootPath
 	 */
 	public ClassPathTemplateLocator(int priority, String rootPath) {
-		super(priority, rootPath);
-		this.classLoader = Thread.currentThread().getContextClassLoader();
+		this(priority, rootPath, Thread.currentThread().getContextClassLoader());
 	}
 
 	/**
@@ -58,8 +59,8 @@ public class ClassPathTemplateLocator extends PathTemplateLocator {
 	 * @param rootPath
 	 */
 	public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
-		super(priority, rootPath, suffix);
-		this.classLoader = Thread.currentThread().getContextClassLoader();
+		this(priority, rootPath, suffix, Thread.currentThread()
+				.getContextClassLoader());
 	}
 
 	/**
@@ -73,6 +74,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator {
 			String suffix, ClassLoader classLoader) {
 		super(priority, rootPath, suffix);
 		this.classLoader = classLoader;
+		checkRootDir();
 	}
 
 	/**
@@ -85,60 +87,38 @@ public class ClassPathTemplateLocator extends PathTemplateLocator {
 			ClassLoader classLoader) {
 		super(priority, rootPath);
 		this.classLoader = classLoader;
+		checkRootDir();
 	}
 
 	@Override
-	public Reader locate(String templateName) {
+	public Reader locateRealPath(String realPath) {
 		InputStream in = classLoader.getResourceAsStream(getRootPath()
-				+ addSuffix(templateName));
+				+ addSuffix(realPath));
 		if (in == null) {
 			return null;
 		}
+		logger.debug("Template located: {}", realPath);
 		return new InputStreamReader(in);
 	}
 
 	@Override
-	public Set<String> getAllAvailableNames() {
-
-		Set<String> names = new HashSet<String>();
+	protected File getRootDir() {
 
 		try {
 
-			Enumeration<URL> resources = classLoader
-					.getResources(getRootPath());
+			URL url = classLoader.getResource(getRootPath());
 
-			while (resources.hasMoreElements()) {
-				URL url = resources.nextElement();
-				String urlPath = url.getFile();
-				urlPath = URLDecoder.decode(urlPath, "UTF-8");
-				if (urlPath.startsWith("file:")) {
-					urlPath = urlPath.substring(5);
-				}
-				if (urlPath.indexOf('!') > 0) {
-					urlPath = urlPath.substring(0, urlPath.indexOf('!'));
-				}
-				File file = new File(urlPath);
-
-				if (file.isDirectory()) {
-					for (File found : file.listFiles()) {
-
-						if (found.isFile()) {
-							if (getSuffix() != null) {
-								if (found.getName().endsWith(getSuffix())) {
-									names.add(stripSuffix(found.getName()));
-								}
-							} else {
-								names.add(found.getName());
-							}
-						}
-					}
-				}
+			if (url == null) {
+				throw new MustacheException(
+						MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
+						"Root path resource not found: %s", getRootPath());
 			}
-		} catch (IOException e) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-					e);
+			return new File(URLDecoder.decode(url.getFile(), "UTF-8"));
+
+		} catch (UnsupportedEncodingException e) {
+			throw new MustacheException(
+					MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION, e);
 		}
-		return names;
 	}
 
 }

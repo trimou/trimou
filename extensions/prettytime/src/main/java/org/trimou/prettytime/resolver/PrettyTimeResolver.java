@@ -5,8 +5,8 @@ import static org.trimou.engine.priority.Priorities.after;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
@@ -66,8 +66,8 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
 	}
 
 	@Override
-	public List<ConfigurationKey> getConfigurationKeys() {
-		return Collections.singletonList(MATCH_NAME_KEY);
+	public Set<ConfigurationKey> getConfigurationKeys() {
+		return Collections.singleton(MATCH_NAME_KEY);
 	}
 
 	@Override

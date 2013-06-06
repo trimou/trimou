@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
 import org.trimou.engine.segment.InvertedSectionSegment;
@@ -18,7 +18,7 @@ import org.trimou.engine.segment.TemplateSegment;
  *
  * @author Martin Kouba
  */
-public class ParsingTest extends AbstractTest {
+public class ParsingTest extends AbstractEngineTest {
 
 	@Test
 	public void testVariable() {

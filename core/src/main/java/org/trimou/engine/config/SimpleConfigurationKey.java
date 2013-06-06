@@ -46,4 +46,11 @@ public class SimpleConfigurationKey implements ConfigurationKey {
 		return defaultValue;
 	}
 
+	@Override
+	public String toString() {
+		return String.format(
+				"SimpleConfigurationKey [key:%s, defaultValue: %s]", key,
+				defaultValue);
+	}
+
 }

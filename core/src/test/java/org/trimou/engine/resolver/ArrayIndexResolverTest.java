@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class ArrayIndexResolverTest extends AbstractTest {
+public class ArrayIndexResolverTest extends AbstractEngineTest {
 
 	@Test
 	public void testInterpolation() {

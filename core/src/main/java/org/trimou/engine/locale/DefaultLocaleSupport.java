@@ -17,13 +17,15 @@ package org.trimou.engine.locale;
 
 import java.util.Locale;
 
+import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
  * Always returns the default locale for this JVM.
  *
  * @author Martin Kouba
  */
-class DefaultLocaleSupport implements LocaleSupport {
+class DefaultLocaleSupport extends AbstractConfigurationAware implements
+		LocaleSupport {
 
 	@Override
 	public Locale getCurrentLocale() {

@@ -19,33 +19,37 @@ import java.io.Reader;
 import java.util.Set;
 
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.priority.WithPriority;
 
 /**
- * Automatically locates the template contents for the given template name.
+ * Automatically locates the template contents for the given template
+ * identifier. The form of the template identifier is not defined, however in
+ * most cases the id will represent a template name or virtual path.
  *
  * Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
-public interface TemplateLocator extends WithPriority {
+public interface TemplateLocator extends WithPriority, ConfigurationAware {
 
 	public static final int DEFAULT_SYSTEM_TEMPLATE_LOCATOR_PRIORITY = 10;
 
 	/**
-	 * @param templateName
-	 *            The template name
+	 * @param templateId
+	 *            The template identifier
 	 * @return the reader object for a template with the given name or
 	 *         <code>null</code> if no available template with the given name
 	 *         exists
 	 */
-	public Reader locate(String templateName);
+	public Reader locate(String templateId);
 
 	/**
 	 *
-	 * @return the set of names of all available templates
+	 * @return the set of names of all available template identifiers (i.e. all
+	 *         available templates)
 	 * @see Configuration#isPrecompileAllTemplates()
 	 */
-	public Set<String> getAllAvailableNames();
+	public Set<String> getAllIdentifiers();
 
 }

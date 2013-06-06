@@ -4,23 +4,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.trimou.AbstractTest;
+import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 /**
  *
  * @author Martin Kouba
  */
-public class DefaultConfigurationTest extends AbstractTest {
+public class DefaultConfigurationTest extends AbstractEngineTest {
 
 	private final ConfigurationKey testResolverKeyAlpha = new SimpleConfigurationKey(
 			"test.key.alpha", true);
@@ -56,8 +56,8 @@ public class DefaultConfigurationTest extends AbstractTest {
 					}
 
 					@Override
-					public List<ConfigurationKey> getConfigurationKeys() {
-						return ImmutableList.<ConfigurationKey> of(
+					public Set<ConfigurationKey> getConfigurationKeys() {
+						return ImmutableSet.<ConfigurationKey> of(
 								testResolverKeyAlpha, testResolverKeyBravo);
 					}
 

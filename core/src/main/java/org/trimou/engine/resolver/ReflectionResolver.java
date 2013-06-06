@@ -20,7 +20,7 @@ import static org.trimou.engine.priority.Priorities.before;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,8 +98,7 @@ public class ReflectionResolver extends AbstractResolver implements
 
 		long memberCacheMaxSize = configuration
 				.getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
-		logger.info("Initialized [memberCacheMaxSize: {}]",
-				memberCacheMaxSize);
+		logger.info("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);
 
 		memberCache = CacheBuilder.newBuilder().maximumSize(memberCacheMaxSize)
 				.removalListener(this)
@@ -121,8 +120,8 @@ public class ReflectionResolver extends AbstractResolver implements
 						}
 
 						// Find public field
-						Field foundField = Reflections.getAccesibleField(key.getClazz(),
-								key.getName());
+						Field foundField = Reflections.getAccesibleField(
+								key.getClazz(), key.getName());
 
 						if (foundField != null) {
 							return Optional
@@ -137,9 +136,9 @@ public class ReflectionResolver extends AbstractResolver implements
 	}
 
 	@Override
-	public List<ConfigurationKey> getConfigurationKeys() {
+	public Set<ConfigurationKey> getConfigurationKeys() {
 		return Collections
-				.<ConfigurationKey> singletonList(MEMBER_CACHE_MAX_SIZE_KEY);
+				.<ConfigurationKey> singleton(MEMBER_CACHE_MAX_SIZE_KEY);
 	}
 
 	@Override

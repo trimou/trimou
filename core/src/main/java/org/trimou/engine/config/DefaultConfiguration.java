@@ -20,12 +20,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.LocaleSupport;
@@ -65,13 +67,13 @@ class DefaultConfiguration implements Configuration {
 	 * @param builder
 	 */
 	DefaultConfiguration(MustacheEngineBuilder builder) {
-		loadResolvers(builder);
-		initializeTextSupport(builder);
-		initializeLocaleSupport(builder);
-		initializeTemplateLocators(builder);
+		identifyResolvers(builder);
+		identifyTextSupport(builder);
+		identifyLocaleSupport(builder);
+		identifyTemplateLocators(builder);
 		initializeGlobalData(builder);
 		initializeProperties(builder);
-		initializeResolvers();
+		initializeConfigurationAwareComponents();
 	}
 
 	@Override
@@ -197,14 +199,13 @@ class DefaultConfiguration implements Configuration {
 		throw new IllegalStateException("Unknown configuration value");
 	}
 
-	private void initializeResolvers() {
-		for (Iterator<Resolver> iterator = this.resolvers.iterator(); iterator
-				.hasNext();) {
-			iterator.next().init(this);
+	private void initializeConfigurationAwareComponents() {
+		for (ConfigurationAware component : getConfigurationAwareComponents()) {
+			component.init(this);
 		}
 	}
 
-	private void loadResolvers(MustacheEngineBuilder builder) {
+	private void identifyResolvers(MustacheEngineBuilder builder) {
 
 		resolvers = new ArrayList<Resolver>();
 		if (builder.getResolvers() != null) {
@@ -222,15 +223,7 @@ class DefaultConfiguration implements Configuration {
 
 	private void initializeProperties(MustacheEngineBuilder builder) {
 
-		List<ConfigurationKey> keysToProcess = new ArrayList<ConfigurationKey>();
-		// Global keys
-		for (ConfigurationKey key : EngineConfigurationKey.values()) {
-			keysToProcess.add(key);
-		}
-		// Resolver keys
-		for (Resolver resolver : resolvers) {
-			keysToProcess.addAll(resolver.getConfigurationKeys());
-		}
+		Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess();
 
 		properties = new HashMap<String, Object>(keysToProcess.size());
 		Properties resourceProperties = new Properties();
@@ -269,28 +262,37 @@ class DefaultConfiguration implements Configuration {
 							configKey.getDefaultValue(), value) : configKey
 							.getDefaultValue());
 		}
-
 	}
 
-	private void initializeTextSupport(MustacheEngineBuilder builder) {
+	private Set<ConfigurationKey> getConfigurationKeysToProcess() {
+		Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
+		// Global keys
+		for (ConfigurationKey key : EngineConfigurationKey.values()) {
+			keys.add(key);
+		}
+		for (ConfigurationAware component : getConfigurationAwareComponents()) {
+			keys.addAll(component.getConfigurationKeys());
+		}
+		return keys;
+	}
+
+	private void identifyTextSupport(MustacheEngineBuilder builder) {
 		if (builder.getTextSupport() != null) {
 			textSupport = builder.getTextSupport();
 		} else {
-			textSupport = new TextSupportFactory()
-					.createTextSupport();
+			textSupport = new TextSupportFactory().createTextSupport();
 		}
 	}
 
-	private void initializeLocaleSupport(MustacheEngineBuilder builder) {
+	private void identifyLocaleSupport(MustacheEngineBuilder builder) {
 		if (builder.getLocaleSupport() != null) {
 			localeSupport = builder.getLocaleSupport();
 		} else {
-			localeSupport = new LocaleSupportFactory()
-					.createLocateSupport();
+			localeSupport = new LocaleSupportFactory().createLocateSupport();
 		}
 	}
 
-	private void initializeTemplateLocators(MustacheEngineBuilder builder) {
+	private void identifyTemplateLocators(MustacheEngineBuilder builder) {
 		if (builder.getTemplateLocators() != null) {
 			List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
 					builder.getTemplateLocators());
@@ -304,6 +306,17 @@ class DefaultConfiguration implements Configuration {
 			this.globalData = ImmutableMap.copyOf(builder.getGlobalData());
 		}
 
+	}
+
+	private Set<ConfigurationAware> getConfigurationAwareComponents() {
+		Set<ConfigurationAware> components = new HashSet<ConfigurationAware>();
+		components.addAll(resolvers);
+		if (templateLocators != null) {
+			components.addAll(templateLocators);
+		}
+		components.add(localeSupport);
+		components.add(textSupport);
+		return components;
 	}
 
 }

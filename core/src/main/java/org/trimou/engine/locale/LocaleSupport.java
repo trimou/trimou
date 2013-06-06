@@ -17,12 +17,14 @@ package org.trimou.engine.locale;
 
 import java.util.Locale;
 
+import org.trimou.engine.config.ConfigurationAware;
+
 /**
  * Locale support. Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
-public interface LocaleSupport {
+public interface LocaleSupport extends ConfigurationAware {
 
 	/**
 	 * @return the current locale
