@@ -1,5 +1,7 @@
 package org.trimou.engine.segment;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
@@ -9,6 +11,10 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.lambda.InputProcessingLambda;
+import org.trimou.lambda.Lambda;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -36,6 +42,30 @@ public class ValueSegmentTest extends AbstractEngineTest {
 			}
 			System.out.println(e.getMessage());
 		}
+	}
+
+	@Test
+	public void testLambda() {
+		Lambda lambda = new InputProcessingLambda() {
+			@Override
+			public String invoke(String text) {
+				assertNull(text);
+				return "ok";
+			}
+
+			@Override
+			public boolean isReturnValueInterpolated() {
+				return true;
+			}
+		};
+		assertEquals(
+				"ok",
+				MustacheEngineBuilder
+						.newBuilder()
+						.build()
+						.compileMustache("value_segment_lambda", "{{lambda}}")
+						.render(ImmutableMap.<String, Object> of("lambda",
+								lambda)));
 	}
 
 }

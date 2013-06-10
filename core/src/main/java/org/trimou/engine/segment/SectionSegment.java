@@ -17,7 +17,6 @@ package org.trimou.engine.segment;
 
 import static org.trimou.engine.context.ExecutionContext.TargetStack.CONTEXT;
 
-import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
@@ -98,8 +97,8 @@ public class SectionSegment extends AbstractSectionSegment {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void processIterable(Appendable appendable, ExecutionContext context,
-			Object value) {
+	private void processIterable(Appendable appendable,
+			ExecutionContext context, Object value) {
 
 		Iterator iterator = ((Iterable) value).iterator();
 		IterationMeta meta = new IterationMeta(iterator);
@@ -142,22 +141,21 @@ public class SectionSegment extends AbstractSectionSegment {
 			input = getContainingLiteralBlock();
 			break;
 		case PROCESSED:
-			StringWriter processed = new StringWriter();
+			StringBuilder processed = new StringBuilder();
 			super.execute(processed, context);
 			input = processed.toString();
 			break;
 		default:
-			throw new UnsupportedOperationException();
+			throw new IllegalStateException("Unsupported lambda input type");
 		}
 
-		// Invoke lambda
 		String returnValue = lambda.invoke(input);
 
 		if (lambda.isReturnValueInterpolated()) {
 			// Parse and interpolate the return value
-			TemplateSegment temp = (TemplateSegment) getEngine().compileMustache(
-					getTemplate().getName() + "_" + System.nanoTime(),
-					returnValue);
+			TemplateSegment temp = (TemplateSegment) getEngine()
+					.compileMustache(Lambdas.constructLambdaOneoffTemplateName(this),
+							returnValue);
 			temp.execute(appendable, context);
 		} else {
 			append(appendable, returnValue);

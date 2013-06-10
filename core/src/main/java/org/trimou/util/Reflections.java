@@ -98,7 +98,6 @@ public final class Reflections {
 	 */
 	public static Method getAccesibleMethod(Class<?> clazz, String name) {
 
-		long start = System.currentTimeMillis();
 		checkArgumentNotNull(clazz);
 		checkArgumentNotNull(name);
 
@@ -119,10 +118,8 @@ public final class Reflections {
 				break;
 			}
 		}
-		logger.debug(
-				"{} accesible method {}found [type: {}, time: {} ms]",
-				new Object[] { name, found != null ? "" : "not ",
-						clazz.getName(), System.currentTimeMillis() - start });
+		logger.debug("{} accesible method {}found [type: {}]", new Object[] {
+				name, found != null ? "" : "not ", clazz.getName() });
 		return found;
 	}
 

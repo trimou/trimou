@@ -17,8 +17,6 @@ package org.trimou.engine.segment;
 
 import static org.trimou.engine.config.EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM;
 
-import java.io.StringWriter;
-
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.exception.MustacheException;
@@ -62,10 +60,9 @@ public class ValueSegment extends AbstractSegment {
 			// By default a variable miss returns an empty string
 			if (getEngineConfiguration().getBooleanPropertyValue(
 					NO_VALUE_INDICATES_PROBLEM)) {
-				throw new MustacheException(
-						MustacheProblem.RENDER_NO_VALUE,
-						"No value for the given key found: %s %s",
-						getText(), getOrigin());
+				throw new MustacheException(MustacheProblem.RENDER_NO_VALUE,
+						"No value for the given key found: %s %s", getText(),
+						getOrigin());
 			}
 		}
 	}
@@ -84,15 +81,13 @@ public class ValueSegment extends AbstractSegment {
 			Object value) {
 
 		Lambda lambda = (Lambda) value;
-
 		String returnValue = lambda.invoke(null);
 
 		if (lambda.isReturnValueInterpolated()) {
 			// Parse and interpolate the return value
-			StringWriter interpolated = new StringWriter();
+			StringBuilder interpolated = new StringBuilder();
 			TemplateSegment temp = (TemplateSegment) getEngine()
-					.compileMustache(
-							lambda.getClass() + "_" + System.nanoTime(),
+					.compileMustache(Lambdas.constructLambdaOneoffTemplateName(this),
 							returnValue);
 			temp.execute(interpolated, context);
 			writeValue(appendable, interpolated.toString());
