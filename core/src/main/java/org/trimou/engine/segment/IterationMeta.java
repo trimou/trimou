@@ -45,8 +45,9 @@ public final class IterationMeta {
 	}
 
 	/**
+	 * The first element is at index <code>1</code>.
 	 *
-	 * @return
+	 * @return the current iteration index
 	 */
 	public int getIterIndex() {
 		return index;
@@ -54,7 +55,8 @@ public final class IterationMeta {
 
 	/**
 	 *
-	 * @return
+	 * @return <code>true</code> if the iteration has more elements,
+	 *         <code>false</code> otherwise
 	 */
 	public boolean getIterHasNext() {
 		return iterator != null ? iterator.hasNext() : (index < length);

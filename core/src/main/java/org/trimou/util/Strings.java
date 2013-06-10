@@ -15,11 +15,7 @@
  */
 package org.trimou.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.trimou.annotations.Internal;
-
 
 /**
  *
@@ -41,41 +37,9 @@ public final class Strings {
 
 	public static final String SLASH = "/";
 
-	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+	public static final String FILE_SEPARATOR = System
+			.getProperty("file.separator");
 
 	public static final String KEY_SEPARATOR = ".";
-
-	/**
-	 *
-	 * @param text
-	 * @return
-	 */
-	public static List<String> readLines(String text) {
-
-		List<String> lines = new ArrayList<String>();
-		StringBuilder buffer = new StringBuilder();
-
-		for (int i = 0; i < text.length(); i++) {
-
-			char val = text.charAt(i);
-
-			if(val == LINUX_LINE_SEPARATOR.charAt(0)) {
-				buffer.append(val);
-				lines.add(buffer.toString());
-				buffer = new StringBuilder();
-			} else if((val == WINDOWS_LINE_SEPARATOR.charAt(0)) && (text.charAt(i+1) == WINDOWS_LINE_SEPARATOR.charAt(1))) {
-				buffer.append(WINDOWS_LINE_SEPARATOR);
-				lines.add(buffer.toString());
-				i++;
-			} else {
-				buffer.append(val);
-			}
-		}
-
-		if(buffer.length() > 0) {
-			lines.add(buffer.toString());
-		}
-		return lines;
-	}
 
 }

@@ -50,7 +50,7 @@ public final class Reflections {
 	 * property.
 	 *
 	 * @param clazz
-	 * @return read methods map
+	 * @return map of found accesible methods
 	 */
 	public static Map<String, Method> getAccesibleMethods(Class<?> clazz) {
 
@@ -94,7 +94,7 @@ public final class Reflections {
 	 *
 	 * @param clazz
 	 * @param name
-	 * @return the found read method or <code>null</code>
+	 * @return the found accessible method or <code>null</code>
 	 */
 	public static Method getAccesibleMethod(Class<?> clazz, String name) {
 
@@ -127,7 +127,7 @@ public final class Reflections {
 	 *
 	 * @param clazz
 	 * @param name
-	 * @return
+	 * @return the found accesible field or <code>null</code>
 	 */
 	public static Field getAccesibleField(Class<?> clazz, String name) {
 

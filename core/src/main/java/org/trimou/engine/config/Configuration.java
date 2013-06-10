@@ -63,28 +63,28 @@ public interface Configuration {
 	/**
 	 *
 	 * @param configurationKey
-	 * @return
+	 * @return the property value for the given key
 	 */
 	public Long getLongPropertyValue(ConfigurationKey configurationKey);
 
 	/**
 	 *
 	 * @param configurationKey
-	 * @return
+	 * @return the property value for the given key
 	 */
 	public Integer getIntegerPropertyValue(ConfigurationKey configurationKey);
 
 	/**
 	 *
 	 * @param configurationKey
-	 * @return
+	 * @return the property value for the given key
 	 */
 	public String getStringPropertyValue(ConfigurationKey configurationKey);
 
 	/**
 	 *
 	 * @param configurationKey
-	 * @return
+	 * @return the property value for the given key
 	 */
 	public Boolean getBooleanPropertyValue(ConfigurationKey configurationKey);
 

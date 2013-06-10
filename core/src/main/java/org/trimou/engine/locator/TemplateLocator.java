@@ -18,8 +18,8 @@ package org.trimou.engine.locator;
 import java.io.Reader;
 import java.util.Set;
 
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationAware;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
 
 /**
@@ -48,7 +48,7 @@ public interface TemplateLocator extends WithPriority, ConfigurationAware {
 	 *
 	 * @return the set of names of all available template identifiers (i.e. all
 	 *         available templates)
-	 * @see Configuration#isPrecompileAllTemplates()
+	 * @see EngineConfigurationKey#PRECOMPILE_ALL_TEMPLATES
 	 */
 	public Set<String> getAllIdentifiers();
 

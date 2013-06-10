@@ -114,21 +114,22 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
 
 	/**
 	 *
-	 * @return
+	 * @return the root directory
+	 * @see PathTemplateLocator#getRootPath()
 	 */
 	protected abstract File getRootDir();
 
 	/**
 	 *
 	 * @param realPath
-	 * @return
+	 * @return the reader for the given path
 	 */
 	protected abstract Reader locateRealPath(String realPath);
 
 	/**
 	 *
 	 * @param dir
-	 * @return
+	 * @return the list of matching files/templates
 	 */
 	protected List<File> listFiles(File dir) {
 
