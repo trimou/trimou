@@ -40,11 +40,12 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 /**
- * Reflection-based resolver. First matching accesible methods defined on the
- * context object class and its superclasses are found, afterwards accesible
- * fields.
+ * Reflection-based resolver attempts to find a matching member on the context
+ * object class and its superclasses. Methods have higher priority than fields.
  *
  * @author Martin Kouba
+ * @see Reflections#getAccesibleField(Class, String)
+ * @see Reflections#getAccesibleMethod(Class, String)
  */
 public class ReflectionResolver extends AbstractResolver implements
 		RemovalListener<MemberKey, Optional<MemberWrapper>> {
@@ -56,13 +57,15 @@ public class ReflectionResolver extends AbstractResolver implements
 
 	/**
 	 * Limit the size of the cache (e.g. to avoid problems when dynamic class
-	 * compilation is involved).
+	 * compilation is involved). Use zero value to disable the cache.
+	 *
+	 * @see CacheBuilder#maximumSize(long)
 	 */
 	public static final ConfigurationKey MEMBER_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
 			ReflectionResolver.class.getName() + ".memberCacheMaxSize", 5000l);
 
 	/**
-	 * Lazy loading cache of members
+	 * Lazy loading cache of lookup attempts (contains both hits and misses)
 	 */
 	private LoadingCache<MemberKey, Optional<MemberWrapper>> memberCache;
 
@@ -144,9 +147,10 @@ public class ReflectionResolver extends AbstractResolver implements
 	@Override
 	public void onRemoval(
 			RemovalNotification<MemberKey, Optional<MemberWrapper>> notification) {
-		logger.debug("Remove [type: {}, key: {}, cause: {}]: ", notification
-				.getKey().getClazz(), notification.getKey().getName(),
-				notification.getCause());
+		logger.debug(
+				"Remove [type: {}, key: {}, cause: {}, memberCacheSize: {}]: ",
+				notification.getKey().getClazz(), notification.getKey()
+						.getName(), notification.getCause(), memberCache.size());
 	}
 
 }
