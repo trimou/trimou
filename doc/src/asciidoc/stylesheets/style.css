@@ -98,3 +98,11 @@ p code, p tt, p tt, td.content tt {
 pre {
 	overflow: auto;
 }
+
+#content pre code {
+	background: none repeat scroll 0 0 #F8F8F8;
+}
+
+#toc ol {
+	list-style: none;
+}

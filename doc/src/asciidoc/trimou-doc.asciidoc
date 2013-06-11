@@ -1,4 +1,4 @@
-= Trimou Documentation
+= Trimou Documentation - {version}
 :toc:
 :toclevels: 4
 //:toc-title:
@@ -438,7 +438,9 @@ TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup
 
 SPI: +org.trimou.engine.locator.TemplateLocator+
 
-Template locators automatically load the template contents for the given template name. There are three built-in implementations. +org.trimou.engine.locator.FilesystemTemplateLocator+ loads templates from the given root directory on the filesystem (watch out, this wouldn't be likely portable across various operating systems). +org.trimou.engine.locator.ClassPathTemplateLocator+ makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. +org.trimou.engine.locator.MapTemplateLocator+ is backed by a +Map+.
+Template locators automatically locate the template contents for the given template identifier. The form of the template identifier is not defined, however in most cases the id will represent a template name, e.g. +foo+ and +foo.html+, or virtual path like +order/orderDetail+. The default virtual path separator is +/+ and can be configured via +org.trimou.engine.locator.PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY+.
+
+There are three basic built-in implementations. +org.trimou.engine.locator.FilesystemTemplateLocator+ finds templates on the filesystem, within the given root directory (watch out, this wouldn't be likely portable across various operating systems). +org.trimou.engine.locator.ClassPathTemplateLocator+ makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. +org.trimou.engine.locator.MapTemplateLocator+ is backed by a +Map+. See javadoc for more configuration info.
 
 TIP: Locators with *higher priority* are called *first*.
 
@@ -498,6 +500,14 @@ At the moment only Servlet 3.0 API is supported.
 ==== ServletContextTemplateLocator
 
 Locates the template anywhere in the web app. The root path must begin with a +/+ and is interpreted as relative to the current context root, or relative to the +/META-INF/resources+ directory of a JAR file inside the web application's +/WEB-INF/lib+ directory.
+
+[source,java]
+----
+MustacheEngineBuilder
+  .newBuilder()
+  .addTemplateLocator(new ServletContextTemplateLocator(10, "/WEB-INF/templates"))
+  .build();
+----
 
 ==== HttpServletRequestResolver
 
