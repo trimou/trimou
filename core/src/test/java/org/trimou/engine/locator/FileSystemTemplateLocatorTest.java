@@ -66,7 +66,6 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
 
 	@Test
 	public void testInvalidRootDir() {
-
 		try {
 			new FileSystemTemplateLocator(1, "_?dsss");
 			fail();
@@ -76,7 +75,32 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
 				fail("Invalid problem code: " + e);
 			}
 		}
+	}
 
+	@Test
+	public void testCustomVirtualPathSeparator() throws IOException {
+
+		TemplateLocator locator = new FileSystemTemplateLocator(1,
+				"src/test/resources/locator/file", "foo");
+
+		// Just to init the locator
+		MustacheEngineBuilder
+				.newBuilder()
+				.addTemplateLocator(locator)
+				.setProperty(PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY,
+						"*").build();
+
+		Set<String> names = locator.getAllIdentifiers();
+		assertEquals(4, names.size());
+		assertTrue(names.contains("index"));
+		assertTrue(names.contains("home"));
+		assertTrue(names.contains("sub*bar"));
+		assertTrue(names.contains("sub*subsub*qux"));
+
+		assertEquals("{{foo}}", read(locator.locate("index")));
+		assertEquals("bar", read(locator.locate("home")));
+		assertEquals("{{foo}}", read(locator.locate("sub*bar")));
+		assertEquals("{{bar}}", read(locator.locate("sub*subsub*qux")));
 	}
 
 }

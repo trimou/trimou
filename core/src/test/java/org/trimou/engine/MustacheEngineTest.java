@@ -7,8 +7,11 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
 import org.trimou.Mustache;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -54,11 +57,26 @@ public class MustacheEngineTest extends AbstractEngineTest {
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
 				.addGlobalData("foo", true)
 				.addGlobalData("archiveTypes", ArchiveType.class)
-				.addGlobalData("bold", bold)
-				.addGlobalData("italic", italic).build()
-				.compileMustache("global_data", templateContents);
+				.addGlobalData("bold", bold).addGlobalData("italic", italic)
+				.build().compileMustache("global_data", templateContents);
 
-		assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear|JAR", mustache.render(null));
+		assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear|JAR",
+				mustache.render(null));
+	}
+
+	@Test
+	public void testDelimitersConfiguration() {
+		assertEquals(
+				"bar",
+				MustacheEngineBuilder
+						.newBuilder()
+						.setProperty(EngineConfigurationKey.START_DELIMITER,
+								"<%")
+						.setProperty(EngineConfigurationKey.END_DELIMITER, "//")
+						.build()
+						.compileMustache("delimiters_configuration", "<%foo//")
+						.render(ImmutableMap.<String, Object> of("foo", "bar")));
+
 	}
 
 }

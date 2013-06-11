@@ -79,9 +79,9 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
 	@Override
 	public void init(Configuration configuration) {
-		logger.info("{} initialized [virtualPathSeparator: {}]", getClass().getSimpleName(), getVirtualPathSeparator());
 		this.virtualPathSeparator = configuration
 				.getStringPropertyValue(VIRTUAL_PATH_SEPARATOR_KEY);
+		logger.info("{} initialized [virtualPathSeparator: {}]", getClass().getSimpleName(), getVirtualPathSeparator());
 	}
 
 	@Override

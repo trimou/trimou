@@ -40,9 +40,11 @@ public class PrettyTimeResolverTest {
 					public Locale getCurrentLocale() {
 						return Locale.ENGLISH;
 					}
+
 					@Override
 					public void init(Configuration configuration) {
 					}
+
 					@Override
 					public Set<ConfigurationKey> getConfigurationKeys() {
 						return Collections.emptySet();
@@ -66,15 +68,16 @@ public class PrettyTimeResolverTest {
 					public Locale getCurrentLocale() {
 						return Locale.ENGLISH;
 					}
+
 					@Override
 					public void init(Configuration configuration) {
 					}
+
 					@Override
 					public Set<ConfigurationKey> getConfigurationKeys() {
 						return Collections.emptySet();
 					}
-				})
-				.addResolver(new MapResolver())
+				}).addResolver(new MapResolver())
 				.addResolver(new PrettyTimeResolver()).build();
 
 		String expected = new Resources_en().getString("JustNowPastPrefix");
@@ -93,6 +96,37 @@ public class PrettyTimeResolverTest {
 				engine.compileMustache("pretty_long", "{{now.prettyTime}}")
 						.render(ImmutableMap.<String, Object> of("now",
 								now.getTimeInMillis())));
+	}
+
+	@Test
+	public void testCustomMatchName() {
+
+		PrettyTimeResolver resolver = new PrettyTimeResolver();
+
+		// Just to init the resolver
+		MustacheEngineBuilder.newBuilder().omitServiceLoaderResolvers()
+				.setLocaleSupport(new LocaleSupport() {
+
+					@Override
+					public Locale getCurrentLocale() {
+						return Locale.ENGLISH;
+					}
+
+					@Override
+					public void init(Configuration configuration) {
+					}
+
+					@Override
+					public Set<ConfigurationKey> getConfigurationKeys() {
+						return Collections.emptySet();
+					}
+				}).addResolver(resolver)
+				.setProperty(PrettyTimeResolver.MATCH_NAME_KEY, "pretty")
+				.build();
+
+		assertNull(resolver.resolve(null, "pretty"));
+		assertNull(resolver.resolve("foo", "pretty"));
+		assertNotNull(resolver.resolve(new Date(), "pretty"));
 	}
 
 }

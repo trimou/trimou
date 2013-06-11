@@ -66,7 +66,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
 			if (!isFileUsable(templateFile)) {
 				return null;
 			}
-			logger.debug("Template located: {}", realPath);
+			logger.debug("Template located: {}", templateFile.getAbsolutePath());
 			return new FileReader(templateFile);
 
 		} catch (FileNotFoundException e) {

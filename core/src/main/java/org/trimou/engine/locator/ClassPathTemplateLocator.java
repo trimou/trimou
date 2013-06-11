@@ -97,7 +97,7 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
 		if (in == null) {
 			return null;
 		}
-		logger.debug("Template located: {}", realPath);
+		logger.debug("Template located: {}", getRootPath() + realPath);
 		return new InputStreamReader(in);
 	}
 

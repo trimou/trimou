@@ -67,7 +67,8 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * The builder cleanup is performed after the engine is built.
+	 * Builds the engine instance. The builder cleanup is performed after the
+	 * engine is built.
 	 *
 	 * @return the built engine
 	 */
@@ -84,7 +85,8 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * Add a value (e.g. Lambda) that is available during execution of all templates.
+	 * Adds a value (e.g. Lambda) that is available during execution of all
+	 * templates.
 	 *
 	 * Global values have to be thread-safe.
 	 *
@@ -101,6 +103,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
+	 * Adds a template locator.
 	 *
 	 * @param locator
 	 * @return self
@@ -114,7 +117,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * Add a custom resolver.
+	 * Adds a context object resolver.
 	 *
 	 * @param resolver
 	 * @return self
@@ -128,6 +131,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
+	 * Sets a configuration property.
 	 *
 	 * @param key
 	 * @param value
@@ -139,6 +143,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
+	 * Sets a configuration property.
 	 *
 	 * @param configurationKey
 	 * @param value
@@ -151,6 +156,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
+	 * Sets a text support instance.
 	 *
 	 * @param textSupport
 	 * @return selg
@@ -161,6 +167,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
+	 * Sets a locale support instance.
 	 *
 	 * @param localeSupport
 	 * @return self
@@ -187,7 +194,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * Do not use ServiceLoader to load resolvers.
+	 * Don't use the ServiceLoader mechanism to load resolvers.
 	 */
 	public MustacheEngineBuilder omitServiceLoaderResolvers() {
 		this.omitServiceLoaderResolvers = true;
