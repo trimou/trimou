@@ -1,41 +1,31 @@
 package org.trimou.util;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.Map;
 
 import org.junit.Test;
 
 public class ReflectionsTest {
 
 	@Test
-	public void testGetReadMethods() {
-		Map<String, Method> readMethods = Reflections
-				.getAccesibleMethods(Charlie.class);
-		assertEquals(6, readMethods.size());
-	}
-
-	@Test
-	public void testGetAccesibleMembers() {
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "name"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "old"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class,
+	public void testGetMembers() {
+		assertNotNull(Reflections.findMethod(Charlie.class, "name"));
+		assertNotNull(Reflections.findMethod(Charlie.class, "old"));
+		assertNotNull(Reflections.findMethod(Charlie.class,
 				"hasSomething"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class,
+		assertNotNull(Reflections.findMethod(Charlie.class,
 				"getAnotherName"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class,
+		assertNotNull(Reflections.findMethod(Charlie.class,
 				"anotherName"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "isOk"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "ok"));
-		assertNotNull(Reflections.getAccesibleMethod(Charlie.class, "info"));
-		assertNull(Reflections.getAccesibleMethod(Charlie.class, "getPrice"));
-		assertNotNull(Reflections.getAccesibleField(Charlie.class,
+		assertNotNull(Reflections.findMethod(Charlie.class, "isOk"));
+		assertNotNull(Reflections.findMethod(Charlie.class, "ok"));
+		assertNotNull(Reflections.findMethod(Charlie.class, "info"));
+		assertNull(Reflections.findMethod(Charlie.class, "getPrice"));
+		assertNotNull(Reflections.findField(Charlie.class,
 				"publicField"));
-		assertNull(Reflections.getAccesibleField(Charlie.class, "privateField"));
+		assertNull(Reflections.findField(Charlie.class, "privateField"));
 	}
 
 	public static class Alpha {

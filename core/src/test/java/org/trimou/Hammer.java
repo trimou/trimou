@@ -4,6 +4,8 @@ public class Hammer {
 
 	public String nail = "NAIL";
 
+	public Integer age = Integer.valueOf(15);
+
 	public String getName() {
 		return "Edgar";
 	}

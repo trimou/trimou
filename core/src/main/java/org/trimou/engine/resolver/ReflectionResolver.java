@@ -44,8 +44,8 @@ import com.google.common.cache.RemovalNotification;
  * object class and its superclasses. Methods have higher priority than fields.
  *
  * @author Martin Kouba
- * @see Reflections#getAccesibleField(Class, String)
- * @see Reflections#getAccesibleMethod(Class, String)
+ * @see Reflections#findField(Class, String)
+ * @see Reflections#findMethod(Class, String)
  */
 public class ReflectionResolver extends AbstractResolver implements
 		RemovalListener<MemberKey, Optional<MemberWrapper>> {
@@ -113,7 +113,7 @@ public class ReflectionResolver extends AbstractResolver implements
 
 						// Find accesible method with the given name, no
 						// parameters and non-void return type
-						Method foundMethod = Reflections.getAccesibleMethod(
+						Method foundMethod = Reflections.findMethod(
 								key.getClazz(), key.getName());
 
 						if (foundMethod != null) {
@@ -123,7 +123,7 @@ public class ReflectionResolver extends AbstractResolver implements
 						}
 
 						// Find public field
-						Field foundField = Reflections.getAccesibleField(
+						Field foundField = Reflections.findField(
 								key.getClazz(), key.getName());
 
 						if (foundField != null) {

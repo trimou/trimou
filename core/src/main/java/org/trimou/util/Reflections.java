@@ -21,8 +21,8 @@ import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,47 +45,7 @@ public final class Reflections {
 	}
 
 	/**
-	 * If the name of the method starts with <b>get/is</b> prefix (JavaBean
-	 * naming convention), the key in the map is the name of the corresponding
-	 * property.
-	 *
-	 * @param clazz
-	 * @return map of found accesible methods
-	 */
-	public static Map<String, Method> getAccesibleMethods(Class<?> clazz) {
-
-		long start = System.currentTimeMillis();
-		checkArgumentNotNull(clazz);
-
-		Method[] clazzMethods = clazz.getMethods();
-		Map<String, Method> readMethods = new HashMap<String, Method>(
-				clazzMethods.length);
-
-		for (Method method : clazzMethods) {
-
-			if (!isAccesibleMethod(method)) {
-				continue;
-			}
-
-			String methodName = method.getName();
-
-			if (methodName.startsWith(GET_PREFIX)) {
-				readMethods.put(decapitalize(methodName, GET_PREFIX), method);
-			} else if (methodName.startsWith(IS_PREFIX)) {
-				readMethods.put(decapitalize(methodName, IS_PREFIX), method);
-			} else {
-				readMethods.put(methodName, method);
-			}
-		}
-		logger.debug(
-				"Accesible methods [type: {}, found: {}, time: {} ms]",
-				new Object[] { clazz.getName(), readMethods.size(),
-						System.currentTimeMillis() - start });
-		return readMethods;
-	}
-
-	/**
-	 * First try to find a method with the same name. Afterwards try JavaBean
+	 * First tries to find a method with the same name, afterwards method following JavaBean
 	 * naming convention.
 	 *
 	 * If the name of the method starts with <b>get/is</b> prefix (JavaBean
@@ -94,18 +54,18 @@ public final class Reflections {
 	 *
 	 * @param clazz
 	 * @param name
-	 * @return the found accessible method or <code>null</code>
+	 * @return the found method or <code>null</code>
 	 */
-	public static Method getAccesibleMethod(Class<?> clazz, String name) {
+	public static Method findMethod(Class<?> clazz, String name) {
 
 		checkArgumentNotNull(clazz);
 		checkArgumentNotNull(name);
 
 		Method found = null;
 
-		for (Method method : clazz.getMethods()) {
+		for (Method method : getMethods(clazz)) {
 
-			if (!isAccesibleMethod(method)) {
+			if (!isMethodValid(method)) {
 				continue;
 			}
 
@@ -118,32 +78,53 @@ public final class Reflections {
 				break;
 			}
 		}
-		logger.debug("{} accesible method {}found [type: {}]", new Object[] {
+		logger.debug("{} method {}found [type: {}]", new Object[] {
 				name, found != null ? "" : "not ", clazz.getName() });
 		return found;
 	}
 
+	private static Method[] getMethods(final Class<?> clazz) {
+		return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+
+			@Override
+			public Method[] run() {
+				return clazz.getMethods();
+			}
+		});
+	}
+
 	/**
+	 * Tries to find a public field with the given name on the given class.
 	 *
 	 * @param clazz
 	 * @param name
-	 * @return the found accesible field or <code>null</code>
+	 * @return the found field or <code>null</code>
 	 */
-	public static Field getAccesibleField(Class<?> clazz, String name) {
+	public static Field findField(Class<?> clazz, String name) {
 
 		checkArgumentNotNull(clazz);
 		checkArgumentNotNull(name);
 
 		Field found = null;
 
-		for (Field accesibleField : clazz.getFields()) {
-			if (accesibleField.getName().equals(name)) {
-				found = accesibleField;
+		for (Field field : getFields(clazz)) {
+			if (field.getName().equals(name)) {
+				found = field;
 			}
 		}
-		logger.debug("{} accesible field {}found [type: {}]", new Object[] {
+		logger.debug("{} field {}found [type: {}]", new Object[] {
 				name, found != null ? "" : "not ", clazz.getName() });
 		return found;
+	}
+
+	private static Field[] getFields(final Class<?> clazz) {
+		return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
+
+			@Override
+			public Field[] run() {
+				return clazz.getFields();
+			}
+		});
 	}
 
 	/**
@@ -158,7 +139,7 @@ public final class Reflections {
 	 * @param method
 	 * @return <code>true</code> if the given method is considered a read method
 	 */
-	public static boolean isAccesibleMethod(Method method) {
+	public static boolean isMethodValid(Method method) {
 
 		if (method == null) {
 			return false;
