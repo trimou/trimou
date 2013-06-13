@@ -59,22 +59,27 @@ public class ServletContextTemplateLocatorTest {
 		TemplateLocator locator3 = new ServletContextTemplateLocator(
 				8, "/WEB-INF/templates");
 
-		Set<String> locator1Names = locator1.getAllIdentifiers();
-		assertEquals(3, locator1Names.size());
-		assertTrue(locator1Names.contains("foo"));
-		assertTrue(locator1Names.contains("qux"));
-		assertTrue(locator1Names.contains("cool/charlie"));
+		// Just to init the locators
+		MustacheEngineBuilder.newBuilder()
+				.addTemplateLocator(locator1).addTemplateLocator(locator2)
+				.addTemplateLocator(locator3).build();
 
-		Set<String> locator2Names = locator2.getAllIdentifiers();
-		assertEquals(1, locator2Names.size());
-		assertTrue(locator2Names.contains("bar"));
+		Set<String> locator1Ids = locator1.getAllIdentifiers();
+		assertEquals(3, locator1Ids.size());
+		assertTrue(locator1Ids.contains("foo"));
+		assertTrue(locator1Ids.contains("qux"));
+		assertTrue(locator1Ids.contains("cool/charlie"));
 
-		Set<String> locator3Names = locator3.getAllIdentifiers();
-		assertEquals(4, locator3Names.size());
-		assertTrue(locator3Names.contains("foo.html"));
-		assertTrue(locator3Names.contains("qux.html"));
-		assertTrue(locator3Names.contains("alpha.xml"));
-		assertTrue(locator3Names.contains("cool/charlie.html"));
+		Set<String> locator2Ids = locator2.getAllIdentifiers();
+		assertEquals(1, locator2Ids.size());
+		assertTrue(locator2Ids.contains("bar"));
+
+		Set<String> locator3Ids = locator3.getAllIdentifiers();
+		assertEquals(4, locator3Ids.size());
+		assertTrue(locator3Ids.contains("foo.html"));
+		assertTrue(locator3Ids.contains("qux.html"));
+		assertTrue(locator3Ids.contains("alpha.xml"));
+		assertTrue(locator3Ids.contains("cool/charlie.html"));
 	}
 
 	@Test

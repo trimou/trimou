@@ -72,15 +72,15 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
 			return Collections.emptySet();
 		}
 
-		Set<String> names = new HashSet<String>();
+		Set<String> identifiers = new HashSet<String>();
 		for (File file : files) {
 			if (isFileUsable(file)) {
-				String name = stripSuffix(constructVirtualPath(file));
-				names.add(name);
-				logger.debug("Template name available: {}", name);
+				String id = stripSuffix(constructVirtualPath(file));
+				identifiers.add(id);
+				logger.debug("Template available: {}", id);
 			}
 		}
-		return names;
+		return identifiers;
 	}
 
 	@Override

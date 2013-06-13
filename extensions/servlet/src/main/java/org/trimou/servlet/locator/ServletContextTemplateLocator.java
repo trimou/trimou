@@ -107,7 +107,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 		ServletContext ctx = getServletContext();
 
 		if (ctx == null) {
-			logger.warn("Servlet context not available - cannot get all available names");
+			logger.warn("Servlet context not available - cannot get all available identifiers");
 			return Collections.emptySet();
 		}
 
@@ -117,13 +117,13 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 			return Collections.emptySet();
 		}
 
-		Set<String> names = new HashSet<String>();
+		Set<String> identifiers = new HashSet<String>();
 		for (String resource : resources) {
-			String name = stripSuffix(constructVirtualPath(resource));
-			names.add(name);
-			logger.debug("Template name available: {}", name);
+			String id = stripSuffix(constructVirtualPath(resource));
+			identifiers.add(id);
+			logger.debug("Template available: {}", id);
 		}
-		return names;
+		return identifiers;
 	}
 
 	private Set<String> listResources(String path, ServletContext ctx) {
