@@ -69,13 +69,20 @@ class DefaultMustacheEngine implements MustacheEngine {
 
 		configuration = new ConfigurationFactory().createConfiguration(builder);
 
+		CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
+
+		if (configuration
+				.getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE_ENABLED)) {
+			// Disable template cache
+			cacheBuilder.maximumSize(0);
+		}
+
 		// Template cache
-		templateCache = CacheBuilder.newBuilder().build(
-				new CacheLoader<String, Optional<Mustache>>() {
+		templateCache = cacheBuilder
+				.build(new CacheLoader<String, Optional<Mustache>>() {
 
 					@Override
-					public Optional<Mustache> load(String key)
-							throws Exception {
+					public Optional<Mustache> load(String key) throws Exception {
 
 						if (configuration.getTemplateLocators() == null
 								|| configuration.getTemplateLocators()

@@ -26,49 +26,50 @@ import org.apache.commons.lang3.text.WordUtils;
 public enum EngineConfigurationKey implements ConfigurationKey {
 
 	/**
-	 * The defeault start delimiter (e.g. <code>}}</code>)
+	 * The defeault start delimiter (e.g. <code>}}</code>).
 	 */
 	START_DELIMITER("{{"),
 	/**
-	 * The defeault end delimiter (e.g. <code>}}</code>)
+	 * The defeault end delimiter (e.g. <code>}}</code>).
 	 */
 	END_DELIMITER("}}"),
 	/**
 	 * <code>true</code> if precompilation of all available templates is
-	 * required, <code>false</code> otherwise
+	 * required, <code>false</code> otherwise.
 	 */
 	PRECOMPILE_ALL_TEMPLATES(false),
 	/**
 	 * <code>true</code> if standalone lines should be removed (see also
-	 * Mustache spec), <code>false</code> otherwise
+	 * Mustache spec), <code>false</code> otherwise.
 	 */
 	REMOVE_STANDALONE_LINES(true),
 	/**
 	 * <code>true</code> if unnecessary segments should be removed (e.g.
-	 * comments), <code>false</code> otherwise
+	 * comments), <code>false</code> otherwise.
 	 */
 	REMOVE_UNNECESSARY_SEGMENTS(true),
 	/**
 	 * <code>true</code> if lookup miss should result in exception,
-	 * <code>false</code> otherwise
+	 * <code>false</code> otherwise.
 	 */
 	NO_VALUE_INDICATES_PROBLEM(false),
 	/**
 	 * <code>true</code> in case of debug mode should be enabled,
-	 * <code>false</code> otherwise
-	 */
+	 * <code>false</code> otherwise. Debug mode disables the template cache and
+	 * provides some more logging during template rendering.
+	 * */
 	DEBUG_MODE_ENABLED(false),
 	/**
 	 * <code>true</code> in case of the section-based literal blocks should be
 	 * cached (useful to optimize some lambdas processing scenarios, but memory
-	 * intensive), <code>false</code> otherwise
+	 * intensive), <code>false</code> otherwise.
 	 */
 	CACHE_SECTION_LITERAL_BLOCK(false),
 	/**
-	 * The limit of recursive template invocation; 0 - recursive invocation is forbidden
+	 * The limit of recursive template invocation; 0 - recursive invocation is
+	 * forbidden.
 	 */
-	TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10),
-	;
+	TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10), ;
 
 	private Object defaultValue;
 
