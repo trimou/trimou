@@ -28,11 +28,11 @@ public class ParsingTest extends AbstractEngineTest {
 
 		List<Segment> segments = template.getSegments();
 		assertEquals(5, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.VALUE, segments.get(1).getType());
-		assertEquals(SegmentType.TEXT, segments.get(2).getType());
-		assertEquals(SegmentType.VALUE, segments.get(1).getType());
-		assertEquals(SegmentType.TEXT, segments.get(2).getType());
+		validateSegment(segments, 0, SegmentType.TEXT, "Hello ");
+		validateSegment(segments, 1, SegmentType.VALUE, "foo");
+		validateSegment(segments, 2, SegmentType.TEXT, " and ");
+		validateSegment(segments, 3, SegmentType.VALUE, "me");
+		validateSegment(segments, 4, SegmentType.TEXT, "!");
 	}
 
 	@Test
@@ -42,8 +42,9 @@ public class ParsingTest extends AbstractEngineTest {
 				"parse_comment", "{{! ignore}}{{me}}");
 
 		List<Segment> segments = template.getSegments();
+		// Comment tag is removed by default
 		assertEquals(1, segments.size());
-		assertEquals(SegmentType.VALUE, segments.get(0).getType());
+		validateSegment(segments, 0, SegmentType.VALUE, "me");
 	}
 
 	@Test
@@ -55,8 +56,8 @@ public class ParsingTest extends AbstractEngineTest {
 
 		List<Segment> segments = template.getSegments();
 		assertEquals(2, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.SECTION, segments.get(1).getType());
+		validateSegment(segments, 0, SegmentType.TEXT, "This is a ");
+		validateSegment(segments, 1, SegmentType.SECTION, "section");
 		assertEquals(3, ((SectionSegment) segments.get(1)).getSegments().size());
 		// System.out.println(template.getSegmentTreeAsString());
 	}
@@ -70,8 +71,8 @@ public class ParsingTest extends AbstractEngineTest {
 
 		List<Segment> segments = template.getSegments();
 		assertEquals(2, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.INVERTED_SECTION, segments.get(1).getType());
+		validateSegment(segments, 0, SegmentType.TEXT, "This is a ");
+		validateSegment(segments, 1, SegmentType.INVERTED_SECTION, "section");
 		assertEquals(1, ((InvertedSectionSegment) segments.get(1))
 				.getSegments().size());
 	}
@@ -84,13 +85,14 @@ public class ParsingTest extends AbstractEngineTest {
 				"This {{=%% %%=}} is a %%foo%% jupi %%={{ }}=%% {{bar}}");
 
 		List<Segment> segments = template.getSegments();
+		// Delimiters tag is removed by default
 		assertEquals(6, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.TEXT, segments.get(1).getType());
-		assertEquals(SegmentType.VALUE, segments.get(2).getType());
-		assertEquals(SegmentType.TEXT, segments.get(3).getType());
-		assertEquals(SegmentType.TEXT, segments.get(4).getType());
-		assertEquals(SegmentType.VALUE, segments.get(5).getType());
+		validateSegment(segments, 0, SegmentType.TEXT, "This ");
+		validateSegment(segments, 1, SegmentType.TEXT, " is a ");
+		validateSegment(segments, 2, SegmentType.VALUE, "foo");
+		validateSegment(segments, 3, SegmentType.TEXT, " jupi ");
+		validateSegment(segments, 4, SegmentType.TEXT, " ");
+		validateSegment(segments, 5, SegmentType.VALUE, "bar");
 	}
 
 	@Test
@@ -101,9 +103,9 @@ public class ParsingTest extends AbstractEngineTest {
 
 		List<Segment> segments = template.getSegments();
 		assertEquals(3, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.PARTIAL, segments.get(1).getType());
-		assertEquals(SegmentType.TEXT, segments.get(2).getType());
+		validateSegment(segments, 0, SegmentType.TEXT, "START");
+		validateSegment(segments, 1, SegmentType.PARTIAL, "partial");
+		validateSegment(segments, 2, SegmentType.TEXT, "END");
 	}
 
 	@Test
@@ -115,13 +117,13 @@ public class ParsingTest extends AbstractEngineTest {
 		List<Segment> segments = template.getSegments();
 		assertEquals(9, segments.size());
 		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(0).getType());
-		assertEquals(SegmentType.TEXT, segments.get(1).getType());
-		assertEquals(SegmentType.VALUE, segments.get(2).getType());
+		validateSegment(segments, 1, SegmentType.TEXT, "Hello ");
+		validateSegment(segments, 2, SegmentType.VALUE, "foo");
 		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(3).getType());
 		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(4).getType());
-		assertEquals(SegmentType.TEXT, segments.get(5).getType());
-		assertEquals(SegmentType.VALUE, segments.get(6).getType());
-		assertEquals(SegmentType.TEXT, segments.get(7).getType());
+		validateSegment(segments, 5, SegmentType.TEXT, " and ");
+		validateSegment(segments, 6, SegmentType.VALUE, "me");
+		validateSegment(segments, 7, SegmentType.TEXT, "!");
 		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(8).getType());
 	}
 
@@ -197,6 +199,12 @@ public class ParsingTest extends AbstractEngineTest {
 		assertEquals(var1, segments.get(1).getText());
 		assertEquals(SegmentType.VALUE, segments.get(2).getType());
 		assertEquals(var2, segments.get(2).getText());
+	}
+
+	private void validateSegment(List<Segment> segments, int index, SegmentType expectedType, String expectedText) {
+		Segment segment = segments.get(index);
+		assertEquals(expectedType, segment.getType());
+		assertEquals(expectedText, segment.getText());
 	}
 
 }
