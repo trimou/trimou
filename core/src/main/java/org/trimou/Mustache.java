@@ -18,7 +18,10 @@ package org.trimou;
 import java.util.Map;
 
 /**
- * Compiled mustache template.
+ * Compiled mustache template. Template is considered immutable once the
+ * compilation is finished.
+ *
+ * @author Martin Kouba
  */
 public interface Mustache {
 

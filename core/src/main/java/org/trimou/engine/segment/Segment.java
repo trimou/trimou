@@ -20,9 +20,8 @@ import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda.InputType;
 
 /**
- * Compiled template segment.
- *
- * Any segment is considered immutable once the compilation is finished.
+ * Compiled template segment. Any segment is considered immutable once the
+ * compilation is finished.
  *
  * @author Martin Kouba
  */
@@ -61,7 +60,7 @@ public interface Segment {
 	public void execute(Appendable appendable, ExecutionContext context);
 
 	/**
-	 * Perform post processing, e.g. optimization.
+	 * Perform compilation post processing, e.g. optimization.
 	 */
 	public void performPostProcessing();
 
