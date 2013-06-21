@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.ConfigurationKey;
@@ -79,7 +80,11 @@ public class MustacheEngineBuilder {
 				callback.engineBuilt(engine);
 			}
 		}
-		logger.info("Engine built... \n{}", engine.toString());
+		Package pack = MustacheEngine.class.getPackage();
+		logger.info(
+				"Engine built {}\n{}",
+				StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
+						: pack.getSpecificationVersion(), engine.toString());
 		performCleanup();
 		return engine;
 	}

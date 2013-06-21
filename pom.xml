@@ -57,6 +57,7 @@
         <version.gson>2.2.2</version.gson>
         <version.arquillian>1.0.3.Final</version.arquillian>
         <version.wildfly>8.0.0.Alpha1</version.wildfly>
+        <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     </properties>
 
     <build>
@@ -79,6 +80,21 @@
                         <org.slf4j.simpleLogger.defaultLogLevel>WARN</org.slf4j.simpleLogger.defaultLogLevel>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-jar-plugin</artifactId>
+               <version>2.3.2</version>
+               <configuration>
+                  <archive>
+                     <manifestEntries>
+                        <Implementation-Title>${project.name}</Implementation-Title>
+                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                        <Specification-Title>${project.name}</Specification-Title>
+                        <Specification-Version>${project.version}</Specification-Version>
+                     </manifestEntries>
+                  </archive>
+               </configuration>
             </plugin>
         </plugins>
     </build>
