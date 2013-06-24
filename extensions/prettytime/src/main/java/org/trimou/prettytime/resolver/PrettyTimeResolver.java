@@ -15,6 +15,7 @@ import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.i18n.LocaleAwareResolver;
 
 import com.google.common.cache.CacheBuilder;
@@ -44,7 +45,8 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
 	private LoadingCache<Locale, PrettyTime> prettyTimeCache;
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name,
+			ResolutionContext context) {
 
 		if (contextObject == null || !matchName.equals(name)) {
 			return null;

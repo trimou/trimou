@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.TemplateSegment;
@@ -134,13 +135,13 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 	 * @param name
 	 * @return the resolved leading context object
 	 */
-	protected Object resolveLeadingContextObject(String name) {
+	protected Object resolveLeadingContextObject(String name, ResolutionContext context) {
 
 		Object leading = null;
 
 		for (Object contextObject : contextObjectStack) {
 
-			leading = resolve(contextObject, name);
+			leading = resolve(contextObject, name, context);
 
 			if (leading != null) {
 				// Skip following
@@ -149,7 +150,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 		}
 		if (leading == null) {
 			// Try to resolve context unrelated objects
-			leading = resolve(null, name);
+			leading = resolve(null, name, context);
 		}
 		return leading;
 	}
@@ -160,10 +161,10 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 	 * @param name
 	 * @return the resolved object
 	 */
-	protected Object resolve(Object contextObject, String name) {
+	protected Object resolve(Object contextObject, String name, ResolutionContext context) {
 		Object value = null;
 		for (Resolver resolver : resolvers()) {
-			value = resolver.resolve(contextObject, name);
+			value = resolver.resolve(contextObject, name, context);
 			if (value != null) {
 				break;
 			}

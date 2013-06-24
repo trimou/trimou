@@ -19,6 +19,7 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.List;
 
+
 /**
  * Resolve index-based access to lists.
  *
@@ -34,7 +35,7 @@ public class ListIndexResolver extends IndexResolver {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null || notAnIndex(name)
 				|| !(contextObject instanceof List)) {

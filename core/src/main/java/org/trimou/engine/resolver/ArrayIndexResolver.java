@@ -19,6 +19,7 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.lang.reflect.Array;
 
+
 /**
  * Resolve index-based access to arrays.
  *
@@ -35,7 +36,7 @@ public class ArrayIndexResolver extends IndexResolver {
 	public static final int ARRAY_RESOLVER_PRIORITY = after(ListIndexResolver.LIST_RESOLVER_PRIORITY);
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null || notAnIndex(name)
 				|| !isArray(contextObject)) {

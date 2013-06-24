@@ -2,14 +2,11 @@ package org.trimou.cdi.resolver;
 
 import static org.trimou.engine.priority.Priorities.after;
 
-import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -23,6 +20,8 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
+import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.ResolutionContext.ReleaseCallback;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -30,14 +29,12 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * Resolver for CDI beans with names.
- *
- * At the moment only built-in normal scopes are supported.
+ * CDI beans resolver. Note that only beans with a name (ie. annotated with
+ * {@link Named}) are resolvable.
  *
  * @author Martin Kouba
- * @see Named
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class CDIBeanResolver extends AbstractResolver {
 
 	private static final Logger logger = LoggerFactory
@@ -53,7 +50,8 @@ public class CDIBeanResolver extends AbstractResolver {
 	private LoadingCache<String, Optional<Bean>> beanCache;
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name,
+			ResolutionContext context) {
 
 		if (contextObject != null) {
 			return null;
@@ -65,7 +63,7 @@ public class CDIBeanResolver extends AbstractResolver {
 			// Unsuccessful lookup already performed
 			return null;
 		}
-		return getReference(bean.get());
+		return getReference(bean.get(), context);
 	}
 
 	@Override
@@ -110,7 +108,6 @@ public class CDIBeanResolver extends AbstractResolver {
 					}
 				});
 		logger.info("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
-
 	}
 
 	@Override
@@ -119,21 +116,42 @@ public class CDIBeanResolver extends AbstractResolver {
 				.<ConfigurationKey> singleton(BEAN_CACHE_MAX_SIZE_KEY);
 	}
 
-	private Object getReference(Bean<?> bean) {
-		if (isSupportedScope(bean.getScope())) {
+	private Object getReference(Bean bean, ResolutionContext context) {
+
+		CreationalContext creationalContext = beanManager
+				.createCreationalContext(bean);
+
+		if (Dependent.class.equals(bean.getScope())) {
+			Object reference = bean.create(creationalContext);
+			context.registerReleaseCallback(new DependentDestroyCallback(bean,
+					creationalContext, reference));
+			return reference;
+
+		} else {
 			return beanManager.getReference(bean, Object.class,
-					beanManager.createCreationalContext(bean));
+					creationalContext);
 		}
-		logger.warn("Bean with name {} has unsupported bean scope {}",
-				bean.getName(), bean.getScope());
-		return null;
 	}
 
-	private boolean isSupportedScope(Class<? extends Annotation> scope) {
-		return RequestScoped.class.equals(scope)
-				|| ApplicationScoped.class.equals(scope)
-				|| ConversationScoped.class.equals(scope)
-				|| SessionScoped.class.equals(scope);
+	static class DependentDestroyCallback implements ReleaseCallback {
+
+		private final Bean bean;
+		private final CreationalContext creationalContext;
+		private final Object instance;
+
+		private DependentDestroyCallback(Bean<?> bean,
+				CreationalContext<?> creationalContext, Object instance) {
+			super();
+			this.bean = bean;
+			this.creationalContext = creationalContext;
+			this.instance = instance;
+		}
+
+		@Override
+		public void release() {
+			bean.destroy(instance, creationalContext);
+		}
+
 	}
 
 }

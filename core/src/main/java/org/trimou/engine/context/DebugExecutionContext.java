@@ -18,6 +18,7 @@ package org.trimou.engine.context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
 
@@ -61,12 +62,12 @@ class DebugExecutionContext extends DefaultExecutionContext {
 	 * @param key
 	 * @return the resolved object
 	 */
-	protected Object resolve(Object contextObject, String key) {
+	protected Object resolve(Object contextObject, String key, ResolutionContext context) {
 
 		Object value = null;
 
 		for (Resolver resolver : resolvers()) {
-			value = resolver.resolve(contextObject, key);
+			value = resolver.resolve(contextObject, key, context);
 			if (value != null) {
 				logger.debug("Value found [key: {}, resolver: {}]", key,
 						resolver.getClass());

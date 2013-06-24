@@ -21,9 +21,9 @@ public class MapResolverTest extends AbstractEngineTest {
 	@Test
 	public void testResolution() {
 		MapResolver resolver = new MapResolver();
-		assertNull(resolver.resolve(null, "foo"));
-		assertNotNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "bar"));
-		assertNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "qux"));
+		assertNull(resolver.resolve(null, "foo", null));
+		assertNotNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "bar", null));
+		assertNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "qux", null));
 	}
 
 	@Test

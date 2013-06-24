@@ -20,9 +20,8 @@ import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
 
 /**
- * A new execution context is created for each template rendering.
- *
- * Execution context is not considered to be thread-safe.
+ * A new execution context is created for each template rendering. Execution
+ * context is not considered to be thread-safe.
  *
  * @author Martin Kouba
  */
@@ -31,10 +30,9 @@ public interface ExecutionContext {
 
 	/**
 	 * @param key
-	 * @return the resolved object associated with the given key, or
-	 *         <code>null</code> if no such object exists
+	 * @return the wrapper for the given key
 	 */
-	public Object getValue(String key);
+	public ValueWrapper getValue(String key);
 
 	/**
 	 * Push the object on the specified stack.

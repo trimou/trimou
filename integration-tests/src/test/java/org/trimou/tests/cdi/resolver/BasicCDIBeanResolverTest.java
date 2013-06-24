@@ -1,6 +1,7 @@
 package org.trimou.tests.cdi.resolver;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.trimou.tests.IntegrationTestUtils.createCDITestArchiveBase;
 import static org.trimou.tests.IntegrationTestUtils.getResolver;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -30,7 +32,7 @@ public class BasicCDIBeanResolverTest {
 	@Deployment
 	public static WebArchive createTestArchive() {
 		return createCDITestArchiveBase().addClasses(Alpha.class, Bravo.class,
-				Charlie.class, BeanWithId.class, MustacheEngineProducer.class)
+				Charlie.class, Delta.class, BeanWithId.class, MustacheEngineProducer.class)
 				.addAsLibraries(
 						getResolver().artifact(
 								"org.trimou:trimou-extension-cdi")
@@ -38,19 +40,10 @@ public class BasicCDIBeanResolverTest {
 	}
 
 	@Inject
-	Alpha alpha;
-
-	@Inject
-	Bravo bravo;
-
-	@Inject
-	Charlie charlie;
-
-	@Inject
 	MustacheEngine engine;
 
 	@Test
-	public void testInterpolation() {
+	public void testInterpolation(Alpha alpha, Bravo bravo, Charlie charlie) {
 
 		assertNotNull(alpha);
 		assertNotNull(bravo);
@@ -69,6 +62,26 @@ public class BasicCDIBeanResolverTest {
 
 		assertEquals(result, mustache.render(data));
 		assertEquals(result, mustache.render(data));
+	}
+
+	@Test
+	public void testDependentBeans() {
+
+		Delta.reset();
+		Mustache mustache = engine
+				.compileMustache(
+						"dependent_destroyed",
+						"{{delta.createdAt}}|{{delta.createdAt}}");
+		String result = mustache.render(null);
+
+		assertNotNull(result);
+		String[] parts = StringUtils.split(result, "|");
+		assertEquals(2, parts.length);
+		assertNotEquals(Long.valueOf(parts[0]), Long.valueOf(parts[1]));
+
+		assertEquals(2, Delta.destructions.size());
+		assertEquals(Long.valueOf(parts[0]), Delta.destructions.get(0));
+		assertEquals(Long.valueOf(parts[1]), Delta.destructions.get(1));
 	}
 
 }

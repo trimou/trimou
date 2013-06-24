@@ -13,6 +13,7 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
+import org.trimou.engine.resolver.ResolutionContext;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -51,7 +52,8 @@ public class DefaultConfigurationTest extends AbstractEngineTest {
 					}
 
 					@Override
-					public Object resolve(Object contextObject, String name) {
+					public Object resolve(Object contextObject, String name,
+							ResolutionContext context) {
 						return null;
 					}
 

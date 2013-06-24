@@ -70,7 +70,7 @@ public class ReflectionResolver extends AbstractResolver implements
 	private LoadingCache<MemberKey, Optional<MemberWrapper>> memberCache;
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null) {
 			return null;

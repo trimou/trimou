@@ -28,31 +28,33 @@ class DefaultExecutionContext extends AbstractExecutionContext {
 	}
 
 	@Override
-	public Object getValue(String key) {
+	public ValueWrapper getValue(String key) {
 
-		Object value = null;
+		ValueWrapper value = new ValueWrapper();
 
 		if (isCompoundKey(key)) {
 
+			Object lastValue = null;
 			String[] parts = splitKey(key);
 
-			// Resolve the leading context object
-			value = resolveLeadingContextObject(parts[0]);
+			lastValue = resolveLeadingContextObject(parts[0], value);
 
-			if (value == null) {
+			if (lastValue == null) {
 				// Not found - miss
-				return null;
+				return value;
 			}
 
 			for (int i = 1; i < parts.length; i++) {
-				value = resolve(value, parts[i]);
-				if (value == null) {
+				lastValue = resolve(lastValue, parts[i], value);
+				if (lastValue == null) {
 					// Not found - miss
 					break;
 				}
 			}
+			value.set(lastValue);
+
 		} else {
-			value = resolveLeadingContextObject(key);
+			value.set(resolveLeadingContextObject(key, value));
 		}
 		return value;
 	}

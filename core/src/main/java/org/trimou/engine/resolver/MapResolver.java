@@ -19,6 +19,7 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.Map;
 
+
 /**
  * Resolves {@link Map} values.
  *
@@ -30,7 +31,7 @@ public class MapResolver extends AbstractResolver {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null || !(contextObject instanceof Map)) {
 			return null;

@@ -19,7 +19,7 @@ import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.priority.WithPriority;
 
 /**
- * Context object resolver. Implementation must be thread-safe.
+ * Value resolver. Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
@@ -31,12 +31,18 @@ public interface Resolver extends WithPriority, ConfigurationAware {
 	 * first and return <code>null</code> in case of the resolver is not capable
 	 * of resolving it.
 	 *
+	 * {@link ResolutionContext} allows to register a callback to release
+	 * all the relevant resources after the resolved value is used.
+	 *
 	 * @param contextObject
-	 *            The context object may be <code>null</code>
+	 *            The current context object (aka base object), may be <code>null</code>
 	 * @param name
-	 *            The name (part of the key) is never <code>null</code>
+	 *            The name (the key or its part) is never <code>null</code>
+	 * @param context
+	 *            The current resolution context
 	 * @return the resolved object or <code>null</code>
 	 */
-	public Object resolve(Object contextObject, String name);
+	public Object resolve(Object contextObject, String name,
+			ResolutionContext context);
 
 }

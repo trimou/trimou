@@ -51,11 +51,11 @@ public class PrettyTimeResolverTest {
 					}
 				}).addResolver(resolver).build();
 
-		assertNull(resolver.resolve(null, "prettyTime"));
-		assertNull(resolver.resolve("foo", "prettyTime"));
-		assertNotNull(resolver.resolve(new Date(), "prettyTime"));
-		assertNotNull(resolver.resolve(10000l, "prettyTime"));
-		assertNotNull(resolver.resolve(Calendar.getInstance(), "prettyTime"));
+		assertNull(resolver.resolve(null, "prettyTime", null));
+		assertNull(resolver.resolve("foo", "prettyTime", null));
+		assertNotNull(resolver.resolve(new Date(), "prettyTime", null));
+		assertNotNull(resolver.resolve(10000l, "prettyTime", null));
+		assertNotNull(resolver.resolve(Calendar.getInstance(), "prettyTime", null));
 	}
 
 	@Test
@@ -124,9 +124,9 @@ public class PrettyTimeResolverTest {
 				.setProperty(PrettyTimeResolver.MATCH_NAME_KEY, "pretty")
 				.build();
 
-		assertNull(resolver.resolve(null, "pretty"));
-		assertNull(resolver.resolve("foo", "pretty"));
-		assertNotNull(resolver.resolve(new Date(), "pretty"));
+		assertNull(resolver.resolve(null, "pretty", null));
+		assertNull(resolver.resolve("foo", "pretty", null));
+		assertNotNull(resolver.resolve(new Date(), "pretty", null));
 	}
 
 }

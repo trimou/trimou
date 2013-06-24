@@ -30,6 +30,7 @@ import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.ResolutionContext;
 
 /**
  * Basic date and time formatting resolver.
@@ -64,7 +65,7 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
 	private String customPattern;
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null) {
 			return null;

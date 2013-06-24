@@ -20,6 +20,7 @@ import static org.trimou.engine.priority.Priorities.after;
 import java.text.NumberFormat;
 
 import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.ResolutionContext;
 
 /**
  * Basic number formatting resolver.
@@ -46,7 +47,7 @@ public class NumberFormatResolver extends LocaleAwareResolver {
 	private static final String NAME_FORMAT_CURR = "formatCurrency";
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null || !(contextObject instanceof Number)) {
 			return null;

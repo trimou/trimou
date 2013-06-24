@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.context.ValueWrapper;
 
 /**
  * Inverted section segment.
@@ -43,36 +44,41 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
 		return SegmentType.INVERTED_SECTION;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		Object value = context.getValue(getText());
-		boolean render = false;
+		ValueWrapper value = context.getValue(getText());
 
-		if (value == null) {
-			// No value
-			render = true;
-		} else if (value instanceof Boolean) {
+		try {
+			if (value.isNull()
+					|| processValue(appendable, context, value.get())) {
+				super.execute(appendable, context);
+			}
+		} finally {
+			value.release();
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean processValue(Appendable appendable,
+			ExecutionContext context, Object value) {
+		if (value instanceof Boolean) {
 			// Boolean
 			if (!(Boolean) value) {
-				render = true;
+				return true;
 			}
 		} else if (value instanceof Iterable) {
 			// No elements to iterate
 			Iterator iterator = ((Iterable) value).iterator();
 			if (!iterator.hasNext()) {
-				render = true;
+				return true;
 			}
 		} else if (value.getClass().isArray()) {
 			// Array is empty
 			if (Array.getLength(value) == 0) {
-				render = true;
+				return true;
 			}
 		}
-
-		if (render) {
-			super.execute(appendable, context);
-		}
+		return false;
 	}
 
 }

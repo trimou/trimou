@@ -30,7 +30,7 @@ public class ThisResolver extends AbstractResolver {
 	public static final String NAME_THIS = "this";
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null) {
 			return null;

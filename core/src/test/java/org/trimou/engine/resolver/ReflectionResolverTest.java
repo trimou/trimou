@@ -30,11 +30,11 @@ public class ReflectionResolverTest extends AbstractEngineTest {
 				.addResolver(resolver).build();
 
 		Hammer hammer = new Hammer();
-		assertNull(resolver.resolve(null, "whatever"));
-		assertNotNull(resolver.resolve(hammer, "age"));
+		assertNull(resolver.resolve(null, "whatever", null));
+		assertNotNull(resolver.resolve(hammer, "age", null));
 		// Methods have higher priority
-		assertEquals(Integer.valueOf(10), resolver.resolve(hammer, "age"));
-		assertNull(resolver.resolve(hammer, "getAgeForName"));
+		assertEquals(Integer.valueOf(10), resolver.resolve(hammer, "age", null));
+		assertNull(resolver.resolve(hammer, "getAgeForName", null));
 	}
 
 	@Test

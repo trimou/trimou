@@ -20,6 +20,7 @@ import static org.trimou.engine.priority.Priorities.after;
 import java.util.ResourceBundle;
 
 import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.lambda.i18n.ResourceBundleLambda;
 
 /**
@@ -61,7 +62,7 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
 	}
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject == null && baseName.equals(name)) {
 			return ResourceBundle.getBundle(baseName,

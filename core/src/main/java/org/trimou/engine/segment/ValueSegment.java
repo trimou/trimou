@@ -19,12 +19,13 @@ import static org.trimou.engine.config.EngineConfigurationKey.NO_VALUE_INDICATES
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.context.ValueWrapper;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.Lambda;
 
 /**
- * Value rendering segment.
+ * Value segment (aka variable tag).
  *
  * @author Martin Kouba
  */
@@ -48,28 +49,40 @@ public class ValueSegment extends AbstractSegment {
 
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		Object value = context.getValue(getText());
+		ValueWrapper value = context.getValue(getText());
 
-		if (value != null) {
-			if (value instanceof Lambda) {
-				processLambda(appendable, context, value);
-			} else {
-				writeValue(appendable, value.toString());
+		try {
+
+			if (value.isNull()) {
+				if (getEngineConfiguration().getBooleanPropertyValue(
+						NO_VALUE_INDICATES_PROBLEM)) {
+					throw new MustacheException(
+							MustacheProblem.RENDER_NO_VALUE,
+							"No value for the given key found: %s %s",
+							getText(), getOrigin());
+				}
+				// By default a variable miss returns an empty string
+				return;
 			}
-		} else {
-			// By default a variable miss returns an empty string
-			if (getEngineConfiguration().getBooleanPropertyValue(
-					NO_VALUE_INDICATES_PROBLEM)) {
-				throw new MustacheException(MustacheProblem.RENDER_NO_VALUE,
-						"No value for the given key found: %s %s", getText(),
-						getOrigin());
-			}
+			processValue(appendable, context, value.get());
+
+		} finally {
+			value.release();
 		}
 	}
 
 	@Override
 	protected String getSegmentName() {
 		return getText();
+	}
+
+	private void processValue(Appendable appendable, ExecutionContext context,
+			Object value) {
+		if (value instanceof Lambda) {
+			processLambda(appendable, context, value);
+		} else {
+			writeValue(appendable, value.toString());
+		}
 	}
 
 	private void writeValue(Appendable appendable, String text) {
@@ -87,7 +100,8 @@ public class ValueSegment extends AbstractSegment {
 			// Parse and interpolate the return value
 			StringBuilder interpolated = new StringBuilder();
 			TemplateSegment temp = (TemplateSegment) getEngine()
-					.compileMustache(Lambdas.constructLambdaOneoffTemplateName(this),
+					.compileMustache(
+							Lambdas.constructLambdaOneoffTemplateName(this),
 							returnValue);
 			temp.execute(interpolated, context);
 			writeValue(appendable, interpolated.toString());

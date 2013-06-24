@@ -9,8 +9,8 @@ public class HttpServletRequestResolverTest {
 	@Test
 	public void testNulltIsResolved() {
 		HttpServletRequestResolver resolver = new HttpServletRequestResolver();
-		assertNull(resolver.resolve("whatever", "request"));
-		assertNull(resolver.resolve(null, "foo"));
+		assertNull(resolver.resolve("whatever", "request", null));
+		assertNull(resolver.resolve(null, "foo", null));
 	}
 
 }

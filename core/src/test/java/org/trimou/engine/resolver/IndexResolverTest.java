@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
-import org.trimou.engine.resolver.IndexResolver;
 
 /**
  *
@@ -24,9 +23,11 @@ public class IndexResolverTest extends AbstractEngineTest {
 			}
 
 			@Override
-			public Object resolve(Object baseObject, String key) {
+			public Object resolve(Object contextObject, String name,
+					ResolutionContext context) {
 				return null;
 			}
+
 		};
 		assertTrue(indexResolver.notAnIndex("-1"));
 		assertTrue(indexResolver.notAnIndex("size"));

@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.context.ValueWrapper;
 import org.trimou.lambda.Lambda;
 
 /**
@@ -68,12 +69,20 @@ public class SectionSegment extends AbstractSectionSegment {
 
 	public void execute(Appendable appendable, ExecutionContext context) {
 
-		Object value = context.getValue(getText());
+		ValueWrapper value = context.getValue(getText());
 
-		if (value == null) {
-			return;
+		try {
+			if (value.isNull()) {
+				return;
+			}
+			processValue(appendable, context, value.get());
+		} finally {
+			value.release();
 		}
+	}
 
+	private void processValue(Appendable appendable, ExecutionContext context,
+			Object value) {
 		if (value instanceof Boolean) {
 			// Boolean#TRUE, true
 			if ((Boolean) value) {
@@ -101,6 +110,11 @@ public class SectionSegment extends AbstractSectionSegment {
 			ExecutionContext context, Object value) {
 
 		Iterator iterator = ((Iterable) value).iterator();
+
+		if (!iterator.hasNext()) {
+			return;
+		}
+
 		IterationMeta meta = new IterationMeta(iterator);
 		context.push(CONTEXT, meta);
 		while (iterator.hasNext()) {
@@ -116,8 +130,12 @@ public class SectionSegment extends AbstractSectionSegment {
 			Object value) {
 
 		int length = Array.getLength(value);
+
+		if (length < 1) {
+			return;
+		}
+
 		IterationMeta meta = new IterationMeta(length);
-		// Push iteration meta
 		context.push(CONTEXT, meta);
 		for (int i = 0; i < length; i++) {
 			context.push(CONTEXT, Array.get(value, i));
@@ -125,7 +143,6 @@ public class SectionSegment extends AbstractSectionSegment {
 			context.pop(CONTEXT);
 			meta.nextIteration();
 		}
-		// Pop iteration meta
 		context.pop(CONTEXT);
 	}
 
@@ -154,7 +171,8 @@ public class SectionSegment extends AbstractSectionSegment {
 		if (lambda.isReturnValueInterpolated()) {
 			// Parse and interpolate the return value
 			TemplateSegment temp = (TemplateSegment) getEngine()
-					.compileMustache(Lambdas.constructLambdaOneoffTemplateName(this),
+					.compileMustache(
+							Lambdas.constructLambdaOneoffTemplateName(this),
 							returnValue);
 			temp.execute(appendable, context);
 		} else {

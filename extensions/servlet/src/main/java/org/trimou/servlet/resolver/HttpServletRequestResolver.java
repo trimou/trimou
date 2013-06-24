@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
+import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.servlet.RequestHolder;
 
 /**
@@ -24,7 +25,7 @@ public class HttpServletRequestResolver extends AbstractResolver {
 	}
 
 	@Override
-	public Object resolve(Object contextObject, String name) {
+	public Object resolve(Object contextObject, String name, ResolutionContext context) {
 
 		if (contextObject != null) {
 			return null;
