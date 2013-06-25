@@ -21,7 +21,7 @@ import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
-import org.trimou.engine.resolver.ResolutionContext.ReleaseCallback;
+import org.trimou.engine.resource.ReleaseCallback;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -29,8 +29,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * CDI beans resolver. Note that only beans with a name (ie. annotated with
+ * CDI beans resolver. Note that only beans with a name (i.e. annotated with
  * {@link Named}) are resolvable.
+ *
+ * Similarly to the CDI and Unified EL integration, instance of a dependent bean
+ * exists to service just a single tag evaluation.
  *
  * @author Martin Kouba
  */
@@ -136,7 +139,9 @@ public class CDIBeanResolver extends AbstractResolver {
 	static class DependentDestroyCallback implements ReleaseCallback {
 
 		private final Bean bean;
+
 		private final CreationalContext creationalContext;
+
 		private final Object instance;
 
 		private DependentDestroyCallback(Bean<?> bean,

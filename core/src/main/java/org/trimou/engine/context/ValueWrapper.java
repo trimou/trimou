@@ -15,23 +15,24 @@
  */
 package org.trimou.engine.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.trimou.annotations.Internal;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 
 /**
- * A wrapper class for the resolved object and release callbacks.
+ * Wrapper for the resolved value object, and also release callbacks.
+ *
+ * The {@link #release()} method must be always called after the wrapper is used,
+ * even if the resolved object is <code>null</code> (there might be still some
+ * callbacks registered).
  *
  * @author Martin Kouba
  */
 @Internal
-public final class ValueWrapper implements ResolutionContext {
+public final class ValueWrapper extends AbstractReleaseCallbackContainer implements
+		ResolutionContext {
 
 	private Object value = null;
-
-	private List<ResolutionContext.ReleaseCallback> releaseCallbacks = null;
 
 	ValueWrapper() {
 		super();
@@ -58,27 +59,6 @@ public final class ValueWrapper implements ResolutionContext {
 	 */
 	public boolean isNull() {
 		return value == null;
-	}
-
-	/**
-	 * Release all the resolution-specific resources. This method must be always
-	 * called after the wrapper is used, even if the resolved object is
-	 * <code>null</code> (there might be still some callbacks registered).
-	 */
-	public void release() {
-		if (releaseCallbacks != null) {
-			for (ResolutionContext.ReleaseCallback callback : releaseCallbacks) {
-				callback.release();
-			}
-		}
-	}
-
-	@Override
-	public void registerReleaseCallback(ResolutionContext.ReleaseCallback callback) {
-		if (releaseCallbacks == null) {
-			releaseCallbacks = new ArrayList<ResolutionContext.ReleaseCallback>(5);
-		}
-		releaseCallbacks.add(callback);
 	}
 
 }

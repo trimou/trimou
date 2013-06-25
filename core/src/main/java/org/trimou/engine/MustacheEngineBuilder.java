@@ -27,8 +27,12 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.Mustache;
+import org.trimou.engine.config.ConfigurationExtension;
+import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBuilder;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
@@ -39,12 +43,13 @@ import org.trimou.engine.text.TextSupport;
  *
  * @author Martin Kouba
  */
-public class MustacheEngineBuilder {
+public final class MustacheEngineBuilder implements
+		ConfigurationExtensionBuilder {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(MustacheEngineBuilder.class);
 
-	private boolean omitServiceLoaderResolvers = false;
+	private boolean omitServiceLoaderConfigurationExtensions = false;
 
 	private Set<Resolver> resolvers = null;
 
@@ -60,6 +65,8 @@ public class MustacheEngineBuilder {
 			EngineConfigurationKey.values().length);
 
 	private List<EngineBuiltCallback> engineReadyCallbacks = null;
+
+	private List<MustacheListener> mustacheListeners;
 
 	/**
 	 * Don't create a new instance.
@@ -122,7 +129,7 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * Adds a context object resolver.
+	 * Adds a value resolver.
 	 *
 	 * @param resolver
 	 * @return self
@@ -199,10 +206,27 @@ public class MustacheEngineBuilder {
 	}
 
 	/**
-	 * Don't use the ServiceLoader mechanism to load resolvers.
+	 * Adds a {@link Mustache} listener.
+	 *
+	 * @param listener
+	 * @return self
 	 */
-	public MustacheEngineBuilder omitServiceLoaderResolvers() {
-		this.omitServiceLoaderResolvers = true;
+	public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
+		checkArgumentNotNull(listener);
+		if (this.mustacheListeners == null) {
+			this.mustacheListeners = new ArrayList<MustacheListener>();
+		}
+		this.mustacheListeners.add(listener);
+		return this;
+	}
+
+	/**
+	 * Don't use the ServiceLoader mechanism to load configuration extensions.
+	 *
+	 * @see ConfigurationExtension
+	 */
+	public MustacheEngineBuilder omitServiceLoaderConfigurationExtensions() {
+		this.omitServiceLoaderConfigurationExtensions = true;
 		return this;
 	}
 
@@ -244,16 +268,20 @@ public class MustacheEngineBuilder {
 		return localeSupport;
 	}
 
-	public boolean isOmitServiceLoaderResolvers() {
-		return omitServiceLoaderResolvers;
+	public boolean isOmitServiceLoaderConfigurationExtensions() {
+		return omitServiceLoaderConfigurationExtensions;
 	}
 
 	public Map<String, Object> getProperties() {
 		return properties;
 	}
 
+	public List<MustacheListener> getMustacheListeners() {
+		return mustacheListeners;
+	}
+
 	private void performCleanup() {
-		this.omitServiceLoaderResolvers = false;
+		this.omitServiceLoaderConfigurationExtensions = false;
 		this.resolvers = null;
 		this.templateLocators = null;
 		this.globalData = null;

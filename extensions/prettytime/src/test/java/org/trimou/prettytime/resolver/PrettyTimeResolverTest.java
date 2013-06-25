@@ -33,7 +33,7 @@ public class PrettyTimeResolverTest {
 		PrettyTimeResolver resolver = new PrettyTimeResolver();
 
 		// Just to init the resolver
-		MustacheEngineBuilder.newBuilder().omitServiceLoaderResolvers()
+		MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
 				.setLocaleSupport(new LocaleSupport() {
 
 					@Override
@@ -62,7 +62,7 @@ public class PrettyTimeResolverTest {
 	public void testInterpolation() {
 
 		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.omitServiceLoaderResolvers()
+				.omitServiceLoaderConfigurationExtensions()
 				.setLocaleSupport(new LocaleSupport() {
 					@Override
 					public Locale getCurrentLocale() {
@@ -104,7 +104,7 @@ public class PrettyTimeResolverTest {
 		PrettyTimeResolver resolver = new PrettyTimeResolver();
 
 		// Just to init the resolver
-		MustacheEngineBuilder.newBuilder().omitServiceLoaderResolvers()
+		MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
 				.setLocaleSupport(new LocaleSupport() {
 
 					@Override

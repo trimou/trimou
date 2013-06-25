@@ -21,7 +21,6 @@ public class RequestListener implements ServletRequestListener {
 			throw new IllegalStateException(
 					"This extension only supports HTTP Servlet lifecycle");
 		}
-
 	}
 
 	@Override

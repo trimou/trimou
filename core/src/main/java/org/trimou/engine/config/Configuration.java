@@ -18,7 +18,9 @@ package org.trimou.engine.config;
 import java.util.List;
 import java.util.Map;
 
+import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
+import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
@@ -33,7 +35,7 @@ import org.trimou.engine.text.TextSupport;
 public interface Configuration {
 
 	/**
-	 * @return an ordered immutable list of resolvers, or <code>null</code> if
+	 * @return the ordered immutable list of resolvers, or <code>null</code> if
 	 *         no resolvers defined
 	 */
 	public List<Resolver> getResolvers();
@@ -45,7 +47,7 @@ public interface Configuration {
 	public Map<String, Object> getGlobalData();
 
 	/**
-	 * @return an ordered immutable list of template locators, or <code>null</code> if
+	 * @return the ordered immutable list of template locators, or <code>null</code> if
 	 *         no template locators defined
 	 */
 	public List<TemplateLocator> getTemplateLocators();
@@ -59,6 +61,11 @@ public interface Configuration {
 	 * @return the locale support implementation
 	 */
 	public LocaleSupport getLocaleSupport();
+
+	/**
+	 * @return the immutable list of {@link Mustache} listeners
+	 */
+	public List<MustacheListener> getMustacheListeners();
 
 	/**
 	 *

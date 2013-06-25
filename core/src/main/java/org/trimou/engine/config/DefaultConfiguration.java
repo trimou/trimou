@@ -30,6 +30,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locale.LocaleSupportFactory;
 import org.trimou.engine.locator.TemplateLocator;
@@ -62,15 +63,27 @@ class DefaultConfiguration implements Configuration {
 
 	private Map<String, Object> properties;
 
+	private List<MustacheListener> mustacheListeners;
+
 	/**
 	 *
 	 * @param builder
 	 */
 	DefaultConfiguration(MustacheEngineBuilder builder) {
+
+		if (!builder.isOmitServiceLoaderConfigurationExtensions()) {
+			// Process configuration extensions
+			for (Iterator<ConfigurationExtension> iterator = ServiceLoader
+					.load(ConfigurationExtension.class).iterator(); iterator
+					.hasNext();) {
+				iterator.next().register(builder);
+			}
+		}
 		identifyResolvers(builder);
 		identifyTextSupport(builder);
 		identifyLocaleSupport(builder);
 		identifyTemplateLocators(builder);
+		identifyMustacheListeners(builder);
 		initializeGlobalData(builder);
 		initializeProperties(builder);
 		initializeConfigurationAwareComponents();
@@ -99,6 +112,11 @@ class DefaultConfiguration implements Configuration {
 	@Override
 	public LocaleSupport getLocaleSupport() {
 		return localeSupport;
+	}
+
+	@Override
+	public List<MustacheListener> getMustacheListeners() {
+		return mustacheListeners;
 	}
 
 	@Override
@@ -206,16 +224,9 @@ class DefaultConfiguration implements Configuration {
 	}
 
 	private void identifyResolvers(MustacheEngineBuilder builder) {
-
 		resolvers = new ArrayList<Resolver>();
 		if (builder.getResolvers() != null) {
 			resolvers.addAll(builder.getResolvers());
-		}
-		if (!builder.isOmitServiceLoaderResolvers()) {
-			for (Iterator<Resolver> iterator = ServiceLoader.load(
-					Resolver.class).iterator(); iterator.hasNext();) {
-				resolvers.add(iterator.next());
-			}
 		}
 		Collections.sort(resolvers, new HighPriorityComparator());
 		resolvers = ImmutableList.copyOf(resolvers);
@@ -305,7 +316,13 @@ class DefaultConfiguration implements Configuration {
 		if (builder.getGlobalData() != null) {
 			this.globalData = ImmutableMap.copyOf(builder.getGlobalData());
 		}
+	}
 
+	private void identifyMustacheListeners(MustacheEngineBuilder builder) {
+		if (builder.getMustacheListeners() != null) {
+			this.mustacheListeners = ImmutableList.copyOf(builder
+					.getMustacheListeners());
+		}
 	}
 
 	private Set<ConfigurationAware> getConfigurationAwareComponents() {
@@ -313,6 +330,9 @@ class DefaultConfiguration implements Configuration {
 		components.addAll(resolvers);
 		if (templateLocators != null) {
 			components.addAll(templateLocators);
+		}
+		if (mustacheListeners != null) {
+			components.addAll(mustacheListeners);
 		}
 		components.add(localeSupport);
 		components.add(textSupport);

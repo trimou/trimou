@@ -26,7 +26,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
 		ReflectionResolver resolver = new ReflectionResolver();
 
 		// Just to init the resolver
-		MustacheEngineBuilder.newBuilder().omitServiceLoaderResolvers()
+		MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
 				.addResolver(resolver).build();
 
 		Hammer hammer = new Hammer();

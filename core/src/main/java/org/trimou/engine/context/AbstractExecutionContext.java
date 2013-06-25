@@ -18,7 +18,6 @@ package org.trimou.engine.context;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -159,11 +158,12 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 	 *
 	 * @param contextObject
 	 * @param name
+	 * @param context
 	 * @return the resolved object
 	 */
 	protected Object resolve(Object contextObject, String name, ResolutionContext context) {
 		Object value = null;
-		for (Resolver resolver : resolvers()) {
+		for (Resolver resolver : configuration.getResolvers()) {
 			value = resolver.resolve(contextObject, name, context);
 			if (value != null) {
 				break;
@@ -179,10 +179,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 
 	protected String[] splitKey(String key) {
 		return StringUtils.split(key, Strings.KEY_SEPARATOR);
-	}
-
-	protected List<Resolver> resolvers() {
-		return configuration.getResolvers();
 	}
 
 	private void pushTemplateInvocation(TemplateSegment template) {

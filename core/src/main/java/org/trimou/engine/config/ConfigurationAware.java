@@ -18,13 +18,19 @@ package org.trimou.engine.config;
 import java.util.Set;
 
 /**
+ * Configuration-aware components can define additional configuration keys to be
+ * processed (i.e. system properties) and also initialize self with partially
+ * initialized engine configuration (it's only safe to inspect properties and
+ * global data).
  *
  * @author Martin Kouba
  */
 public interface ConfigurationAware {
 
 	/**
-	 * Initialize the instance.
+	 * Initialize the component. Keep in mind that the configuration itself is
+	 * likely not fully initialized yet. It's only safe to inspect properties
+	 * and global data.
 	 *
 	 * @param configuration
 	 */

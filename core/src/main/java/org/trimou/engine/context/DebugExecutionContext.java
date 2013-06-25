@@ -66,7 +66,7 @@ class DebugExecutionContext extends DefaultExecutionContext {
 
 		Object value = null;
 
-		for (Resolver resolver : resolvers()) {
+		for (Resolver resolver : configuration.getResolvers()) {
 			value = resolver.resolve(contextObject, key, context);
 			if (value != null) {
 				logger.debug("Value found [key: {}, resolver: {}]", key,

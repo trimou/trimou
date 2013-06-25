@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.resolver;
+package org.trimou.cdi.context;
 
-import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.resource.ReleaseCallbackContainer;
-import org.trimou.engine.segment.Segment;
+import org.trimou.engine.listener.AbstractMustacheListener;
+import org.trimou.engine.listener.MustacheRenderingEvent;
+import org.trimou.engine.resource.ReleaseCallback;
 
 /**
- * Value resolution context is initialized for each
- * {@link ExecutionContext#getValue(String)} call and destroyed once the
- * template {@link Segment} which asks for a value is executed.
- *
- * Release callbacks are invoked right before the context is destroyed.
+ * This listener initializes and destroys rendering context.
  *
  * @author Martin Kouba
  */
-public interface ResolutionContext extends ReleaseCallbackContainer {
+public final class RenderingContextListener extends AbstractMustacheListener {
+
+	@Override
+	public void renderingStarted(final MustacheRenderingEvent event) {
+		RenderingContext.INSTANCE.initialize(event);
+		event.registerReleaseCallback(new ReleaseCallback() {
+			@Override
+			public void release() {
+				RenderingContext.INSTANCE.destroy(event);
+			}
+		});
+	}
 
 }

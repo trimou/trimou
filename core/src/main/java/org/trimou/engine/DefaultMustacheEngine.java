@@ -27,6 +27,8 @@ import org.trimou.Mustache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.listener.MustacheCompilationEvent;
+import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.parser.Parser;
 import org.trimou.engine.parser.ParserFactory;
@@ -168,8 +170,19 @@ class DefaultMustacheEngine implements MustacheEngine {
 	private Mustache parse(String templateName, Reader reader) {
 		ParsingHandler handler = new ParsingHandlerFactory()
 				.createParsingHandler();
+
 		parser.parse(templateName, reader, handler);
-		return handler.getCompiledTemplate();
+		Mustache mustache = handler.getCompiledTemplate();
+
+		if (configuration.getMustacheListeners() != null) {
+			MustacheCompilationEvent event = new DefaultMustacheCompilationEvent(
+					mustache);
+			for (MustacheListener listener : configuration
+					.getMustacheListeners()) {
+				listener.compilationFinished(event);
+			}
+		}
+		return mustache;
 	}
 
 	@Override
@@ -190,6 +203,31 @@ class DefaultMustacheEngine implements MustacheEngine {
 			throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
 					e);
 		}
+	}
+
+	/**
+	 *
+	 * @author Martin Kouba
+	 */
+	private static class DefaultMustacheCompilationEvent implements
+			MustacheCompilationEvent {
+
+		private final Mustache mustache;
+
+		/**
+		 *
+		 * @param mustache
+		 */
+		public DefaultMustacheCompilationEvent(Mustache mustache) {
+			super();
+			this.mustache = mustache;
+		}
+
+		@Override
+		public Mustache getMustache() {
+			return mustache;
+		}
+
 	}
 
 }

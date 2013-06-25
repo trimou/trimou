@@ -18,6 +18,7 @@ package org.trimou.engine.segment;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
+import java.util.List;
 import java.util.Map;
 
 import org.trimou.Mustache;
@@ -26,11 +27,16 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ExecutionContext.TargetStack;
 import org.trimou.engine.context.ExecutionContextBuilder;
+import org.trimou.engine.listener.MustacheListener;
+import org.trimou.engine.listener.MustacheRenderingEvent;
+import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
+import com.google.common.collect.Lists;
+
 /**
- * Template segment.
+ * Template segment (aka Mustache template).
  *
  * @author Martin Kouba
  */
@@ -49,14 +55,28 @@ public class TemplateSegment extends AbstractContainerSegment implements
 
 	@Override
 	public void render(Appendable appendable, Map<String, Object> data) {
+
 		if (!isReadOnly()) {
 			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
-					"Template %s is not ready", getName());
+					"Template %s is not ready yet", getName());
 		}
-		ExecutionContext context = new ExecutionContextBuilder(engine)
-				.withData(data).build();
-		context.push(TargetStack.TEMPLATE_INVOCATION, this);
-		super.execute(appendable, context);
+
+		DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
+				getText());
+
+		try {
+			renderingStarted(event);
+			// Build execution context and push the template on the invocation
+			// stack
+			ExecutionContext context = new ExecutionContextBuilder(engine)
+					.withData(data).build();
+			context.push(TargetStack.TEMPLATE_INVOCATION, this);
+			// Execute the template
+			super.execute(appendable, context);
+			renderingFinished(event);
+		} finally {
+			event.release();
+		}
 	}
 
 	@Override
@@ -110,6 +130,50 @@ public class TemplateSegment extends AbstractContainerSegment implements
 
 	protected MustacheEngine getEngine() {
 		return engine;
+	}
+
+	private void renderingStarted(MustacheRenderingEvent event) {
+		List<MustacheListener> listeners = engine.getConfiguration()
+				.getMustacheListeners();
+		if (listeners != null) {
+			for (MustacheListener listener : listeners) {
+				listener.renderingStarted(event);
+			}
+		}
+	}
+
+	private void renderingFinished(MustacheRenderingEvent event) {
+		List<MustacheListener> listeners = engine.getConfiguration()
+				.getMustacheListeners();
+		if (listeners != null) {
+			for (MustacheListener listener : Lists.reverse(listeners)) {
+				listener.renderingFinished(event);
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @author Martin Kouba
+	 */
+	private static final class DefaultMustacheRenderingEvent extends
+			AbstractReleaseCallbackContainer implements MustacheRenderingEvent {
+
+		private final String mustacheName;
+
+		/**
+		 *
+		 * @param mustacheName
+		 */
+		public DefaultMustacheRenderingEvent(String mustacheName) {
+			super();
+			this.mustacheName = mustacheName;
+		}
+
+		public String getMustacheName() {
+			return mustacheName;
+		}
+
 	}
 
 }
