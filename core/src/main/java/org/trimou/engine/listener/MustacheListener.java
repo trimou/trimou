@@ -28,8 +28,8 @@ import org.trimou.lambda.Lambda;
  * {@link #renderingFinished(DefaultMustacheRenderingEvent)} method which is
  * invoked in reverse order.
  *
- * Listeners are not invoked in case of any unchecked exception occurs under the
- * call stack during the processing.
+ * Code inside a listener may throw an unchecked exception - this aborts further
+ * processing of template and no more listeners are invoked afterwards.
  *
  * @author Martin Kouba
  * @see MustacheEngineBuilder#addMustacheListener(MustacheListener)

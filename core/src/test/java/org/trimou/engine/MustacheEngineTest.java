@@ -55,10 +55,10 @@ public class MustacheEngineTest extends AbstractEngineTest {
 			}
 		};
 
-		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveTypes.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveTypes.values}}|{{archiveTypes.JAR}}";
+		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveType.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveType.values}}|{{archiveTypes.JAR}}";
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
 				.addGlobalData("foo", true)
-				.addGlobalData("archiveTypes", ArchiveType.class)
+				.addGlobalData("archiveType", ArchiveType.class)
 				.addGlobalData("bold", bold).addGlobalData("italic", italic)
 				.build().compileMustache("global_data", templateContents);
 

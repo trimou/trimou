@@ -31,7 +31,7 @@ The most notable enhancements are:
 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/interpolation.yml
 
-NOTE: The interpolation tag's content is called a *key* hereafter. The key consists of one or more dot-separated parts (+"foo"+, +"."+, +"foo.bar.name"+). The current object the key part is resolved against is called a *context object* hereafter.
+NOTE: The interpolation tag's content is called a *key* hereafter. The key consists of one or more dot-separated parts - a *key part* (+"foo"+ -> +["foo"]+, +"foo.bar.name"+ -> +["foo, "bar", "name"]+). The current object the key part is resolved against is called a *context object* hereafter.
 
 In general Trimou interpolation works very similar to the spec description - walk the context object stack from top to bottom, and resolve the value for the given part of the key (first part againts the context stack, other parts against the result from the former resolution).
 
@@ -40,8 +40,8 @@ However there are some differences:
 * it's possible to use +this+ keyword to reference the object atop the context object stack; the spec only allows +.+,
 * if the context object is an instance of a +java.util.Map+, value of the entry with the given key is resolved,
 * for any context object Trimou tries to:
-** find and invoke an accesible method (public, with no params and non-void return type) with name +key+, +getKey+ or +isKey+ defined on the context object's class and its superclasses (except for +java.lang.Object+),
-** find an accesible field (public) with name +key+ and get its value,
+** find and invoke an accessible public method with no params, non-void return type and name +keypart+, +getKeypart+ or +isKeypart+ defined on the context object's class and its superclasses (except for +java.lang.Object+),
+** find an accessible public field with name +keypart+ and get its value,
 * +java.util.List+ and array elements can be accessed via index (the key must be unsigned integer),
 * +iterIndex+ and +iterHasNext+ keywords can be used inside iteration block,
 * Trimou allows you to define a resolver that does not handle the context object stack at all (e.g. looks up a <<cdi,CDI bean>>).
@@ -62,6 +62,10 @@ However there are some differences:
   {{name}} <6>
   {{iterHasNext}}, {{/iterHasNext}} <7>
 {{/items}}
+
+{{#quxEnumClass.values}} <8>
+  {{this}}
+{{/quxEnumClass.values}}
 ----
 
 <1> Try to get a value of key "foo" from supplied data map
@@ -71,6 +75,7 @@ However there are some differences:
 <5> The current index of the iteration block
 <6> "name" is resolved against the context object stack (iteration element, supplied data map)
 <7> render a comma if the iteration has more elements (iterHasNext is true)
+<8> it's also possible to invoke static methods; quxEnumClass is an enum class here and we iterate over the array returned from static method values() 
 
 NOTE: The set of resolvers may be extended - so in fact the above mentioned applies to the default set of resolvers only.
 
@@ -417,10 +422,12 @@ Now: 03-05-2013 22:05
 [[how_to_extend]]
 == How to extend
 
+Basically all the extension points are focused on +MustacheEngine+ configuration. Some components may be automatically added using the +org.trimou.engine.config.ConfigurationExtension+ and JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Others may be added manually via +MustacheEngineBuilder+ methods. See existing extensions to get acquainted with the basic principles.
+
+NOTE: Automatic +org.trimou.engine.config.ConfigurationExtension+ processing may be disabled per engine - see also +MustacheEngineBuilder#omitServiceLoaderConfigurationExtensions()+.
+
 [[resolver]]
 === Resolver
-
-SPI: +org.trimou.engine.resolver.Resolver+
 
 Resolvers define the set of resolvable objects for your templates. The built-in set of resolvers should satisfy most of the basic requirements.
 
@@ -428,17 +435,17 @@ Resolvers define the set of resolvable objects for your templates. The built-in 
 
 WARNING: Implementing/adding a custom resolver may have serious impact on the engine functionality and performance.
 
-All resolvers have a priority and resolvers with *higher priority* are called *first*. Keep in mind that all resolvers must be thread-safe. There are two ways to extend the basic set of resolvers. Trimou utilizes JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Simply create a file with name +org.trimou.engine.resolver.Resolver+, write down FCQN of your resolver (one per line) and place the file into +META-INF/services+ folder and the listed resolvers are loaded automatically. This way of loading resolvers may be disabled per engine, see also +MustacheEngineBuilder.omitServiceLoaderResolvers()+.
-You can also use +MustacheEngineBuilder.addResolver()+ method - this approach is suitable if you need to customize the way the resolver instance is created.
+All resolvers have a priority and resolvers with *higher priority* are called *first*. Keep in mind that all resolvers must be thread-safe. There are two ways to extend the basic set of resolvers:
+
+* automatically via +org.trimou.engine.config.ConfigurationExtension+,
+* you can also use +MustacheEngineBuilder.addResolver()+ method.
 
 TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup normal-scoped CDI beans with name. <<servlets,trimou-extension-servlet>> extension provides +HttpServletRequestResolver+ to get the current Servlet request wrapper.
 
 [[template_locator]]
 === TemplateLocator
 
-SPI: +org.trimou.engine.locator.TemplateLocator+
-
-Template locators automatically locate the template contents for the given template identifier. The form of the template identifier is not defined, however in most cases the id will represent a template name, e.g. +foo+ and +foo.html+, or virtual path like +order/orderDetail+. The default virtual path separator is +/+ and can be configured via +org.trimou.engine.locator.PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY+.
+Template locators automatically locate the template contents for the given template identifier. The form of the template identifier is not defined, however in most cases the id will represent a template name, e.g. +foo+ and +foo.html+, or virtual path like +order/orderDetail+. The default virtual path separator is +/+ and can be configured via +org.trimou.engine.locator.PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY+. Template locators may only be added with +MustacheEngineBuilder.addTemplateLocator()+ method.
 
 There are three basic built-in implementations. +org.trimou.engine.locator.FilesystemTemplateLocator+ finds templates on the filesystem, within the given root directory (watch out, this wouldn't be likely portable across various operating systems). +org.trimou.engine.locator.ClassPathTemplateLocator+ makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. +org.trimou.engine.locator.MapTemplateLocator+ is backed by a +Map+. See javadoc for more configuration info.
 
@@ -449,16 +456,24 @@ TIP: <<servlets,trimou-extension-servlet>> extension provides +org.trimou.servle
 [[text_support]]
 === TextSupport
 
-SPI: +org.trimou.engine.text.TextSupport+
-
-So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance.
+You can set the custom +org.trimou.engine.text.TextSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setTextSupport()+ method. So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance. 
 
 [[locale_support]]
 === LocaleSupport
 
-SPI: +org.trimou.engine.locale.LocaleSupport+
+You can set the custom +org.trimou.engine.locale.LocaleSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setLocaleSupport()+ method. It allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+.
 
-Allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+.
+[[mustache_listener]]
+=== MustacheListener
+
+Receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering.
+
+There are two ways to register a custom listener:
+
+* automatically via +org.trimou.engine.config.ConfigurationExtension+,
+* +MustacheEngineBuilder.addMustacheListener()+ method.
+
+NOTE: Code inside a listener may throw an unchecked exception - this aborts further processing of template and no more listeners are invoked afterwards.
 
 [[extensions]]
 == Extensions
@@ -480,12 +495,14 @@ Allows the engine and its components (e.g. resolvers) to get the current locale 
 
 Tries to lookup a normal-scoped CDI bean with the given name (key).
 
-NOTE: At the moment only built-in normal scopes are supported.
+==== Rendering context
+
+The rendering scope is active during each rendering of a template, i.e. during +Mustache.render()+ invocation - there is exactly one bean instance per rendering which is destroyed after the rendering is finished. This could be useful in SE environments where usually only +@ApplicationScoped+ and +@Dependent+ built-in scopes are available. You can annotate your bean with +org.trimou.cdi.context.RenderingScoped+ to declare the rendering scope.
 
 [[servlets]]
 === Servlets
 
-At the moment only Servlet 3.0 API is supported.
+At the moment only Servlet 3.x API is supported.
 
 .Maven dependency
 [source,xml]
