@@ -71,17 +71,21 @@ public class BasicCDIBeanResolverTest {
 		Mustache mustache = engine
 				.compileMustache(
 						"dependent_destroyed",
-						"{{delta.createdAt}}|{{delta.createdAt}}");
+						"{{delta.createdAt}}|{{delta.createdAt}}|{{#delta}}{{createdAt}}:{{createdAt}}{{/delta}}");
 		String result = mustache.render(null);
 
 		assertNotNull(result);
 		String[] parts = StringUtils.split(result, "|");
-		assertEquals(2, parts.length);
+		assertEquals(3, parts.length);
 		assertNotEquals(Long.valueOf(parts[0]), Long.valueOf(parts[1]));
+		String[] nestedParts = StringUtils.split(parts[2], ":");
+		assertNotEquals(Long.valueOf(parts[0]), Long.valueOf(nestedParts[0]));
+		assertEquals(nestedParts[0], nestedParts[1]);
 
-		assertEquals(2, Delta.destructions.size());
+		assertEquals(3, Delta.destructions.size());
 		assertEquals(Long.valueOf(parts[0]), Delta.destructions.get(0));
 		assertEquals(Long.valueOf(parts[1]), Delta.destructions.get(1));
+		assertEquals(Long.valueOf(nestedParts[0]), Delta.destructions.get(2));
 	}
 
 }
