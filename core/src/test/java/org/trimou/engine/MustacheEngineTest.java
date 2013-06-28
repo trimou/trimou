@@ -55,7 +55,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
 			}
 		};
 
-		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveType.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveType.values}}|{{archiveTypes.JAR}}";
+		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveType.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveType.values}}|{{archiveType.JAR}}";
 		Mustache mustache = MustacheEngineBuilder.newBuilder()
 				.addGlobalData("foo", true)
 				.addGlobalData("archiveType", ArchiveType.class)
