@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.context;
 
-import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE_ENABLED;
+import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class ExecutionContextBuilder {
 		ExecutionContext context = null;
 
 		if (engine.getConfiguration().getBooleanPropertyValue(
-				DEBUG_MODE_ENABLED)) {
+				DEBUG_MODE)) {
 			context = new DebugExecutionContext(engine.getConfiguration());
 		} else {
 			context = new DefaultExecutionContext(engine.getConfiguration());

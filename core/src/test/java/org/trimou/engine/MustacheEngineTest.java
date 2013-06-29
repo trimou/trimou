@@ -85,7 +85,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
 	public void testDebugModeDisablesTemplateCache() {
 		MustacheEngine engine = MustacheEngineBuilder
 				.newBuilder()
-				.setProperty(EngineConfigurationKey.DEBUG_MODE_ENABLED, true)
+				.setProperty(EngineConfigurationKey.DEBUG_MODE, true)
 				.addTemplateLocator(
 						new MapTemplateLocator(ImmutableMap.of("foo", "Hey!")))
 				.build();

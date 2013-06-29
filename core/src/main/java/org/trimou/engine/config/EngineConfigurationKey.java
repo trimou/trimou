@@ -26,11 +26,11 @@ import org.apache.commons.lang3.text.WordUtils;
 public enum EngineConfigurationKey implements ConfigurationKey {
 
 	/**
-	 * The defeault start delimiter (e.g. <code>}}</code>).
+	 * The default start delimiter (e.g. <code>}}</code>).
 	 */
 	START_DELIMITER("{{"),
 	/**
-	 * The defeault end delimiter (e.g. <code>}}</code>).
+	 * The default end delimiter (e.g. <code>}}</code>).
 	 */
 	END_DELIMITER("}}"),
 	/**
@@ -58,7 +58,7 @@ public enum EngineConfigurationKey implements ConfigurationKey {
 	 * <code>false</code> otherwise. Debug mode disables the template cache and
 	 * provides some more logging during template rendering.
 	 * */
-	DEBUG_MODE_ENABLED(false),
+	DEBUG_MODE(false),
 	/**
 	 * <code>true</code> in case of the section-based literal blocks should be
 	 * cached (useful to optimize some lambdas processing scenarios, but memory

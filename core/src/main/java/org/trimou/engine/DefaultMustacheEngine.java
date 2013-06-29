@@ -74,7 +74,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 		CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
 
 		if (configuration
-				.getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE_ENABLED)) {
+				.getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
 			// Disable template cache
 			cacheBuilder.maximumSize(0);
 		}

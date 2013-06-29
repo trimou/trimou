@@ -106,3 +106,32 @@ pre {
 #toc ol {
 	list-style: none;
 }
+
+table.tableblock {
+    border-bottom: 3px solid #6CAE37;
+    border-collapse: separate;
+    /*border-radius: 4px 4px 4px 4px;*/
+    border-spacing: 1px;
+    border-top: 3px solid #6CAE37;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+table.tableblock caption {
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 0.2em;
+    padding-top: 0.5em;
+    text-align: left;
+}
+
+table.tableblock tr {
+    background: none repeat scroll 0 0 #F9F9F9;
+}
+
+table.tableblock td {
+    border-top: 1px solid silver;
+    /*border-left: 1px solid #6CAE37;*/
+    padding-left: 4px;
+}

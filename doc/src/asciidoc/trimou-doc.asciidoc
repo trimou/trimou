@@ -344,11 +344,13 @@ mustache.render(writer, ImmutableMap.<String, Object> of("foo", "bar"));
 
 You may want to:
 
-* Add template locators; see <<use_template_locator,why>>
-* Add global data objects (available during execution of all templates)
-* Add custom resolvers; see <<resolver,why>>
-* Set custom +TextSupport+ implementation; see <<text_support,why>>
-* Set configuration properties; see <<configuration,why>>
+* Add template locators; see also <<use_template_locator>>
+* Add thread-safe global data objects (available during execution of all templates)
+* Add custom resolvers; see also <<resolver>>
+* Add template listeners; see also <<mustache_listener>>
+* Set custom +TextSupport+ implementation; see <<text_support>>
+* Set custom +LocaleSupport+ implementation; see <<locale_support>>
+* Set configuration properties; see <<configuration>>
 
 Simply use appropriate +MustacheEngineBuilder+ methods, e.g.:
 
@@ -359,11 +361,6 @@ MustacheEngine engine = MustacheEngineBuilder
                             .addGlobalData("fooLambda", mySuperUsefulLambdaInstance)
                             .build();
 ----
-
-[[configuration]]
-==== Configuration properties
-
-Trimou engine properties can be configured through *system properties*, *trimou.properties* file or the property may be manually set via: +MustacheEngineBuilder.setProperty(String, Object)+. Manually set properties have hihger priority than system properties which have higher priority than properties from trimou.properties file. Global configuration properties are defined and described in +EngineConfigurationKey+ enum.
 
 [[use_template_locator]]
 === Make use of template cache and template locators
@@ -389,6 +386,76 @@ There may be more than one template locators registered with the engine. Locator
 TIP: Use +MustacheEngine#invalidateTemplateCache()+ to invalidate all template cache entries and force recompilation.
 
 See also <<template_locator, TemplateLocator SPI>>.
+
+[[configuration]]
+=== Configuration properties
+
+Trimou engine properties can be configured through system properties, +trimou.properties+ file or the property can be set manually with +MustacheEngineBuilder.setProperty(String, Object)+ method. Manually set properties have higher priority than system properties which have higher priority than properties from +trimou.properties+ file. 
+
+NOTE: Trimou logs all configuration properties and values during engine initialization
+
+[cols="2,1,2" options="header"]
+.Engine configuration keys - see also +org.trimou.engine.config.EngineConfigurationKey+ enum
+|===
+|Enum value / property key
+|Default value
+|Description
+
+|START_DELIMITER
+
+*org.trimou.engine.config.startDelimiter*
+|{{
+|The default start delimiter.
+
+|END_DELIMITER
+
+*org.trimou.engine.config.endDelimiter*
+|}}
+|The default end delimiter
+
+|PRECOMPILE_ALL_TEMPLATES
+
+*org.trimou.engine.config.precompileAllTemplates*
+|false
+|If enabled, all available templates from all available template locators will be compiled during engine initialization.
+
+|REMOVE_STANDALONE_LINES
+
+*org.trimou.engine.config.removeStandaloneLines*
+|true
+|Remove "standalone lines" from each template during compilation to fullfill the spec requirements (and get more readable output :-)
+
+|REMOVE_UNNECESSARY_SEGMENTS
+
+*org.trimou.engine.config.removeUnnecessarySegments*
+|true
+|Remove unnecessary segments (e.g. comments and delimiters tags) from each template during compilation. Having this enabled results in spec not-compliant output, but may improve performance a little bit.
+
+|NO_VALUE_INDICATES_PROBLEM
+
+*org.trimou.engine.config.noValueIndicatesProblem*
+|false
+|By default a variable miss returns an empty string. If set to +true+ a +org.trimou.exception.MustacheException+ with code +org.trimou.exception.MustacheProblem.RENDER_NO_VALUE+ is thrown.
+
+|DEBUG_MODE
+
+*org.trimou.engine.config.debugMode*
+|false
+|Debug mode disables the template cache and provides some more logging during template rendering.
+
+|CACHE_SECTION_LITERAL_BLOCK
+
+*org.trimou.engine.config.cacheSectionLiteralBlock*
+|false
+|The section-based literal blocks can be cached. This may be useful to optimize some lambdas processing scenarios, though it's memory intensive.
+
+|TEMPLATE_RECURSIVE_INVOCATION_LIMIT
+
+*org.trimou.engine.config.templateRecursiveInvocationLimit*
+|10
+|The limit of recursive template invocation (partials, template inheritance); 0 - recursive invocation is forbidden.
+
+|===
 
 [[i18n]]
 === Basic i18n support
