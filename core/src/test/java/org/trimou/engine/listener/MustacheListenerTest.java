@@ -93,7 +93,7 @@ public class MustacheListenerTest extends AbstractEngineTest {
 	}
 
 	@Test
-	public void testListenerThrowsUncheckerException() {
+	public void testListenerThrowsUncheckedException() {
 
 		final List<String> renderingStarts = new ArrayList<String>();
 		final List<String> renderingEnds = new ArrayList<String>();
@@ -136,26 +136,26 @@ public class MustacheListenerTest extends AbstractEngineTest {
 		};
 
 		try {
-			assertEquals(
-					"",
-					MustacheEngineBuilder
-							.newBuilder()
-							.addMustacheListener(listener1)
-							.addMustacheListener(listener2)
-							.build()
-							.compileMustache(
-									"listener_throws_unchecked_exception", " ")
-							.render(null));
+			MustacheEngineBuilder
+					.newBuilder()
+					.addMustacheListener(listener1)
+					.addMustacheListener(listener2)
+					.build()
+					.compileMustache("listener_throws_unchecked_exception", " ")
+					.render(null);
 			fail("Rendering should fail");
 		} catch (NullPointerException e) {
 			// Expected
 		}
 
 		assertEquals(2, renderingStarts.size());
-		assertEquals("listener_throws_unchecked_exception", renderingStarts.get(0));
-		assertEquals("listener_throws_unchecked_exception2", renderingStarts.get(1));
+		assertEquals("listener_throws_unchecked_exception",
+				renderingStarts.get(0));
+		assertEquals("listener_throws_unchecked_exception2",
+				renderingStarts.get(1));
 		assertEquals(1, renderingEnds.size());
-		assertEquals("listener_throws_unchecked_exception2", renderingEnds.get(0));
+		assertEquals("listener_throws_unchecked_exception2",
+				renderingEnds.get(0));
 		assertTrue(callbackInvoked.get());
 	}
 }
