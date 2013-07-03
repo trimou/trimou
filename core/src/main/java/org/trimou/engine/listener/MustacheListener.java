@@ -25,7 +25,7 @@ import org.trimou.lambda.Lambda;
  * Receives notifications about {@link Mustache} processing.
  *
  * Listeners are invoked in the order of their registration, except for
- * {@link #renderingFinished(DefaultMustacheRenderingEvent)} method which is
+ * {@link #renderingFinished(MustacheRenderingEvent)} method which is
  * invoked in reverse order.
  *
  * Code inside a listener may throw an unchecked exception - this aborts further

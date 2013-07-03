@@ -20,7 +20,7 @@ import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 
 /**
- * Wrapper for the resolved value object, and also release callbacks.
+ * Wrapper for the resolved value object and release callbacks.
  *
  * The {@link #release()} method must be always called after the wrapper is used,
  * even if the resolved object is <code>null</code> (there might be still some

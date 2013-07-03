@@ -16,7 +16,7 @@
 package org.trimou.engine.resource;
 
 /**
- * Release callback container.
+ * {@link ReleaseCallback} container.
  *
  * @author Martin Kouba
  */

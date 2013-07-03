@@ -1,10 +1,13 @@
 package org.trimou.engine.segment;
 
+import org.trimou.annotations.Internal;
+
 /**
  * A segment origin.
  *
  * @author Martin Kouba
  */
+@Internal
 public class Origin {
 
 	private final TemplateSegment template;

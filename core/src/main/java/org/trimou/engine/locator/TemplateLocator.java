@@ -33,8 +33,6 @@ import org.trimou.engine.priority.WithPriority;
  */
 public interface TemplateLocator extends WithPriority, ConfigurationAware {
 
-	public static final int DEFAULT_SYSTEM_TEMPLATE_LOCATOR_PRIORITY = 10;
-
 	/**
 	 * @param templateId
 	 *            The template identifier
