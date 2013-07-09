@@ -31,6 +31,12 @@ public final class Checker {
 	private Checker() {
 	}
 
+	public static void checkArgumentsNotNull(Object... arguments) {
+		for (Object argument : arguments) {
+			checkArgumentNotNull(argument);
+		}
+	}
+
 	public static void checkArgumentNotNull(Object argument) {
 		checkArgument(argument != null, "Argument must not be null");
 	}

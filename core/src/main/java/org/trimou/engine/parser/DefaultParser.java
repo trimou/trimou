@@ -17,6 +17,8 @@ package org.trimou.engine.parser;
 
 import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
 import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
+import static org.trimou.util.Checker.checkArgumentNotEmpty;
+import static org.trimou.util.Checker.checkArgumentsNotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,10 +60,8 @@ class DefaultParser implements Parser {
 	}
 
 	public void parse(String name, Reader reader, ParsingHandler handler) {
-
-		if (name == null || reader == null || handler == null) {
-			throw new NullPointerException();
-		}
+		checkArgumentNotEmpty(name);
+		checkArgumentsNotNull(reader, handler);
 
 		reader = ensureBufferedReader(reader);
 
