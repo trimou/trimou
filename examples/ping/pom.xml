@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.trimou</groupId>
         <artifactId>trimou-parent</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>trimou-example-ping</artifactId>
-    <description>Simple example showing extensions in action</description>
+    <description>Simple example showing all built-in extensions in action.</description>
     <packaging>war</packaging>
 
     <dependencies>
