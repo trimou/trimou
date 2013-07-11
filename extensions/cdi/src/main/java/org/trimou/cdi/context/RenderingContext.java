@@ -18,10 +18,6 @@ package org.trimou.cdi.context;
 import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;
@@ -39,29 +35,16 @@ import org.trimou.engine.listener.MustacheRenderingEvent;
  */
 public final class RenderingContext implements Context {
 
-	/**
-	 * Singleton
-	 */
-	public static final RenderingContext INSTANCE = new RenderingContext();
-
 	private static final Logger logger = LoggerFactory
 			.getLogger(RenderingContext.class);
 
-	private final ThreadLocal<Map<Integer, ContextualInstance<?>>> contextualInstancesMap = new ThreadLocal<Map<Integer, ContextualInstance<?>>>();
-
-	private final ConcurrentHashMap<Contextual<?>, Integer> contextualsMap = new ConcurrentHashMap<Contextual<?>, Integer>();
-
-	private final AtomicInteger idSequence = new AtomicInteger();
-
-	private RenderingContext() {
-	}
+	private final ThreadLocal<ContextualInstanceStore> contextualInstanceStore = new ThreadLocal<ContextualInstanceStore>();
 
 	@Override
 	public Class<? extends Annotation> getScope() {
 		return RenderingScoped.class;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T get(Contextual<T> contextual,
 			CreationalContext<T> creationalContext) {
@@ -72,19 +55,11 @@ public final class RenderingContext implements Context {
 			throw new ContextNotActiveException();
 		}
 
-		Map<Integer, ContextualInstance<?>> instancesMap = contextualInstancesMap
-				.get();
-		Integer id = getId(contextual);
-		ContextualInstance<T> contextualInstance = (ContextualInstance<T>) instancesMap
-				.get(id);
+		ContextualInstance<T> contextualInstance = contextualInstanceStore
+				.get().get(contextual, creationalContext);
 
 		if (contextualInstance != null) {
 			return contextualInstance.getInstance();
-		} else if (creationalContext != null) {
-			T instance = contextual.create(creationalContext);
-			instancesMap.put(id, new ContextualInstance<T>(instance,
-					creationalContext, contextual));
-			return instance;
 		}
 		return null;
 	}
@@ -96,35 +71,20 @@ public final class RenderingContext implements Context {
 
 	@Override
 	public boolean isActive() {
-		return contextualInstancesMap.get() != null;
-	}
-
-	private Integer getId(Contextual<?> contextual) {
-
-		Integer id = contextualsMap.get(contextual);
-
-		if (id == null) {
-			synchronized (contextual) {
-				id = idSequence.incrementAndGet();
-				contextualsMap.put(contextual, id);
-			}
-		}
-		return id;
+		return contextualInstanceStore.get() != null;
 	}
 
 	void initialize(MustacheRenderingEvent event) {
 		logger.debug("Rendering started - init context [mustache: {}]",
 				event.getMustacheName());
-		contextualInstancesMap
-				.set(new HashMap<Integer, ContextualInstance<?>>());
+		contextualInstanceStore.set(new ContextualInstanceStore());
 	}
 
 	void destroy(MustacheRenderingEvent event) {
 
-		Map<Integer, ContextualInstance<?>> contextualInstances = contextualInstancesMap
-				.get();
+		ContextualInstanceStore store = contextualInstanceStore.get();
 
-		if (contextualInstances == null) {
+		if (store == null) {
 			logger.warn("Cannot destroy context - contextual instances map is null");
 			return;
 		}
@@ -133,15 +93,9 @@ public final class RenderingContext implements Context {
 				event.getMustacheName());
 
 		try {
-			for (ContextualInstance<?> contextualInstance : contextualInstances
-					.values()) {
-				logger.trace("Destroying contextual instance [contextual: {}]",
-						contextualInstance.getContextual());
-				contextualInstance.destroy();
-			}
-			contextualInstances.clear();
+			store.destroy();
 		} finally {
-			contextualInstancesMap.remove();
+			contextualInstanceStore.remove();
 		}
 	}
 

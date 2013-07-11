@@ -18,21 +18,36 @@ package org.trimou.cdi.context;
 import org.trimou.engine.listener.AbstractMustacheListener;
 import org.trimou.engine.listener.MustacheRenderingEvent;
 import org.trimou.engine.resource.ReleaseCallback;
+import org.trimou.util.Checker;
 
 /**
- * This listener initializes and destroys rendering context.
+ * This listener initializes and destroys rendering context. Basically it's
+ * possible to have more than one listener per application - listeners are bound
+ * to the engine.
  *
  * @author Martin Kouba
  */
 public final class RenderingContextListener extends AbstractMustacheListener {
 
+	private final RenderingContext renderingContext;
+
+	/**
+	 *
+	 * @param renderingContext
+	 */
+	public RenderingContextListener(RenderingContext renderingContext) {
+		super();
+		Checker.checkArgumentNotNull(renderingContext);
+		this.renderingContext = renderingContext;
+	}
+
 	@Override
 	public void renderingStarted(final MustacheRenderingEvent event) {
-		RenderingContext.INSTANCE.initialize(event);
+		renderingContext.initialize(event);
 		event.registerReleaseCallback(new ReleaseCallback() {
 			@Override
 			public void release() {
-				RenderingContext.INSTANCE.destroy(event);
+				renderingContext.destroy(event);
 			}
 		});
 	}

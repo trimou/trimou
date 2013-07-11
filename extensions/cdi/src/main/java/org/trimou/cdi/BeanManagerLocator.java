@@ -39,8 +39,14 @@ public class BeanManagerLocator {
 	private static final String[] JNDI_NAMES = { "java:comp/BeanManager",
 			"java:comp/env/BeanManager" };
 
+	private static BeanManager extensionProvidedBeanManager = null;
+
 	/**
-	 * Lookup {@link BeanManager} instance.
+	 * Try to lookup the {@link BeanManager} reference.
+	 *
+	 * First try CDI 1.1 preferred way - javax.enterprise.inject.spi.CDI. Then
+	 * CDI 1.0 compatible way - JNDI lookup. And finally extension provided
+	 * manager (workaround to support CDI 1.0 and SE).
 	 *
 	 * @return {@link BeanManager} instance or <code>null</code>
 	 */
@@ -51,7 +57,14 @@ public class BeanManagerLocator {
 		if (beanManager == null) {
 			beanManager = locateJNDI();
 		}
-		return beanManager;
+
+		if (beanManager != null) {
+			return beanManager;
+		} else if (extensionProvidedBeanManager != null) {
+			logger.info("Finally using extension provided BeanManager instance");
+			return extensionProvidedBeanManager;
+		}
+		return null;
 	}
 
 	private static BeanManager locateCDI11() {
@@ -78,6 +91,8 @@ public class BeanManagerLocator {
 				beanManager = (BeanManager) getBeanManagerMethod.invoke(cdi);
 			} catch (Exception e) {
 				// Reflection invocation failed
+				logger.warn("Unable to invoke CDI.current().getBeanManager()",
+						e);
 			}
 		}
 		return beanManager;
@@ -98,9 +113,10 @@ public class BeanManagerLocator {
 					beanManager = (BeanManager) ctx.lookup(name);
 				} catch (NamingException e) {
 					// Not found
+					logger.info("Unable to find BeanManager at: {}", name);
 				}
 				if (beanManager != null) {
-					logger.info("BeanManager found: " + name);
+					logger.info("BeanManager found at: {}", name);
 					break;
 				}
 			}
@@ -109,6 +125,10 @@ public class BeanManagerLocator {
 			logger.warn("JNDI lookup failed - unable to create initial context");
 		}
 		return beanManager;
+	}
+
+	static void setExtensionProvidedBeanManager(BeanManager beanManager) {
+		extensionProvidedBeanManager = beanManager;
 	}
 
 }

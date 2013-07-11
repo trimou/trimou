@@ -15,6 +15,13 @@
  */
 package org.trimou.cdi;
 
+import java.util.Set;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+
+import org.trimou.cdi.context.RenderingContext;
 import org.trimou.cdi.context.RenderingContextListener;
 import org.trimou.cdi.resolver.CDIBeanResolver;
 import org.trimou.engine.config.ConfigurationExtension;
@@ -28,7 +35,24 @@ public class CDIConfigurationExtension implements ConfigurationExtension {
 	@Override
 	public void register(ConfigurationExtensionBuilder builder) {
 		builder.addResolver(new CDIBeanResolver());
-		builder.addMustacheListener(new RenderingContextListener());
+		builder.addMustacheListener(new RenderingContextListener(
+				getRenderingContext()));
+	}
+
+	private RenderingContext getRenderingContext() {
+
+		BeanManager beanManager = BeanManagerLocator.locate();
+		Set<Bean<?>> beans = beanManager.getBeans(TrimouExtension.class);
+
+		if (beans.isEmpty()) {
+			throw new IllegalStateException(
+					"Unable to get rendering context reference");
+		}
+		Bean<?> bean = beanManager.resolve(beans);
+		CreationalContext<?> ctx = beanManager.createCreationalContext(bean);
+		TrimouExtension trimouExtension = (TrimouExtension) beanManager
+				.getReference(bean, TrimouExtension.class, ctx);
+		return trimouExtension.getRenderingContext();
 	}
 
 }
