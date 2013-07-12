@@ -3,13 +3,13 @@ package org.trimou.tests.servlet.locator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.trimou.tests.IntegrationTestUtils.createTestArchiveBase;
 import static org.trimou.tests.IntegrationTestUtils.getResolver;
 
 import java.util.Set;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -29,8 +29,7 @@ public class ServletContextTemplateLocatorTest {
 
 	@Deployment
 	public static WebArchive createTestArchive() {
-		return ShrinkWrap
-				.create(WebArchive.class)
+		return createTestArchiveBase()
 				// WEB-INF/templates
 				.addAsWebInfResource(new StringAsset("<html/>"),
 						"templates/foo.html")
@@ -52,17 +51,17 @@ public class ServletContextTemplateLocatorTest {
 	@Test
 	public void testAllIdentifiers() {
 
-		TemplateLocator locator1 = new ServletContextTemplateLocator(
-				10, "/WEB-INF/templates", "html");
-		TemplateLocator locator2 = new ServletContextTemplateLocator(
-			9, "/templates", "html");
-		TemplateLocator locator3 = new ServletContextTemplateLocator(
-				8, "/WEB-INF/templates");
+		TemplateLocator locator1 = new ServletContextTemplateLocator(10,
+				"/WEB-INF/templates", "html");
+		TemplateLocator locator2 = new ServletContextTemplateLocator(9,
+				"/templates", "html");
+		TemplateLocator locator3 = new ServletContextTemplateLocator(8,
+				"/WEB-INF/templates");
 
 		// Just to init the locators
-		MustacheEngineBuilder.newBuilder()
-				.addTemplateLocator(locator1).addTemplateLocator(locator2)
-				.addTemplateLocator(locator3).build();
+		MustacheEngineBuilder.newBuilder().addTemplateLocator(locator1)
+				.addTemplateLocator(locator2).addTemplateLocator(locator3)
+				.build();
 
 		Set<String> locator1Ids = locator1.getAllIdentifiers();
 		assertEquals(3, locator1Ids.size());
@@ -85,12 +84,12 @@ public class ServletContextTemplateLocatorTest {
 	@Test
 	public void testLocate() {
 
-		TemplateLocator locator1 = new ServletContextTemplateLocator(
-				10, "/WEB-INF/templates", "html");
-		TemplateLocator locator2 = new ServletContextTemplateLocator(
-			9, "/templates", "html");
-		TemplateLocator locator3 = new ServletContextTemplateLocator(
-				8, "/WEB-INF/templates");
+		TemplateLocator locator1 = new ServletContextTemplateLocator(10,
+				"/WEB-INF/templates", "html");
+		TemplateLocator locator2 = new ServletContextTemplateLocator(9,
+				"/templates", "html");
+		TemplateLocator locator3 = new ServletContextTemplateLocator(8,
+				"/WEB-INF/templates");
 
 		MustacheEngine factory = MustacheEngineBuilder.newBuilder()
 				.addTemplateLocator(locator1).addTemplateLocator(locator2)
