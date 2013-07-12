@@ -52,6 +52,22 @@ public class CDIBeanResolver extends AbstractResolver {
 
 	private LoadingCache<String, Optional<Bean>> beanCache;
 
+	/**
+	 *
+	 */
+	public CDIBeanResolver() {
+		super();
+	}
+
+	/**
+	 *
+	 * @param beanManager
+	 */
+	public CDIBeanResolver(BeanManager beanManager) {
+		super();
+		this.beanManager = beanManager;
+	}
+
 	@Override
 	public Object resolve(Object contextObject, String name,
 			ResolutionContext context) {
@@ -77,8 +93,10 @@ public class CDIBeanResolver extends AbstractResolver {
 	@Override
 	public void init(Configuration configuration) {
 
-		// Init BeanManager
-		beanManager = BeanManagerLocator.locate();
+		if (beanManager == null) {
+			beanManager = BeanManagerLocator.locate();
+		}
+
 		if (beanManager == null) {
 			throw new IllegalStateException(
 					"BeanManager not set - invalid resolver configuration");
