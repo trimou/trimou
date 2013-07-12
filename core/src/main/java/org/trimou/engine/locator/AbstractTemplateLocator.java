@@ -22,22 +22,22 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  * @author Martin Kouba
  */
 public abstract class AbstractTemplateLocator extends
-		AbstractConfigurationAware implements TemplateLocator {
+        AbstractConfigurationAware implements TemplateLocator {
 
-	private int priority;
+    private int priority;
 
-	/**
-	 *
-	 * @param priority
-	 */
-	protected AbstractTemplateLocator(int priority) {
-		super();
-		this.priority = priority;
-	}
+    /**
+     *
+     * @param priority
+     */
+    protected AbstractTemplateLocator(int priority) {
+        super();
+        this.priority = priority;
+    }
 
-	@Override
-	public int getPriority() {
-		return priority;
-	}
+    @Override
+    public int getPriority() {
+        return priority;
+    }
 
 }

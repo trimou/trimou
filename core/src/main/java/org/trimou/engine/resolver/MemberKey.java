@@ -21,62 +21,62 @@ package org.trimou.engine.resolver;
  */
 final class MemberKey {
 
-	private final Class<?> clazz;
+    private final Class<?> clazz;
 
-	private final String name;
+    private final String name;
 
-	public Class<?> getClazz() {
-		return clazz;
-	}
+    public Class<?> getClazz() {
+        return clazz;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	MemberKey(Object contextObject, String name) {
-		super();
-		if(contextObject instanceof Class<?>) {
-			this.clazz = (Class<?>) contextObject;
-		} else {
-			this.clazz = contextObject.getClass();
-		}
-		this.name = name;
-	}
+    MemberKey(Object contextObject, String name) {
+        super();
+        if (contextObject instanceof Class<?>) {
+            this.clazz = (Class<?>) contextObject;
+        } else {
+            this.clazz = contextObject.getClass();
+        }
+        this.name = name;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof MemberKey))
-			return false;
-		MemberKey other = (MemberKey) obj;
-		if (clazz == null) {
-			if (other.clazz != null)
-				return false;
-		} else if (!clazz.equals(other.clazz))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof MemberKey))
+            return false;
+        MemberKey other = (MemberKey) obj;
+        if (clazz == null) {
+            if (other.clazz != null)
+                return false;
+        } else if (!clazz.equals(other.clazz))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("MemberKey [clazz=%s, name=%s]", clazz, name);
-	}
+    @Override
+    public String toString() {
+        return String.format("MemberKey [clazz=%s, name=%s]", clazz, name);
+    }
 
 }

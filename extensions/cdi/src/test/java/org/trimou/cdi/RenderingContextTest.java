@@ -12,13 +12,13 @@ import org.trimou.engine.MustacheEngineBuilder;
  */
 public class RenderingContextTest extends WeldSETest {
 
-	@Test
-	public void testInterpolation() {
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
-		assertEquals(
-				"bar",
-				engine.compileMustache("cdi_rendering_context_weld_se",
-						"{{renderingScopedBean.name}}").render(null));
-	}
+    @Test
+    public void testInterpolation() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        assertEquals(
+                "bar",
+                engine.compileMustache("cdi_rendering_context_weld_se",
+                        "{{renderingScopedBean.name}}").render(null));
+    }
 
 }

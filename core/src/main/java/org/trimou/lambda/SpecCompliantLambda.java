@@ -15,7 +15,6 @@
  */
 package org.trimou.lambda;
 
-
 /**
  * Spec compliant callable object.
  *
@@ -24,9 +23,9 @@ package org.trimou.lambda;
  */
 public abstract class SpecCompliantLambda extends InputLiteralLambda {
 
-	@Override
-	public boolean isReturnValueInterpolated() {
-		return true;
-	}
+    @Override
+    public boolean isReturnValueInterpolated() {
+        return true;
+    }
 
 }

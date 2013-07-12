@@ -12,11 +12,12 @@ import org.trimou.Mustache;
  */
 public class LineSeparatorSegmentTest extends AbstractEngineTest {
 
-	@Test
-	public void testLineSeparators() {
-		String templateContents = "\nHello\r\n\n!";
-		Mustache mustache = engine.compileMustache("line_sep", templateContents);
-		assertEquals("\nHello\r\n\n!", mustache.render(null));
-	}
+    @Test
+    public void testLineSeparators() {
+        String templateContents = "\nHello\r\n\n!";
+        Mustache mustache = engine
+                .compileMustache("line_sep", templateContents);
+        assertEquals("\nHello\r\n\n!", mustache.render(null));
+    }
 
 }

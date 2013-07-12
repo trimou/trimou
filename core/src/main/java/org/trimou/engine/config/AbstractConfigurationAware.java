@@ -25,15 +25,15 @@ import java.util.Set;
  */
 public abstract class AbstractConfigurationAware implements ConfigurationAware {
 
-	@Override
-	public void init(Configuration configuration) {
-		// No-op
-	}
+    @Override
+    public void init(Configuration configuration) {
+        // No-op
+    }
 
-	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		// No config keys by default
-		return Collections.emptySet();
-	}
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        // No config keys by default
+        return Collections.emptySet();
+    }
 
 }

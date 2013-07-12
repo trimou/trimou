@@ -50,184 +50,184 @@ import com.google.common.cache.LoadingCache;
  */
 class DefaultMustacheEngine implements MustacheEngine {
 
-	private LoadingCache<String, Optional<Mustache>> templateCache;
+    private LoadingCache<String, Optional<Mustache>> templateCache;
 
-	private Configuration configuration;
+    private Configuration configuration;
 
-	private Parser parser;
+    private Parser parser;
 
-	/**
-	 * Make this type proxyable (CDI) so that it's possible to produce
-	 * application scoped CDI bean
-	 */
-	DefaultMustacheEngine() {
-	}
+    /**
+     * Make this type proxyable (CDI) so that it's possible to produce
+     * application scoped CDI bean
+     */
+    DefaultMustacheEngine() {
+    }
 
-	/**
-	 *
-	 * @param builder
-	 */
-	DefaultMustacheEngine(MustacheEngineBuilder builder) {
+    /**
+     *
+     * @param builder
+     */
+    DefaultMustacheEngine(MustacheEngineBuilder builder) {
 
-		configuration = new ConfigurationFactory().createConfiguration(builder);
+        configuration = new ConfigurationFactory().createConfiguration(builder);
 
-		CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
+        CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
 
-		if (configuration
-				.getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
-			// Disable template cache
-			cacheBuilder.maximumSize(0);
-		}
+        if (configuration
+                .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
+            // Disable template cache
+            cacheBuilder.maximumSize(0);
+        }
 
-		// Template cache
-		templateCache = cacheBuilder
-				.build(new CacheLoader<String, Optional<Mustache>>() {
+        // Template cache
+        templateCache = cacheBuilder
+                .build(new CacheLoader<String, Optional<Mustache>>() {
 
-					@Override
-					public Optional<Mustache> load(String key) throws Exception {
+                    @Override
+                    public Optional<Mustache> load(String key) throws Exception {
 
-						if (configuration.getTemplateLocators() == null
-								|| configuration.getTemplateLocators()
-										.isEmpty()) {
-							return Optional.absent();
-						}
+                        if (configuration.getTemplateLocators() == null
+                                || configuration.getTemplateLocators()
+                                        .isEmpty()) {
+                            return Optional.absent();
+                        }
 
-						Reader reader = null;
+                        Reader reader = null;
 
-						for (TemplateLocator locator : configuration
-								.getTemplateLocators()) {
-							reader = locator.locate(key);
-							if (reader != null) {
-								break;
-							}
-						}
+                        for (TemplateLocator locator : configuration
+                                .getTemplateLocators()) {
+                            reader = locator.locate(key);
+                            if (reader != null) {
+                                break;
+                            }
+                        }
 
-						if (reader == null) {
-							return Optional.absent();
-						}
-						return Optional.of(parse(key, reader));
-					}
-				});
+                        if (reader == null) {
+                            return Optional.absent();
+                        }
+                        return Optional.of(parse(key, reader));
+                    }
+                });
 
-		// Init parser
-		parser = new ParserFactory().createParser(this);
+        // Init parser
+        parser = new ParserFactory().createParser(this);
 
-		// Precompile templates
-		if (configuration
-				.getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
+        // Precompile templates
+        if (configuration
+                .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
 
-			Set<String> templateNames = new HashSet<String>();
+            Set<String> templateNames = new HashSet<String>();
 
-			for (TemplateLocator locator : configuration.getTemplateLocators()) {
-				templateNames.addAll(locator.getAllIdentifiers());
-			}
+            for (TemplateLocator locator : configuration.getTemplateLocators()) {
+                templateNames.addAll(locator.getAllIdentifiers());
+            }
 
-			for (String templateName : templateNames) {
-				getTemplateFromCache(templateName);
-			}
-		}
-	}
+            for (String templateName : templateNames) {
+                getTemplateFromCache(templateName);
+            }
+        }
+    }
 
-	public Mustache getMustache(String templateName) {
-		checkArgumentNotEmpty(templateName);
-		return getTemplateFromCache(templateName);
-	}
+    public Mustache getMustache(String templateName) {
+        checkArgumentNotEmpty(templateName);
+        return getTemplateFromCache(templateName);
+    }
 
-	public Mustache compileMustache(String templateName, String templateContent) {
-		checkArgumentNotEmpty(templateName);
-		checkArgumentNotEmpty(templateContent);
-		return parse(templateName, new StringReader(templateContent));
-	}
+    public Mustache compileMustache(String templateName, String templateContent) {
+        checkArgumentNotEmpty(templateName);
+        checkArgumentNotEmpty(templateContent);
+        return parse(templateName, new StringReader(templateContent));
+    }
 
-	/**
-	 * @return
-	 */
-	public Configuration getConfiguration() {
-		return configuration;
-	}
+    /**
+     * @return
+     */
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 
-	/**
-	 * Invalidates the template cache.
-	 */
-	public void invalidateTemplateCache() {
-		this.templateCache.invalidateAll();
-	}
+    /**
+     * Invalidates the template cache.
+     */
+    public void invalidateTemplateCache() {
+        this.templateCache.invalidateAll();
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public LoadingCache<String, Optional<Mustache>> getTemplateCache() {
-		return templateCache;
-	}
+    /**
+     *
+     * @return
+     */
+    public LoadingCache<String, Optional<Mustache>> getTemplateCache() {
+        return templateCache;
+    }
 
-	/**
-	 *
-	 * @param templateName
-	 * @param reader
-	 * @return
-	 */
-	private Mustache parse(String templateName, Reader reader) {
-		ParsingHandler handler = new ParsingHandlerFactory()
-				.createParsingHandler();
+    /**
+     *
+     * @param templateName
+     * @param reader
+     * @return
+     */
+    private Mustache parse(String templateName, Reader reader) {
+        ParsingHandler handler = new ParsingHandlerFactory()
+                .createParsingHandler();
 
-		parser.parse(templateName, reader, handler);
-		Mustache mustache = handler.getCompiledTemplate();
+        parser.parse(templateName, reader, handler);
+        Mustache mustache = handler.getCompiledTemplate();
 
-		if (configuration.getMustacheListeners() != null) {
-			MustacheCompilationEvent event = new DefaultMustacheCompilationEvent(
-					mustache);
-			for (MustacheListener listener : configuration
-					.getMustacheListeners()) {
-				listener.compilationFinished(event);
-			}
-		}
-		return mustache;
-	}
+        if (configuration.getMustacheListeners() != null) {
+            MustacheCompilationEvent event = new DefaultMustacheCompilationEvent(
+                    mustache);
+            for (MustacheListener listener : configuration
+                    .getMustacheListeners()) {
+                listener.compilationFinished(event);
+            }
+        }
+        return mustache;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		builder.append(this.getClass().getName());
-		builder.append("]");
-		builder.append(Strings.LINE_SEPARATOR);
-		builder.append(configuration.toString());
-		return builder.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        builder.append(this.getClass().getName());
+        builder.append("]");
+        builder.append(Strings.LINE_SEPARATOR);
+        builder.append(configuration.toString());
+        return builder.toString();
+    }
 
-	private Mustache getTemplateFromCache(String templateName) {
-		try {
-			return templateCache.get(templateName).orNull();
-		} catch (ExecutionException e) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-					e);
-		}
-	}
+    private Mustache getTemplateFromCache(String templateName) {
+        try {
+            return templateCache.get(templateName).orNull();
+        } catch (ExecutionException e) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                    e);
+        }
+    }
 
-	/**
-	 *
-	 * @author Martin Kouba
-	 */
-	private static class DefaultMustacheCompilationEvent implements
-			MustacheCompilationEvent {
+    /**
+     *
+     * @author Martin Kouba
+     */
+    private static class DefaultMustacheCompilationEvent implements
+            MustacheCompilationEvent {
 
-		private final Mustache mustache;
+        private final Mustache mustache;
 
-		/**
-		 *
-		 * @param mustache
-		 */
-		public DefaultMustacheCompilationEvent(Mustache mustache) {
-			super();
-			this.mustache = mustache;
-		}
+        /**
+         *
+         * @param mustache
+         */
+        public DefaultMustacheCompilationEvent(Mustache mustache) {
+            super();
+            this.mustache = mustache;
+        }
 
-		@Override
-		public Mustache getMustache() {
-			return mustache;
-		}
+        @Override
+        public Mustache getMustache() {
+            return mustache;
+        }
 
-	}
+    }
 
 }

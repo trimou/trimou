@@ -23,41 +23,41 @@ import com.google.common.collect.ImmutableMap;
  */
 public class ResourceBundleLambdaTest extends AbstractEngineTest {
 
-	@Override
-	@Before
-	public void buildEngine() {
+    @Override
+    @Before
+    public void buildEngine() {
 
-		ResourceBundleLambda resourceBundleLambda = new ResourceBundleLambda(
-				"messages");
+        ResourceBundleLambda resourceBundleLambda = new ResourceBundleLambda(
+                "messages");
 
-		engine = MustacheEngineBuilder.newBuilder()
-				.setLocaleSupport(new LocaleSupport() {
-					@Override
-					public Locale getCurrentLocale() {
-						return new Locale("en");
-					}
+        engine = MustacheEngineBuilder.newBuilder()
+                .setLocaleSupport(new LocaleSupport() {
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return new Locale("en");
+                    }
 
-					@Override
-					public void init(Configuration configuration) {
-					}
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
 
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return Collections.emptySet();
-					}
-				}).addGlobalData("bundle", resourceBundleLambda)
-				.registerCallback(resourceBundleLambda).build();
-	}
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addGlobalData("bundle", resourceBundleLambda)
+                .registerCallback(resourceBundleLambda).build();
+    }
 
-	@Test
-	public void testInterpolation() {
+    @Test
+    public void testInterpolation() {
 
-		String templateContents = "{{#bundle}}{{key}}{{/bundle}}";
-		Mustache mustache = engine.compileMustache("bundle_lambda",
-				templateContents);
+        String templateContents = "{{#bundle}}{{key}}{{/bundle}}";
+        Mustache mustache = engine.compileMustache("bundle_lambda",
+                templateContents);
 
-		assertEquals("Hello", mustache.render(ImmutableMap.<String, Object> of(
-				"key", "echo_one")));
-	}
+        assertEquals("Hello", mustache.render(ImmutableMap.<String, Object> of(
+                "key", "echo_one")));
+    }
 
 }

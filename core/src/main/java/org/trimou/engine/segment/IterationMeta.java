@@ -24,46 +24,46 @@ import java.util.Iterator;
  */
 public final class IterationMeta {
 
-	private final Iterator<?> iterator;
+    private final Iterator<?> iterator;
 
-	private final int length;
+    private final int length;
 
-	private int index;
+    private int index;
 
-	IterationMeta(Iterator<?> iterator) {
-		super();
-		this.iterator = iterator;
-		this.index = 1;
-		this.length = 0;
-	}
+    IterationMeta(Iterator<?> iterator) {
+        super();
+        this.iterator = iterator;
+        this.index = 1;
+        this.length = 0;
+    }
 
-	IterationMeta(int length) {
-		super();
-		this.iterator = null;
-		this.index = 1;
-		this.length = length;
-	}
+    IterationMeta(int length) {
+        super();
+        this.iterator = null;
+        this.index = 1;
+        this.length = length;
+    }
 
-	/**
-	 * The first element is at index <code>1</code>.
-	 *
-	 * @return the current iteration index
-	 */
-	public int getIterIndex() {
-		return index;
-	}
+    /**
+     * The first element is at index <code>1</code>.
+     *
+     * @return the current iteration index
+     */
+    public int getIterIndex() {
+        return index;
+    }
 
-	/**
-	 *
-	 * @return <code>true</code> if the iteration has more elements,
-	 *         <code>false</code> otherwise
-	 */
-	public boolean getIterHasNext() {
-		return iterator != null ? iterator.hasNext() : (index < length);
-	}
+    /**
+     *
+     * @return <code>true</code> if the iteration has more elements,
+     *         <code>false</code> otherwise
+     */
+    public boolean getIterHasNext() {
+        return iterator != null ? iterator.hasNext() : (index < length);
+    }
 
-	void nextIteration() {
-		index++;
-	}
+    void nextIteration() {
+        index++;
+    }
 
 }

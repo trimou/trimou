@@ -28,39 +28,39 @@ import org.trimou.annotations.Internal;
  */
 @Internal
 public abstract class AbstractReleaseCallbackContainer implements
-		ReleaseCallbackContainer {
+        ReleaseCallbackContainer {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(AbstractReleaseCallbackContainer.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(AbstractReleaseCallbackContainer.class);
 
-	private List<ReleaseCallback> releaseCallbacks = null;
+    private List<ReleaseCallback> releaseCallbacks = null;
 
-	/**
-	 * Release all the resources, i.e. invoke {@link ReleaseCallback#release()}
-	 * on each callback. All the callbacks are always invoked, even if one of
-	 * the invocation fails (throws unchecked exception). Callbacks are invoked
-	 * in the order in which they were registered.
-	 */
-	public void release() {
-		if (releaseCallbacks != null) {
-			for (ReleaseCallback callback : releaseCallbacks) {
-				try {
-					callback.release();
-				} catch (Exception e) {
-					logger.warn(
-							"Exception occured during release callback invocation:",
-							e);
-				}
-			}
-		}
-	}
+    /**
+     * Release all the resources, i.e. invoke {@link ReleaseCallback#release()}
+     * on each callback. All the callbacks are always invoked, even if one of
+     * the invocation fails (throws unchecked exception). Callbacks are invoked
+     * in the order in which they were registered.
+     */
+    public void release() {
+        if (releaseCallbacks != null) {
+            for (ReleaseCallback callback : releaseCallbacks) {
+                try {
+                    callback.release();
+                } catch (Exception e) {
+                    logger.warn(
+                            "Exception occured during release callback invocation:",
+                            e);
+                }
+            }
+        }
+    }
 
-	@Override
-	public void registerReleaseCallback(ReleaseCallback callback) {
-		if (releaseCallbacks == null) {
-			releaseCallbacks = new ArrayList<ReleaseCallback>(5);
-		}
-		releaseCallbacks.add(callback);
-	}
+    @Override
+    public void registerReleaseCallback(ReleaseCallback callback) {
+        if (releaseCallbacks == null) {
+            releaseCallbacks = new ArrayList<ReleaseCallback>(5);
+        }
+        releaseCallbacks.add(callback);
+    }
 
 }

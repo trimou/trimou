@@ -25,8 +25,8 @@ import org.trimou.lambda.Lambda;
  * Receives notifications about {@link Mustache} processing.
  *
  * Listeners are invoked in the order of their registration, except for
- * {@link #renderingFinished(MustacheRenderingEvent)} method which is
- * invoked in reverse order.
+ * {@link #renderingFinished(MustacheRenderingEvent)} method which is invoked in
+ * reverse order.
  *
  * Code inside a listener may throw an unchecked exception - this aborts further
  * processing of template and no more listeners are invoked afterwards.
@@ -36,34 +36,34 @@ import org.trimou.lambda.Lambda;
  */
 public interface MustacheListener extends ConfigurationAware {
 
-	/**
-	 * Notification that a {@link Mustache} template was just compiled. Keep in
-	 * mind that processing of a {@link Lambda} may also result in one-off
-	 * template compilation - see also
-	 * {@link Lambda#isReturnValueInterpolated()}.
-	 *
-	 * @param event
-	 */
-	void compilationFinished(MustacheCompilationEvent event);
+    /**
+     * Notification that a {@link Mustache} template was just compiled. Keep in
+     * mind that processing of a {@link Lambda} may also result in one-off
+     * template compilation - see also
+     * {@link Lambda#isReturnValueInterpolated()}.
+     *
+     * @param event
+     */
+    void compilationFinished(MustacheCompilationEvent event);
 
-	/**
-	 * Rendering of a {@link Mustache} is about to start. Always use
-	 * {@link MustacheRenderingEvent#registerReleaseCallback(ReleaseCallback)}
-	 * to release all the necessary resources.
-	 *
-	 * @param event
-	 */
-	void renderingStarted(MustacheRenderingEvent event);
+    /**
+     * Rendering of a {@link Mustache} is about to start. Always use
+     * {@link MustacheRenderingEvent#registerReleaseCallback(ReleaseCallback)}
+     * to release all the necessary resources.
+     *
+     * @param event
+     */
+    void renderingStarted(MustacheRenderingEvent event);
 
-	/**
-	 * Rendering of a {@link Mustache} is about to finish.
-	 *
-	 * Always use
-	 * {@link MustacheRenderingEvent#registerReleaseCallback(ReleaseCallback)}
-	 * to release all the necessary resources.
-	 *
-	 * @param event
-	 */
-	void renderingFinished(MustacheRenderingEvent event);
+    /**
+     * Rendering of a {@link Mustache} is about to finish.
+     *
+     * Always use
+     * {@link MustacheRenderingEvent#registerReleaseCallback(ReleaseCallback)}
+     * to release all the necessary resources.
+     *
+     * @param event
+     */
+    void renderingFinished(MustacheRenderingEvent event);
 
 }

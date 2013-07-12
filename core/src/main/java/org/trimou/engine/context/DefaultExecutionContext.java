@@ -23,40 +23,40 @@ import org.trimou.engine.config.Configuration;
  */
 class DefaultExecutionContext extends AbstractExecutionContext {
 
-	public DefaultExecutionContext(Configuration configuration) {
-		super(configuration);
-	}
+    public DefaultExecutionContext(Configuration configuration) {
+        super(configuration);
+    }
 
-	@Override
-	public ValueWrapper getValue(String key) {
+    @Override
+    public ValueWrapper getValue(String key) {
 
-		ValueWrapper value = new ValueWrapper();
+        ValueWrapper value = new ValueWrapper();
 
-		if (isCompoundKey(key)) {
+        if (isCompoundKey(key)) {
 
-			Object lastValue = null;
-			String[] parts = splitKey(key);
+            Object lastValue = null;
+            String[] parts = splitKey(key);
 
-			lastValue = resolveLeadingContextObject(parts[0], value);
+            lastValue = resolveLeadingContextObject(parts[0], value);
 
-			if (lastValue == null) {
-				// Not found - miss
-				return value;
-			}
+            if (lastValue == null) {
+                // Not found - miss
+                return value;
+            }
 
-			for (int i = 1; i < parts.length; i++) {
-				lastValue = resolve(lastValue, parts[i], value);
-				if (lastValue == null) {
-					// Not found - miss
-					break;
-				}
-			}
-			value.set(lastValue);
+            for (int i = 1; i < parts.length; i++) {
+                lastValue = resolve(lastValue, parts[i], value);
+                if (lastValue == null) {
+                    // Not found - miss
+                    break;
+                }
+            }
+            value.set(lastValue);
 
-		} else {
-			value.set(resolveLeadingContextObject(key, value));
-		}
-		return value;
-	}
+        } else {
+            value.set(resolveLeadingContextObject(key, value));
+        }
+        return value;
+    }
 
 }

@@ -59,125 +59,125 @@ import org.trimou.lambda.Lambda;
 @Internal
 public class SectionSegment extends AbstractSectionSegment {
 
-	public SectionSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public SectionSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	public SegmentType getType() {
-		return SegmentType.SECTION;
-	}
+    public SegmentType getType() {
+        return SegmentType.SECTION;
+    }
 
-	public void execute(Appendable appendable, ExecutionContext context) {
+    public void execute(Appendable appendable, ExecutionContext context) {
 
-		ValueWrapper value = context.getValue(getText());
+        ValueWrapper value = context.getValue(getText());
 
-		try {
-			if (value.isNull()) {
-				return;
-			}
-			processValue(appendable, context, value.get());
-		} finally {
-			value.release();
-		}
-	}
+        try {
+            if (value.isNull()) {
+                return;
+            }
+            processValue(appendable, context, value.get());
+        } finally {
+            value.release();
+        }
+    }
 
-	private void processValue(Appendable appendable, ExecutionContext context,
-			Object value) {
-		if (value instanceof Boolean) {
-			// Boolean#TRUE, true
-			if ((Boolean) value) {
-				super.execute(appendable, context);
-			}
-		} else if (value instanceof Iterable) {
-			// Iterable
-			processIterable(appendable, context, value);
-		} else if (value.getClass().isArray()) {
-			// Array
-			processArray(appendable, context, value);
-		} else if (value instanceof Lambda) {
-			// Lambda
-			processLambda(appendable, context, value);
-		} else {
-			// Nested context
-			context.push(CONTEXT, value);
-			super.execute(appendable, context);
-			context.pop(CONTEXT);
-		}
-	}
+    private void processValue(Appendable appendable, ExecutionContext context,
+            Object value) {
+        if (value instanceof Boolean) {
+            // Boolean#TRUE, true
+            if ((Boolean) value) {
+                super.execute(appendable, context);
+            }
+        } else if (value instanceof Iterable) {
+            // Iterable
+            processIterable(appendable, context, value);
+        } else if (value.getClass().isArray()) {
+            // Array
+            processArray(appendable, context, value);
+        } else if (value instanceof Lambda) {
+            // Lambda
+            processLambda(appendable, context, value);
+        } else {
+            // Nested context
+            context.push(CONTEXT, value);
+            super.execute(appendable, context);
+            context.pop(CONTEXT);
+        }
+    }
 
-	@SuppressWarnings("rawtypes")
-	private void processIterable(Appendable appendable,
-			ExecutionContext context, Object value) {
+    @SuppressWarnings("rawtypes")
+    private void processIterable(Appendable appendable,
+            ExecutionContext context, Object value) {
 
-		Iterator iterator = ((Iterable) value).iterator();
+        Iterator iterator = ((Iterable) value).iterator();
 
-		if (!iterator.hasNext()) {
-			return;
-		}
+        if (!iterator.hasNext()) {
+            return;
+        }
 
-		IterationMeta meta = new IterationMeta(iterator);
-		context.push(CONTEXT, meta);
-		while (iterator.hasNext()) {
-			context.push(CONTEXT, iterator.next());
-			super.execute(appendable, context);
-			context.pop(CONTEXT);
-			meta.nextIteration();
-		}
-		context.pop(CONTEXT);
-	}
+        IterationMeta meta = new IterationMeta(iterator);
+        context.push(CONTEXT, meta);
+        while (iterator.hasNext()) {
+            context.push(CONTEXT, iterator.next());
+            super.execute(appendable, context);
+            context.pop(CONTEXT);
+            meta.nextIteration();
+        }
+        context.pop(CONTEXT);
+    }
 
-	private void processArray(Appendable appendable, ExecutionContext context,
-			Object value) {
+    private void processArray(Appendable appendable, ExecutionContext context,
+            Object value) {
 
-		int length = Array.getLength(value);
+        int length = Array.getLength(value);
 
-		if (length < 1) {
-			return;
-		}
+        if (length < 1) {
+            return;
+        }
 
-		IterationMeta meta = new IterationMeta(length);
-		context.push(CONTEXT, meta);
-		for (int i = 0; i < length; i++) {
-			context.push(CONTEXT, Array.get(value, i));
-			super.execute(appendable, context);
-			context.pop(CONTEXT);
-			meta.nextIteration();
-		}
-		context.pop(CONTEXT);
-	}
+        IterationMeta meta = new IterationMeta(length);
+        context.push(CONTEXT, meta);
+        for (int i = 0; i < length; i++) {
+            context.push(CONTEXT, Array.get(value, i));
+            super.execute(appendable, context);
+            context.pop(CONTEXT);
+            meta.nextIteration();
+        }
+        context.pop(CONTEXT);
+    }
 
-	private void processLambda(Appendable appendable, ExecutionContext context,
-			Object value) {
+    private void processLambda(Appendable appendable, ExecutionContext context,
+            Object value) {
 
-		Lambda lambda = (Lambda) value;
+        Lambda lambda = (Lambda) value;
 
-		String input;
-		switch (lambda.getInputType()) {
-		case LITERAL:
-			// Try to reconstruct the original text
-			input = getContainingLiteralBlock();
-			break;
-		case PROCESSED:
-			StringBuilder processed = new StringBuilder();
-			super.execute(processed, context);
-			input = processed.toString();
-			break;
-		default:
-			throw new IllegalStateException("Unsupported lambda input type");
-		}
+        String input;
+        switch (lambda.getInputType()) {
+        case LITERAL:
+            // Try to reconstruct the original text
+            input = getContainingLiteralBlock();
+            break;
+        case PROCESSED:
+            StringBuilder processed = new StringBuilder();
+            super.execute(processed, context);
+            input = processed.toString();
+            break;
+        default:
+            throw new IllegalStateException("Unsupported lambda input type");
+        }
 
-		String returnValue = lambda.invoke(input);
+        String returnValue = lambda.invoke(input);
 
-		if (lambda.isReturnValueInterpolated()) {
-			// Parse and interpolate the return value
-			TemplateSegment temp = (TemplateSegment) getEngine()
-					.compileMustache(
-							Lambdas.constructLambdaOneoffTemplateName(this),
-							returnValue);
-			temp.execute(appendable, context);
-		} else {
-			append(appendable, returnValue);
-		}
-	}
+        if (lambda.isReturnValueInterpolated()) {
+            // Parse and interpolate the return value
+            TemplateSegment temp = (TemplateSegment) getEngine()
+                    .compileMustache(
+                            Lambdas.constructLambdaOneoffTemplateName(this),
+                            returnValue);
+            temp.execute(appendable, context);
+        } else {
+            append(appendable, returnValue);
+        }
+    }
 
 }

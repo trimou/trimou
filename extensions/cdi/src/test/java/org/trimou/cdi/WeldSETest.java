@@ -10,17 +10,17 @@ import org.junit.BeforeClass;
  */
 public abstract class WeldSETest {
 
-	private static Weld weld;
+    private static Weld weld;
 
-	@BeforeClass
-	public static void startWeldSE() {
-		weld = new Weld();
-		weld.initialize();
-	}
+    @BeforeClass
+    public static void startWeldSE() {
+        weld = new Weld();
+        weld.initialize();
+    }
 
-	@AfterClass
-	public static void shutdownWeldSE() {
-		weld.shutdown();
-	}
+    @AfterClass
+    public static void shutdownWeldSE() {
+        weld.shutdown();
+    }
 
 }

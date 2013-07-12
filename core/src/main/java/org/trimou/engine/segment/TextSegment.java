@@ -26,21 +26,21 @@ import org.trimou.engine.context.ExecutionContext;
 @Internal
 public class TextSegment extends AbstractSegment {
 
-	public TextSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public TextSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	public SegmentType getType() {
-		return SegmentType.TEXT;
-	}
+    public SegmentType getType() {
+        return SegmentType.TEXT;
+    }
 
-	public void execute(Appendable appendable, ExecutionContext context) {
-		append(appendable, getText());
-	}
+    public void execute(Appendable appendable, ExecutionContext context) {
+        append(appendable, getText());
+    }
 
-	@Override
-	public String getLiteralBlock() {
-		return getText();
-	}
+    @Override
+    public String getLiteralBlock() {
+        return getText();
+    }
 
 }

@@ -22,43 +22,43 @@ import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 /**
  * Wrapper for the resolved value object and release callbacks.
  *
- * The {@link #release()} method must be always called after the wrapper is used,
- * even if the resolved object is <code>null</code> (there might be still some
- * callbacks registered).
+ * The {@link #release()} method must be always called after the wrapper is
+ * used, even if the resolved object is <code>null</code> (there might be still
+ * some callbacks registered).
  *
  * @author Martin Kouba
  */
 @Internal
-public final class ValueWrapper extends AbstractReleaseCallbackContainer implements
-		ResolutionContext {
+public final class ValueWrapper extends AbstractReleaseCallbackContainer
+        implements ResolutionContext {
 
-	private Object value = null;
+    private Object value = null;
 
-	ValueWrapper() {
-		super();
-	}
+    ValueWrapper() {
+        super();
+    }
 
-	/**
-	 * @return the resolved object or <code>null</code> if no such object exists
-	 */
-	public Object get() {
-		return value;
-	}
+    /**
+     * @return the resolved object or <code>null</code> if no such object exists
+     */
+    public Object get() {
+        return value;
+    }
 
-	/**
-	 *
-	 * @param value
-	 */
-	void set(Object value) {
-		this.value = value;
-	}
+    /**
+     *
+     * @param value
+     */
+    void set(Object value) {
+        this.value = value;
+    }
 
-	/**
-	 * @return <code>true</code> if there is no wrapped value (resolved object),
-	 *         <code>false</code> otherwise
-	 */
-	public boolean isNull() {
-		return value == null;
-	}
+    /**
+     * @return <code>true</code> if there is no wrapped value (resolved object),
+     *         <code>false</code> otherwise
+     */
+    public boolean isNull() {
+        return value == null;
+    }
 
 }

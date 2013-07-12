@@ -20,191 +20,192 @@ import org.trimou.engine.segment.TemplateSegment;
  */
 public class ParsingTest extends AbstractEngineTest {
 
-	@Test
-	public void testVariable() {
+    @Test
+    public void testVariable() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_variable", "Hello {{foo}} and {{& me}}!");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_variable", "Hello {{foo}} and {{& me}}!");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(5, segments.size());
-		validateSegment(segments, 0, SegmentType.TEXT, "Hello ");
-		validateSegment(segments, 1, SegmentType.VALUE, "foo");
-		validateSegment(segments, 2, SegmentType.TEXT, " and ");
-		validateSegment(segments, 3, SegmentType.VALUE, "me");
-		validateSegment(segments, 4, SegmentType.TEXT, "!");
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(5, segments.size());
+        validateSegment(segments, 0, SegmentType.TEXT, "Hello ");
+        validateSegment(segments, 1, SegmentType.VALUE, "foo");
+        validateSegment(segments, 2, SegmentType.TEXT, " and ");
+        validateSegment(segments, 3, SegmentType.VALUE, "me");
+        validateSegment(segments, 4, SegmentType.TEXT, "!");
+    }
 
-	@Test
-	public void testComment() {
+    @Test
+    public void testComment() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_comment", "{{! ignore}}{{me}}");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_comment", "{{! ignore}}{{me}}");
 
-		List<Segment> segments = template.getSegments();
-		// Comment tag is removed by default
-		assertEquals(1, segments.size());
-		validateSegment(segments, 0, SegmentType.VALUE, "me");
-	}
+        List<Segment> segments = template.getSegments();
+        // Comment tag is removed by default
+        assertEquals(1, segments.size());
+        validateSegment(segments, 0, SegmentType.VALUE, "me");
+    }
 
-	@Test
-	public void testSection() {
+    @Test
+    public void testSection() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_section",
-				"This is a {{#section}} jupi {{mustache}} {{/section}}");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_section",
+                "This is a {{#section}} jupi {{mustache}} {{/section}}");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(2, segments.size());
-		validateSegment(segments, 0, SegmentType.TEXT, "This is a ");
-		validateSegment(segments, 1, SegmentType.SECTION, "section");
-		assertEquals(3, ((SectionSegment) segments.get(1)).getSegments().size());
-		// System.out.println(template.getSegmentTreeAsString());
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(2, segments.size());
+        validateSegment(segments, 0, SegmentType.TEXT, "This is a ");
+        validateSegment(segments, 1, SegmentType.SECTION, "section");
+        assertEquals(3, ((SectionSegment) segments.get(1)).getSegments().size());
+        // System.out.println(template.getSegmentTreeAsString());
+    }
 
-	@Test
-	public void testInvertedSection() {
+    @Test
+    public void testInvertedSection() {
 
-		TemplateSegment template = (TemplateSegment) engine
-				.compileMustache("parse_inv_section",
-						"This is a {{^section}} jupi {{/section}}");
+        TemplateSegment template = (TemplateSegment) engine
+                .compileMustache("parse_inv_section",
+                        "This is a {{^section}} jupi {{/section}}");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(2, segments.size());
-		validateSegment(segments, 0, SegmentType.TEXT, "This is a ");
-		validateSegment(segments, 1, SegmentType.INVERTED_SECTION, "section");
-		assertEquals(1, ((InvertedSectionSegment) segments.get(1))
-				.getSegments().size());
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(2, segments.size());
+        validateSegment(segments, 0, SegmentType.TEXT, "This is a ");
+        validateSegment(segments, 1, SegmentType.INVERTED_SECTION, "section");
+        assertEquals(1, ((InvertedSectionSegment) segments.get(1))
+                .getSegments().size());
+    }
 
-	@Test
-	public void testDelimiters() {
+    @Test
+    public void testDelimiters() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_delimiters",
-				"This {{=%% %%=}} is a %%foo%% jupi %%={{ }}=%% {{bar}}");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_delimiters",
+                "This {{=%% %%=}} is a %%foo%% jupi %%={{ }}=%% {{bar}}");
 
-		List<Segment> segments = template.getSegments();
-		// Delimiters tag is removed by default
-		assertEquals(6, segments.size());
-		validateSegment(segments, 0, SegmentType.TEXT, "This ");
-		validateSegment(segments, 1, SegmentType.TEXT, " is a ");
-		validateSegment(segments, 2, SegmentType.VALUE, "foo");
-		validateSegment(segments, 3, SegmentType.TEXT, " jupi ");
-		validateSegment(segments, 4, SegmentType.TEXT, " ");
-		validateSegment(segments, 5, SegmentType.VALUE, "bar");
-	}
+        List<Segment> segments = template.getSegments();
+        // Delimiters tag is removed by default
+        assertEquals(6, segments.size());
+        validateSegment(segments, 0, SegmentType.TEXT, "This ");
+        validateSegment(segments, 1, SegmentType.TEXT, " is a ");
+        validateSegment(segments, 2, SegmentType.VALUE, "foo");
+        validateSegment(segments, 3, SegmentType.TEXT, " jupi ");
+        validateSegment(segments, 4, SegmentType.TEXT, " ");
+        validateSegment(segments, 5, SegmentType.VALUE, "bar");
+    }
 
-	@Test
-	public void testPartials() {
+    @Test
+    public void testPartials() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_partial", "START{{>partial}}END");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_partial", "START{{>partial}}END");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(3, segments.size());
-		validateSegment(segments, 0, SegmentType.TEXT, "START");
-		validateSegment(segments, 1, SegmentType.PARTIAL, "partial");
-		validateSegment(segments, 2, SegmentType.TEXT, "END");
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(3, segments.size());
+        validateSegment(segments, 0, SegmentType.TEXT, "START");
+        validateSegment(segments, 1, SegmentType.PARTIAL, "partial");
+        validateSegment(segments, 2, SegmentType.TEXT, "END");
+    }
 
-	@Test
-	public void testLineSeparator() {
+    @Test
+    public void testLineSeparator() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_line_sep", "\nHello {{foo}}\r\n\n and {{& me}}!\n");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_line_sep", "\nHello {{foo}}\r\n\n and {{& me}}!\n");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(9, segments.size());
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(0).getType());
-		validateSegment(segments, 1, SegmentType.TEXT, "Hello ");
-		validateSegment(segments, 2, SegmentType.VALUE, "foo");
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(3).getType());
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(4).getType());
-		validateSegment(segments, 5, SegmentType.TEXT, " and ");
-		validateSegment(segments, 6, SegmentType.VALUE, "me");
-		validateSegment(segments, 7, SegmentType.TEXT, "!");
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(8).getType());
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(9, segments.size());
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(0).getType());
+        validateSegment(segments, 1, SegmentType.TEXT, "Hello ");
+        validateSegment(segments, 2, SegmentType.VALUE, "foo");
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(3).getType());
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(4).getType());
+        validateSegment(segments, 5, SegmentType.TEXT, " and ");
+        validateSegment(segments, 6, SegmentType.VALUE, "me");
+        validateSegment(segments, 7, SegmentType.TEXT, "!");
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(8).getType());
+    }
 
-	@Test
-	public void testStandaloneLines() {
+    @Test
+    public void testStandaloneLines() {
 
-		TemplateSegment template = (TemplateSegment) engine
-				.compileMustache("parse_standalone_line",
-						"\nHello {{foo}}\n{{! Standalone}}\n and {{& me}}!\n{{#test}}\nyes\n{{/test}}");
+        TemplateSegment template = (TemplateSegment) engine
+                .compileMustache("parse_standalone_line",
+                        "\nHello {{foo}}\n{{! Standalone}}\n and {{& me}}!\n{{#test}}\nyes\n{{/test}}");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(9, segments.size());
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(0).getType());
-		assertEquals(SegmentType.TEXT, segments.get(1).getType());
-		assertEquals(SegmentType.VALUE, segments.get(2).getType());
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(3).getType());
-		assertEquals(SegmentType.TEXT, segments.get(4).getType());
-		assertEquals(SegmentType.VALUE, segments.get(5).getType());
-		assertEquals(SegmentType.TEXT, segments.get(6).getType());
-		assertEquals(SegmentType.LINE_SEPARATOR, segments.get(7).getType());
-		assertEquals(SegmentType.SECTION, segments.get(8).getType());
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(9, segments.size());
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(0).getType());
+        assertEquals(SegmentType.TEXT, segments.get(1).getType());
+        assertEquals(SegmentType.VALUE, segments.get(2).getType());
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(3).getType());
+        assertEquals(SegmentType.TEXT, segments.get(4).getType());
+        assertEquals(SegmentType.VALUE, segments.get(5).getType());
+        assertEquals(SegmentType.TEXT, segments.get(6).getType());
+        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(7).getType());
+        assertEquals(SegmentType.SECTION, segments.get(8).getType());
+    }
 
-	@Test
-	public void testExtendSegments() {
+    @Test
+    public void testExtendSegments() {
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_extend_super",
-				"Hello {{$insert}}default content{{/insert}}!");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_extend_super",
+                "Hello {{$insert}}default content{{/insert}}!");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(3, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.EXTEND_SECTION, segments.get(1).getType());
-		assertEquals(SegmentType.TEXT, segments.get(2).getType());
+        List<Segment> segments = template.getSegments();
+        assertEquals(3, segments.size());
+        assertEquals(SegmentType.TEXT, segments.get(0).getType());
+        assertEquals(SegmentType.EXTEND_SECTION, segments.get(1).getType());
+        assertEquals(SegmentType.TEXT, segments.get(2).getType());
 
-		segments = ((ExtendSectionSegment) segments.get(1)).getSegments();
-		assertEquals(1, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
+        segments = ((ExtendSectionSegment) segments.get(1)).getSegments();
+        assertEquals(1, segments.size());
+        assertEquals(SegmentType.TEXT, segments.get(0).getType());
 
-		template = (TemplateSegment) engine
-				.compileMustache(
-						"parse_extend_sub",
-						"Intro... {{<super}} skip {{$insert}}default content{{/insert}} skip! {{/super}} ...outro");
+        template = (TemplateSegment) engine
+                .compileMustache(
+                        "parse_extend_sub",
+                        "Intro... {{<super}} skip {{$insert}}default content{{/insert}} skip! {{/super}} ...outro");
 
-		segments = template.getSegments();
-		assertEquals(3, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(SegmentType.EXTEND, segments.get(1).getType());
-		assertEquals(SegmentType.TEXT, segments.get(2).getType());
+        segments = template.getSegments();
+        assertEquals(3, segments.size());
+        assertEquals(SegmentType.TEXT, segments.get(0).getType());
+        assertEquals(SegmentType.EXTEND, segments.get(1).getType());
+        assertEquals(SegmentType.TEXT, segments.get(2).getType());
 
-		segments = ((ExtendSegment) segments.get(1)).getSegments();
-		assertEquals(1, segments.size());
-		assertEquals(SegmentType.EXTEND_SECTION, segments.get(0).getType());
-	}
+        segments = ((ExtendSegment) segments.get(1)).getSegments();
+        assertEquals(1, segments.size());
+        assertEquals(SegmentType.EXTEND_SECTION, segments.get(0).getType());
+    }
 
-	@Test
-	public void testAccentedLetters() {
+    @Test
+    public void testAccentedLetters() {
 
-		String text1 = "Teď testujeme";
-		String var1 = "akcentované";
-		String var2 = "ěščěšřéáíéířčžč";
+        String text1 = "Teď testujeme";
+        String var1 = "akcentované";
+        String var2 = "ěščěšřéáíéířčžč";
 
-		TemplateSegment template = (TemplateSegment) engine.compileMustache(
-				"parse_accented_letters", text1 + "{{" + var1 + "}}{{& " + var2
-						+ "}}");
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_accented_letters", text1 + "{{" + var1 + "}}{{& " + var2
+                        + "}}");
 
-		List<Segment> segments = template.getSegments();
-		assertEquals(3, segments.size());
-		assertEquals(SegmentType.TEXT, segments.get(0).getType());
-		assertEquals(text1, segments.get(0).getText());
-		assertEquals(SegmentType.VALUE, segments.get(1).getType());
-		assertEquals(var1, segments.get(1).getText());
-		assertEquals(SegmentType.VALUE, segments.get(2).getType());
-		assertEquals(var2, segments.get(2).getText());
-	}
+        List<Segment> segments = template.getSegments();
+        assertEquals(3, segments.size());
+        assertEquals(SegmentType.TEXT, segments.get(0).getType());
+        assertEquals(text1, segments.get(0).getText());
+        assertEquals(SegmentType.VALUE, segments.get(1).getType());
+        assertEquals(var1, segments.get(1).getText());
+        assertEquals(SegmentType.VALUE, segments.get(2).getType());
+        assertEquals(var2, segments.get(2).getText());
+    }
 
-	private void validateSegment(List<Segment> segments, int index, SegmentType expectedType, String expectedText) {
-		Segment segment = segments.get(index);
-		assertEquals(expectedType, segment.getType());
-		assertEquals(expectedText, segment.getText());
-	}
+    private void validateSegment(List<Segment> segments, int index,
+            SegmentType expectedType, String expectedText) {
+        Segment segment = segments.get(index);
+        assertEquals(expectedType, segment.getType());
+        assertEquals(expectedText, segment.getText());
+    }
 
 }

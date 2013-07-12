@@ -15,7 +15,6 @@
  */
 package org.trimou.lambda;
 
-
 /**
  *
  * @author Martin Kouba
@@ -23,9 +22,9 @@ package org.trimou.lambda;
  */
 public abstract class InputLiteralLambda implements Lambda {
 
-	@Override
-	public InputType getInputType() {
-		return InputType.LITERAL;
-	}
+    @Override
+    public InputType getInputType() {
+        return InputType.LITERAL;
+    }
 
 }

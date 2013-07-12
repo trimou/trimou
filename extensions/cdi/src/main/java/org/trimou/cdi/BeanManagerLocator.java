@@ -31,104 +31,104 @@ import org.slf4j.LoggerFactory;
  */
 public class BeanManagerLocator {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(BeanManagerLocator.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(BeanManagerLocator.class);
 
-	private static final String CDI_CLASS_NAME = "javax.enterprise.inject.spi.CDI";
+    private static final String CDI_CLASS_NAME = "javax.enterprise.inject.spi.CDI";
 
-	private static final String[] JNDI_NAMES = { "java:comp/BeanManager",
-			"java:comp/env/BeanManager" };
+    private static final String[] JNDI_NAMES = { "java:comp/BeanManager",
+            "java:comp/env/BeanManager" };
 
-	private static BeanManager extensionProvidedBeanManager = null;
+    private static BeanManager extensionProvidedBeanManager = null;
 
-	/**
-	 * Try to lookup the {@link BeanManager} reference.
-	 *
-	 * First try CDI 1.1 preferred way - javax.enterprise.inject.spi.CDI. Then
-	 * CDI 1.0 compatible way - JNDI lookup. And finally extension provided
-	 * manager (workaround to support CDI 1.0 and SE).
-	 *
-	 * @return {@link BeanManager} instance or <code>null</code>
-	 */
-	public static BeanManager locate() {
+    /**
+     * Try to lookup the {@link BeanManager} reference.
+     *
+     * First try CDI 1.1 preferred way - javax.enterprise.inject.spi.CDI. Then
+     * CDI 1.0 compatible way - JNDI lookup. And finally extension provided
+     * manager (workaround to support CDI 1.0 and SE).
+     *
+     * @return {@link BeanManager} instance or <code>null</code>
+     */
+    public static BeanManager locate() {
 
-		BeanManager beanManager = locateCDI11();
+        BeanManager beanManager = locateCDI11();
 
-		if (beanManager == null) {
-			beanManager = locateJNDI();
-		}
+        if (beanManager == null) {
+            beanManager = locateJNDI();
+        }
 
-		if (beanManager != null) {
-			return beanManager;
-		} else if (extensionProvidedBeanManager != null) {
-			logger.info("Finally using extension provided BeanManager instance");
-			return extensionProvidedBeanManager;
-		}
-		return null;
-	}
+        if (beanManager != null) {
+            return beanManager;
+        } else if (extensionProvidedBeanManager != null) {
+            logger.info("Finally using extension provided BeanManager instance");
+            return extensionProvidedBeanManager;
+        }
+        return null;
+    }
 
-	private static BeanManager locateCDI11() {
+    private static BeanManager locateCDI11() {
 
-		BeanManager beanManager = null;
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
-		Class<?> cdiClass = null;
+        BeanManager beanManager = null;
+        ClassLoader classLoader = Thread.currentThread()
+                .getContextClassLoader();
+        Class<?> cdiClass = null;
 
-		try {
-			cdiClass = classLoader.loadClass(CDI_CLASS_NAME);
-			logger.info("CDI 1.1 - using javax.enterprise.inject.spi.CDI to obtain BeanManager instance");
-		} catch (ClassNotFoundException e) {
-			// CDI 1.0
-		} catch (NoClassDefFoundError e) {
-			// CDI 1.0
-		}
+        try {
+            cdiClass = classLoader.loadClass(CDI_CLASS_NAME);
+            logger.info("CDI 1.1 - using javax.enterprise.inject.spi.CDI to obtain BeanManager instance");
+        } catch (ClassNotFoundException e) {
+            // CDI 1.0
+        } catch (NoClassDefFoundError e) {
+            // CDI 1.0
+        }
 
-		if (cdiClass != null) {
-			try {
-				Object cdi = cdiClass.getMethod("current").invoke(null);
-				Method getBeanManagerMethod = cdiClass
-						.getMethod("getBeanManager");
-				beanManager = (BeanManager) getBeanManagerMethod.invoke(cdi);
-			} catch (Exception e) {
-				// Reflection invocation failed
-				logger.warn("Unable to invoke CDI.current().getBeanManager()",
-						e);
-			}
-		}
-		return beanManager;
-	}
+        if (cdiClass != null) {
+            try {
+                Object cdi = cdiClass.getMethod("current").invoke(null);
+                Method getBeanManagerMethod = cdiClass
+                        .getMethod("getBeanManager");
+                beanManager = (BeanManager) getBeanManagerMethod.invoke(cdi);
+            } catch (Exception e) {
+                // Reflection invocation failed
+                logger.warn("Unable to invoke CDI.current().getBeanManager()",
+                        e);
+            }
+        }
+        return beanManager;
+    }
 
-	private static BeanManager locateJNDI() {
+    private static BeanManager locateJNDI() {
 
-		BeanManager beanManager = null;
+        BeanManager beanManager = null;
 
-		logger.info("CDI 1.0 - using JNDI to obtain BeanManager instance");
+        logger.info("CDI 1.0 - using JNDI to obtain BeanManager instance");
 
-		try {
+        try {
 
-			Context ctx = new InitialContext();
+            Context ctx = new InitialContext();
 
-			for (String name : JNDI_NAMES) {
-				try {
-					beanManager = (BeanManager) ctx.lookup(name);
-				} catch (NamingException e) {
-					// Not found
-					logger.info("Unable to find BeanManager at: {}", name);
-				}
-				if (beanManager != null) {
-					logger.info("BeanManager found at: {}", name);
-					break;
-				}
-			}
+            for (String name : JNDI_NAMES) {
+                try {
+                    beanManager = (BeanManager) ctx.lookup(name);
+                } catch (NamingException e) {
+                    // Not found
+                    logger.info("Unable to find BeanManager at: {}", name);
+                }
+                if (beanManager != null) {
+                    logger.info("BeanManager found at: {}", name);
+                    break;
+                }
+            }
 
-		} catch (NamingException e) {
-			logger.warn("JNDI lookup failed - unable to create initial context");
-		}
-		return beanManager;
-	}
+        } catch (NamingException e) {
+            logger.warn("JNDI lookup failed - unable to create initial context");
+        }
+        return beanManager;
+    }
 
-	static void setExtensionProvidedBeanManager(BeanManager beanManager) {
-		extensionProvidedBeanManager = beanManager;
-	}
+    static void setExtensionProvidedBeanManager(BeanManager beanManager) {
+        extensionProvidedBeanManager = beanManager;
+    }
 
 }

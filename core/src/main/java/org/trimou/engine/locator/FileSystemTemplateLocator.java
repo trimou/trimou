@@ -31,57 +31,57 @@ import org.trimou.util.Strings;
  */
 public class FileSystemTemplateLocator extends FilePathTemplateLocator {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FileSystemTemplateLocator.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(FileSystemTemplateLocator.class);
 
-	/**
-	 *
-	 * @param priority
-	 * @param rootPath
-	 */
-	public FileSystemTemplateLocator(int priority, String rootPath) {
-		super(priority, rootPath);
-		checkRootDir();
-	}
+    /**
+     *
+     * @param priority
+     * @param rootPath
+     */
+    public FileSystemTemplateLocator(int priority, String rootPath) {
+        super(priority, rootPath);
+        checkRootDir();
+    }
 
-	/**
-	 *
-	 * @param priority
-	 * @param suffix
-	 * @param rootPath
-	 */
-	public FileSystemTemplateLocator(int priority, String rootPath,
-			String suffix) {
-		super(priority, rootPath, suffix);
-		checkRootDir();
-	}
+    /**
+     *
+     * @param priority
+     * @param suffix
+     * @param rootPath
+     */
+    public FileSystemTemplateLocator(int priority, String rootPath,
+            String suffix) {
+        super(priority, rootPath, suffix);
+        checkRootDir();
+    }
 
-	@Override
-	public Reader locateRealPath(String realPath) {
-		try {
+    @Override
+    public Reader locateRealPath(String realPath) {
+        try {
 
-			File templateFile = new File(new File(getRootPath()),
-					addSuffix(realPath));
+            File templateFile = new File(new File(getRootPath()),
+                    addSuffix(realPath));
 
-			if (!isFileUsable(templateFile)) {
-				return null;
-			}
-			logger.debug("Template located: {}", templateFile.getAbsolutePath());
-			return new FileReader(templateFile);
+            if (!isFileUsable(templateFile)) {
+                return null;
+            }
+            logger.debug("Template located: {}", templateFile.getAbsolutePath());
+            return new FileReader(templateFile);
 
-		} catch (FileNotFoundException e) {
-			return null;
-		}
-	}
+        } catch (FileNotFoundException e) {
+            return null;
+        }
+    }
 
-	@Override
-	protected String getRealPathSeparator() {
-		return Strings.FILE_SEPARATOR;
-	}
+    @Override
+    protected String getRealPathSeparator() {
+        return Strings.FILE_SEPARATOR;
+    }
 
-	@Override
-	protected File getRootDir() {
-		return new File(getRootPath());
-	}
+    @Override
+    protected File getRootDir() {
+        return new File(getRootPath());
+    }
 
 }

@@ -12,28 +12,28 @@ import org.trimou.AbstractEngineTest;
  */
 public class IndexResolverTest extends AbstractEngineTest {
 
-	@Test
-	public void testNotAnIndex() {
+    @Test
+    public void testNotAnIndex() {
 
-		IndexResolver indexResolver = new IndexResolver() {
+        IndexResolver indexResolver = new IndexResolver() {
 
-			@Override
-			public int getPriority() {
-				return 0;
-			}
+            @Override
+            public int getPriority() {
+                return 0;
+            }
 
-			@Override
-			public Object resolve(Object contextObject, String name,
-					ResolutionContext context) {
-				return null;
-			}
+            @Override
+            public Object resolve(Object contextObject, String name,
+                    ResolutionContext context) {
+                return null;
+            }
 
-		};
-		assertTrue(indexResolver.notAnIndex("-1"));
-		assertTrue(indexResolver.notAnIndex("size"));
-		assertTrue(indexResolver.notAnIndex(".1"));
-		assertTrue(indexResolver.notAnIndex("1,5"));
-		assertFalse(indexResolver.notAnIndex("1500"));
-	}
+        };
+        assertTrue(indexResolver.notAnIndex("-1"));
+        assertTrue(indexResolver.notAnIndex("size"));
+        assertTrue(indexResolver.notAnIndex(".1"));
+        assertTrue(indexResolver.notAnIndex("1,5"));
+        assertFalse(indexResolver.notAnIndex("1500"));
+    }
 
 }

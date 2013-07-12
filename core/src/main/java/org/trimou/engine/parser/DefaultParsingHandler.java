@@ -56,216 +56,216 @@ import org.trimou.exception.MustacheProblem;
  */
 class DefaultParsingHandler implements ParsingHandler {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DefaultParsingHandler.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(DefaultParsingHandler.class);
 
-	private Deque<ContainerSegment> containerStack = new ArrayDeque<ContainerSegment>();
+    private Deque<ContainerSegment> containerStack = new ArrayDeque<ContainerSegment>();
 
-	private TemplateSegment template;
+    private TemplateSegment template;
 
-	private Delimiters delimiters;
+    private Delimiters delimiters;
 
-	private long start;
+    private long start;
 
-	private int segments = 0;
+    private int segments = 0;
 
-	private int line = 1;
+    private int line = 1;
 
-	@Override
-	public void startTemplate(String name, Delimiters delimiters,
-			MustacheEngine engine) {
+    @Override
+    public void startTemplate(String name, Delimiters delimiters,
+            MustacheEngine engine) {
 
-		this.delimiters = delimiters;
-		template = new TemplateSegment(name, engine);
-		containerStack.addFirst(template);
+        this.delimiters = delimiters;
+        template = new TemplateSegment(name, engine);
+        containerStack.addFirst(template);
 
-		start = System.currentTimeMillis();
-		logger.debug("Start compilation of {}", new Object[] { name });
-	}
+        start = System.currentTimeMillis();
+        logger.debug("Start compilation of {}", new Object[] { name });
+    }
 
-	@Override
-	public void endTemplate() {
-		validate();
-		template.performPostProcessing();
-		logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
-				new Object[] { template.getText(),
-						System.currentTimeMillis() - start, segments });
-	}
+    @Override
+    public void endTemplate() {
+        validate();
+        template.performPostProcessing();
+        logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
+                new Object[] { template.getText(),
+                        System.currentTimeMillis() - start, segments });
+    }
 
-	@Override
-	public void text(String text) {
-		addSegment(new TextSegment(text, new Origin(template, line)));
-	}
+    @Override
+    public void text(String text) {
+        addSegment(new TextSegment(text, new Origin(template, line)));
+    }
 
-	@Override
-	public void tag(ParsedTag tag) {
+    @Override
+    public void tag(ParsedTag tag) {
 
-		validateTag(tag);
+        validateTag(tag);
 
-		switch (tag.getType()) {
-		case VARIABLE:
-			addSegment(new ValueSegment(tag.getContent(), new Origin(template,
-					line), false));
-			break;
-		case UNESCAPE_VARIABLE:
-			addSegment(new ValueSegment(tag.getContent(), new Origin(template,
-					line), true));
-			break;
-		case COMMENT:
-			addSegment(new CommentSegment(tag.getContent(), new Origin(
-					template, line)));
-			break;
-		case DELIMITER:
-			changeDelimiters(tag.getContent());
-			addSegment(new SetDelimitersSegment(tag.getContent(), new Origin(
-					template, line)));
-			break;
-		case SECTION:
-			push(new SectionSegment(tag.getContent(),
-					new Origin(template, line)));
-			break;
-		case INVERTED_SECTION:
-			push(new InvertedSectionSegment(tag.getContent(), new Origin(
-					template, line)));
-			break;
-		case SECTION_END:
-			endSection(tag.getContent());
-			break;
-		case PARTIAL:
-			addSegment(new PartialSegment(tag.getContent(), new Origin(
-					template, line)));
-			break;
-		case EXTEND:
-			push(new ExtendSegment(tag.getContent(), new Origin(template, line)));
-			break;
-		case EXTEND_SECTION:
-			push(new ExtendSectionSegment(tag.getContent(), new Origin(
-					template, line)));
-			break;
-		default:
-			break;
-		}
-	}
+        switch (tag.getType()) {
+        case VARIABLE:
+            addSegment(new ValueSegment(tag.getContent(), new Origin(template,
+                    line), false));
+            break;
+        case UNESCAPE_VARIABLE:
+            addSegment(new ValueSegment(tag.getContent(), new Origin(template,
+                    line), true));
+            break;
+        case COMMENT:
+            addSegment(new CommentSegment(tag.getContent(), new Origin(
+                    template, line)));
+            break;
+        case DELIMITER:
+            changeDelimiters(tag.getContent());
+            addSegment(new SetDelimitersSegment(tag.getContent(), new Origin(
+                    template, line)));
+            break;
+        case SECTION:
+            push(new SectionSegment(tag.getContent(),
+                    new Origin(template, line)));
+            break;
+        case INVERTED_SECTION:
+            push(new InvertedSectionSegment(tag.getContent(), new Origin(
+                    template, line)));
+            break;
+        case SECTION_END:
+            endSection(tag.getContent());
+            break;
+        case PARTIAL:
+            addSegment(new PartialSegment(tag.getContent(), new Origin(
+                    template, line)));
+            break;
+        case EXTEND:
+            push(new ExtendSegment(tag.getContent(), new Origin(template, line)));
+            break;
+        case EXTEND_SECTION:
+            push(new ExtendSectionSegment(tag.getContent(), new Origin(
+                    template, line)));
+            break;
+        default:
+            break;
+        }
+    }
 
-	@Override
-	public void lineSeparator(String separator) {
-		addSegment(new LineSeparatorSegment(separator, new Origin(template,
-				line)));
-		line++;
-	}
+    @Override
+    public void lineSeparator(String separator) {
+        addSegment(new LineSeparatorSegment(separator, new Origin(template,
+                line)));
+        line++;
+    }
 
-	public Mustache getCompiledTemplate() {
-		if (!template.isReadOnly()) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
-					template.getName());
-		}
-		return template;
-	}
+    public Mustache getCompiledTemplate() {
+        if (!template.isReadOnly()) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
+                    template.getName());
+        }
+        return template;
+    }
 
-	private void validateTag(ParsedTag tag) {
-		if (StringUtils.isEmpty(tag.getContent())) {
-			throw new MustacheException(COMPILE_INVALID_TAG,
-					"Tag has no content [line: %s]", line);
-		}
-	}
+    private void validateTag(ParsedTag tag) {
+        if (StringUtils.isEmpty(tag.getContent())) {
+            throw new MustacheException(COMPILE_INVALID_TAG,
+                    "Tag has no content [line: %s]", line);
+        }
+    }
 
-	private void endSection(String key) {
-		ContainerSegment container = pop();
-		if (container == null || !key.equals(container.getText())) {
-			StringBuilder msg = new StringBuilder();
-			List<String> params = new ArrayList<String>();
-			msg.append("Invalid section end: ");
-			if (container == null
-					|| SegmentType.TEMPLATE.equals(container.getType())) {
-				msg.append("%s has no matching section start");
-				params.add(key);
-			} else {
-				msg.append("%s is not matching section start %s");
-				params.add(key);
-				params.add(container.getText());
-			}
-			msg.append(" [line: %s]");
-			params.add("" + line);
-			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_SECTION_END,
-					msg.toString(), params.toArray());
-		}
-		addSegment(container);
-	}
+    private void endSection(String key) {
+        ContainerSegment container = pop();
+        if (container == null || !key.equals(container.getText())) {
+            StringBuilder msg = new StringBuilder();
+            List<String> params = new ArrayList<String>();
+            msg.append("Invalid section end: ");
+            if (container == null
+                    || SegmentType.TEMPLATE.equals(container.getType())) {
+                msg.append("%s has no matching section start");
+                params.add(key);
+            } else {
+                msg.append("%s is not matching section start %s");
+                params.add(key);
+                params.add(container.getText());
+            }
+            msg.append(" [line: %s]");
+            params.add("" + line);
+            throw new MustacheException(
+                    MustacheProblem.COMPILE_INVALID_SECTION_END,
+                    msg.toString(), params.toArray());
+        }
+        addSegment(container);
+    }
 
-	/**
-	 * E.g. =<% %>=, =[ ]=
-	 *
-	 * @param key
-	 */
-	private void changeDelimiters(String key) {
+    /**
+     * E.g. =<% %>=, =[ ]=
+     *
+     * @param key
+     */
+    private void changeDelimiters(String key) {
 
-		if (key.charAt(0) != MustacheTagType.DELIMITER.getCommand()
-				|| key.charAt(key.length() - 1) != MustacheTagType.DELIMITER
-						.getCommand()) {
-			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_DELIMITERS,
-					"Invalid set delimiters tag: %s [line: %s]", key, line);
-		}
+        if (key.charAt(0) != MustacheTagType.DELIMITER.getCommand()
+                || key.charAt(key.length() - 1) != MustacheTagType.DELIMITER
+                        .getCommand()) {
+            throw new MustacheException(
+                    MustacheProblem.COMPILE_INVALID_DELIMITERS,
+                    "Invalid set delimiters tag: %s [line: %s]", key, line);
+        }
 
-		Matcher matcher = Pattern.compile("([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)")
-				.matcher(key.substring(1, key.length() - 1));
+        Matcher matcher = Pattern.compile("([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)")
+                .matcher(key.substring(1, key.length() - 1));
 
-		if (matcher.find()) {
-			delimiters.setNewValues(matcher.group(1), matcher.group(3));
-		} else {
-			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_DELIMITERS,
-					"Invalid delimiters set: %s [line: %s]", key, line);
-		}
-	}
+        if (matcher.find()) {
+            delimiters.setNewValues(matcher.group(1), matcher.group(3));
+        } else {
+            throw new MustacheException(
+                    MustacheProblem.COMPILE_INVALID_DELIMITERS,
+                    "Invalid delimiters set: %s [line: %s]", key, line);
+        }
+    }
 
-	/**
-	 * Push the container on the stack.
-	 *
-	 * @param container
-	 */
-	private void push(ContainerSegment container) {
-		containerStack.addFirst(container);
-		logger.trace("Push {} [name: {}]", container.getType(),
-				container.getText());
-	}
+    /**
+     * Push the container on the stack.
+     *
+     * @param container
+     */
+    private void push(ContainerSegment container) {
+        containerStack.addFirst(container);
+        logger.trace("Push {} [name: {}]", container.getType(),
+                container.getText());
+    }
 
-	/**
-	 *
-	 * @return the container removed from the stack
-	 */
-	private ContainerSegment pop() {
-		ContainerSegment container = containerStack.removeFirst();
-		logger.trace("Pop {} [name: {}]", container.getType(),
-				container.getText());
-		return container;
-	}
+    /**
+     *
+     * @return the container removed from the stack
+     */
+    private ContainerSegment pop() {
+        ContainerSegment container = containerStack.removeFirst();
+        logger.trace("Pop {} [name: {}]", container.getType(),
+                container.getText());
+        return container;
+    }
 
-	/**
-	 * Add the segment to the top container on the stack.
-	 *
-	 * @param segment
-	 */
-	private void addSegment(Segment segment) {
-		segments++;
-		containerStack.peekFirst().addSegment(segment);
-		logger.trace("Add {}", segment);
-	}
+    /**
+     * Add the segment to the top container on the stack.
+     *
+     * @param segment
+     */
+    private void addSegment(Segment segment) {
+        segments++;
+        containerStack.peekFirst().addSegment(segment);
+        logger.trace("Add {}", segment);
+    }
 
-	/**
-	 * Validate the compiled template.
-	 *
-	 * TODO add more validations
-	 */
-	private void validate() {
+    /**
+     * Validate the compiled template.
+     *
+     * TODO add more validations
+     */
+    private void validate() {
 
-		if (!containerStack.peekFirst().equals(template)) {
-			throw new MustacheException(
-					MustacheProblem.COMPILE_INVALID_TEMPLATE,
-					"Incorrect last container segment on the stack: %s [line: %s]",
-					containerStack.peekFirst().toString(), line);
-		}
-	}
+        if (!containerStack.peekFirst().equals(template)) {
+            throw new MustacheException(
+                    MustacheProblem.COMPILE_INVALID_TEMPLATE,
+                    "Incorrect last container segment on the stack: %s [line: %s]",
+                    containerStack.peekFirst().toString(), line);
+        }
+    }
 
 }

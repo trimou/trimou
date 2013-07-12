@@ -19,7 +19,6 @@ import java.util.Comparator;
 
 import org.trimou.annotations.Internal;
 
-
 /**
  * The highest priority wins.
  *
@@ -28,13 +27,13 @@ import org.trimou.annotations.Internal;
 @Internal
 public class HighPriorityComparator implements Comparator<WithPriority> {
 
-	@Override
-	public int compare(final WithPriority left, final WithPriority right) {
+    @Override
+    public int compare(final WithPriority left, final WithPriority right) {
 
-		if (left == null || right == null) {
-			throw new NullPointerException();
-		}
-		return ((Integer) right.getPriority()).compareTo(left.getPriority());
-	}
+        if (left == null || right == null) {
+            throw new NullPointerException();
+        }
+        return ((Integer) right.getPriority()).compareTo(left.getPriority());
+    }
 
 }

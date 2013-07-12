@@ -30,18 +30,18 @@ import org.trimou.engine.context.ExecutionContext;
 @Internal
 public class SetDelimitersSegment extends AbstractSegment {
 
-	public SetDelimitersSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public SetDelimitersSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.DELIMITERS;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.DELIMITERS;
+    }
 
-	@Override
-	public void execute(Appendable appendable, ExecutionContext context) {
-		// No-op
-	}
+    @Override
+    public void execute(Appendable appendable, ExecutionContext context) {
+        // No-op
+    }
 
 }

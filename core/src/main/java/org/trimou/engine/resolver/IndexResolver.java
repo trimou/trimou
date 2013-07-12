@@ -26,37 +26,37 @@ import org.apache.commons.lang3.math.NumberUtils;
  */
 public abstract class IndexResolver extends AbstractResolver {
 
-	/**
-	 * @param name
-	 * @return <code>true</code> if the given key doesn't represent an index
-	 *         (must only contain digits)
-	 */
-	protected boolean notAnIndex(String name) {
-		return !NumberUtils.isDigits(name);
-	}
+    /**
+     * @param name
+     * @return <code>true</code> if the given key doesn't represent an index
+     *         (must only contain digits)
+     */
+    protected boolean notAnIndex(String name) {
+        return !NumberUtils.isDigits(name);
+    }
 
-	/**
-	 *
-	 * @param key
-	 * @param maxSize
-	 * @return the index value or <code>null</code> in case of invalid index
-	 */
-	protected Integer getIndexValue(String key, int maxSize) {
+    /**
+     *
+     * @param key
+     * @param maxSize
+     * @return the index value or <code>null</code> in case of invalid index
+     */
+    protected Integer getIndexValue(String key, int maxSize) {
 
-		Integer index = null;
+        Integer index = null;
 
-		try {
-			index = Integer.valueOf(key);
-		} catch (NumberFormatException e) {
-			// Index is not an integer
-			return null;
-		}
+        try {
+            index = Integer.valueOf(key);
+        } catch (NumberFormatException e) {
+            // Index is not an integer
+            return null;
+        }
 
-		if (index < 0 || index >= maxSize) {
-			// Index out of bound
-			return null;
-		}
-		return index;
-	}
+        if (index < 0 || index >= maxSize) {
+            // Index out of bound
+            return null;
+        }
+        return index;
+    }
 
 }

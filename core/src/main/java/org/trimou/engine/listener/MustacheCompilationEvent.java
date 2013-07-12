@@ -23,9 +23,9 @@ import org.trimou.Mustache;
  */
 public interface MustacheCompilationEvent {
 
-	/**
-	 * @return the compiled template
-	 */
-	public Mustache getMustache();
+    /**
+     * @return the compiled template
+     */
+    public Mustache getMustache();
 
 }

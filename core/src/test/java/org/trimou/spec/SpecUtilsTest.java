@@ -9,12 +9,12 @@ import org.junit.Test;
 
 public class SpecUtilsTest {
 
-	@Test
-	public void testParsing() throws IOException {
+    @Test
+    public void testParsing() throws IOException {
 
-		List<Definition> definitions = SpecUtils.parseDefinitions(SpecUtils
-				.getSpecFile("comments.json", SpecTest.SPEC_VERSION));
-		assertFalse(definitions.isEmpty());
-	}
+        List<Definition> definitions = SpecUtils.parseDefinitions(SpecUtils
+                .getSpecFile("comments.json", SpecTest.SPEC_VERSION));
+        assertFalse(definitions.isEmpty());
+    }
 
 }

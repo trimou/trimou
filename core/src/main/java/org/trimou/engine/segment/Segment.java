@@ -28,40 +28,40 @@ import org.trimou.lambda.Lambda.InputType;
 @Internal
 public interface Segment {
 
-	/**
-	 * @return the segment type
-	 */
-	public SegmentType getType();
+    /**
+     * @return the segment type
+     */
+    public SegmentType getType();
 
-	/**
-	 * @return the segment text (a tag key, a line separator text, etc.)
-	 */
-	public String getText();
+    /**
+     * @return the segment text (a tag key, a line separator text, etc.)
+     */
+    public String getText();
 
-	/**
-	 * @return the origin of this segment or <code>null</code> in case of this
-	 *         segment is a template
-	 */
-	public Origin getOrigin();
+    /**
+     * @return the origin of this segment or <code>null</code> in case of this
+     *         segment is a template
+     */
+    public Origin getOrigin();
 
-	/**
-	 * @return the reconstructed literal block this segment represents (original
-	 *         text before compilation)
-	 * @see InputType#LITERAL
-	 */
-	public String getLiteralBlock();
+    /**
+     * @return the reconstructed literal block this segment represents (original
+     *         text before compilation)
+     * @see InputType#LITERAL
+     */
+    public String getLiteralBlock();
 
-	/**
-	 * Execute this segment (e.g. write down some variable value).
-	 *
-	 * @param appendable
-	 * @param context
-	 */
-	public void execute(Appendable appendable, ExecutionContext context);
+    /**
+     * Execute this segment (e.g. write down some variable value).
+     *
+     * @param appendable
+     * @param context
+     */
+    public void execute(Appendable appendable, ExecutionContext context);
 
-	/**
-	 * Perform compilation post processing, e.g. optimization.
-	 */
-	public void performPostProcessing();
+    /**
+     * Perform compilation post processing, e.g. optimization.
+     */
+    public void performPostProcessing();
 
 }

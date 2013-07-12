@@ -19,7 +19,6 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.Map;
 
-
 /**
  * Resolves {@link Map} values.
  *
@@ -27,23 +26,24 @@ import java.util.Map;
  */
 public class MapResolver extends AbstractResolver {
 
-	public static final int MAP_RESOLVER_PRIORITY = after(ThisResolver.THIS_RESOLVER_PRIORITY);
+    public static final int MAP_RESOLVER_PRIORITY = after(ThisResolver.THIS_RESOLVER_PRIORITY);
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null || !(contextObject instanceof Map)) {
-			return null;
-		}
+        if (contextObject == null || !(contextObject instanceof Map)) {
+            return null;
+        }
 
-		Map map = (Map) contextObject;
-		return map.get(name);
-	}
+        Map map = (Map) contextObject;
+        return map.get(name);
+    }
 
-	@Override
-	public int getPriority() {
-		return MAP_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return MAP_RESOLVER_PRIORITY;
+    }
 
 }

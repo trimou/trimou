@@ -11,50 +11,49 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.priority.WithPriority;
 
-
 /**
  *
  * @author Martin Kouba
  */
 public class HighPriorityComparatorTest extends AbstractEngineTest {
 
-	@Test
-	public void testComparator() {
+    @Test
+    public void testComparator() {
 
-		List<WithPriority> list = new ArrayList<WithPriority>();
-		list.add(new WithPriority() {
+        List<WithPriority> list = new ArrayList<WithPriority>();
+        list.add(new WithPriority() {
 
-			@Override
-			public int getPriority() {
-				return 0;
-			}
-		});
-		list.add(new WithPriority() {
+            @Override
+            public int getPriority() {
+                return 0;
+            }
+        });
+        list.add(new WithPriority() {
 
-			@Override
-			public int getPriority() {
-				return -1;
-			}
-		});
-		list.add(new WithPriority() {
+            @Override
+            public int getPriority() {
+                return -1;
+            }
+        });
+        list.add(new WithPriority() {
 
-			@Override
-			public int getPriority() {
-				return 10;
-			}
-		});
-		list.add(new WithPriority() {
+            @Override
+            public int getPriority() {
+                return 10;
+            }
+        });
+        list.add(new WithPriority() {
 
-			@Override
-			public int getPriority() {
-				return 1;
-			}
-		});
-		Collections.sort(list, new HighPriorityComparator());
-		assertEquals(10, list.get(0).getPriority());
-		assertEquals(1, list.get(1).getPriority());
-		assertEquals(0, list.get(2).getPriority());
-		assertEquals(-1, list.get(3).getPriority());
-	}
+            @Override
+            public int getPriority() {
+                return 1;
+            }
+        });
+        Collections.sort(list, new HighPriorityComparator());
+        assertEquals(10, list.get(0).getPriority());
+        assertEquals(1, list.get(1).getPriority());
+        assertEquals(0, list.get(2).getPriority());
+        assertEquals(-1, list.get(3).getPriority());
+    }
 
 }

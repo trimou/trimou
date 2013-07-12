@@ -26,35 +26,35 @@ import org.trimou.tests.cdi.MustacheEngineProducer;
 @RunWith(Arquillian.class)
 public class RenderingContextTest {
 
-	@Deployment
-	public static WebArchive createTestArchive() {
-		return createCDITestArchiveBase().addClasses(Foo.class, Observer.class,
-				MustacheEngineProducer.class).addAsLibraries(
-				getResolver().artifact("org.trimou:trimou-extension-cdi")
-						.resolveAsFiles());
-	}
+    @Deployment
+    public static WebArchive createTestArchive() {
+        return createCDITestArchiveBase().addClasses(Foo.class, Observer.class,
+                MustacheEngineProducer.class).addAsLibraries(
+                getResolver().artifact("org.trimou:trimou-extension-cdi")
+                        .resolveAsFiles());
+    }
 
-	@Inject
-	MustacheEngine engine;
+    @Inject
+    MustacheEngine engine;
 
-	@Test
-	public void testRenderingContext(Observer observer) {
+    @Test
+    public void testRenderingContext(Observer observer) {
 
-		Mustache mustache = engine.compileMustache("rendering_context",
-				"{{foo.createdAt}}|{{foo.createdAt}}");
+        Mustache mustache = engine.compileMustache("rendering_context",
+                "{{foo.createdAt}}|{{foo.createdAt}}");
 
-		assertResult(mustache);
-		assertResult(mustache);
+        assertResult(mustache);
+        assertResult(mustache);
 
-		List<Long> timestamps = observer.getFoos();
-		assertEquals(2, timestamps.size());
-		assertNotEquals(timestamps.get(0), timestamps.get(1));
-	}
+        List<Long> timestamps = observer.getFoos();
+        assertEquals(2, timestamps.size());
+        assertNotEquals(timestamps.get(0), timestamps.get(1));
+    }
 
-	private void assertResult(Mustache mustache) {
-		String[] parts = StringUtils.split(mustache.render(null), "|");
-		assertEquals(2, parts.length);
-		assertEquals(parts[0], parts[1]);
-	}
+    private void assertResult(Mustache mustache) {
+        String[] parts = StringUtils.split(mustache.render(null), "|");
+        assertEquals(2, parts.length);
+        assertEquals(parts[0], parts[1]);
+    }
 
 }

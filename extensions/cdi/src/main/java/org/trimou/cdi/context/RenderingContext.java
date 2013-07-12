@@ -35,68 +35,68 @@ import org.trimou.engine.listener.MustacheRenderingEvent;
  */
 public final class RenderingContext implements Context {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(RenderingContext.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(RenderingContext.class);
 
-	private final ThreadLocal<ContextualInstanceStore> contextualInstanceStore = new ThreadLocal<ContextualInstanceStore>();
+    private final ThreadLocal<ContextualInstanceStore> contextualInstanceStore = new ThreadLocal<ContextualInstanceStore>();
 
-	@Override
-	public Class<? extends Annotation> getScope() {
-		return RenderingScoped.class;
-	}
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return RenderingScoped.class;
+    }
 
-	@Override
-	public <T> T get(Contextual<T> contextual,
-			CreationalContext<T> creationalContext) {
+    @Override
+    public <T> T get(Contextual<T> contextual,
+            CreationalContext<T> creationalContext) {
 
-		checkArgumentNotNull(contextual);
+        checkArgumentNotNull(contextual);
 
-		if (!isActive()) {
-			throw new ContextNotActiveException();
-		}
+        if (!isActive()) {
+            throw new ContextNotActiveException();
+        }
 
-		ContextualInstance<T> contextualInstance = contextualInstanceStore
-				.get().get(contextual, creationalContext);
+        ContextualInstance<T> contextualInstance = contextualInstanceStore
+                .get().get(contextual, creationalContext);
 
-		if (contextualInstance != null) {
-			return contextualInstance.getInstance();
-		}
-		return null;
-	}
+        if (contextualInstance != null) {
+            return contextualInstance.getInstance();
+        }
+        return null;
+    }
 
-	@Override
-	public <T> T get(Contextual<T> contextual) {
-		return get(contextual, null);
-	}
+    @Override
+    public <T> T get(Contextual<T> contextual) {
+        return get(contextual, null);
+    }
 
-	@Override
-	public boolean isActive() {
-		return contextualInstanceStore.get() != null;
-	}
+    @Override
+    public boolean isActive() {
+        return contextualInstanceStore.get() != null;
+    }
 
-	void initialize(MustacheRenderingEvent event) {
-		logger.debug("Rendering started - init context [mustache: {}]",
-				event.getMustacheName());
-		contextualInstanceStore.set(new ContextualInstanceStore());
-	}
+    void initialize(MustacheRenderingEvent event) {
+        logger.debug("Rendering started - init context [mustache: {}]",
+                event.getMustacheName());
+        contextualInstanceStore.set(new ContextualInstanceStore());
+    }
 
-	void destroy(MustacheRenderingEvent event) {
+    void destroy(MustacheRenderingEvent event) {
 
-		ContextualInstanceStore store = contextualInstanceStore.get();
+        ContextualInstanceStore store = contextualInstanceStore.get();
 
-		if (store == null) {
-			logger.warn("Cannot destroy context - contextual instances map is null");
-			return;
-		}
+        if (store == null) {
+            logger.warn("Cannot destroy context - contextual instances map is null");
+            return;
+        }
 
-		logger.debug("Rendering finished - destroy context [mustache: {}]",
-				event.getMustacheName());
+        logger.debug("Rendering finished - destroy context [mustache: {}]",
+                event.getMustacheName());
 
-		try {
-			store.destroy();
-		} finally {
-			contextualInstanceStore.remove();
-		}
-	}
+        try {
+            store.destroy();
+        } finally {
+            contextualInstanceStore.remove();
+        }
+    }
 
 }

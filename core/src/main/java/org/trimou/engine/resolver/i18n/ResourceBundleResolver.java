@@ -34,52 +34,53 @@ import org.trimou.lambda.i18n.ResourceBundleLambda;
  */
 public class ResourceBundleResolver extends LocaleAwareResolver {
 
-	private String baseName;
+    private String baseName;
 
-	private int priority;
+    private int priority;
 
-	/**
-	 *
-	 * @param baseName
-	 *            The base name of the resource bundle
-	 */
-	public ResourceBundleResolver(String baseName) {
-		super();
-		this.baseName = baseName;
-		this.priority = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
-	}
+    /**
+     *
+     * @param baseName
+     *            The base name of the resource bundle
+     */
+    public ResourceBundleResolver(String baseName) {
+        super();
+        this.baseName = baseName;
+        this.priority = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    }
 
-	/**
-	 *
-	 * @param baseName
-	 *            The base name of the resource bundle
-	 * @param priority
-	 */
-	public ResourceBundleResolver(String baseName, int priority) {
-		super();
-		this.baseName = baseName;
-		this.priority = priority;
-	}
+    /**
+     *
+     * @param baseName
+     *            The base name of the resource bundle
+     * @param priority
+     */
+    public ResourceBundleResolver(String baseName, int priority) {
+        super();
+        this.baseName = baseName;
+        this.priority = priority;
+    }
 
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null && baseName.equals(name)) {
-			return ResourceBundle.getBundle(baseName,
-					localeSupport.getCurrentLocale());
-		} else if (contextObject != null
-				&& (contextObject instanceof ResourceBundle)) {
-			ResourceBundle bundle = (ResourceBundle) contextObject;
-			if (bundle.containsKey(name)) {
-				return bundle.getObject(name);
-			}
-		}
-		return null;
-	}
+        if (contextObject == null && baseName.equals(name)) {
+            return ResourceBundle.getBundle(baseName,
+                    localeSupport.getCurrentLocale());
+        } else if (contextObject != null
+                && (contextObject instanceof ResourceBundle)) {
+            ResourceBundle bundle = (ResourceBundle) contextObject;
+            if (bundle.containsKey(name)) {
+                return bundle.getObject(name);
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public int getPriority() {
-		return priority;
-	}
+    @Override
+    public int getPriority() {
+        return priority;
+    }
 
 }

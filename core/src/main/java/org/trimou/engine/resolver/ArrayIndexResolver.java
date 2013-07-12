@@ -19,7 +19,6 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.lang.reflect.Array;
 
-
 /**
  * Resolve index-based access to arrays.
  *
@@ -33,35 +32,36 @@ import java.lang.reflect.Array;
  */
 public class ArrayIndexResolver extends IndexResolver {
 
-	public static final int ARRAY_RESOLVER_PRIORITY = after(ListIndexResolver.LIST_RESOLVER_PRIORITY);
+    public static final int ARRAY_RESOLVER_PRIORITY = after(ListIndexResolver.LIST_RESOLVER_PRIORITY);
 
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null || notAnIndex(name)
-				|| !isArray(contextObject)) {
-			return null;
-		}
+        if (contextObject == null || notAnIndex(name)
+                || !isArray(contextObject)) {
+            return null;
+        }
 
-		Integer index = getIndexValue(name, Array.getLength(contextObject));
+        Integer index = getIndexValue(name, Array.getLength(contextObject));
 
-		if (index != null) {
-			return Array.get(contextObject, index);
-		}
-		return null;
-	}
+        if (index != null) {
+            return Array.get(contextObject, index);
+        }
+        return null;
+    }
 
-	private boolean isArray(Object base) {
+    private boolean isArray(Object base) {
 
-		if (base.getClass().isArray()) {
-			return true;
-		}
-		return false;
-	}
+        if (base.getClass().isArray()) {
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public int getPriority() {
-		return ARRAY_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return ARRAY_RESOLVER_PRIORITY;
+    }
 
 }

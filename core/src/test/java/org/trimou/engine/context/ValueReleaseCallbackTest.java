@@ -24,134 +24,134 @@ import org.trimou.exception.MustacheProblem;
  */
 public class ValueReleaseCallbackTest extends AbstractTest {
 
-	@Test
-	public void testReleaseCallbackInvoked() {
+    @Test
+    public void testReleaseCallbackInvoked() {
 
-		final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
+        final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.addResolver(new AbstractResolver() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addResolver(new AbstractResolver() {
 
-					@Override
-					public int getPriority() {
-						return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
-					}
+                    @Override
+                    public int getPriority() {
+                        return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
+                    }
 
-					@Override
-					public Object resolve(Object contextObject, String name,
-							ResolutionContext context) {
+                    @Override
+                    public Object resolve(Object contextObject, String name,
+                            ResolutionContext context) {
 
-						if ("bar".equals(name)) {
-							context.registerReleaseCallback(new ReleaseCallback() {
+                        if ("bar".equals(name)) {
+                            context.registerReleaseCallback(new ReleaseCallback() {
 
-								@Override
-								public void release() {
-									callbackInvoked.set(true);
-								}
-							});
-							return "foo";
-						} else {
-							return null;
-						}
-					}
-				}).build();
+                                @Override
+                                public void release() {
+                                    callbackInvoked.set(true);
+                                }
+                            });
+                            return "foo";
+                        } else {
+                            return null;
+                        }
+                    }
+                }).build();
 
-		assertEquals("foo",
-				engine.compileMustache("release_callback_invoked1", "{{bar}}")
-						.render(null));
-		assertTrue(callbackInvoked.get());
+        assertEquals("foo",
+                engine.compileMustache("release_callback_invoked1", "{{bar}}")
+                        .render(null));
+        assertTrue(callbackInvoked.get());
 
-		callbackInvoked.set(false);
-		assertEquals(
-				"",
-				engine.compileMustache("release_callback_invoked2",
-						"{{bar.qux}}").render(null));
-		assertTrue(callbackInvoked.get());
-	}
+        callbackInvoked.set(false);
+        assertEquals(
+                "",
+                engine.compileMustache("release_callback_invoked2",
+                        "{{bar.qux}}").render(null));
+        assertTrue(callbackInvoked.get());
+    }
 
-	@Test
-	public void testReleaseCallbackInvokedEvenIfRenderingFails() {
+    @Test
+    public void testReleaseCallbackInvokedEvenIfRenderingFails() {
 
-		final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
+        final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
-		MustacheEngine engine = MustacheEngineBuilder
-				.newBuilder()
-				.setProperty(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM,
-						true).addResolver(new AbstractResolver() {
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM,
+                        true).addResolver(new AbstractResolver() {
 
-					@Override
-					public int getPriority() {
-						return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
-					}
+                    @Override
+                    public int getPriority() {
+                        return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
+                    }
 
-					@Override
-					public Object resolve(Object contextObject, String name,
-							ResolutionContext context) {
+                    @Override
+                    public Object resolve(Object contextObject, String name,
+                            ResolutionContext context) {
 
-						context.registerReleaseCallback(new ReleaseCallback() {
+                        context.registerReleaseCallback(new ReleaseCallback() {
 
-							@Override
-							public void release() {
-								callbackInvoked.set(true);
-							}
-						});
-						return null;
-					}
-				}).build();
+                            @Override
+                            public void release() {
+                                callbackInvoked.set(true);
+                            }
+                        });
+                        return null;
+                    }
+                }).build();
 
-		try {
-			engine.compileMustache("release_callback_invoked_rendering_fails",
-					"{{cannotmatch}}").render(null);
-			fail("Rendering should fail");
-		} catch (MustacheException e) {
-			if (!MustacheProblem.RENDER_NO_VALUE.equals(e.getCode())) {
-				fail("Unexpected problem");
-			}
-		}
-		assertTrue(callbackInvoked.get());
-	}
+        try {
+            engine.compileMustache("release_callback_invoked_rendering_fails",
+                    "{{cannotmatch}}").render(null);
+            fail("Rendering should fail");
+        } catch (MustacheException e) {
+            if (!MustacheProblem.RENDER_NO_VALUE.equals(e.getCode())) {
+                fail("Unexpected problem");
+            }
+        }
+        assertTrue(callbackInvoked.get());
+    }
 
-	@Test
-	public void testReleaseCallbackFails() {
+    @Test
+    public void testReleaseCallbackFails() {
 
-		final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
+        final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.addResolver(new AbstractResolver() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addResolver(new AbstractResolver() {
 
-					@Override
-					public int getPriority() {
-						return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
-					}
+                    @Override
+                    public int getPriority() {
+                        return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
+                    }
 
-					@Override
-					public Object resolve(Object contextObject, String name,
-							ResolutionContext context) {
+                    @Override
+                    public Object resolve(Object contextObject, String name,
+                            ResolutionContext context) {
 
-						context.registerReleaseCallback(new ReleaseCallback() {
+                        context.registerReleaseCallback(new ReleaseCallback() {
 
-							@Override
-							public void release() {
-								throw new NullPointerException();
-							}
-						});
-						context.registerReleaseCallback(new ReleaseCallback() {
+                            @Override
+                            public void release() {
+                                throw new NullPointerException();
+                            }
+                        });
+                        context.registerReleaseCallback(new ReleaseCallback() {
 
-							@Override
-							public void release() {
-								callbackInvoked.set(true);
-							}
-						});
-						return null;
-					}
-				}).build();
+                            @Override
+                            public void release() {
+                                callbackInvoked.set(true);
+                            }
+                        });
+                        return null;
+                    }
+                }).build();
 
-		assertEquals(
-				"",
-				engine.compileMustache("release_callback_fails",
-						"{{cannotmatch}}").render(null));
+        assertEquals(
+                "",
+                engine.compileMustache("release_callback_fails",
+                        "{{cannotmatch}}").render(null));
 
-		assertTrue(callbackInvoked.get());
-	}
+        assertTrue(callbackInvoked.get());
+    }
 
 }

@@ -27,19 +27,19 @@ import java.util.Set;
  */
 public interface ConfigurationAware {
 
-	/**
-	 * Initialize the component. Keep in mind that the configuration itself is
-	 * likely not fully initialized yet. It's only safe to inspect properties
-	 * and global data.
-	 *
-	 * @param configuration
-	 */
-	public void init(Configuration configuration);
+    /**
+     * Initialize the component. Keep in mind that the configuration itself is
+     * likely not fully initialized yet. It's only safe to inspect properties
+     * and global data.
+     *
+     * @param configuration
+     */
+    public void init(Configuration configuration);
 
-	/**
-	 *
-	 * @return the set of configuration keys to discover
-	 */
-	public Set<ConfigurationKey> getConfigurationKeys();
+    /**
+     *
+     * @return the set of configuration keys to discover
+     */
+    public Set<ConfigurationKey> getConfigurationKeys();
 
 }

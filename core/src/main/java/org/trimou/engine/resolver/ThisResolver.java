@@ -25,26 +25,27 @@ import org.trimou.util.Strings;
  */
 public class ThisResolver extends AbstractResolver {
 
-	public static final int THIS_RESOLVER_PRIORITY = after(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int THIS_RESOLVER_PRIORITY = after(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY);
 
-	public static final String NAME_THIS = "this";
+    public static final String NAME_THIS = "this";
 
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null) {
-			return null;
-		}
+        if (contextObject == null) {
+            return null;
+        }
 
-		if (NAME_THIS.equals(name) || Strings.KEY_SEPARATOR.equals(name)) {
-			return contextObject;
-		}
-		return null;
-	}
+        if (NAME_THIS.equals(name) || Strings.KEY_SEPARATOR.equals(name)) {
+            return contextObject;
+        }
+        return null;
+    }
 
-	@Override
-	public int getPriority() {
-		return THIS_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return THIS_RESOLVER_PRIORITY;
+    }
 
 }

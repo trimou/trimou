@@ -25,55 +25,55 @@ import javax.enterprise.context.spi.CreationalContext;
  */
 final class ContextualInstance<T> {
 
-	private final T instance;
+    private final T instance;
 
-	private final CreationalContext<T> creationalContext;
+    private final CreationalContext<T> creationalContext;
 
-	private final Contextual<T> contextual;
+    private final Contextual<T> contextual;
 
-	/**
-	 *
-	 * @param instance
-	 * @param creationalContext
-	 * @param contextual
-	 */
-	ContextualInstance(T instance, CreationalContext<T> creationalContext,
-			Contextual<T> contextual) {
-		super();
-		this.instance = instance;
-		this.creationalContext = creationalContext;
-		this.contextual = contextual;
-	}
+    /**
+     *
+     * @param instance
+     * @param creationalContext
+     * @param contextual
+     */
+    ContextualInstance(T instance, CreationalContext<T> creationalContext,
+            Contextual<T> contextual) {
+        super();
+        this.instance = instance;
+        this.creationalContext = creationalContext;
+        this.contextual = contextual;
+    }
 
-	/**
-	 *
-	 * @return the instance
-	 */
-	public T getInstance() {
-		return instance;
-	}
+    /**
+     *
+     * @return the instance
+     */
+    public T getInstance() {
+        return instance;
+    }
 
-	/**
-	 *
-	 * @return the creational context
-	 */
-	public CreationalContext<T> getCreationalContext() {
-		return creationalContext;
-	}
+    /**
+     *
+     * @return the creational context
+     */
+    public CreationalContext<T> getCreationalContext() {
+        return creationalContext;
+    }
 
-	/**
-	 *
-	 * @return the contextual (aka bean)
-	 */
-	public Contextual<T> getContextual() {
-		return contextual;
-	}
+    /**
+     *
+     * @return the contextual (aka bean)
+     */
+    public Contextual<T> getContextual() {
+        return contextual;
+    }
 
-	/**
-	 * Destroy the contextual instance properly.
-	 */
-	public void destroy() {
-		contextual.destroy(instance, creationalContext);
-	}
+    /**
+     * Destroy the contextual instance properly.
+     */
+    public void destroy() {
+        contextual.destroy(instance, creationalContext);
+    }
 
 }

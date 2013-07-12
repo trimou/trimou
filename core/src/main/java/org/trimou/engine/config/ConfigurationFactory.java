@@ -10,13 +10,13 @@ import org.trimou.engine.MustacheEngineBuilder;
 @Internal
 public class ConfigurationFactory {
 
-	/**
-	 *
-	 * @param builder
-	 * @return the engine configuration
-	 */
-	public Configuration createConfiguration(MustacheEngineBuilder builder) {
-		return new DefaultConfiguration(builder);
-	}
+    /**
+     *
+     * @param builder
+     * @return the engine configuration
+     */
+    public Configuration createConfiguration(MustacheEngineBuilder builder) {
+        return new DefaultConfiguration(builder);
+    }
 
 }

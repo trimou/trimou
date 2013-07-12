@@ -28,58 +28,58 @@ import org.trimou.engine.segment.ExtendSegment;
 @Internal
 public interface ExecutionContext {
 
-	/**
-	 * @param key
-	 * @return the wrapper for the given key
-	 */
-	public ValueWrapper getValue(String key);
+    /**
+     * @param key
+     * @return the wrapper for the given key
+     */
+    public ValueWrapper getValue(String key);
 
-	/**
-	 * Push the object on the specified stack.
-	 *
-	 * @param object
-	 */
-	public void push(TargetStack stack, Object object);
+    /**
+     * Push the object on the specified stack.
+     *
+     * @param object
+     */
+    public void push(TargetStack stack, Object object);
 
-	/**
-	 * Remove the object at the top of the specified stack.
-	 *
-	 * @return the removed object
-	 */
-	public Object pop(TargetStack stack);
+    /**
+     * Remove the object at the top of the specified stack.
+     *
+     * @return the removed object
+     */
+    public Object pop(TargetStack stack);
 
-	/**
-	 * Associate the specified defining section with the context, but only if no
-	 * defining section with the same name is associated.
-	 *
-	 * @param name
-	 * @param segment
-	 * @see ExtendSegment
-	 */
-	public void addDefiningSection(String name, ExtendSectionSegment segment);
+    /**
+     * Associate the specified defining section with the context, but only if no
+     * defining section with the same name is associated.
+     *
+     * @param name
+     * @param segment
+     * @see ExtendSegment
+     */
+    public void addDefiningSection(String name, ExtendSectionSegment segment);
 
-	/**
-	 * @param name
-	 * @return the defining section with the specified name or <code>null</code>
-	 *         if no such associated with the context
-	 * @see ExtendSegment
-	 */
-	public ExtendSectionSegment getDefiningSection(String name);
+    /**
+     * @param name
+     * @return the defining section with the specified name or <code>null</code>
+     *         if no such associated with the context
+     * @see ExtendSegment
+     */
+    public ExtendSectionSegment getDefiningSection(String name);
 
-	/**
-	 *
-	 * @author Martin Kouba
-	 *
-	 */
-	public enum TargetStack {
-		/**
-		 * Context object stack
-		 */
-		CONTEXT,
-		/**
-		 * Template invocations stack
-		 */
-		TEMPLATE_INVOCATION,
-	}
+    /**
+     *
+     * @author Martin Kouba
+     *
+     */
+    public enum TargetStack {
+        /**
+         * Context object stack
+         */
+        CONTEXT,
+        /**
+         * Template invocations stack
+         */
+        TEMPLATE_INVOCATION,
+    }
 
 }

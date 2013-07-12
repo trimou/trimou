@@ -39,169 +39,171 @@ import org.trimou.util.Strings;
  */
 abstract class AbstractExecutionContext implements ExecutionContext {
 
-	/**
-	 * Immutable engine configuration
-	 */
-	protected Configuration configuration;
+    /**
+     * Immutable engine configuration
+     */
+    protected Configuration configuration;
 
-	/**
-	 * LIFO stack of context objects
-	 */
-	protected Deque<Object> contextObjectStack = new ArrayDeque<Object>(8);
+    /**
+     * LIFO stack of context objects
+     */
+    protected Deque<Object> contextObjectStack = new ArrayDeque<Object>(8);
 
-	/**
-	 * LIFO stack of template invocations
-	 */
-	protected Deque<TemplateSegment> templateInvocationStack = new ArrayDeque<TemplateSegment>(
-			8);
+    /**
+     * LIFO stack of template invocations
+     */
+    protected Deque<TemplateSegment> templateInvocationStack = new ArrayDeque<TemplateSegment>(
+            8);
 
-	/**
-	 * Map of defining/overriding sections
-	 */
-	protected Map<String, ExtendSectionSegment> definingSections = null;
+    /**
+     * Map of defining/overriding sections
+     */
+    protected Map<String, ExtendSectionSegment> definingSections = null;
 
-	/**
-	 * @see EngineConfigurationKey#TEMPLATE_RECURSIVE_INVOCATION_LIMIT
-	 */
-	private int templateRecursiveInvocationLimit;
+    /**
+     * @see EngineConfigurationKey#TEMPLATE_RECURSIVE_INVOCATION_LIMIT
+     */
+    private int templateRecursiveInvocationLimit;
 
-	/**
-	 *
-	 * @param resolvers
-	 */
-	protected AbstractExecutionContext(Configuration configuration) {
-		this.configuration = configuration;
-		this.templateRecursiveInvocationLimit = configuration
-				.getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
-	}
+    /**
+     *
+     * @param resolvers
+     */
+    protected AbstractExecutionContext(Configuration configuration) {
+        this.configuration = configuration;
+        this.templateRecursiveInvocationLimit = configuration
+                .getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
+    }
 
-	@Override
-	public void push(TargetStack stack, Object object) {
-		Checker.checkArgumentNotNull(stack);
-		Checker.checkArgumentNotNull(object);
+    @Override
+    public void push(TargetStack stack, Object object) {
+        Checker.checkArgumentNotNull(stack);
+        Checker.checkArgumentNotNull(object);
 
-		switch (stack) {
-		case CONTEXT:
-			contextObjectStack.addFirst(object);
-			break;
-		case TEMPLATE_INVOCATION:
-			pushTemplateInvocation((TemplateSegment) object);
-			break;
-		default:
-			throw new IllegalStateException("Invalid stack type");
-		}
-	}
+        switch (stack) {
+        case CONTEXT:
+            contextObjectStack.addFirst(object);
+            break;
+        case TEMPLATE_INVOCATION:
+            pushTemplateInvocation((TemplateSegment) object);
+            break;
+        default:
+            throw new IllegalStateException("Invalid stack type");
+        }
+    }
 
-	@Override
-	public Object pop(TargetStack stack) {
-		Checker.checkArgumentNotNull(stack);
-		switch (stack) {
-		case CONTEXT:
-			return contextObjectStack.removeFirst();
-		case TEMPLATE_INVOCATION:
-			return templateInvocationStack.removeFirst();
-		default:
-			throw new IllegalStateException("Invalid stack type");
-		}
-	}
+    @Override
+    public Object pop(TargetStack stack) {
+        Checker.checkArgumentNotNull(stack);
+        switch (stack) {
+        case CONTEXT:
+            return contextObjectStack.removeFirst();
+        case TEMPLATE_INVOCATION:
+            return templateInvocationStack.removeFirst();
+        default:
+            throw new IllegalStateException("Invalid stack type");
+        }
+    }
 
-	@Override
-	public void addDefiningSection(String name, ExtendSectionSegment segment) {
-		if (definingSections == null) {
-			// Lazy init - ok, context is not thread-safe
-			definingSections = new HashMap<String, ExtendSectionSegment>(8);
-		}
-		if (!definingSections.containsKey(name)) {
-			definingSections.put(name, segment);
-		}
-	}
+    @Override
+    public void addDefiningSection(String name, ExtendSectionSegment segment) {
+        if (definingSections == null) {
+            // Lazy init - ok, context is not thread-safe
+            definingSections = new HashMap<String, ExtendSectionSegment>(8);
+        }
+        if (!definingSections.containsKey(name)) {
+            definingSections.put(name, segment);
+        }
+    }
 
-	@Override
-	public ExtendSectionSegment getDefiningSection(String name) {
-		if (definingSections == null || definingSections.isEmpty()) {
-			return null;
-		}
-		return definingSections.get(name);
-	}
+    @Override
+    public ExtendSectionSegment getDefiningSection(String name) {
+        if (definingSections == null || definingSections.isEmpty()) {
+            return null;
+        }
+        return definingSections.get(name);
+    }
 
-	/**
-	 * Resolve the leading context object (the first part of the key). E.g.
-	 * <code>foo</code> in <code>{{foo.bar.name}}</code> may identify a property
-	 * of some context object on the stack (passed data, section iteration,
-	 * nested context, ...), or some context and data unrelated object (e.g. CDI
-	 * bean).
-	 *
-	 * @param name
-	 * @return the resolved leading context object
-	 */
-	protected Object resolveLeadingContextObject(String name, ResolutionContext context) {
+    /**
+     * Resolve the leading context object (the first part of the key). E.g.
+     * <code>foo</code> in <code>{{foo.bar.name}}</code> may identify a property
+     * of some context object on the stack (passed data, section iteration,
+     * nested context, ...), or some context and data unrelated object (e.g. CDI
+     * bean).
+     *
+     * @param name
+     * @return the resolved leading context object
+     */
+    protected Object resolveLeadingContextObject(String name,
+            ResolutionContext context) {
 
-		Object leading = null;
+        Object leading = null;
 
-		for (Object contextObject : contextObjectStack) {
+        for (Object contextObject : contextObjectStack) {
 
-			leading = resolve(contextObject, name, context);
+            leading = resolve(contextObject, name, context);
 
-			if (leading != null) {
-				// Skip following
-				break;
-			}
-		}
-		if (leading == null) {
-			// Try to resolve context unrelated objects
-			leading = resolve(null, name, context);
-		}
-		return leading;
-	}
+            if (leading != null) {
+                // Skip following
+                break;
+            }
+        }
+        if (leading == null) {
+            // Try to resolve context unrelated objects
+            leading = resolve(null, name, context);
+        }
+        return leading;
+    }
 
-	/**
-	 *
-	 * @param contextObject
-	 * @param name
-	 * @param context
-	 * @return the resolved object
-	 */
-	protected Object resolve(Object contextObject, String name, ResolutionContext context) {
-		Object value = null;
-		for (Resolver resolver : configuration.getResolvers()) {
-			value = resolver.resolve(contextObject, name, context);
-			if (value != null) {
-				break;
-			}
-		}
-		return value;
-	}
+    /**
+     *
+     * @param contextObject
+     * @param name
+     * @param context
+     * @return the resolved object
+     */
+    protected Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
+        Object value = null;
+        for (Resolver resolver : configuration.getResolvers()) {
+            value = resolver.resolve(contextObject, name, context);
+            if (value != null) {
+                break;
+            }
+        }
+        return value;
+    }
 
-	protected boolean isCompoundKey(String key) {
-		return !key.equals(Strings.KEY_SEPARATOR)
-				&& key.contains(Strings.KEY_SEPARATOR);
-	}
+    protected boolean isCompoundKey(String key) {
+        return !key.equals(Strings.KEY_SEPARATOR)
+                && key.contains(Strings.KEY_SEPARATOR);
+    }
 
-	protected String[] splitKey(String key) {
-		return StringUtils.split(key, Strings.KEY_SEPARATOR);
-	}
+    protected String[] splitKey(String key) {
+        return StringUtils.split(key, Strings.KEY_SEPARATOR);
+    }
 
-	private void pushTemplateInvocation(TemplateSegment template) {
+    private void pushTemplateInvocation(TemplateSegment template) {
 
-		Checker.checkArgumentNotNull(template);
+        Checker.checkArgumentNotNull(template);
 
-		if (getTemplateInvocations(template) > templateRecursiveInvocationLimit) {
-			throw new MustacheException(
-					MustacheProblem.RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
-					"Recursive invocation limit exceeded [limit: %s, stack: %s]",
-					templateRecursiveInvocationLimit, templateInvocationStack);
-		}
-		templateInvocationStack.addFirst(template);
-	}
+        if (getTemplateInvocations(template) > templateRecursiveInvocationLimit) {
+            throw new MustacheException(
+                    MustacheProblem.RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
+                    "Recursive invocation limit exceeded [limit: %s, stack: %s]",
+                    templateRecursiveInvocationLimit, templateInvocationStack);
+        }
+        templateInvocationStack.addFirst(template);
+    }
 
-	private int getTemplateInvocations(TemplateSegment template) {
-		int invocations = 0;
-		for (TemplateSegment segment : templateInvocationStack) {
-			if (segment.equals(template)) {
-				invocations++;
-			}
-		}
-		return invocations;
-	}
+    private int getTemplateInvocations(TemplateSegment template) {
+        int invocations = 0;
+        for (TemplateSegment segment : templateInvocationStack) {
+            if (segment.equals(template)) {
+                invocations++;
+            }
+        }
+        return invocations;
+    }
 
 }

@@ -9,12 +9,12 @@ import org.trimou.annotations.Internal;
 @Internal
 public class LocaleSupportFactory {
 
-	/**
-	 *
-	 * @return the default locale support
-	 */
-	public LocaleSupport createLocateSupport() {
-		return new DefaultLocaleSupport();
-	}
+    /**
+     *
+     * @return the default locale support
+     */
+    public LocaleSupport createLocateSupport() {
+        return new DefaultLocaleSupport();
+    }
 
 }

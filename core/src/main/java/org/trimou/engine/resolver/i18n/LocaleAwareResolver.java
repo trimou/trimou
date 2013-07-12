@@ -27,15 +27,15 @@ import org.trimou.engine.resolver.AbstractResolver;
  */
 public abstract class LocaleAwareResolver extends AbstractResolver {
 
-	protected LocaleSupport localeSupport;
+    protected LocaleSupport localeSupport;
 
-	@Override
-	public void init(Configuration configuration) {
-		localeSupport = configuration.getLocaleSupport();
-	}
+    @Override
+    public void init(Configuration configuration) {
+        localeSupport = configuration.getLocaleSupport();
+    }
 
-	protected Locale getCurrentLocale() {
-		return localeSupport.getCurrentLocale();
-	}
+    protected Locale getCurrentLocale() {
+        return localeSupport.getCurrentLocale();
+    }
 
 }

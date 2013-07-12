@@ -42,138 +42,138 @@ import com.google.common.collect.Lists;
  */
 @Internal
 public class TemplateSegment extends AbstractContainerSegment implements
-		Mustache {
+        Mustache {
 
-	private final MustacheEngine engine;
+    private final MustacheEngine engine;
 
-	private boolean readOnly = false;
+    private boolean readOnly = false;
 
-	public TemplateSegment(String text, MustacheEngine engine) {
-		super(text, null);
-		this.engine = engine;
-	}
+    public TemplateSegment(String text, MustacheEngine engine) {
+        super(text, null);
+        this.engine = engine;
+    }
 
-	@Override
-	public void render(Appendable appendable, Map<String, Object> data) {
+    @Override
+    public void render(Appendable appendable, Map<String, Object> data) {
 
-		if (!isReadOnly()) {
-			throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
-					"Template %s is not ready yet", getName());
-		}
+        if (!isReadOnly()) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
+                    "Template %s is not ready yet", getName());
+        }
 
-		DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
-				getText());
+        DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
+                getText());
 
-		try {
-			renderingStarted(event);
-			// Build execution context and push the template on the invocation
-			// stack
-			ExecutionContext context = new ExecutionContextBuilder(engine)
-					.withData(data).build();
-			context.push(TargetStack.TEMPLATE_INVOCATION, this);
-			// Execute the template
-			super.execute(appendable, context);
-			renderingFinished(event);
-		} finally {
-			event.release();
-		}
-	}
+        try {
+            renderingStarted(event);
+            // Build execution context and push the template on the invocation
+            // stack
+            ExecutionContext context = new ExecutionContextBuilder(engine)
+                    .withData(data).build();
+            context.push(TargetStack.TEMPLATE_INVOCATION, this);
+            // Execute the template
+            super.execute(appendable, context);
+            renderingFinished(event);
+        } finally {
+            event.release();
+        }
+    }
 
-	@Override
-	public String render(Map<String, Object> data) {
-		StringBuilder builder = new StringBuilder();
-		render(builder, data);
-		return builder.toString();
-	}
+    @Override
+    public String render(Map<String, Object> data) {
+        StringBuilder builder = new StringBuilder();
+        render(builder, data);
+        return builder.toString();
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.TEMPLATE;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.TEMPLATE;
+    }
 
-	@Override
-	public String getLiteralBlock() {
-		return getContainingLiteralBlock();
-	}
+    @Override
+    public String getLiteralBlock() {
+        return getContainingLiteralBlock();
+    }
 
-	@Override
-	public String getName() {
-		return getText();
-	}
+    @Override
+    public String getName() {
+        return getText();
+    }
 
-	@Override
-	public void performPostProcessing() {
+    @Override
+    public void performPostProcessing() {
 
-		if (engine.getConfiguration().getBooleanPropertyValue(
-				REMOVE_STANDALONE_LINES)) {
-			Segments.removeStandaloneLines(this);
-		}
-		if (engine.getConfiguration().getBooleanPropertyValue(
-				REMOVE_UNNECESSARY_SEGMENTS)) {
-			Segments.removeUnnecessarySegments(this);
-		}
-		super.performPostProcessing();
-		readOnly = true;
-	}
+        if (engine.getConfiguration().getBooleanPropertyValue(
+                REMOVE_STANDALONE_LINES)) {
+            Segments.removeStandaloneLines(this);
+        }
+        if (engine.getConfiguration().getBooleanPropertyValue(
+                REMOVE_UNNECESSARY_SEGMENTS)) {
+            Segments.removeUnnecessarySegments(this);
+        }
+        super.performPostProcessing();
+        readOnly = true;
+    }
 
-	/**
-	 * @return <code>true</code> if read only, <code>false</code> otherwise
-	 */
-	public boolean isReadOnly() {
-		return readOnly;
-	}
+    /**
+     * @return <code>true</code> if read only, <code>false</code> otherwise
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s: %s]", getType(), getName());
-	}
+    @Override
+    public String toString() {
+        return String.format("%s: %s]", getType(), getName());
+    }
 
-	protected MustacheEngine getEngine() {
-		return engine;
-	}
+    protected MustacheEngine getEngine() {
+        return engine;
+    }
 
-	private void renderingStarted(MustacheRenderingEvent event) {
-		List<MustacheListener> listeners = engine.getConfiguration()
-				.getMustacheListeners();
-		if (listeners != null) {
-			for (MustacheListener listener : listeners) {
-				listener.renderingStarted(event);
-			}
-		}
-	}
+    private void renderingStarted(MustacheRenderingEvent event) {
+        List<MustacheListener> listeners = engine.getConfiguration()
+                .getMustacheListeners();
+        if (listeners != null) {
+            for (MustacheListener listener : listeners) {
+                listener.renderingStarted(event);
+            }
+        }
+    }
 
-	private void renderingFinished(MustacheRenderingEvent event) {
-		List<MustacheListener> listeners = engine.getConfiguration()
-				.getMustacheListeners();
-		if (listeners != null) {
-			for (MustacheListener listener : Lists.reverse(listeners)) {
-				listener.renderingFinished(event);
-			}
-		}
-	}
+    private void renderingFinished(MustacheRenderingEvent event) {
+        List<MustacheListener> listeners = engine.getConfiguration()
+                .getMustacheListeners();
+        if (listeners != null) {
+            for (MustacheListener listener : Lists.reverse(listeners)) {
+                listener.renderingFinished(event);
+            }
+        }
+    }
 
-	/**
-	 *
-	 * @author Martin Kouba
-	 */
-	private static final class DefaultMustacheRenderingEvent extends
-			AbstractReleaseCallbackContainer implements MustacheRenderingEvent {
+    /**
+     *
+     * @author Martin Kouba
+     */
+    private static final class DefaultMustacheRenderingEvent extends
+            AbstractReleaseCallbackContainer implements MustacheRenderingEvent {
 
-		private final String mustacheName;
+        private final String mustacheName;
 
-		/**
-		 *
-		 * @param mustacheName
-		 */
-		public DefaultMustacheRenderingEvent(String mustacheName) {
-			super();
-			this.mustacheName = mustacheName;
-		}
+        /**
+         *
+         * @param mustacheName
+         */
+        public DefaultMustacheRenderingEvent(String mustacheName) {
+            super();
+            this.mustacheName = mustacheName;
+        }
 
-		public String getMustacheName() {
-			return mustacheName;
-		}
+        public String getMustacheName() {
+            return mustacheName;
+        }
 
-	}
+    }
 
 }

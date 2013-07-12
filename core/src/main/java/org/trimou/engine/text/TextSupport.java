@@ -24,12 +24,12 @@ import org.trimou.engine.config.ConfigurationAware;
  */
 public interface TextSupport extends ConfigurationAware {
 
-	/**
-	 * Interpolated values should be HTML escaped, if appropriate.
-	 *
-	 * @param input
-	 * @return escaped text
-	 */
-	public String escapeHtml(String input);
+    /**
+     * Interpolated values should be HTML escaped, if appropriate.
+     *
+     * @param input
+     * @return escaped text
+     */
+    public String escapeHtml(String input);
 
 }

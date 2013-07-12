@@ -12,22 +12,22 @@ import org.trimou.annotations.Internal;
 @Internal
 public interface ContainerSegment extends Segment, Iterable<Segment> {
 
-	/**
-	 *
-	 * @param segment
-	 */
-	public void addSegment(Segment segment);
+    /**
+     *
+     * @param segment
+     */
+    public void addSegment(Segment segment);
 
-	/**
-	 *
-	 * @return the list of contained segments
-	 */
-	public List<Segment> getSegments();
+    /**
+     *
+     * @return the list of contained segments
+     */
+    public List<Segment> getSegments();
 
-	/**
-	 *
-	 * @return the number of contained segments
-	 */
-	public int getSegmentsSize();
+    /**
+     *
+     * @return the number of contained segments
+     */
+    public int getSegmentsSize();
 
 }

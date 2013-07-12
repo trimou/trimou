@@ -12,13 +12,13 @@ import org.trimou.engine.MustacheEngineBuilder;
  */
 public class CDIBeanResolverTest extends WeldSETest {
 
-	@Test
-	public void testInterpolation() {
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
-		assertEquals(
-				"foo",
-				engine.compileMustache("cdi_bean_resolver_weld_se",
-						"{{appScopedBean.name}}").render(null));
-	}
+    @Test
+    public void testInterpolation() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        assertEquals(
+                "foo",
+                engine.compileMustache("cdi_bean_resolver_weld_se",
+                        "{{appScopedBean.name}}").render(null));
+    }
 
 }

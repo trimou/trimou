@@ -8,15 +8,15 @@ import java.lang.reflect.InvocationTargetException;
  */
 interface MemberWrapper {
 
-	/**
-	 *
-	 * @param instance
-	 * @return the member value for the given instance
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 */
-	public Object getValue(Object instance) throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException;
+    /**
+     *
+     * @param instance
+     * @return the member value for the given instance
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
+    public Object getValue(Object instance) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException;
 
 }

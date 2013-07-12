@@ -28,21 +28,21 @@ import org.trimou.engine.config.ConfigurationKey;
  */
 public abstract class AbstractResolver implements Resolver {
 
-	@Override
-	public void init(Configuration configuration) {
-		// No-op
-	}
+    @Override
+    public void init(Configuration configuration) {
+        // No-op
+    }
 
-	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		// No config keys by default
-		return Collections.emptySet();
-	}
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        // No config keys by default
+        return Collections.emptySet();
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s [priority: %s]", getClass().getName(),
-				getPriority());
-	}
+    @Override
+    public String toString() {
+        return String.format("%s [priority: %s]", getClass().getName(),
+                getPriority());
+    }
 
 }

@@ -6,15 +6,15 @@ import javax.annotation.PostConstruct;
 
 public abstract class BeanWithId {
 
-	private String id;
+    private String id;
 
-	@PostConstruct
-	public void init() {
-		id = UUID.randomUUID().toString();
-	}
+    @PostConstruct
+    public void init() {
+        id = UUID.randomUUID().toString();
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
 }

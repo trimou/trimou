@@ -21,43 +21,44 @@ package org.trimou.exception;
  */
 public class MustacheException extends RuntimeException {
 
-	private static final long serialVersionUID = -83740749228227269L;
+    private static final long serialVersionUID = -83740749228227269L;
 
-	private MustacheProblem code;
+    private MustacheProblem code;
 
-	public MustacheException(MustacheProblem code) {
-		this.code = code;
-	}
+    public MustacheException(MustacheProblem code) {
+        this.code = code;
+    }
 
-	public MustacheException(MustacheProblem code, String message, Object... params) {
-		super(String.format(message, params));
-		this.code = code;
-	}
+    public MustacheException(MustacheProblem code, String message,
+            Object... params) {
+        super(String.format(message, params));
+        this.code = code;
+    }
 
-	public MustacheException(MustacheProblem code, Throwable cause) {
-		super(cause);
-		this.code = code;
-	}
+    public MustacheException(MustacheProblem code, Throwable cause) {
+        super(cause);
+        this.code = code;
+    }
 
-	public MustacheException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public MustacheException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public MustacheException(String message) {
-		super(message);
-	}
+    public MustacheException(String message) {
+        super(message);
+    }
 
-	public MustacheException(Throwable cause) {
-		super(cause);
-	}
+    public MustacheException(Throwable cause) {
+        super(cause);
+    }
 
-	public MustacheProblem getCode() {
-		return code;
-	}
+    public MustacheProblem getCode() {
+        return code;
+    }
 
-	@Override
-	public String getMessage() {
-		return String.format("%s: %s", getCode(), super.getMessage());
-	}
+    @Override
+    public String getMessage() {
+        return String.format("%s: %s", getCode(), super.getMessage());
+    }
 
 }

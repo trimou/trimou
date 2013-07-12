@@ -22,10 +22,10 @@ package org.trimou.engine.resource;
  */
 public interface ReleaseCallback {
 
-	/**
-	 * Release all the resources. Any thrown unchecked exceptions are
-	 * catched and logged, but not rethrown.
-	 */
-	void release();
+    /**
+     * Release all the resources. Any thrown unchecked exceptions are catched
+     * and logged, but not rethrown.
+     */
+    void release();
 
 }

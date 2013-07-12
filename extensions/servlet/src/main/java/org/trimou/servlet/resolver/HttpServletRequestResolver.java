@@ -15,29 +15,30 @@ import org.trimou.servlet.RequestHolder;
  */
 public class HttpServletRequestResolver extends AbstractResolver {
 
-	public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
-	private static final String NAME_REQUEST = "request";
+    private static final String NAME_REQUEST = "request";
 
-	@Override
-	public int getPriority() {
-		return SERVLET_REQUEST_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return SERVLET_REQUEST_RESOLVER_PRIORITY;
+    }
 
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject != null) {
-			return null;
-		}
+        if (contextObject != null) {
+            return null;
+        }
 
-		if (NAME_REQUEST.equals(name)) {
-			HttpServletRequest request = RequestHolder.getCurrentRequest();
-			if (request != null) {
-				return new HttpServletRequestWrapper(request);
-			}
-		}
-		return null;
-	}
+        if (NAME_REQUEST.equals(name)) {
+            HttpServletRequest request = RequestHolder.getCurrentRequest();
+            if (request != null) {
+                return new HttpServletRequestWrapper(request);
+            }
+        }
+        return null;
+    }
 
 }

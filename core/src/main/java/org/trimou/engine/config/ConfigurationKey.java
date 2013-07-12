@@ -22,16 +22,16 @@ package org.trimou.engine.config;
  */
 public interface ConfigurationKey {
 
-	/**
-	 *
-	 * @return the key itself
-	 */
-	public String get();
+    /**
+     *
+     * @return the key itself
+     */
+    public String get();
 
-	/**
-	 *
-	 * @return the default value
-	 */
-	public Object getDefaultValue();
+    /**
+     *
+     * @return the default value
+     */
+    public Object getDefaultValue();
 
 }

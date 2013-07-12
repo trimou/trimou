@@ -31,24 +31,24 @@ import org.trimou.util.Strings;
 @Internal
 public class CommentSegment extends AbstractSegment {
 
-	public CommentSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public CommentSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.COMMENT;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.COMMENT;
+    }
 
-	@Override
-	public void execute(Appendable appendable, ExecutionContext context) {
-		// No-op
-	}
+    @Override
+    public void execute(Appendable appendable, ExecutionContext context) {
+        // No-op
+    }
 
-	@Override
-	public String getLiteralBlock() {
-		return getTagLiteral(getType().getTagType().getCommand() + Strings.GAP
-				+ getText());
-	}
+    @Override
+    public String getLiteralBlock() {
+        return getTagLiteral(getType().getTagType().getCommand() + Strings.GAP
+                + getText());
+    }
 
 }

@@ -16,16 +16,17 @@ import com.google.common.collect.ImmutableMap;
  */
 public class SimpleTest extends AbstractEngineTest {
 
-	@Test
-	public void testInterpolation() {
+    @Test
+    public void testInterpolation() {
 
-		StringWriter writer = new StringWriter();
-		Map<String, Object> data = ImmutableMap.<String, Object>of("foo", "me", "bar", new Hammer());
-		String templateContents = "Hello {{foo}} and {{bar.name}}!";
+        StringWriter writer = new StringWriter();
+        Map<String, Object> data = ImmutableMap.<String, Object> of("foo",
+                "me", "bar", new Hammer());
+        String templateContents = "Hello {{foo}} and {{bar.name}}!";
 
-		engine.compileMustache("foo", templateContents).render(writer, data);
+        engine.compileMustache("foo", templateContents).render(writer, data);
 
-		assertEquals("Hello me and Edgar!", writer.toString());
-	}
+        assertEquals("Hello me and Edgar!", writer.toString());
+    }
 
 }

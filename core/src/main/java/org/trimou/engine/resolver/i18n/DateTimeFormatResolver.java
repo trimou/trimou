@@ -47,89 +47,92 @@ import org.trimou.engine.resolver.ResolutionContext;
  */
 public class DateTimeFormatResolver extends LocaleAwareResolver {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DateTimeFormatResolver.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(DateTimeFormatResolver.class);
 
-	public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
-	public static final ConfigurationKey CUSTOM_PATTERN_KEY = new SimpleConfigurationKey(DateTimeFormatResolver.class.getName() + ".customPattern", "M/d/yy h:mm a");
+    public static final ConfigurationKey CUSTOM_PATTERN_KEY = new SimpleConfigurationKey(
+            DateTimeFormatResolver.class.getName() + ".customPattern",
+            "M/d/yy h:mm a");
 
-	private static final String NAME_FORMAT = "format";
+    private static final String NAME_FORMAT = "format";
 
-	private static final String NAME_FORMAT_SHORT = "formatShort";
+    private static final String NAME_FORMAT_SHORT = "formatShort";
 
-	private static final String NAME_FORMAT_CUSTOM = "formatCustom";
+    private static final String NAME_FORMAT_CUSTOM = "formatCustom";
 
-	private static final String NAME_FORMAT_DATE = "formatDate";
+    private static final String NAME_FORMAT_DATE = "formatDate";
 
-	private String customPattern;
+    private String customPattern;
 
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null) {
-			return null;
-		}
+        if (contextObject == null) {
+            return null;
+        }
 
-		Object formattableObject = getFormattableObject(contextObject);
+        Object formattableObject = getFormattableObject(contextObject);
 
-		if (formattableObject == null) {
-			return null;
-		}
+        if (formattableObject == null) {
+            return null;
+        }
 
-		if (NAME_FORMAT.equals(name)) {
-			return format(DateFormat.MEDIUM, formattableObject);
-		} else if (NAME_FORMAT_SHORT.equals(name)) {
-			return format(DateFormat.SHORT, formattableObject);
-		} else if (NAME_FORMAT_CUSTOM.equals(name)) {
-			return formatCustom(formattableObject);
-		}
-		if (NAME_FORMAT_DATE.equals(name)) {
-			return formatDate(DateFormat.MEDIUM, formattableObject);
-		}
-		return null;
-	}
+        if (NAME_FORMAT.equals(name)) {
+            return format(DateFormat.MEDIUM, formattableObject);
+        } else if (NAME_FORMAT_SHORT.equals(name)) {
+            return format(DateFormat.SHORT, formattableObject);
+        } else if (NAME_FORMAT_CUSTOM.equals(name)) {
+            return formatCustom(formattableObject);
+        }
+        if (NAME_FORMAT_DATE.equals(name)) {
+            return formatDate(DateFormat.MEDIUM, formattableObject);
+        }
+        return null;
+    }
 
-	@Override
-	public int getPriority() {
-		return DATE_TIME_FORMAT_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return DATE_TIME_FORMAT_RESOLVER_PRIORITY;
+    }
 
-	@Override
-	public void init(Configuration configuration) {
-		super.init(configuration);
-		customPattern = configuration
-				.getStringPropertyValue(CUSTOM_PATTERN_KEY);
-		logger.info("Initialized [customPattern: {}]", customPattern);
-	}
+    @Override
+    public void init(Configuration configuration) {
+        super.init(configuration);
+        customPattern = configuration
+                .getStringPropertyValue(CUSTOM_PATTERN_KEY);
+        logger.info("Initialized [customPattern: {}]", customPattern);
+    }
 
-	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		return Collections.singleton(CUSTOM_PATTERN_KEY);
-	}
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(CUSTOM_PATTERN_KEY);
+    }
 
-	private Object getFormattableObject(Object contextObject) {
-		if (contextObject instanceof Date || contextObject instanceof Number) {
-			return contextObject;
-		} else if (contextObject instanceof Calendar) {
-			return ((Calendar) contextObject).getTime();
-		}
-		return null;
-	}
+    private Object getFormattableObject(Object contextObject) {
+        if (contextObject instanceof Date || contextObject instanceof Number) {
+            return contextObject;
+        } else if (contextObject instanceof Calendar) {
+            return ((Calendar) contextObject).getTime();
+        }
+        return null;
+    }
 
-	private String format(int style, Object object) {
-		return DateFormat.getDateTimeInstance(style, style,
-				localeSupport.getCurrentLocale()).format(object);
-	}
+    private String format(int style, Object object) {
+        return DateFormat.getDateTimeInstance(style, style,
+                localeSupport.getCurrentLocale()).format(object);
+    }
 
-	private String formatDate(int style, Object object) {
-		return DateFormat.getDateInstance(style,
-				localeSupport.getCurrentLocale()).format(object);
-	}
+    private String formatDate(int style, Object object) {
+        return DateFormat.getDateInstance(style,
+                localeSupport.getCurrentLocale()).format(object);
+    }
 
-	private String formatCustom(Object object) {
-		return new SimpleDateFormat(customPattern,
-				localeSupport.getCurrentLocale()).format(object);
-	}
+    private String formatCustom(Object object) {
+        return new SimpleDateFormat(customPattern,
+                localeSupport.getCurrentLocale()).format(object);
+    }
 
 }

@@ -49,294 +49,294 @@ import com.google.common.collect.ImmutableMap;
  */
 class DefaultConfiguration implements Configuration {
 
-	private static final String RESOURCE_FILE = "/trimou.properties";
+    private static final String RESOURCE_FILE = "/trimou.properties";
 
-	private List<TemplateLocator> templateLocators = null;
+    private List<TemplateLocator> templateLocators = null;
 
-	private List<Resolver> resolvers = null;
+    private List<Resolver> resolvers = null;
 
-	private Map<String, Object> globalData = null;
+    private Map<String, Object> globalData = null;
 
-	private TextSupport textSupport;
+    private TextSupport textSupport;
 
-	private LocaleSupport localeSupport;
+    private LocaleSupport localeSupport;
 
-	private Map<String, Object> properties;
+    private Map<String, Object> properties;
 
-	private List<MustacheListener> mustacheListeners;
+    private List<MustacheListener> mustacheListeners;
 
-	/**
-	 *
-	 * @param builder
-	 */
-	DefaultConfiguration(MustacheEngineBuilder builder) {
+    /**
+     *
+     * @param builder
+     */
+    DefaultConfiguration(MustacheEngineBuilder builder) {
 
-		if (!builder.isOmitServiceLoaderConfigurationExtensions()) {
-			// Process configuration extensions
-			for (Iterator<ConfigurationExtension> iterator = ServiceLoader
-					.load(ConfigurationExtension.class).iterator(); iterator
-					.hasNext();) {
-				iterator.next().register(builder);
-			}
-		}
-		identifyResolvers(builder);
-		identifyTextSupport(builder);
-		identifyLocaleSupport(builder);
-		identifyTemplateLocators(builder);
-		identifyMustacheListeners(builder);
-		initializeGlobalData(builder);
-		initializeProperties(builder);
-		initializeConfigurationAwareComponents();
-	}
+        if (!builder.isOmitServiceLoaderConfigurationExtensions()) {
+            // Process configuration extensions
+            for (Iterator<ConfigurationExtension> iterator = ServiceLoader
+                    .load(ConfigurationExtension.class).iterator(); iterator
+                    .hasNext();) {
+                iterator.next().register(builder);
+            }
+        }
+        identifyResolvers(builder);
+        identifyTextSupport(builder);
+        identifyLocaleSupport(builder);
+        identifyTemplateLocators(builder);
+        identifyMustacheListeners(builder);
+        initializeGlobalData(builder);
+        initializeProperties(builder);
+        initializeConfigurationAwareComponents();
+    }
 
-	@Override
-	public List<Resolver> getResolvers() {
-		return resolvers;
-	}
+    @Override
+    public List<Resolver> getResolvers() {
+        return resolvers;
+    }
 
-	@Override
-	public Map<String, Object> getGlobalData() {
-		return globalData;
-	}
+    @Override
+    public Map<String, Object> getGlobalData() {
+        return globalData;
+    }
 
-	@Override
-	public List<TemplateLocator> getTemplateLocators() {
-		return templateLocators;
-	}
+    @Override
+    public List<TemplateLocator> getTemplateLocators() {
+        return templateLocators;
+    }
 
-	@Override
-	public TextSupport getTextSupport() {
-		return textSupport;
-	}
+    @Override
+    public TextSupport getTextSupport() {
+        return textSupport;
+    }
 
-	@Override
-	public LocaleSupport getLocaleSupport() {
-		return localeSupport;
-	}
+    @Override
+    public LocaleSupport getLocaleSupport() {
+        return localeSupport;
+    }
 
-	@Override
-	public List<MustacheListener> getMustacheListeners() {
-		return mustacheListeners;
-	}
+    @Override
+    public List<MustacheListener> getMustacheListeners() {
+        return mustacheListeners;
+    }
 
-	@Override
-	public Long getLongPropertyValue(ConfigurationKey configurationKey) {
+    @Override
+    public Long getLongPropertyValue(ConfigurationKey configurationKey) {
 
-		Long value = (Long) properties.get(configurationKey.get());
+        Long value = (Long) properties.get(configurationKey.get());
 
-		if (value == null) {
-			value = (Long) configurationKey.getDefaultValue();
-		}
-		return value;
-	}
+        if (value == null) {
+            value = (Long) configurationKey.getDefaultValue();
+        }
+        return value;
+    }
 
-	@Override
-	public Integer getIntegerPropertyValue(ConfigurationKey configurationKey) {
+    @Override
+    public Integer getIntegerPropertyValue(ConfigurationKey configurationKey) {
 
-		Integer value = (Integer) properties.get(configurationKey.get());
+        Integer value = (Integer) properties.get(configurationKey.get());
 
-		if (value == null) {
-			value = (Integer) configurationKey.getDefaultValue();
-		}
-		return value;
-	}
+        if (value == null) {
+            value = (Integer) configurationKey.getDefaultValue();
+        }
+        return value;
+    }
 
-	@Override
-	public String getStringPropertyValue(ConfigurationKey configurationKey) {
+    @Override
+    public String getStringPropertyValue(ConfigurationKey configurationKey) {
 
-		Object value = properties.get(configurationKey.get());
+        Object value = properties.get(configurationKey.get());
 
-		if (value == null) {
-			value = configurationKey.getDefaultValue();
-		}
-		return value.toString();
-	}
+        if (value == null) {
+            value = configurationKey.getDefaultValue();
+        }
+        return value.toString();
+    }
 
-	@Override
-	public Boolean getBooleanPropertyValue(ConfigurationKey configurationKey) {
+    @Override
+    public Boolean getBooleanPropertyValue(ConfigurationKey configurationKey) {
 
-		Boolean value = (Boolean) properties.get(configurationKey.get());
+        Boolean value = (Boolean) properties.get(configurationKey.get());
 
-		if (value == null) {
-			value = (Boolean) configurationKey.getDefaultValue();
-		}
-		return value;
-	}
+        if (value == null) {
+            value = (Boolean) configurationKey.getDefaultValue();
+        }
+        return value;
+    }
 
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("----------");
-		builder.append(Strings.LINE_SEPARATOR);
-		builder.append("[");
-		builder.append(this.getClass().getName());
-		builder.append("]");
-		if (templateLocators != null) {
-			builder.append(Strings.LINE_SEPARATOR);
-			builder.append("----------");
-			builder.append(Strings.LINE_SEPARATOR);
-			builder.append("[Template locators]");
-			for (TemplateLocator locator : templateLocators) {
-				builder.append(Strings.LINE_SEPARATOR);
-				builder.append(locator.toString());
-			}
-		}
-		if (resolvers != null) {
-			builder.append(Strings.LINE_SEPARATOR);
-			builder.append("----------");
-			builder.append(Strings.LINE_SEPARATOR);
-			builder.append("[Resolvers]");
-			for (Resolver resolver : resolvers) {
-				builder.append(Strings.LINE_SEPARATOR);
-				builder.append(resolver.toString());
-			}
-		}
-		builder.append(Strings.LINE_SEPARATOR);
-		builder.append("----------");
-		builder.append(Strings.LINE_SEPARATOR);
-		builder.append("[Properties]");
-		for (Entry<String, Object> entry : properties.entrySet()) {
-			builder.append(Strings.LINE_SEPARATOR);
-			builder.append(entry.getKey());
-			builder.append("=");
-			builder.append(entry.getValue());
-		}
-		return builder.toString();
-	}
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("----------");
+        builder.append(Strings.LINE_SEPARATOR);
+        builder.append("[");
+        builder.append(this.getClass().getName());
+        builder.append("]");
+        if (templateLocators != null) {
+            builder.append(Strings.LINE_SEPARATOR);
+            builder.append("----------");
+            builder.append(Strings.LINE_SEPARATOR);
+            builder.append("[Template locators]");
+            for (TemplateLocator locator : templateLocators) {
+                builder.append(Strings.LINE_SEPARATOR);
+                builder.append(locator.toString());
+            }
+        }
+        if (resolvers != null) {
+            builder.append(Strings.LINE_SEPARATOR);
+            builder.append("----------");
+            builder.append(Strings.LINE_SEPARATOR);
+            builder.append("[Resolvers]");
+            for (Resolver resolver : resolvers) {
+                builder.append(Strings.LINE_SEPARATOR);
+                builder.append(resolver.toString());
+            }
+        }
+        builder.append(Strings.LINE_SEPARATOR);
+        builder.append("----------");
+        builder.append(Strings.LINE_SEPARATOR);
+        builder.append("[Properties]");
+        for (Entry<String, Object> entry : properties.entrySet()) {
+            builder.append(Strings.LINE_SEPARATOR);
+            builder.append(entry.getKey());
+            builder.append("=");
+            builder.append(entry.getValue());
+        }
+        return builder.toString();
+    }
 
-	private Object getPropertyValue(Object defaultValue, Object suppliedValue) {
+    private Object getPropertyValue(Object defaultValue, Object suppliedValue) {
 
-		if (defaultValue instanceof String) {
-			return suppliedValue.toString();
-		} else if (defaultValue instanceof Boolean) {
-			return Boolean.valueOf(suppliedValue.toString());
-		} else if (defaultValue instanceof Long) {
-			return Long.valueOf(suppliedValue.toString());
-		} else if (defaultValue instanceof Integer) {
-			return Integer.valueOf(suppliedValue.toString());
-		}
-		throw new IllegalStateException("Unknown configuration value");
-	}
+        if (defaultValue instanceof String) {
+            return suppliedValue.toString();
+        } else if (defaultValue instanceof Boolean) {
+            return Boolean.valueOf(suppliedValue.toString());
+        } else if (defaultValue instanceof Long) {
+            return Long.valueOf(suppliedValue.toString());
+        } else if (defaultValue instanceof Integer) {
+            return Integer.valueOf(suppliedValue.toString());
+        }
+        throw new IllegalStateException("Unknown configuration value");
+    }
 
-	private void initializeConfigurationAwareComponents() {
-		for (ConfigurationAware component : getConfigurationAwareComponents()) {
-			component.init(this);
-		}
-	}
+    private void initializeConfigurationAwareComponents() {
+        for (ConfigurationAware component : getConfigurationAwareComponents()) {
+            component.init(this);
+        }
+    }
 
-	private void identifyResolvers(MustacheEngineBuilder builder) {
-		resolvers = new ArrayList<Resolver>();
-		if (builder.getResolvers() != null) {
-			resolvers.addAll(builder.getResolvers());
-		}
-		Collections.sort(resolvers, new HighPriorityComparator());
-		resolvers = ImmutableList.copyOf(resolvers);
-	}
+    private void identifyResolvers(MustacheEngineBuilder builder) {
+        resolvers = new ArrayList<Resolver>();
+        if (builder.getResolvers() != null) {
+            resolvers.addAll(builder.getResolvers());
+        }
+        Collections.sort(resolvers, new HighPriorityComparator());
+        resolvers = ImmutableList.copyOf(resolvers);
+    }
 
-	private void initializeProperties(MustacheEngineBuilder builder) {
+    private void initializeProperties(MustacheEngineBuilder builder) {
 
-		Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess();
+        Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess();
 
-		properties = new HashMap<String, Object>(keysToProcess.size());
-		Properties resourceProperties = new Properties();
+        properties = new HashMap<String, Object>(keysToProcess.size());
+        Properties resourceProperties = new Properties();
 
-		try {
-			InputStream in = this.getClass().getResourceAsStream(RESOURCE_FILE);
-			if (in != null) {
-				try {
-					resourceProperties.load(in);
-				} finally {
-					in.close();
-				}
-			}
-		} catch (IOException e) {
-			// No-op, file is optional
-		}
+        try {
+            InputStream in = this.getClass().getResourceAsStream(RESOURCE_FILE);
+            if (in != null) {
+                try {
+                    resourceProperties.load(in);
+                } finally {
+                    in.close();
+                }
+            }
+        } catch (IOException e) {
+            // No-op, file is optional
+        }
 
-		for (ConfigurationKey configKey : keysToProcess) {
+        for (ConfigurationKey configKey : keysToProcess) {
 
-			String key = configKey.get();
+            String key = configKey.get();
 
-			// Manually set properties
-			Object value = builder.getProperties().get(key);
+            // Manually set properties
+            Object value = builder.getProperties().get(key);
 
-			if (value == null) {
-				// System properties
-				value = System.getProperty(key);
-				if (value == null) {
-					// Resource properties
-					value = resourceProperties.getProperty(key);
-				}
-			}
-			properties.put(
-					key,
-					value != null ? getPropertyValue(
-							configKey.getDefaultValue(), value) : configKey
-							.getDefaultValue());
-		}
-	}
+            if (value == null) {
+                // System properties
+                value = System.getProperty(key);
+                if (value == null) {
+                    // Resource properties
+                    value = resourceProperties.getProperty(key);
+                }
+            }
+            properties.put(
+                    key,
+                    value != null ? getPropertyValue(
+                            configKey.getDefaultValue(), value) : configKey
+                            .getDefaultValue());
+        }
+    }
 
-	private Set<ConfigurationKey> getConfigurationKeysToProcess() {
-		Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
-		// Global keys
-		for (ConfigurationKey key : EngineConfigurationKey.values()) {
-			keys.add(key);
-		}
-		for (ConfigurationAware component : getConfigurationAwareComponents()) {
-			keys.addAll(component.getConfigurationKeys());
-		}
-		return keys;
-	}
+    private Set<ConfigurationKey> getConfigurationKeysToProcess() {
+        Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
+        // Global keys
+        for (ConfigurationKey key : EngineConfigurationKey.values()) {
+            keys.add(key);
+        }
+        for (ConfigurationAware component : getConfigurationAwareComponents()) {
+            keys.addAll(component.getConfigurationKeys());
+        }
+        return keys;
+    }
 
-	private void identifyTextSupport(MustacheEngineBuilder builder) {
-		if (builder.getTextSupport() != null) {
-			textSupport = builder.getTextSupport();
-		} else {
-			textSupport = new TextSupportFactory().createTextSupport();
-		}
-	}
+    private void identifyTextSupport(MustacheEngineBuilder builder) {
+        if (builder.getTextSupport() != null) {
+            textSupport = builder.getTextSupport();
+        } else {
+            textSupport = new TextSupportFactory().createTextSupport();
+        }
+    }
 
-	private void identifyLocaleSupport(MustacheEngineBuilder builder) {
-		if (builder.getLocaleSupport() != null) {
-			localeSupport = builder.getLocaleSupport();
-		} else {
-			localeSupport = new LocaleSupportFactory().createLocateSupport();
-		}
-	}
+    private void identifyLocaleSupport(MustacheEngineBuilder builder) {
+        if (builder.getLocaleSupport() != null) {
+            localeSupport = builder.getLocaleSupport();
+        } else {
+            localeSupport = new LocaleSupportFactory().createLocateSupport();
+        }
+    }
 
-	private void identifyTemplateLocators(MustacheEngineBuilder builder) {
-		if (builder.getTemplateLocators() != null) {
-			List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
-					builder.getTemplateLocators());
-			Collections.sort(locators, new HighPriorityComparator());
-			this.templateLocators = ImmutableList.copyOf(locators);
-		}
-	}
+    private void identifyTemplateLocators(MustacheEngineBuilder builder) {
+        if (builder.getTemplateLocators() != null) {
+            List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
+                    builder.getTemplateLocators());
+            Collections.sort(locators, new HighPriorityComparator());
+            this.templateLocators = ImmutableList.copyOf(locators);
+        }
+    }
 
-	private void initializeGlobalData(MustacheEngineBuilder builder) {
-		if (builder.getGlobalData() != null) {
-			this.globalData = ImmutableMap.copyOf(builder.getGlobalData());
-		}
-	}
+    private void initializeGlobalData(MustacheEngineBuilder builder) {
+        if (builder.getGlobalData() != null) {
+            this.globalData = ImmutableMap.copyOf(builder.getGlobalData());
+        }
+    }
 
-	private void identifyMustacheListeners(MustacheEngineBuilder builder) {
-		if (builder.getMustacheListeners() != null) {
-			this.mustacheListeners = ImmutableList.copyOf(builder
-					.getMustacheListeners());
-		}
-	}
+    private void identifyMustacheListeners(MustacheEngineBuilder builder) {
+        if (builder.getMustacheListeners() != null) {
+            this.mustacheListeners = ImmutableList.copyOf(builder
+                    .getMustacheListeners());
+        }
+    }
 
-	private Set<ConfigurationAware> getConfigurationAwareComponents() {
-		Set<ConfigurationAware> components = new HashSet<ConfigurationAware>();
-		components.addAll(resolvers);
-		if (templateLocators != null) {
-			components.addAll(templateLocators);
-		}
-		if (mustacheListeners != null) {
-			components.addAll(mustacheListeners);
-		}
-		components.add(localeSupport);
-		components.add(textSupport);
-		return components;
-	}
+    private Set<ConfigurationAware> getConfigurationAwareComponents() {
+        Set<ConfigurationAware> components = new HashSet<ConfigurationAware>();
+        components.addAll(resolvers);
+        if (templateLocators != null) {
+            components.addAll(templateLocators);
+        }
+        if (mustacheListeners != null) {
+            components.addAll(mustacheListeners);
+        }
+        components.add(localeSupport);
+        components.add(textSupport);
+        return components;
+    }
 
 }

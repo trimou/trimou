@@ -12,10 +12,10 @@ import org.trimou.engine.MustacheEngineBuilder;
  */
 public class MustacheEngineProducer {
 
-	@Produces
-	@ApplicationScoped
-	public MustacheEngine produceMustacheEngine() {
-		return MustacheEngineBuilder.newBuilder().build();
-	}
+    @Produces
+    @ApplicationScoped
+    public MustacheEngine produceMustacheEngine() {
+        return MustacheEngineBuilder.newBuilder().build();
+    }
 
 }

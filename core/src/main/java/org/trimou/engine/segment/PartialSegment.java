@@ -33,71 +33,71 @@ import org.trimou.exception.MustacheProblem;
 @Internal
 public class PartialSegment extends AbstractSegment {
 
-	private String indentation;
+    private String indentation;
 
-	public PartialSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public PartialSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.PARTIAL;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.PARTIAL;
+    }
 
-	@Override
-	public void execute(Appendable appendable, ExecutionContext context) {
+    @Override
+    public void execute(Appendable appendable, ExecutionContext context) {
 
-		TemplateSegment partialTemplate = (TemplateSegment) getEngine()
-				.getMustache(getText());
+        TemplateSegment partialTemplate = (TemplateSegment) getEngine()
+                .getMustache(getText());
 
-		if (partialTemplate == null) {
-			throw new MustacheException(
-					MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
-					"No partial found for the given key: %s %s",
-					getText(), getOrigin());
-		}
+        if (partialTemplate == null) {
+            throw new MustacheException(
+                    MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
+                    "No partial found for the given key: %s %s", getText(),
+                    getOrigin());
+        }
 
-		context.push(TEMPLATE_INVOCATION, partialTemplate);
-		if (indentation == null) {
-			partialTemplate.execute(appendable, context);
-		} else {
-			prependIndentation(appendable, context, partialTemplate);
-		}
-		context.pop(TEMPLATE_INVOCATION);
-	}
+        context.push(TEMPLATE_INVOCATION, partialTemplate);
+        if (indentation == null) {
+            partialTemplate.execute(appendable, context);
+        } else {
+            prependIndentation(appendable, context, partialTemplate);
+        }
+        context.pop(TEMPLATE_INVOCATION);
+    }
 
-	@Override
-	public String getLiteralBlock() {
-		return getTagLiteral(MustacheTagType.PARTIAL.getCommand() + getText());
-	}
+    @Override
+    public String getLiteralBlock() {
+        return getTagLiteral(MustacheTagType.PARTIAL.getCommand() + getText());
+    }
 
-	@Override
-	protected String getSegmentName() {
-		return getText();
-	}
+    @Override
+    protected String getSegmentName() {
+        return getText();
+    }
 
-	public void setIndentation(String indentation) {
-		checkModificationAllowed();
-		this.indentation = indentation;
-	}
+    public void setIndentation(String indentation) {
+        checkModificationAllowed();
+        this.indentation = indentation;
+    }
 
-	private void prependIndentation(Appendable appendable,
-			ExecutionContext context, TemplateSegment partialTemplate) {
+    private void prependIndentation(Appendable appendable,
+            ExecutionContext context, TemplateSegment partialTemplate) {
 
-		List<List<Segment>> partialLines = Segments
-				.readSegmentLinesBeforeRendering(partialTemplate);
-		TextSegment indent = new TextSegment(indentation, new Origin(
-				getTemplate()));
+        List<List<Segment>> partialLines = Segments
+                .readSegmentLinesBeforeRendering(partialTemplate);
+        TextSegment indent = new TextSegment(indentation, new Origin(
+                getTemplate()));
 
-		for (List<Segment> line : partialLines) {
-			line.add(0, indent);
-		}
+        for (List<Segment> line : partialLines) {
+            line.add(0, indent);
+        }
 
-		for (List<Segment> line : partialLines) {
-			for (Segment segment : line) {
-				segment.execute(appendable, context);
-			}
-		}
-	}
+        for (List<Segment> line : partialLines) {
+            for (Segment segment : line) {
+                segment.execute(appendable, context);
+            }
+        }
+    }
 
 }

@@ -9,17 +9,17 @@ import java.lang.reflect.Method;
  */
 class MethodWrapper implements MemberWrapper {
 
-	private final Method method;
+    private final Method method;
 
-	MethodWrapper(Method method) {
-		super();
-		this.method = method;
-	}
+    MethodWrapper(Method method) {
+        super();
+        this.method = method;
+    }
 
-	@Override
-	public Object getValue(Object instance) throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		return method.invoke(instance);
-	}
+    @Override
+    public Object getValue(Object instance) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        return method.invoke(instance);
+    }
 
 }

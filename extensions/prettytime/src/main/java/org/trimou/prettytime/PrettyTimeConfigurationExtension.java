@@ -24,9 +24,9 @@ import org.trimou.prettytime.resolver.PrettyTimeResolver;
  */
 public class PrettyTimeConfigurationExtension implements ConfigurationExtension {
 
-	@Override
-	public void register(ConfigurationExtensionBuilder builder) {
-		builder.addResolver(new PrettyTimeResolver());
-	}
+    @Override
+    public void register(ConfigurationExtensionBuilder builder) {
+        builder.addResolver(new PrettyTimeResolver());
+    }
 
 }

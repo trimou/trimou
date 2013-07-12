@@ -30,36 +30,36 @@ import org.slf4j.LoggerFactory;
  */
 public class ContextualInstanceStore {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(ContextualInstanceStore.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ContextualInstanceStore.class);
 
-	private final Map<Contextual<?>, ContextualInstance<?>> contextualInstancesMap = new HashMap<Contextual<?>, ContextualInstance<?>>();
+    private final Map<Contextual<?>, ContextualInstance<?>> contextualInstancesMap = new HashMap<Contextual<?>, ContextualInstance<?>>();
 
-	@SuppressWarnings("unchecked")
-	<T> ContextualInstance<T> get(Contextual<T> contextual,
-			CreationalContext<T> creationalContext) {
+    @SuppressWarnings("unchecked")
+    <T> ContextualInstance<T> get(Contextual<T> contextual,
+            CreationalContext<T> creationalContext) {
 
-		ContextualInstance<T> contextualInstance = (ContextualInstance<T>) contextualInstancesMap
-				.get(contextual);
+        ContextualInstance<T> contextualInstance = (ContextualInstance<T>) contextualInstancesMap
+                .get(contextual);
 
-		if (contextualInstance == null && creationalContext != null) {
-			contextualInstance = new ContextualInstance<T>(
-					contextual.create(creationalContext), creationalContext,
-					contextual);
-			contextualInstancesMap.put(contextual, contextualInstance);
-		}
-		return contextualInstance;
-	}
+        if (contextualInstance == null && creationalContext != null) {
+            contextualInstance = new ContextualInstance<T>(
+                    contextual.create(creationalContext), creationalContext,
+                    contextual);
+            contextualInstancesMap.put(contextual, contextualInstance);
+        }
+        return contextualInstance;
+    }
 
-	void destroy() {
+    void destroy() {
 
-		for (ContextualInstance<?> contextualInstance : contextualInstancesMap
-				.values()) {
-			logger.trace("Destroying contextual instance [contextual: {}]",
-					contextualInstance.getContextual());
-			contextualInstance.destroy();
-		}
-		contextualInstancesMap.clear();
-	}
+        for (ContextualInstance<?> contextualInstance : contextualInstancesMap
+                .values()) {
+            logger.trace("Destroying contextual instance [contextual: {}]",
+                    contextualInstance.getContextual());
+            contextualInstance.destroy();
+        }
+        contextualInstancesMap.clear();
+    }
 
 }

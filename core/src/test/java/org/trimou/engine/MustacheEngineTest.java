@@ -21,75 +21,75 @@ import com.google.common.collect.ImmutableMap;
  */
 public class MustacheEngineTest extends AbstractEngineTest {
 
-	@Before
-	public void buildEngine() {
-	}
+    @Before
+    public void buildEngine() {
+    }
 
-	@Test
-	public void testGlobalData() {
+    @Test
+    public void testGlobalData() {
 
-		Lambda bold = new SpecCompliantLambda() {
+        Lambda bold = new SpecCompliantLambda() {
 
-			@Override
-			public String invoke(String text) {
-				return "<b>" + text + "</b>";
-			}
+            @Override
+            public String invoke(String text) {
+                return "<b>" + text + "</b>";
+            }
 
-			@Override
-			public boolean isReturnValueInterpolated() {
-				return false;
-			}
+            @Override
+            public boolean isReturnValueInterpolated() {
+                return false;
+            }
 
-		};
+        };
 
-		Lambda italic = new SpecCompliantLambda() {
+        Lambda italic = new SpecCompliantLambda() {
 
-			@Override
-			public String invoke(String text) {
-				return "<i>" + text + "</i>";
-			}
+            @Override
+            public String invoke(String text) {
+                return "<i>" + text + "</i>";
+            }
 
-			@Override
-			public boolean isReturnValueInterpolated() {
-				return false;
-			}
-		};
+            @Override
+            public boolean isReturnValueInterpolated() {
+                return false;
+            }
+        };
 
-		String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveType.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveType.values}}|{{archiveType.JAR}}";
-		Mustache mustache = MustacheEngineBuilder.newBuilder()
-				.addGlobalData("foo", true)
-				.addGlobalData("archiveType", ArchiveType.class)
-				.addGlobalData("bold", bold).addGlobalData("italic", italic)
-				.build().compileMustache("global_data", templateContents);
+        String templateContents = "{{foo}}| {{#bold}}Hello{{/bold}} {{#italic}}world{{/italic}}!|{{#archiveType.values}}{{this.suffix}}{{#iterHasNext}}, {{/iterHasNext}}{{/archiveType.values}}|{{archiveType.JAR}}";
+        Mustache mustache = MustacheEngineBuilder.newBuilder()
+                .addGlobalData("foo", true)
+                .addGlobalData("archiveType", ArchiveType.class)
+                .addGlobalData("bold", bold).addGlobalData("italic", italic)
+                .build().compileMustache("global_data", templateContents);
 
-		assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear|JAR",
-				mustache.render(null));
-	}
+        assertEquals("true| <b>Hello</b> <i>world</i>!|jar, war, ear|JAR",
+                mustache.render(null));
+    }
 
-	@Test
-	public void testDelimitersConfiguration() {
-		assertEquals(
-				"bar",
-				MustacheEngineBuilder
-						.newBuilder()
-						.setProperty(EngineConfigurationKey.START_DELIMITER,
-								"<%")
-						.setProperty(EngineConfigurationKey.END_DELIMITER, "//")
-						.build()
-						.compileMustache("delimiters_configuration", "<%foo//")
-						.render(ImmutableMap.<String, Object> of("foo", "bar")));
+    @Test
+    public void testDelimitersConfiguration() {
+        assertEquals(
+                "bar",
+                MustacheEngineBuilder
+                        .newBuilder()
+                        .setProperty(EngineConfigurationKey.START_DELIMITER,
+                                "<%")
+                        .setProperty(EngineConfigurationKey.END_DELIMITER, "//")
+                        .build()
+                        .compileMustache("delimiters_configuration", "<%foo//")
+                        .render(ImmutableMap.<String, Object> of("foo", "bar")));
 
-	}
+    }
 
-	@Test
-	public void testDebugModeDisablesTemplateCache() {
-		MustacheEngine engine = MustacheEngineBuilder
-				.newBuilder()
-				.setProperty(EngineConfigurationKey.DEBUG_MODE, true)
-				.addTemplateLocator(
-						new MapTemplateLocator(ImmutableMap.of("foo", "Hey!")))
-				.build();
-		assertNotEquals(engine.getMustache("foo"), engine.getMustache("foo"));
-	}
+    @Test
+    public void testDebugModeDisablesTemplateCache() {
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.DEBUG_MODE, true)
+                .addTemplateLocator(
+                        new MapTemplateLocator(ImmutableMap.of("foo", "Hey!")))
+                .build();
+        assertNotEquals(engine.getMustache("foo"), engine.getMustache("foo"));
+    }
 
 }

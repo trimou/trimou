@@ -23,10 +23,10 @@ import org.trimou.engine.resource.ReleaseCallbackContainer;
  */
 public interface MustacheRenderingEvent extends ReleaseCallbackContainer {
 
-	/**
-	 *
-	 * @return the template name
-	 */
-	public String getMustacheName();
+    /**
+     *
+     * @return the template name
+     */
+    public String getMustacheName();
 
 }

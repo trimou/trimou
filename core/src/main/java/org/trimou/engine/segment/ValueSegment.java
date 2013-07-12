@@ -32,82 +32,82 @@ import org.trimou.lambda.Lambda;
 @Internal
 public class ValueSegment extends AbstractSegment {
 
-	private final boolean unescape;
+    private final boolean unescape;
 
-	public ValueSegment(String text, Origin origin, boolean unescape) {
-		super(text, origin);
-		this.unescape = unescape;
-	}
+    public ValueSegment(String text, Origin origin, boolean unescape) {
+        super(text, origin);
+        this.unescape = unescape;
+    }
 
-	public SegmentType getType() {
-		return SegmentType.VALUE;
-	}
+    public SegmentType getType() {
+        return SegmentType.VALUE;
+    }
 
-	public boolean isUnescape() {
-		return unescape;
-	}
+    public boolean isUnescape() {
+        return unescape;
+    }
 
-	public void execute(Appendable appendable, ExecutionContext context) {
+    public void execute(Appendable appendable, ExecutionContext context) {
 
-		ValueWrapper value = context.getValue(getText());
+        ValueWrapper value = context.getValue(getText());
 
-		try {
+        try {
 
-			if (value.isNull()) {
-				if (getEngineConfiguration().getBooleanPropertyValue(
-						NO_VALUE_INDICATES_PROBLEM)) {
-					throw new MustacheException(
-							MustacheProblem.RENDER_NO_VALUE,
-							"No value for the given key found: %s %s",
-							getText(), getOrigin());
-				}
-				// By default a variable miss returns an empty string
-				return;
-			}
-			processValue(appendable, context, value.get());
+            if (value.isNull()) {
+                if (getEngineConfiguration().getBooleanPropertyValue(
+                        NO_VALUE_INDICATES_PROBLEM)) {
+                    throw new MustacheException(
+                            MustacheProblem.RENDER_NO_VALUE,
+                            "No value for the given key found: %s %s",
+                            getText(), getOrigin());
+                }
+                // By default a variable miss returns an empty string
+                return;
+            }
+            processValue(appendable, context, value.get());
 
-		} finally {
-			value.release();
-		}
-	}
+        } finally {
+            value.release();
+        }
+    }
 
-	@Override
-	protected String getSegmentName() {
-		return getText();
-	}
+    @Override
+    protected String getSegmentName() {
+        return getText();
+    }
 
-	private void processValue(Appendable appendable, ExecutionContext context,
-			Object value) {
-		if (value instanceof Lambda) {
-			processLambda(appendable, context, value);
-		} else {
-			writeValue(appendable, value.toString());
-		}
-	}
+    private void processValue(Appendable appendable, ExecutionContext context,
+            Object value) {
+        if (value instanceof Lambda) {
+            processLambda(appendable, context, value);
+        } else {
+            writeValue(appendable, value.toString());
+        }
+    }
 
-	private void writeValue(Appendable appendable, String text) {
-		append(appendable, unescape ? text : getEngineConfiguration()
-				.getTextSupport().escapeHtml(text));
-	}
+    private void writeValue(Appendable appendable, String text) {
+        append(appendable, unescape ? text : getEngineConfiguration()
+                .getTextSupport().escapeHtml(text));
+    }
 
-	private void processLambda(Appendable appendable, ExecutionContext context,
-			Object value) {
+    private void processLambda(Appendable appendable, ExecutionContext context,
+            Object value) {
 
-		Lambda lambda = (Lambda) value;
-		String returnValue = lambda.invoke(null);
+        Lambda lambda = (Lambda) value;
+        String returnValue = lambda.invoke(null);
 
-		if (lambda.isReturnValueInterpolated()) {
-			// Parse and interpolate the return value
-			StringBuilder interpolated = new StringBuilder();
-			TemplateSegment temp = (TemplateSegment) getEngine()
-					.compileMustache(
-							Lambdas.constructLambdaOneoffTemplateName(this),
-							returnValue);
-			temp.execute(interpolated, context);
-			writeValue(appendable, interpolated.toString());
-		} else {
-			writeValue(appendable, returnValue);
-		}
-	}
+        if (lambda.isReturnValueInterpolated()) {
+            // Parse and interpolate the return value
+            StringBuilder interpolated = new StringBuilder();
+            TemplateSegment temp = (TemplateSegment) getEngine()
+                    .compileMustache(
+                            Lambdas.constructLambdaOneoffTemplateName(this),
+                            returnValue);
+            temp.execute(interpolated, context);
+            writeValue(appendable, interpolated.toString());
+        } else {
+            writeValue(appendable, returnValue);
+        }
+    }
 
 }

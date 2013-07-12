@@ -12,23 +12,23 @@ import org.trimou.cdi.context.RenderingScoped;
 @RenderingScoped
 public class Foo {
 
-	@Inject
-	private Event<Foo> event;
+    @Inject
+    private Event<Foo> event;
 
-	private Long createdAt;
+    private Long createdAt;
 
-	@PostConstruct
-	public void init() {
-		this.createdAt = System.nanoTime();
-	}
+    @PostConstruct
+    public void init() {
+        this.createdAt = System.nanoTime();
+    }
 
-	@PreDestroy
-	public void destroy() {
-		event.fire(this);
-	}
+    @PreDestroy
+    public void destroy() {
+        event.fire(this);
+    }
 
-	public Long getCreatedAt() {
-		return createdAt;
-	}
+    public Long getCreatedAt() {
+        return createdAt;
+    }
 
 }

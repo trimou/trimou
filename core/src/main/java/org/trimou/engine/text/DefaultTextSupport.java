@@ -23,11 +23,11 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  * @author Martin Kouba
  */
 class DefaultTextSupport extends AbstractConfigurationAware implements
-		TextSupport {
+        TextSupport {
 
-	@Override
-	public String escapeHtml(String input) {
-		return StringEscapeUtils.escapeHtml3(input);
-	}
+    @Override
+    public String escapeHtml(String input) {
+        return StringEscapeUtils.escapeHtml3(input);
+    }
 
 }

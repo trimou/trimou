@@ -26,170 +26,170 @@ import com.google.gson.JsonPrimitive;
 
 public final class SpecUtils {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(SpecUtils.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(SpecUtils.class);
 
-	/**
-	 * Execute all the spec tests in the given JSON file.
-	 *
-	 * @param filename
-	 * @param specVersion
-	 * @throws IOException
-	 */
-	static void executeTests(String filename, String specVersion)
-			throws IOException {
-		executeTests(filename, specVersion, null);
-	}
+    /**
+     * Execute all the spec tests in the given JSON file.
+     *
+     * @param filename
+     * @param specVersion
+     * @throws IOException
+     */
+    static void executeTests(String filename, String specVersion)
+            throws IOException {
+        executeTests(filename, specVersion, null);
+    }
 
-	static void executeTests(String filename, String specVersion,
-			String singleTest) throws IOException {
+    static void executeTests(String filename, String specVersion,
+            String singleTest) throws IOException {
 
-		List<Definition> definitions = parseDefinitions(getSpecFile(filename,
-				specVersion));
+        List<Definition> definitions = parseDefinitions(getSpecFile(filename,
+                specVersion));
 
-		if (!definitions.isEmpty()) {
+        if (!definitions.isEmpty()) {
 
-			int idx = 0;
-			int failures = 0;
+            int idx = 0;
+            int failures = 0;
 
-			for (Definition definition : definitions) {
+            for (Definition definition : definitions) {
 
-				if (singleTest != null
-						&& !singleTest.equals(definition.getName())) {
-					continue;
-				}
+                if (singleTest != null
+                        && !singleTest.equals(definition.getName())) {
+                    continue;
+                }
 
-				// Mock partials
-				MapTemplateLocator mockTemplateLocator = new MapTemplateLocator(
-						definition.getPartials());
+                // Mock partials
+                MapTemplateLocator mockTemplateLocator = new MapTemplateLocator(
+                        definition.getPartials());
 
-				MustacheEngine factory = MustacheEngineBuilder.newBuilder()
-						.addTemplateLocator(mockTemplateLocator).build();
+                MustacheEngine factory = MustacheEngineBuilder.newBuilder()
+                        .addTemplateLocator(mockTemplateLocator).build();
 
-				idx++;
+                idx++;
 
-				try {
+                try {
 
-					assertEquals(
-							definition.getExpected(),
-							factory.compileMustache(definition.getName(),
-									definition.getTemplate()).render(
-									definition.getData()));
+                    assertEquals(
+                            definition.getExpected(),
+                            factory.compileMustache(definition.getName(),
+                                    definition.getTemplate()).render(
+                                    definition.getData()));
 
-				} catch (Exception e) {
-					failures++;
-					logger.error("{} {}: {} - {}", idx, definition.getName(),
-							e.getClass(), e.getMessage());
-				} catch (Error e) {
-					failures++;
-					logger.error("{} {}: {} - {}", idx, definition.getName(),
-							e.getClass(), e.getMessage());
-				}
-			}
-			logger.info(
-					"Spec tests finished [filename: {}, tests: {}, failures: {}]",
-					new Object[] { filename, definitions.size(), failures });
-			if (failures > 0) {
-				fail(String.format("Spec tests failures: %s", failures));
-			}
-		}
-	}
+                } catch (Exception e) {
+                    failures++;
+                    logger.error("{} {}: {} - {}", idx, definition.getName(),
+                            e.getClass(), e.getMessage());
+                } catch (Error e) {
+                    failures++;
+                    logger.error("{} {}: {} - {}", idx, definition.getName(),
+                            e.getClass(), e.getMessage());
+                }
+            }
+            logger.info(
+                    "Spec tests finished [filename: {}, tests: {}, failures: {}]",
+                    new Object[] { filename, definitions.size(), failures });
+            if (failures > 0) {
+                fail(String.format("Spec tests failures: %s", failures));
+            }
+        }
+    }
 
-	static Reader getSpecFile(String filename, String specVersion) {
-		return new InputStreamReader(
-				SpecUtils.class.getResourceAsStream("/spec/" + specVersion
-						+ "/" + filename));
-	}
+    static Reader getSpecFile(String filename, String specVersion) {
+        return new InputStreamReader(
+                SpecUtils.class.getResourceAsStream("/spec/" + specVersion
+                        + "/" + filename));
+    }
 
-	static List<Definition> parseDefinitions(Reader reader) throws IOException {
+    static List<Definition> parseDefinitions(Reader reader) throws IOException {
 
-		List<Definition> definitions = new ArrayList<Definition>();
-		JsonParser parser = new JsonParser();
-		JsonElement spec = parser.parse(reader);
-		reader.close();
-		JsonArray tests = spec.getAsJsonObject().get("tests").getAsJsonArray();
+        List<Definition> definitions = new ArrayList<Definition>();
+        JsonParser parser = new JsonParser();
+        JsonElement spec = parser.parse(reader);
+        reader.close();
+        JsonArray tests = spec.getAsJsonObject().get("tests").getAsJsonArray();
 
-		for (JsonElement test : tests) {
+        for (JsonElement test : tests) {
 
-			JsonObject testObject = test.getAsJsonObject();
+            JsonObject testObject = test.getAsJsonObject();
 
-			Definition definition = new Definition();
-			definition.setName(testObject.get("name").getAsString());
-			definition.setDesc(testObject.get("desc").getAsString());
-			definition.setTemplate(testObject.get("template").getAsString());
-			definition.setExpected(testObject.get("expected").getAsString());
+            Definition definition = new Definition();
+            definition.setName(testObject.get("name").getAsString());
+            definition.setDesc(testObject.get("desc").getAsString());
+            definition.setTemplate(testObject.get("template").getAsString());
+            definition.setExpected(testObject.get("expected").getAsString());
 
-			Map<String, Object> data = new HashMap<String, Object>();
-			JsonObject dataObject = testObject.get("data").getAsJsonObject();
-			for (Entry<String, JsonElement> property : dataObject.entrySet()) {
-				if (!property.getKey().equals("lambda")) {
-					data.put(property.getKey(),
-							getJsonElementValue(property.getValue()));
-				}
-			}
-			if (Lambdas.testMap.containsKey(definition.getName())) {
-				data.put("lambda", Lambdas.testMap.get(definition.getName()));
-			}
-			definition.setData(data);
+            Map<String, Object> data = new HashMap<String, Object>();
+            JsonObject dataObject = testObject.get("data").getAsJsonObject();
+            for (Entry<String, JsonElement> property : dataObject.entrySet()) {
+                if (!property.getKey().equals("lambda")) {
+                    data.put(property.getKey(),
+                            getJsonElementValue(property.getValue()));
+                }
+            }
+            if (Lambdas.testMap.containsKey(definition.getName())) {
+                data.put("lambda", Lambdas.testMap.get(definition.getName()));
+            }
+            definition.setData(data);
 
-			if (testObject.has("partials")) {
-				JsonObject partialsObject = testObject.get("partials")
-						.getAsJsonObject();
-				Map<String, String> partials = new HashMap<String, String>();
-				for (Entry<String, JsonElement> entry : partialsObject
-						.entrySet()) {
-					partials.put(entry.getKey(), entry.getValue().getAsString());
-				}
-				definition.setPartials(partials);
-			}
+            if (testObject.has("partials")) {
+                JsonObject partialsObject = testObject.get("partials")
+                        .getAsJsonObject();
+                Map<String, String> partials = new HashMap<String, String>();
+                for (Entry<String, JsonElement> entry : partialsObject
+                        .entrySet()) {
+                    partials.put(entry.getKey(), entry.getValue().getAsString());
+                }
+                definition.setPartials(partials);
+            }
 
-			definitions.add(definition);
-		}
-		return definitions;
-	}
+            definitions.add(definition);
+        }
+        return definitions;
+    }
 
-	private static Object getJsonElementValue(JsonElement element) {
+    private static Object getJsonElementValue(JsonElement element) {
 
-		if (element.isJsonPrimitive()) {
-			return getJsonPrimitiveElementValue(element);
-		} else if (element.isJsonArray()) {
-			return getJsonArrayElementValue(element);
-		} else if (element.isJsonObject()) {
-			Map<String, Object> objectData = new HashMap<String, Object>();
-			for (Entry<String, JsonElement> objectProperty : element
-					.getAsJsonObject().entrySet()) {
-				objectData.put(objectProperty.getKey(),
-						getJsonElementValue(objectProperty.getValue()));
-			}
-			return objectData;
-		} else if (element.isJsonNull()) {
-			return null;
-		}
-		throw new IllegalStateException("Unsupported JSON element");
-	}
+        if (element.isJsonPrimitive()) {
+            return getJsonPrimitiveElementValue(element);
+        } else if (element.isJsonArray()) {
+            return getJsonArrayElementValue(element);
+        } else if (element.isJsonObject()) {
+            Map<String, Object> objectData = new HashMap<String, Object>();
+            for (Entry<String, JsonElement> objectProperty : element
+                    .getAsJsonObject().entrySet()) {
+                objectData.put(objectProperty.getKey(),
+                        getJsonElementValue(objectProperty.getValue()));
+            }
+            return objectData;
+        } else if (element.isJsonNull()) {
+            return null;
+        }
+        throw new IllegalStateException("Unsupported JSON element");
+    }
 
-	private static Object getJsonPrimitiveElementValue(JsonElement element) {
+    private static Object getJsonPrimitiveElementValue(JsonElement element) {
 
-		JsonPrimitive primitive = element.getAsJsonPrimitive();
-		if (primitive.isBoolean()) {
-			return primitive.getAsBoolean();
-		} else if (primitive.isString()) {
-			return primitive.getAsString();
-		} else if (primitive.isNumber()) {
-			return primitive.getAsNumber();
-		} else {
-			throw new IllegalStateException("Unsupported primitive type");
-		}
-	}
+        JsonPrimitive primitive = element.getAsJsonPrimitive();
+        if (primitive.isBoolean()) {
+            return primitive.getAsBoolean();
+        } else if (primitive.isString()) {
+            return primitive.getAsString();
+        } else if (primitive.isNumber()) {
+            return primitive.getAsNumber();
+        } else {
+            throw new IllegalStateException("Unsupported primitive type");
+        }
+    }
 
-	private static Object getJsonArrayElementValue(JsonElement element) {
+    private static Object getJsonArrayElementValue(JsonElement element) {
 
-		JsonArray array = element.getAsJsonArray();
-		List<Object> values = new ArrayList<Object>(array.size());
-		for (JsonElement jsonElement : array) {
-			values.add(getJsonElementValue(jsonElement));
-		}
-		return values;
-	}
+        JsonArray array = element.getAsJsonArray();
+        List<Object> values = new ArrayList<Object>(array.size());
+        for (JsonElement jsonElement : array) {
+            values.add(getJsonElementValue(jsonElement));
+        }
+        return values;
+    }
 
 }

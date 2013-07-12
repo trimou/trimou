@@ -9,14 +9,14 @@ import javax.enterprise.event.Observes;
 @ApplicationScoped
 public class Observer {
 
-	private List<Long> foos = new ArrayList<Long>();
+    private List<Long> foos = new ArrayList<Long>();
 
-	public void observeFoo(@Observes Foo foo) {
-		foos.add(foo.getCreatedAt());
-	}
+    public void observeFoo(@Observes Foo foo) {
+        foos.add(foo.getCreatedAt());
+    }
 
-	public List<Long> getFoos() {
-		return foos;
-	}
+    public List<Long> getFoos() {
+        return foos;
+    }
 
 }

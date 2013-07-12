@@ -8,8 +8,8 @@ import org.trimou.cdi.context.RenderingScoped;
 @Named("renderingScopedBean")
 public class RenderingScopedBean {
 
-	public String getName() {
-		return "bar";
-	}
+    public String getName() {
+        return "bar";
+    }
 
 }

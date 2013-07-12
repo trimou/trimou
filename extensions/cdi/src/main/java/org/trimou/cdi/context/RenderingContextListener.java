@@ -29,27 +29,27 @@ import org.trimou.util.Checker;
  */
 public final class RenderingContextListener extends AbstractMustacheListener {
 
-	private final RenderingContext renderingContext;
+    private final RenderingContext renderingContext;
 
-	/**
-	 *
-	 * @param renderingContext
-	 */
-	public RenderingContextListener(RenderingContext renderingContext) {
-		super();
-		Checker.checkArgumentNotNull(renderingContext);
-		this.renderingContext = renderingContext;
-	}
+    /**
+     *
+     * @param renderingContext
+     */
+    public RenderingContextListener(RenderingContext renderingContext) {
+        super();
+        Checker.checkArgumentNotNull(renderingContext);
+        this.renderingContext = renderingContext;
+    }
 
-	@Override
-	public void renderingStarted(final MustacheRenderingEvent event) {
-		renderingContext.initialize(event);
-		event.registerReleaseCallback(new ReleaseCallback() {
-			@Override
-			public void release() {
-				renderingContext.destroy(event);
-			}
-		});
-	}
+    @Override
+    public void renderingStarted(final MustacheRenderingEvent event) {
+        renderingContext.initialize(event);
+        event.registerReleaseCallback(new ReleaseCallback() {
+            @Override
+            public void release() {
+                renderingContext.destroy(event);
+            }
+        });
+    }
 
 }

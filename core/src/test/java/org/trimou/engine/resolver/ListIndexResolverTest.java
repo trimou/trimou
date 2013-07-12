@@ -17,16 +17,16 @@ import com.google.common.collect.ImmutableMap;
  */
 public class ListIndexResolverTest extends AbstractEngineTest {
 
-	@Test
-	public void testInterpolation() {
-		List<String> list = new ArrayList<String>();
-		list.add("foo");
-		list.add("bar");
-		Map<String, Object> data = ImmutableMap.<String, Object> of("list",
-				list);
-		String templateContents = "{{list.0}},{{list.1}},{{list.10}},{{list.a}}!";
-		assertEquals("foo,bar,,!", engine.compileMustache("list", templateContents)
-				.render(data));
-	}
+    @Test
+    public void testInterpolation() {
+        List<String> list = new ArrayList<String>();
+        list.add("foo");
+        list.add("bar");
+        Map<String, Object> data = ImmutableMap.<String, Object> of("list",
+                list);
+        String templateContents = "{{list.0}},{{list.1}},{{list.10}},{{list.a}}!";
+        assertEquals("foo,bar,,!",
+                engine.compileMustache("list", templateContents).render(data));
+    }
 
 }

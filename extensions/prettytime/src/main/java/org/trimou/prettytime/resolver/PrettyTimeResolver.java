@@ -29,74 +29,74 @@ import com.google.common.cache.LoadingCache;
  */
 public class PrettyTimeResolver extends LocaleAwareResolver {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PrettyTimeResolver.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(PrettyTimeResolver.class);
 
-	public static final int PRETTY_TIME_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int PRETTY_TIME_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
-	public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
-			PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
+    public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
+            PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
 
-	private String matchName;
+    private String matchName;
 
-	/**
-	 * Lazy loading cache of PrettyTime instances
-	 */
-	private LoadingCache<Locale, PrettyTime> prettyTimeCache;
+    /**
+     * Lazy loading cache of PrettyTime instances
+     */
+    private LoadingCache<Locale, PrettyTime> prettyTimeCache;
 
-	@Override
-	public Object resolve(Object contextObject, String name,
-			ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null || !matchName.equals(name)) {
-			return null;
-		}
+        if (contextObject == null || !matchName.equals(name)) {
+            return null;
+        }
 
-		Date formattableObject = getFormattableObject(contextObject);
+        Date formattableObject = getFormattableObject(contextObject);
 
-		if (formattableObject == null) {
-			return null;
-		}
+        if (formattableObject == null) {
+            return null;
+        }
 
-		return prettyTimeCache.getUnchecked(getCurrentLocale()).format(
-				formattableObject);
-	}
+        return prettyTimeCache.getUnchecked(getCurrentLocale()).format(
+                formattableObject);
+    }
 
-	@Override
-	public int getPriority() {
-		return PRETTY_TIME_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return PRETTY_TIME_RESOLVER_PRIORITY;
+    }
 
-	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		return Collections.singleton(MATCH_NAME_KEY);
-	}
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(MATCH_NAME_KEY);
+    }
 
-	@Override
-	public void init(Configuration configuration) {
-		super.init(configuration);
+    @Override
+    public void init(Configuration configuration) {
+        super.init(configuration);
 
-		matchName = configuration.getStringPropertyValue(MATCH_NAME_KEY);
-		prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
-				.build(new CacheLoader<Locale, PrettyTime>() {
+        matchName = configuration.getStringPropertyValue(MATCH_NAME_KEY);
+        prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
+                .build(new CacheLoader<Locale, PrettyTime>() {
 
-					@Override
-					public PrettyTime load(Locale locale) throws Exception {
-						return new PrettyTime(locale);
-					}
-				});
-		logger.info("Initialized [matchName: {}]", matchName);
-	}
+                    @Override
+                    public PrettyTime load(Locale locale) throws Exception {
+                        return new PrettyTime(locale);
+                    }
+                });
+        logger.info("Initialized [matchName: {}]", matchName);
+    }
 
-	private Date getFormattableObject(Object contextObject) {
-		if (contextObject instanceof Date) {
-			return (Date) contextObject;
-		} else if (contextObject instanceof Calendar) {
-			return ((Calendar) contextObject).getTime();
-		} else if (contextObject instanceof Long) {
-			return new Date((Long) contextObject);
-		}
-		return null;
-	}
+    private Date getFormattableObject(Object contextObject) {
+        if (contextObject instanceof Date) {
+            return (Date) contextObject;
+        } else if (contextObject instanceof Calendar) {
+            return ((Calendar) contextObject).getTime();
+        } else if (contextObject instanceof Long) {
+            return new Date((Long) contextObject);
+        }
+        return null;
+    }
 
 }

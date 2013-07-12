@@ -9,12 +9,12 @@ import org.trimou.annotations.Internal;
 @Internal
 public class ParsingHandlerFactory {
 
-	/**
-	 *
-	 * @return the parsing handler
-	 */
-	public ParsingHandler createParsingHandler() {
-		return new DefaultParsingHandler();
-	}
+    /**
+     *
+     * @return the parsing handler
+     */
+    public ParsingHandler createParsingHandler() {
+        return new DefaultParsingHandler();
+    }
 
 }

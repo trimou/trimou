@@ -12,15 +12,15 @@ import org.trimou.AbstractTest;
  */
 public class PathTemplateLocatorTest extends AbstractTest {
 
-	protected String read(Reader reader) throws IOException {
-		BufferedReader bufferedReader = new BufferedReader(reader);
+    protected String read(Reader reader) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(reader);
         StringBuilder text = new StringBuilder();
         int character = bufferedReader.read();
         while (character != -1) {
-          text.append((char)character);
-          character = bufferedReader.read();
+            text.append((char) character);
+            character = bufferedReader.read();
         }
         return text.toString();
-	}
+    }
 
 }

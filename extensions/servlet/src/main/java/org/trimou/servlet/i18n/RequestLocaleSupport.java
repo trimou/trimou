@@ -11,11 +11,11 @@ import org.trimou.servlet.RequestHolder;
  * @author Martin Kouba
  */
 public class RequestLocaleSupport extends AbstractConfigurationAware implements
-		LocaleSupport {
+        LocaleSupport {
 
-	@Override
-	public Locale getCurrentLocale() {
-		return RequestHolder.getCurrentRequest().getLocale();
-	}
+    @Override
+    public Locale getCurrentLocale() {
+        return RequestHolder.getCurrentRequest().getLocale();
+    }
 
 }

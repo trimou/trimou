@@ -23,57 +23,57 @@ import org.trimou.util.Strings;
  * @see ResourceBundleResolver
  */
 public class ResourceBundleLambda extends InputProcessingLambda implements
-		EngineBuiltCallback {
+        EngineBuiltCallback {
 
-	private String baseName;
+    private String baseName;
 
-	private LocaleSupport localeSupport;
+    private LocaleSupport localeSupport;
 
-	/**
-	 *
-	 * @param baseName
-	 */
-	public ResourceBundleLambda(String baseName) {
-		super();
-		this.baseName = baseName;
-	}
+    /**
+     *
+     * @param baseName
+     */
+    public ResourceBundleLambda(String baseName) {
+        super();
+        this.baseName = baseName;
+    }
 
-	/**
-	 *
-	 * @param baseName
-	 * @param localeSupport
-	 */
-	public ResourceBundleLambda(String baseName, LocaleSupport localeSupport) {
-		super();
-		this.baseName = baseName;
-		this.localeSupport = localeSupport;
-	}
+    /**
+     *
+     * @param baseName
+     * @param localeSupport
+     */
+    public ResourceBundleLambda(String baseName, LocaleSupport localeSupport) {
+        super();
+        this.baseName = baseName;
+        this.localeSupport = localeSupport;
+    }
 
-	@Override
-	public String invoke(String text) {
+    @Override
+    public String invoke(String text) {
 
-		if (localeSupport == null) {
-			throw new IllegalStateException(
-					"ResourceBundleLambda requires a LocaleSupport instance to work properly");
-		}
+        if (localeSupport == null) {
+            throw new IllegalStateException(
+                    "ResourceBundleLambda requires a LocaleSupport instance to work properly");
+        }
 
-		ResourceBundle bundle = ResourceBundle.getBundle(baseName,
-				localeSupport.getCurrentLocale());
+        ResourceBundle bundle = ResourceBundle.getBundle(baseName,
+                localeSupport.getCurrentLocale());
 
-		if (bundle.containsKey(text)) {
-			return bundle.getObject(text).toString();
-		}
-		return Strings.EMPTY;
-	}
+        if (bundle.containsKey(text)) {
+            return bundle.getObject(text).toString();
+        }
+        return Strings.EMPTY;
+    }
 
-	@Override
-	public boolean isReturnValueInterpolated() {
-		return false;
-	}
+    @Override
+    public boolean isReturnValueInterpolated() {
+        return false;
+    }
 
-	@Override
-	public void engineBuilt(MustacheEngine engine) {
-		this.localeSupport = engine.getConfiguration().getLocaleSupport();
-	}
+    @Override
+    public void engineBuilt(MustacheEngine engine) {
+        this.localeSupport = engine.getConfiguration().getLocaleSupport();
+    }
 
 }

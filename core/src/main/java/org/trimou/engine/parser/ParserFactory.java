@@ -10,13 +10,13 @@ import org.trimou.engine.MustacheEngine;
 @Internal
 public class ParserFactory {
 
-	/**
-	 *
-	 * @param engine
-	 * @return the parser
-	 */
-	public Parser createParser(MustacheEngine engine) {
-		return new DefaultParser(engine);
-	}
+    /**
+     *
+     * @param engine
+     * @return the parser
+     */
+    public Parser createParser(MustacheEngine engine) {
+        return new DefaultParser(engine);
+    }
 
 }

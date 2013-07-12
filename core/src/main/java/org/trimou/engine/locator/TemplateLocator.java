@@ -33,21 +33,21 @@ import org.trimou.engine.priority.WithPriority;
  */
 public interface TemplateLocator extends WithPriority, ConfigurationAware {
 
-	/**
-	 * @param templateId
-	 *            The template identifier
-	 * @return the reader object for a template with the given name or
-	 *         <code>null</code> if no available template with the given name
-	 *         exists
-	 */
-	public Reader locate(String templateId);
+    /**
+     * @param templateId
+     *            The template identifier
+     * @return the reader object for a template with the given name or
+     *         <code>null</code> if no available template with the given name
+     *         exists
+     */
+    public Reader locate(String templateId);
 
-	/**
-	 *
-	 * @return the set of names of all available template identifiers (i.e. all
-	 *         available templates)
-	 * @see EngineConfigurationKey#PRECOMPILE_ALL_TEMPLATES
-	 */
-	public Set<String> getAllIdentifiers();
+    /**
+     *
+     * @return the set of names of all available template identifiers (i.e. all
+     *         available templates)
+     * @see EngineConfigurationKey#PRECOMPILE_ALL_TEMPLATES
+     */
+    public Set<String> getAllIdentifiers();
 
 }

@@ -23,90 +23,88 @@ import com.google.common.collect.ImmutableSet;
  */
 public class DefaultConfigurationTest extends AbstractEngineTest {
 
-	private final ConfigurationKey testResolverKeyAlpha = new SimpleConfigurationKey(
-			"test.key.alpha", true);
+    private final ConfigurationKey testResolverKeyAlpha = new SimpleConfigurationKey(
+            "test.key.alpha", true);
 
-	private final ConfigurationKey testResolverKeyBravo = new SimpleConfigurationKey(
-			"test.key.bravo", 1l);
+    private final ConfigurationKey testResolverKeyBravo = new SimpleConfigurationKey(
+            "test.key.bravo", 1l);
 
-	@Before
-	public void buildEngine() {
+    @Before
+    public void buildEngine() {
 
-		System.setProperty(
-				EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK.get(),
-				"true");
-		System.setProperty(
-				ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY.get(),
-				"2000");
-		System.setProperty("test.key.bravo", "1000");
+        System.setProperty(
+                EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK.get(),
+                "true");
+        System.setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY.get(),
+                "2000");
+        System.setProperty("test.key.bravo", "1000");
 
-		engine = MustacheEngineBuilder
-				.newBuilder()
-				.setProperty(
-						ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY,
-						"3000").addResolver(new AbstractResolver() {
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY,
+                        "3000").addResolver(new AbstractResolver() {
 
-					@Override
-					public int getPriority() {
-						return 0;
-					}
+                    @Override
+                    public int getPriority() {
+                        return 0;
+                    }
 
-					@Override
-					public Object resolve(Object contextObject, String name,
-							ResolutionContext context) {
-						return null;
-					}
+                    @Override
+                    public Object resolve(Object contextObject, String name,
+                            ResolutionContext context) {
+                        return null;
+                    }
 
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return ImmutableSet.<ConfigurationKey> of(
-								testResolverKeyAlpha, testResolverKeyBravo);
-					}
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return ImmutableSet.<ConfigurationKey> of(
+                                testResolverKeyAlpha, testResolverKeyBravo);
+                    }
 
-				}).build();
+                }).build();
 
-	}
+    }
 
-	@After
-	public void resetSystemProperties() {
-		System.setProperty(EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK
-				.get(), EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK
-				.getDefaultValue().toString());
-		System.setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY
-				.get(), ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY
-				.getDefaultValue().toString());
-	}
+    @After
+    public void resetSystemProperties() {
+        System.setProperty(EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK
+                .get(), EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK
+                .getDefaultValue().toString());
+        System.setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY.get(),
+                ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY.getDefaultValue()
+                        .toString());
+    }
 
-	@Test
-	public void testInitializeProperties() {
+    @Test
+    public void testInitializeProperties() {
 
-		// Default values
-		assertEquals(
-				EngineConfigurationKey.START_DELIMITER.getDefaultValue(),
-				engine.getConfiguration().getStringPropertyValue(
-						EngineConfigurationKey.START_DELIMITER));
-		assertEquals(
-				EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES
-						.getDefaultValue(),
-				engine.getConfiguration().getBooleanPropertyValue(
-						EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES));
+        // Default values
+        assertEquals(
+                EngineConfigurationKey.START_DELIMITER.getDefaultValue(),
+                engine.getConfiguration().getStringPropertyValue(
+                        EngineConfigurationKey.START_DELIMITER));
+        assertEquals(
+                EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES
+                        .getDefaultValue(),
+                engine.getConfiguration().getBooleanPropertyValue(
+                        EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES));
 
-		// System prop
-		assertTrue(engine.getConfiguration().getBooleanPropertyValue(
-				EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK));
+        // System prop
+        assertTrue(engine.getConfiguration().getBooleanPropertyValue(
+                EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK));
 
-		// File prop
-		assertFalse(engine.getConfiguration().getBooleanPropertyValue(
-				testResolverKeyAlpha));
+        // File prop
+        assertFalse(engine.getConfiguration().getBooleanPropertyValue(
+                testResolverKeyAlpha));
 
-		// Manually set prop vs system prop priority
-		assertEquals(
-				Long.valueOf(3000),
-				engine.getConfiguration().getLongPropertyValue(
-						ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY));
+        // Manually set prop vs system prop priority
+        assertEquals(
+                Long.valueOf(3000),
+                engine.getConfiguration().getLongPropertyValue(
+                        ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY));
 
-		// System prop vs file prop priority
-		assertEquals(Long.valueOf(1000), engine.getConfiguration()
-				.getLongPropertyValue(testResolverKeyBravo));
-	}
+        // System prop vs file prop priority
+        assertEquals(Long.valueOf(1000), engine.getConfiguration()
+                .getLongPropertyValue(testResolverKeyBravo));
+    }
 }

@@ -24,34 +24,36 @@ import com.google.common.collect.ImmutableMap;
  */
 public class NumberFormatResolverTest extends AbstractEngineTest {
 
-	@Override
-	@Before
-	public void buildEngine() {
-		engine = MustacheEngineBuilder.newBuilder()
-				.setLocaleSupport(new LocaleSupport() {
-					@Override
-					public Locale getCurrentLocale() {
-						return new Locale("cs", "CZ");
-					}
-					@Override
-					public void init(Configuration configuration) {
-					}
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return Collections.emptySet();
-					}
-				}).addResolver(new NumberFormatResolver()).build();
+    @Override
+    @Before
+    public void buildEngine() {
+        engine = MustacheEngineBuilder.newBuilder()
+                .setLocaleSupport(new LocaleSupport() {
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return new Locale("cs", "CZ");
+                    }
 
-	}
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
 
-	@Test
-	public void testInterpolation() {
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(new NumberFormatResolver()).build();
 
-		String templateContents = "{{number.format}}|{{number.formatPercent}}|{{number.formatCurrency}}";
-		Mustache mustache = engine.compileMustache("number", templateContents);
+    }
 
-		assertEquals("1,5|150%|1,5 Kč", mustache.render(ImmutableMap
-				.<String, Object> of("number", new BigDecimal("1.5"))));
-	}
+    @Test
+    public void testInterpolation() {
+
+        String templateContents = "{{number.format}}|{{number.formatPercent}}|{{number.formatCurrency}}";
+        Mustache mustache = engine.compileMustache("number", templateContents);
+
+        assertEquals("1,5|150%|1,5 Kč", mustache.render(ImmutableMap
+                .<String, Object> of("number", new BigDecimal("1.5"))));
+    }
 
 }

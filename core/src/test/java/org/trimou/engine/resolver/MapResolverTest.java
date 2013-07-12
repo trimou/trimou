@@ -18,23 +18,24 @@ import com.google.common.collect.ImmutableMap;
  */
 public class MapResolverTest extends AbstractEngineTest {
 
-	@Test
-	public void testResolution() {
-		MapResolver resolver = new MapResolver();
-		assertNull(resolver.resolve(null, "foo", null));
-		assertNotNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "bar", null));
-		assertNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "qux", null));
-	}
+    @Test
+    public void testResolution() {
+        MapResolver resolver = new MapResolver();
+        assertNull(resolver.resolve(null, "foo", null));
+        assertNotNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "bar",
+                null));
+        assertNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "qux", null));
+    }
 
-	@Test
-	public void testInterpolation() {
-		Map<String, Integer> map = new HashMap<String, Integer>(2);
-		map.put("foo", 1);
-		map.put("bar", 2);
-		Map<String, Object> data = ImmutableMap.<String, Object> of("map", map);
-		String templateContents = "Hello {{map.foo}} or {{map.bar}}!|{{map.nonExisting}}";
-		assertEquals("Hello 1 or 2!|",
-				engine.compileMustache("map", templateContents).render(data));
-	}
+    @Test
+    public void testInterpolation() {
+        Map<String, Integer> map = new HashMap<String, Integer>(2);
+        map.put("foo", 1);
+        map.put("bar", 2);
+        Map<String, Object> data = ImmutableMap.<String, Object> of("map", map);
+        String templateContents = "Hello {{map.foo}} or {{map.bar}}!|{{map.nonExisting}}";
+        assertEquals("Hello 1 or 2!|",
+                engine.compileMustache("map", templateContents).render(data));
+    }
 
 }

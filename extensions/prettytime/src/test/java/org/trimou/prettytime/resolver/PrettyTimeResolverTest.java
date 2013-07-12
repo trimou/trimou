@@ -27,106 +27,109 @@ import com.google.common.collect.ImmutableMap;
  */
 public class PrettyTimeResolverTest {
 
-	@Test
-	public void testFormattableObjectsResolved() {
+    @Test
+    public void testFormattableObjectsResolved() {
 
-		PrettyTimeResolver resolver = new PrettyTimeResolver();
+        PrettyTimeResolver resolver = new PrettyTimeResolver();
 
-		// Just to init the resolver
-		MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
-				.setLocaleSupport(new LocaleSupport() {
+        // Just to init the resolver
+        MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(new LocaleSupport() {
 
-					@Override
-					public Locale getCurrentLocale() {
-						return Locale.ENGLISH;
-					}
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return Locale.ENGLISH;
+                    }
 
-					@Override
-					public void init(Configuration configuration) {
-					}
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
 
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return Collections.emptySet();
-					}
-				}).addResolver(resolver).build();
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(resolver).build();
 
-		assertNull(resolver.resolve(null, "prettyTime", null));
-		assertNull(resolver.resolve("foo", "prettyTime", null));
-		assertNotNull(resolver.resolve(new Date(), "prettyTime", null));
-		assertNotNull(resolver.resolve(10000l, "prettyTime", null));
-		assertNotNull(resolver.resolve(Calendar.getInstance(), "prettyTime", null));
-	}
+        assertNull(resolver.resolve(null, "prettyTime", null));
+        assertNull(resolver.resolve("foo", "prettyTime", null));
+        assertNotNull(resolver.resolve(new Date(), "prettyTime", null));
+        assertNotNull(resolver.resolve(10000l, "prettyTime", null));
+        assertNotNull(resolver.resolve(Calendar.getInstance(), "prettyTime",
+                null));
+    }
 
-	@Test
-	public void testInterpolation() {
+    @Test
+    public void testInterpolation() {
 
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.omitServiceLoaderConfigurationExtensions()
-				.setLocaleSupport(new LocaleSupport() {
-					@Override
-					public Locale getCurrentLocale() {
-						return Locale.ENGLISH;
-					}
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(new LocaleSupport() {
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return Locale.ENGLISH;
+                    }
 
-					@Override
-					public void init(Configuration configuration) {
-					}
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
 
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return Collections.emptySet();
-					}
-				}).addResolver(new MapResolver())
-				.addResolver(new PrettyTimeResolver()).build();
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(new MapResolver())
+                .addResolver(new PrettyTimeResolver()).build();
 
-		String expected = new Resources_en().getString("JustNowPastPrefix");
-		Calendar now = Calendar.getInstance();
+        String expected = new Resources_en().getString("JustNowPastPrefix");
+        Calendar now = Calendar.getInstance();
 
-		assertEquals(expected,
-				engine.compileMustache("pretty_cal", "{{now.prettyTime}}")
-						.render(ImmutableMap.<String, Object> of("now", now)));
-		assertEquals(
-				expected,
-				engine.compileMustache("pretty_date", "{{now.prettyTime}}")
-						.render(ImmutableMap.<String, Object> of("now",
-								now.getTime())));
-		assertEquals(
-				expected,
-				engine.compileMustache("pretty_long", "{{now.prettyTime}}")
-						.render(ImmutableMap.<String, Object> of("now",
-								now.getTimeInMillis())));
-	}
+        assertEquals(expected,
+                engine.compileMustache("pretty_cal", "{{now.prettyTime}}")
+                        .render(ImmutableMap.<String, Object> of("now", now)));
+        assertEquals(
+                expected,
+                engine.compileMustache("pretty_date", "{{now.prettyTime}}")
+                        .render(ImmutableMap.<String, Object> of("now",
+                                now.getTime())));
+        assertEquals(
+                expected,
+                engine.compileMustache("pretty_long", "{{now.prettyTime}}")
+                        .render(ImmutableMap.<String, Object> of("now",
+                                now.getTimeInMillis())));
+    }
 
-	@Test
-	public void testCustomMatchName() {
+    @Test
+    public void testCustomMatchName() {
 
-		PrettyTimeResolver resolver = new PrettyTimeResolver();
+        PrettyTimeResolver resolver = new PrettyTimeResolver();
 
-		// Just to init the resolver
-		MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
-				.setLocaleSupport(new LocaleSupport() {
+        // Just to init the resolver
+        MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(new LocaleSupport() {
 
-					@Override
-					public Locale getCurrentLocale() {
-						return Locale.ENGLISH;
-					}
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return Locale.ENGLISH;
+                    }
 
-					@Override
-					public void init(Configuration configuration) {
-					}
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
 
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return Collections.emptySet();
-					}
-				}).addResolver(resolver)
-				.setProperty(PrettyTimeResolver.MATCH_NAME_KEY, "pretty")
-				.build();
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(resolver)
+                .setProperty(PrettyTimeResolver.MATCH_NAME_KEY, "pretty")
+                .build();
 
-		assertNull(resolver.resolve(null, "pretty", null));
-		assertNull(resolver.resolve("foo", "pretty", null));
-		assertNotNull(resolver.resolve(new Date(), "pretty", null));
-	}
+        assertNull(resolver.resolve(null, "pretty", null));
+        assertNull(resolver.resolve("foo", "pretty", null));
+        assertNotNull(resolver.resolve(new Date(), "pretty", null));
+    }
 
 }

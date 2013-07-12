@@ -21,36 +21,36 @@ package org.trimou.engine.config;
  */
 public class SimpleConfigurationKey implements ConfigurationKey {
 
-	private String key;
+    private String key;
 
-	private Object defaultValue;
+    private Object defaultValue;
 
-	/**
-	 *
-	 * @param key
-	 * @param defaultValue
-	 */
-	public SimpleConfigurationKey(String key, Object defaultValue) {
-		super();
-		this.key = key;
-		this.defaultValue = defaultValue;
-	}
+    /**
+     *
+     * @param key
+     * @param defaultValue
+     */
+    public SimpleConfigurationKey(String key, Object defaultValue) {
+        super();
+        this.key = key;
+        this.defaultValue = defaultValue;
+    }
 
-	@Override
-	public String get() {
-		return key;
-	}
+    @Override
+    public String get() {
+        return key;
+    }
 
-	@Override
-	public Object getDefaultValue() {
-		return defaultValue;
-	}
+    @Override
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
 
-	@Override
-	public String toString() {
-		return String.format(
-				"SimpleConfigurationKey [key:%s, defaultValue: %s]", key,
-				defaultValue);
-	}
+    @Override
+    public String toString() {
+        return String.format(
+                "SimpleConfigurationKey [key:%s, defaultValue: %s]", key,
+                defaultValue);
+    }
 
 }

@@ -26,23 +26,23 @@ import org.trimou.engine.context.ExecutionContext;
 @Internal
 public class LineSeparatorSegment extends AbstractSegment {
 
-	public LineSeparatorSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public LineSeparatorSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.LINE_SEPARATOR;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.LINE_SEPARATOR;
+    }
 
-	@Override
-	public void execute(Appendable appendable, ExecutionContext context) {
-		append(appendable, getText());
-	}
+    @Override
+    public void execute(Appendable appendable, ExecutionContext context) {
+        append(appendable, getText());
+    }
 
-	@Override
-	public String getLiteralBlock() {
-		return getText();
-	}
+    @Override
+    public String getLiteralBlock() {
+        return getText();
+    }
 
 }

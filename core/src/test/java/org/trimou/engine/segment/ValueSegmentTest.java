@@ -22,50 +22,50 @@ import com.google.common.collect.ImmutableMap;
  */
 public class ValueSegmentTest extends AbstractEngineTest {
 
-	@Before
-	public void buildEngine() {
-	}
+    @Before
+    public void buildEngine() {
+    }
 
-	@Test
-	public void testNoValueProblem() {
-		try {
-			MustacheEngineBuilder
-					.newBuilder()
-					.setProperty(
-							EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM,
-							true).build()
-					.compileMustache("value_segment_problem", "{{foo}}")
-					.render(null);
-		} catch (MustacheException e) {
-			if (!e.getCode().equals(MustacheProblem.RENDER_NO_VALUE)) {
-				fail("Invalid problem");
-			}
-			System.out.println(e.getMessage());
-		}
-	}
+    @Test
+    public void testNoValueProblem() {
+        try {
+            MustacheEngineBuilder
+                    .newBuilder()
+                    .setProperty(
+                            EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM,
+                            true).build()
+                    .compileMustache("value_segment_problem", "{{foo}}")
+                    .render(null);
+        } catch (MustacheException e) {
+            if (!e.getCode().equals(MustacheProblem.RENDER_NO_VALUE)) {
+                fail("Invalid problem");
+            }
+            System.out.println(e.getMessage());
+        }
+    }
 
-	@Test
-	public void testLambda() {
-		Lambda lambda = new InputProcessingLambda() {
-			@Override
-			public String invoke(String text) {
-				assertNull(text);
-				return "ok";
-			}
+    @Test
+    public void testLambda() {
+        Lambda lambda = new InputProcessingLambda() {
+            @Override
+            public String invoke(String text) {
+                assertNull(text);
+                return "ok";
+            }
 
-			@Override
-			public boolean isReturnValueInterpolated() {
-				return true;
-			}
-		};
-		assertEquals(
-				"ok",
-				MustacheEngineBuilder
-						.newBuilder()
-						.build()
-						.compileMustache("value_segment_lambda", "{{lambda}}")
-						.render(ImmutableMap.<String, Object> of("lambda",
-								lambda)));
-	}
+            @Override
+            public boolean isReturnValueInterpolated() {
+                return true;
+            }
+        };
+        assertEquals(
+                "ok",
+                MustacheEngineBuilder
+                        .newBuilder()
+                        .build()
+                        .compileMustache("value_segment_lambda", "{{lambda}}")
+                        .render(ImmutableMap.<String, Object> of("lambda",
+                                lambda)));
+    }
 
 }

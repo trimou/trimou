@@ -28,52 +28,53 @@ import org.trimou.engine.segment.ExtendSectionSegment;
  */
 class DebugExecutionContext extends DefaultExecutionContext {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(DebugExecutionContext.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(DebugExecutionContext.class);
 
-	public DebugExecutionContext(Configuration configuration) {
-		super(configuration);
-	}
+    public DebugExecutionContext(Configuration configuration) {
+        super(configuration);
+    }
 
-	@Override
-	public void push(TargetStack stack, Object baseObject) {
-		super.push(stack, baseObject);
-		logger.debug("Push [type: {}, stack: {}]", baseObject.getClass(),
-				contextObjectStack.size());
-	}
+    @Override
+    public void push(TargetStack stack, Object baseObject) {
+        super.push(stack, baseObject);
+        logger.debug("Push [type: {}, stack: {}]", baseObject.getClass(),
+                contextObjectStack.size());
+    }
 
-	@Override
-	public Object pop(TargetStack stack) {
-		Object object = super.pop(stack);
-		logger.debug("Pop [type: {}, stack: {}]", object.getClass(),
-				contextObjectStack.size());
-		return object;
-	}
+    @Override
+    public Object pop(TargetStack stack) {
+        Object object = super.pop(stack);
+        logger.debug("Pop [type: {}, stack: {}]", object.getClass(),
+                contextObjectStack.size());
+        return object;
+    }
 
-	@Override
-	public void addDefiningSection(String name, ExtendSectionSegment segment) {
-		super.addDefiningSection(name, segment);
-		logger.debug("Extend section set [name: {}]", name);
-	}
+    @Override
+    public void addDefiningSection(String name, ExtendSectionSegment segment) {
+        super.addDefiningSection(name, segment);
+        logger.debug("Extend section set [name: {}]", name);
+    }
 
-	/**
-	 *
-	 * @param contextObject
-	 * @param key
-	 * @return the resolved object
-	 */
-	protected Object resolve(Object contextObject, String key, ResolutionContext context) {
+    /**
+     *
+     * @param contextObject
+     * @param key
+     * @return the resolved object
+     */
+    protected Object resolve(Object contextObject, String key,
+            ResolutionContext context) {
 
-		Object value = null;
+        Object value = null;
 
-		for (Resolver resolver : configuration.getResolvers()) {
-			value = resolver.resolve(contextObject, key, context);
-			if (value != null) {
-				logger.debug("Value found [key: {}, resolver: {}]", key,
-						resolver.getClass());
-				break;
-			}
-		}
-		return value;
-	}
+        for (Resolver resolver : configuration.getResolvers()) {
+            value = resolver.resolve(contextObject, key, context);
+            if (value != null) {
+                logger.debug("Value found [key: {}, resolver: {}]", key,
+                        resolver.getClass());
+                break;
+            }
+        }
+        return value;
+    }
 }

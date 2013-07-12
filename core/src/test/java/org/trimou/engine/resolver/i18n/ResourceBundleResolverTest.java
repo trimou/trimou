@@ -21,33 +21,35 @@ import org.trimou.engine.locale.LocaleSupport;
  */
 public class ResourceBundleResolverTest extends AbstractEngineTest {
 
-	@Override
-	@Before
-	public void buildEngine() {
-		engine = MustacheEngineBuilder.newBuilder()
-				.setLocaleSupport(new LocaleSupport() {
-					@Override
-					public Locale getCurrentLocale() {
-						return new Locale("en");
-					}
-					@Override
-					public void init(Configuration configuration) {
-					}
-					@Override
-					public Set<ConfigurationKey> getConfigurationKeys() {
-						return Collections.emptySet();
-					}
-				}).addResolver(new ResourceBundleResolver("messages")).build();
+    @Override
+    @Before
+    public void buildEngine() {
+        engine = MustacheEngineBuilder.newBuilder()
+                .setLocaleSupport(new LocaleSupport() {
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return new Locale("en");
+                    }
 
-	}
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
 
-	@Test
-	public void testInterpolation() {
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(new ResourceBundleResolver("messages")).build();
 
-		String templateContents = "{{messages.echo_one}}";
-		Mustache mustache = engine.compileMustache("bundle", templateContents);
+    }
 
-		assertEquals("Hello", mustache.render(null));
-	}
+    @Test
+    public void testInterpolation() {
+
+        String templateContents = "{{messages.echo_one}}";
+        Mustache mustache = engine.compileMustache("bundle", templateContents);
+
+        assertEquals("Hello", mustache.render(null));
+    }
 
 }

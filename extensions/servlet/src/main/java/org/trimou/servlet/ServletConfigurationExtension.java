@@ -24,9 +24,9 @@ import org.trimou.servlet.resolver.HttpServletRequestResolver;
  */
 public class ServletConfigurationExtension implements ConfigurationExtension {
 
-	@Override
-	public void register(ConfigurationExtensionBuilder builder) {
-		builder.addResolver(new HttpServletRequestResolver());
-	}
+    @Override
+    public void register(ConfigurationExtensionBuilder builder) {
+        builder.addResolver(new HttpServletRequestResolver());
+    }
 
 }

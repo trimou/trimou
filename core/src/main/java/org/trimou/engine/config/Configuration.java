@@ -34,65 +34,65 @@ import org.trimou.engine.text.TextSupport;
 @Internal
 public interface Configuration {
 
-	/**
-	 * @return the ordered immutable list of resolvers, or <code>null</code> if
-	 *         no resolvers defined
-	 */
-	public List<Resolver> getResolvers();
+    /**
+     * @return the ordered immutable list of resolvers, or <code>null</code> if
+     *         no resolvers defined
+     */
+    public List<Resolver> getResolvers();
 
-	/**
-	 * @return the immutable map of global values, or <code>null</code> if no
-	 *         global values defined
-	 */
-	public Map<String, Object> getGlobalData();
+    /**
+     * @return the immutable map of global values, or <code>null</code> if no
+     *         global values defined
+     */
+    public Map<String, Object> getGlobalData();
 
-	/**
-	 * @return the ordered immutable list of template locators, or <code>null</code> if
-	 *         no template locators defined
-	 */
-	public List<TemplateLocator> getTemplateLocators();
+    /**
+     * @return the ordered immutable list of template locators, or
+     *         <code>null</code> if no template locators defined
+     */
+    public List<TemplateLocator> getTemplateLocators();
 
-	/**
-	 * @return the text support implementation
-	 */
-	public TextSupport getTextSupport();
+    /**
+     * @return the text support implementation
+     */
+    public TextSupport getTextSupport();
 
-	/**
-	 * @return the locale support implementation
-	 */
-	public LocaleSupport getLocaleSupport();
+    /**
+     * @return the locale support implementation
+     */
+    public LocaleSupport getLocaleSupport();
 
-	/**
-	 * @return the immutable list of {@link Mustache} listeners
-	 */
-	public List<MustacheListener> getMustacheListeners();
+    /**
+     * @return the immutable list of {@link Mustache} listeners
+     */
+    public List<MustacheListener> getMustacheListeners();
 
-	/**
-	 *
-	 * @param configurationKey
-	 * @return the property value for the given key
-	 */
-	public Long getLongPropertyValue(ConfigurationKey configurationKey);
+    /**
+     *
+     * @param configurationKey
+     * @return the property value for the given key
+     */
+    public Long getLongPropertyValue(ConfigurationKey configurationKey);
 
-	/**
-	 *
-	 * @param configurationKey
-	 * @return the property value for the given key
-	 */
-	public Integer getIntegerPropertyValue(ConfigurationKey configurationKey);
+    /**
+     *
+     * @param configurationKey
+     * @return the property value for the given key
+     */
+    public Integer getIntegerPropertyValue(ConfigurationKey configurationKey);
 
-	/**
-	 *
-	 * @param configurationKey
-	 * @return the property value for the given key
-	 */
-	public String getStringPropertyValue(ConfigurationKey configurationKey);
+    /**
+     *
+     * @param configurationKey
+     * @return the property value for the given key
+     */
+    public String getStringPropertyValue(ConfigurationKey configurationKey);
 
-	/**
-	 *
-	 * @param configurationKey
-	 * @return the property value for the given key
-	 */
-	public Boolean getBooleanPropertyValue(ConfigurationKey configurationKey);
+    /**
+     *
+     * @param configurationKey
+     * @return the property value for the given key
+     */
+    public Boolean getBooleanPropertyValue(ConfigurationKey configurationKey);
 
 }

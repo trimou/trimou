@@ -9,12 +9,12 @@ import org.trimou.annotations.Internal;
 @Internal
 public class TextSupportFactory {
 
-	/**
-	 *
-	 * @return the default text support
-	 */
-	public TextSupport createTextSupport() {
-		return new DefaultTextSupport();
-	}
+    /**
+     *
+     * @return the default text support
+     */
+    public TextSupport createTextSupport() {
+        return new DefaultTextSupport();
+    }
 
 }

@@ -12,26 +12,26 @@ import javax.inject.Named;
 @Dependent
 public class Delta {
 
-	public static List<Long> destructions = new ArrayList<Long>();
+    public static List<Long> destructions = new ArrayList<Long>();
 
-	private long createdAt;
+    private long createdAt;
 
-	@PostConstruct
-	public void init() {
-		createdAt = System.nanoTime();
-	}
+    @PostConstruct
+    public void init() {
+        createdAt = System.nanoTime();
+    }
 
-	public long getCreatedAt() {
-		return createdAt;
-	}
+    public long getCreatedAt() {
+        return createdAt;
+    }
 
-	@PreDestroy
-	public void destroy() {
-		destructions.add(createdAt);
-	}
+    @PreDestroy
+    public void destroy() {
+        destructions.add(createdAt);
+    }
 
-	public static void reset() {
-		destructions.clear();
-	}
+    public static void reset() {
+        destructions.clear();
+    }
 
 }

@@ -24,42 +24,37 @@ import org.trimou.engine.MustacheTagType;
 @Internal
 public enum SegmentType {
 
-	TEMPLATE(null),
-	VALUE(MustacheTagType.VARIABLE),
-	TEXT(null),
-	SECTION(MustacheTagType.SECTION),
-	INVERTED_SECTION(MustacheTagType.INVERTED_SECTION),
-	COMMENT(MustacheTagType.COMMENT),
-	LINE_SEPARATOR(null),
-	DELIMITERS(MustacheTagType.DELIMITER),
-	PARTIAL(MustacheTagType.PARTIAL),
-	// Spec extensions
-	EXTEND(MustacheTagType.EXTEND),
-	EXTEND_SECTION(MustacheTagType.EXTEND_SECTION)
-	;
+    TEMPLATE(null), VALUE(MustacheTagType.VARIABLE), TEXT(null), SECTION(
+            MustacheTagType.SECTION), INVERTED_SECTION(
+            MustacheTagType.INVERTED_SECTION), COMMENT(MustacheTagType.COMMENT), LINE_SEPARATOR(
+            null), DELIMITERS(MustacheTagType.DELIMITER), PARTIAL(
+            MustacheTagType.PARTIAL),
+    // Spec extensions
+    EXTEND(MustacheTagType.EXTEND), EXTEND_SECTION(
+            MustacheTagType.EXTEND_SECTION);
 
-	private MustacheTagType tagType;
+    private MustacheTagType tagType;
 
-	SegmentType(MustacheTagType tagType) {
-		this.tagType = tagType;
-	}
+    SegmentType(MustacheTagType tagType) {
+        this.tagType = tagType;
+    }
 
-	/**
-	 * @return the corresponding tag type or <code>null</code>
-	 */
-	MustacheTagType getTagType() {
-		return tagType;
-	}
+    /**
+     * @return the corresponding tag type or <code>null</code>
+     */
+    MustacheTagType getTagType() {
+        return tagType;
+    }
 
-	public boolean isStandaloneCandidate() {
-		return this.equals(COMMENT) || this.equals(SECTION)
-				|| this.equals(INVERTED_SECTION) || this.equals(DELIMITERS)
-				|| this.equals(PARTIAL);
-	}
+    public boolean isStandaloneCandidate() {
+        return this.equals(COMMENT) || this.equals(SECTION)
+                || this.equals(INVERTED_SECTION) || this.equals(DELIMITERS)
+                || this.equals(PARTIAL);
+    }
 
-	public boolean hasName() {
-		return this.equals(SECTION) || this.equals(INVERTED_SECTION)
-				|| this.equals(PARTIAL) || this.equals(VALUE);
-	}
+    public boolean hasName() {
+        return this.equals(SECTION) || this.equals(INVERTED_SECTION)
+                || this.equals(PARTIAL) || this.equals(VALUE);
+    }
 
 }

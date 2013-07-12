@@ -31,55 +31,54 @@ import org.trimou.engine.context.ExecutionContext.TargetStack;
 @Internal
 public class ExecutionContextBuilder {
 
-	private final MustacheEngine engine;
+    private final MustacheEngine engine;
 
-	private Map<String, Object> data;
+    private Map<String, Object> data;
 
-	/**
-	 *
-	 * @param engine
-	 */
-	public ExecutionContextBuilder(MustacheEngine engine) {
-		this.engine = engine;
-	}
+    /**
+     *
+     * @param engine
+     */
+    public ExecutionContextBuilder(MustacheEngine engine) {
+        this.engine = engine;
+    }
 
-	/**
-	 *
-	 * @param data
-	 * @return self
-	 */
-	public ExecutionContextBuilder withData(Map<String, Object> data) {
-		this.data = data;
-		return this;
-	}
+    /**
+     *
+     * @param data
+     * @return self
+     */
+    public ExecutionContextBuilder withData(Map<String, Object> data) {
+        this.data = data;
+        return this;
+    }
 
-	/**
-	 *
-	 * @return the built execution context
-	 */
-	public ExecutionContext build() {
+    /**
+     *
+     * @return the built execution context
+     */
+    public ExecutionContext build() {
 
-		ExecutionContext context = null;
+        ExecutionContext context = null;
 
-		if (engine.getConfiguration().getBooleanPropertyValue(
-				DEBUG_MODE)) {
-			context = new DebugExecutionContext(engine.getConfiguration());
-		} else {
-			context = new DefaultExecutionContext(engine.getConfiguration());
-		}
+        if (engine.getConfiguration().getBooleanPropertyValue(DEBUG_MODE)) {
+            context = new DebugExecutionContext(engine.getConfiguration());
+        } else {
+            context = new DefaultExecutionContext(engine.getConfiguration());
+        }
 
-		Map<String, Object> contextData = new HashMap<String, Object>();
+        Map<String, Object> contextData = new HashMap<String, Object>();
 
-		if (engine.getConfiguration().getGlobalData() != null) {
-			contextData.putAll(engine.getConfiguration().getGlobalData());
-		}
-		if (data != null) {
-			contextData.putAll(data);
-		}
-		if (!contextData.isEmpty()) {
-			context.push(TargetStack.CONTEXT, contextData);
-		}
-		return context;
-	}
+        if (engine.getConfiguration().getGlobalData() != null) {
+            contextData.putAll(engine.getConfiguration().getGlobalData());
+        }
+        if (data != null) {
+            contextData.putAll(data);
+        }
+        if (!contextData.isEmpty()) {
+            context.push(TargetStack.CONTEXT, contextData);
+        }
+        return context;
+    }
 
 }

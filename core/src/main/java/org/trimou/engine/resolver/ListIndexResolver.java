@@ -19,7 +19,6 @@ import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.List;
 
-
 /**
  * Resolve index-based access to lists.
  *
@@ -31,29 +30,30 @@ import java.util.List;
  */
 public class ListIndexResolver extends IndexResolver {
 
-	public static final int LIST_RESOLVER_PRIORITY = after(MapResolver.MAP_RESOLVER_PRIORITY);
+    public static final int LIST_RESOLVER_PRIORITY = after(MapResolver.MAP_RESOLVER_PRIORITY);
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null || notAnIndex(name)
-				|| !(contextObject instanceof List)) {
-			return null;
-		}
+        if (contextObject == null || notAnIndex(name)
+                || !(contextObject instanceof List)) {
+            return null;
+        }
 
-		List list = (List) contextObject;
-		Integer index = getIndexValue(name, list.size());
+        List list = (List) contextObject;
+        Integer index = getIndexValue(name, list.size());
 
-		if (index != null) {
-			return list.get(index);
-		}
-		return null;
-	}
+        if (index != null) {
+            return list.get(index);
+        }
+        return null;
+    }
 
-	@Override
-	public int getPriority() {
-		return LIST_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return LIST_RESOLVER_PRIORITY;
+    }
 
 }

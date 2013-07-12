@@ -23,48 +23,50 @@ import org.trimou.engine.config.EngineConfigurationKey;
  */
 class Delimiters {
 
-	private String start;
-	private String end;
+    private String start;
+    private String end;
 
-	Delimiters(String startDelimiter, String endDelimiter) {
-		reset(startDelimiter, endDelimiter);
-	}
+    Delimiters(String startDelimiter, String endDelimiter) {
+        reset(startDelimiter, endDelimiter);
+    }
 
-	protected void setNewValues(String startDelimiter, String endDelimiter) {
-		reset(startDelimiter, endDelimiter);
-	}
+    protected void setNewValues(String startDelimiter, String endDelimiter) {
+        reset(startDelimiter, endDelimiter);
+    }
 
-	private void reset(String startDelimiter, String endDelimiter) {
-		start = startDelimiter;
-		end = endDelimiter;
-	}
+    private void reset(String startDelimiter, String endDelimiter) {
+        start = startDelimiter;
+        end = endDelimiter;
+    }
 
-	public char getStart(int index) {
-		return start.charAt(index);
-	}
+    public char getStart(int index) {
+        return start.charAt(index);
+    }
 
-	public boolean isStartOver(int index) {
-		return index == (start.length() - 1);
-	}
+    public boolean isStartOver(int index) {
+        return index == (start.length() - 1);
+    }
 
-	public String getStartPart(int index) {
-		return start.substring(0, index + 1);
-	}
+    public String getStartPart(int index) {
+        return start.substring(0, index + 1);
+    }
 
-	public char getEnd(int index) {
-		return end.charAt(index);
-	}
+    public char getEnd(int index) {
+        return end.charAt(index);
+    }
 
-	public boolean isEndOver(int index) {
-		return index == (end.length() - 1);
-	}
+    public boolean isEndOver(int index) {
+        return index == (end.length() - 1);
+    }
 
-	public String getEndPart(int index) {
-		return end.substring(0, index + 1);
-	}
+    public String getEndPart(int index) {
+        return end.substring(0, index + 1);
+    }
 
-	public boolean hasDefaultDelimitersSet() {
-		return EngineConfigurationKey.START_DELIMITER.getDefaultValue().equals(start)
-				&& EngineConfigurationKey.END_DELIMITER.getDefaultValue().equals(end);
-	}
+    public boolean hasDefaultDelimitersSet() {
+        return EngineConfigurationKey.START_DELIMITER.getDefaultValue().equals(
+                start)
+                && EngineConfigurationKey.END_DELIMITER.getDefaultValue()
+                        .equals(end);
+    }
 }

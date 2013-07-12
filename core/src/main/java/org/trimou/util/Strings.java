@@ -24,22 +24,22 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class Strings {
 
-	public static final String EMPTY = "";
+    public static final String EMPTY = "";
 
-	public static final String GAP = " ";
+    public static final String GAP = " ";
 
-	public static final String LINE_SEPARATOR = System
-			.getProperty("line.separator");
+    public static final String LINE_SEPARATOR = System
+            .getProperty("line.separator");
 
-	public static final String LINUX_LINE_SEPARATOR = "\n";
+    public static final String LINUX_LINE_SEPARATOR = "\n";
 
-	public static final String WINDOWS_LINE_SEPARATOR = "\r\n";
+    public static final String WINDOWS_LINE_SEPARATOR = "\r\n";
 
-	public static final String SLASH = "/";
+    public static final String SLASH = "/";
 
-	public static final String FILE_SEPARATOR = System
-			.getProperty("file.separator");
+    public static final String FILE_SEPARATOR = System
+            .getProperty("file.separator");
 
-	public static final String KEY_SEPARATOR = ".";
+    public static final String KEY_SEPARATOR = ".";
 
 }

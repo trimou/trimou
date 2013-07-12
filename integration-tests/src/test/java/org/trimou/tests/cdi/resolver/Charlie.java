@@ -9,7 +9,6 @@ import javax.inject.Named;
 @SessionScoped
 public class Charlie extends BeanWithId implements Serializable {
 
-	private static final long serialVersionUID = 1854401872473617346L;
-
+    private static final long serialVersionUID = 1854401872473617346L;
 
 }

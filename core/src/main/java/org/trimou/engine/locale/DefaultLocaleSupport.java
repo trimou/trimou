@@ -25,11 +25,11 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  * @author Martin Kouba
  */
 class DefaultLocaleSupport extends AbstractConfigurationAware implements
-		LocaleSupport {
+        LocaleSupport {
 
-	@Override
-	public Locale getCurrentLocale() {
-		return Locale.getDefault();
-	}
+    @Override
+    public Locale getCurrentLocale() {
+        return Locale.getDefault();
+    }
 
 }

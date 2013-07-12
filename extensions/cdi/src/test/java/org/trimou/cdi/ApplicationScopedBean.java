@@ -7,8 +7,8 @@ import javax.inject.Named;
 @Named("appScopedBean")
 public class ApplicationScopedBean {
 
-	public String getName() {
-		return "foo";
-	}
+    public String getName() {
+        return "foo";
+    }
 
 }

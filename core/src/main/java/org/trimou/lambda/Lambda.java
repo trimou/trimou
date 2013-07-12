@@ -22,43 +22,43 @@ package org.trimou.lambda;
  */
 public interface Lambda {
 
-	/**
-	 * @param text
-	 *            The section contents (unprocessed or processed - depends on
-	 *            the input type) in case of section tag, <code>null</code> in
-	 *            case of variable tag
-	 * @return the return value
-	 * @see InputType
-	 * @see #isReturnValueInterpolated()
-	 */
-	public String invoke(String text);
+    /**
+     * @param text
+     *            The section contents (unprocessed or processed - depends on
+     *            the input type) in case of section tag, <code>null</code> in
+     *            case of variable tag
+     * @return the return value
+     * @see InputType
+     * @see #isReturnValueInterpolated()
+     */
+    public String invoke(String text);
 
-	/**
-	 * @return the text input type
-	 */
-	public InputType getInputType();
+    /**
+     * @return the text input type
+     */
+    public InputType getInputType();
 
-	/**
-	 * @return <code>true</code> if the return value should be parsed and
-	 *         interpolated, <code>false</code> otherwise
-	 */
-	public boolean isReturnValueInterpolated();
+    /**
+     * @return <code>true</code> if the return value should be parsed and
+     *         interpolated, <code>false</code> otherwise
+     */
+    public boolean isReturnValueInterpolated();
 
-	/**
-	 *
-	 */
-	public enum InputType {
+    /**
+     *
+     */
+    public enum InputType {
 
-		/**
-		 * The text passed is (almost) the original literal block - complies
-		 * with the spec.
-		 */
-		LITERAL,
-		/**
-		 * The text passed is processed/rendered before invocation.
-		 */
-		PROCESSED,
+        /**
+         * The text passed is (almost) the original literal block - complies
+         * with the spec.
+         */
+        LITERAL,
+        /**
+         * The text passed is processed/rendered before invocation.
+         */
+        PROCESSED,
 
-	}
+    }
 
 }

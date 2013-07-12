@@ -38,37 +38,38 @@ import org.trimou.engine.resolver.ResolutionContext;
  */
 public class NumberFormatResolver extends LocaleAwareResolver {
 
-	public static final int NUMBER_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int NUMBER_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
-	private static final String NAME_FORMAT = "format";
+    private static final String NAME_FORMAT = "format";
 
-	private static final String NAME_FORMAT_PERCENT = "formatPercent";
+    private static final String NAME_FORMAT_PERCENT = "formatPercent";
 
-	private static final String NAME_FORMAT_CURR = "formatCurrency";
+    private static final String NAME_FORMAT_CURR = "formatCurrency";
 
-	@Override
-	public Object resolve(Object contextObject, String name, ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject == null || !(contextObject instanceof Number)) {
-			return null;
-		}
+        if (contextObject == null || !(contextObject instanceof Number)) {
+            return null;
+        }
 
-		if (NAME_FORMAT.equals(name)) {
-			return NumberFormat.getNumberInstance(
-					localeSupport.getCurrentLocale()).format(contextObject);
-		} else if (NAME_FORMAT_PERCENT.equals(name)) {
-			return NumberFormat.getPercentInstance(
-					localeSupport.getCurrentLocale()).format(contextObject);
-		} else if (NAME_FORMAT_CURR.equals(name)) {
-			return NumberFormat.getCurrencyInstance(
-					localeSupport.getCurrentLocale()).format(contextObject);
-		}
-		return null;
-	}
+        if (NAME_FORMAT.equals(name)) {
+            return NumberFormat.getNumberInstance(
+                    localeSupport.getCurrentLocale()).format(contextObject);
+        } else if (NAME_FORMAT_PERCENT.equals(name)) {
+            return NumberFormat.getPercentInstance(
+                    localeSupport.getCurrentLocale()).format(contextObject);
+        } else if (NAME_FORMAT_CURR.equals(name)) {
+            return NumberFormat.getCurrencyInstance(
+                    localeSupport.getCurrentLocale()).format(contextObject);
+        }
+        return null;
+    }
 
-	@Override
-	public int getPriority() {
-		return NUMBER_FORMAT_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return NUMBER_FORMAT_RESOLVER_PRIORITY;
+    }
 
 }

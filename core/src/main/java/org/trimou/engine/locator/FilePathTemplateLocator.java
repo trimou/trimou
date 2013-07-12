@@ -36,161 +36,161 @@ import org.trimou.exception.MustacheProblem;
  */
 public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FilePathTemplateLocator.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(FilePathTemplateLocator.class);
 
-	/**
-	 *
-	 * @param priority
-	 * @param rootPath
-	 * @param suffix
-	 */
-	public FilePathTemplateLocator(int priority, String rootPath, String suffix) {
-		super(priority, rootPath, suffix);
-	}
+    /**
+     *
+     * @param priority
+     * @param rootPath
+     * @param suffix
+     */
+    public FilePathTemplateLocator(int priority, String rootPath, String suffix) {
+        super(priority, rootPath, suffix);
+    }
 
-	/**
-	 *
-	 * @param priority
-	 * @param rootPath
-	 */
-	public FilePathTemplateLocator(int priority, String rootPath) {
-		super(priority, rootPath);
-	}
+    /**
+     *
+     * @param priority
+     * @param rootPath
+     */
+    public FilePathTemplateLocator(int priority, String rootPath) {
+        super(priority, rootPath);
+    }
 
-	@Override
-	public Reader locate(String filePath) {
-		return locateRealPath(toRealPath(filePath));
-	}
+    @Override
+    public Reader locate(String filePath) {
+        return locateRealPath(toRealPath(filePath));
+    }
 
-	@Override
-	public Set<String> getAllIdentifiers() {
+    @Override
+    public Set<String> getAllIdentifiers() {
 
-		List<File> files = listFiles(getRootDir());
+        List<File> files = listFiles(getRootDir());
 
-		if (files.isEmpty()) {
-			return Collections.emptySet();
-		}
+        if (files.isEmpty()) {
+            return Collections.emptySet();
+        }
 
-		Set<String> identifiers = new HashSet<String>();
-		for (File file : files) {
-			if (isFileUsable(file)) {
-				String id = stripSuffix(constructVirtualPath(file));
-				identifiers.add(id);
-				logger.debug("Template available: {}", id);
-			}
-		}
-		return identifiers;
-	}
+        Set<String> identifiers = new HashSet<String>();
+        for (File file : files) {
+            if (isFileUsable(file)) {
+                String id = stripSuffix(constructVirtualPath(file));
+                identifiers.add(id);
+                logger.debug("Template available: {}", id);
+            }
+        }
+        return identifiers;
+    }
 
-	@Override
-	protected String constructVirtualPath(File source) {
+    @Override
+    protected String constructVirtualPath(File source) {
 
-		File rootDir = getRootDir();
-		File parent = source.getParentFile();
-		List<String> parts = new ArrayList<String>();
+        File rootDir = getRootDir();
+        File parent = source.getParentFile();
+        List<String> parts = new ArrayList<String>();
 
-		if (parent == null) {
-			throw new IllegalStateException(
-					"Unable to construct virtual path - no parent directory found");
-		}
-		parts.add(source.getName());
+        if (parent == null) {
+            throw new IllegalStateException(
+                    "Unable to construct virtual path - no parent directory found");
+        }
+        parts.add(source.getName());
 
-		while (!rootDir.equals(parent)) {
-			parts.add(parent.getName());
-			parent = parent.getParentFile();
-		}
+        while (!rootDir.equals(parent)) {
+            parts.add(parent.getName());
+            parent = parent.getParentFile();
+        }
 
-		Collections.reverse(parts);
-		StringBuilder name = new StringBuilder();
-		for (Iterator<String> iterator = parts.iterator(); iterator.hasNext();) {
-			name.append(iterator.next());
-			if (iterator.hasNext()) {
-				name.append(getVirtualPathSeparator());
-			}
-		}
-		return name.toString();
-	}
+        Collections.reverse(parts);
+        StringBuilder name = new StringBuilder();
+        for (Iterator<String> iterator = parts.iterator(); iterator.hasNext();) {
+            name.append(iterator.next());
+            if (iterator.hasNext()) {
+                name.append(getVirtualPathSeparator());
+            }
+        }
+        return name.toString();
+    }
 
-	/**
-	 *
-	 * @return the root directory
-	 * @see PathTemplateLocator#getRootPath()
-	 */
-	protected abstract File getRootDir();
+    /**
+     *
+     * @return the root directory
+     * @see PathTemplateLocator#getRootPath()
+     */
+    protected abstract File getRootDir();
 
-	/**
-	 *
-	 * @param realPath
-	 * @return the reader for the given path
-	 */
-	protected abstract Reader locateRealPath(String realPath);
+    /**
+     *
+     * @param realPath
+     * @return the reader for the given path
+     */
+    protected abstract Reader locateRealPath(String realPath);
 
-	/**
-	 *
-	 * @param dir
-	 * @return the list of matching files/templates
-	 */
-	protected List<File> listFiles(File dir) {
+    /**
+     *
+     * @param dir
+     * @return the list of matching files/templates
+     */
+    protected List<File> listFiles(File dir) {
 
-		List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<File>();
 
-		if (dir.isDirectory()) {
+        if (dir.isDirectory()) {
 
-			for (File file : dir.listFiles()) {
-				if (file.isDirectory()) {
-					files.addAll(listFiles(file));
-				} else if (file.isFile()) {
-					if (getSuffix() != null
-							&& !file.getName().endsWith(getSuffix())) {
-						continue;
-					}
-					files.add(file);
-				}
-			}
-		}
-		return files;
-	}
+            for (File file : dir.listFiles()) {
+                if (file.isDirectory()) {
+                    files.addAll(listFiles(file));
+                } else if (file.isFile()) {
+                    if (getSuffix() != null
+                            && !file.getName().endsWith(getSuffix())) {
+                        continue;
+                    }
+                    files.add(file);
+                }
+            }
+        }
+        return files;
+    }
 
-	protected boolean isDirectoryUsable(File dir) {
-		if (!dir.exists()) {
-			logger.warn("Dir not usable - does not exist: {}", dir);
-			return false;
-		}
-		if (!dir.canRead()) {
-			logger.warn("Dir not usable - cannot read: {}", dir);
-			return false;
-		}
-		if (!dir.isDirectory()) {
-			logger.warn("Dir not usable - not a directory: {}", dir);
-			return false;
-		}
-		return true;
-	}
+    protected boolean isDirectoryUsable(File dir) {
+        if (!dir.exists()) {
+            logger.warn("Dir not usable - does not exist: {}", dir);
+            return false;
+        }
+        if (!dir.canRead()) {
+            logger.warn("Dir not usable - cannot read: {}", dir);
+            return false;
+        }
+        if (!dir.isDirectory()) {
+            logger.warn("Dir not usable - not a directory: {}", dir);
+            return false;
+        }
+        return true;
+    }
 
-	protected boolean isFileUsable(File file) {
-		if (!file.exists()) {
-			logger.warn("File not usable - does not exist: {}", file);
-			return false;
-		}
-		if (!file.canRead()) {
-			logger.warn("File not usable - cannot read: {}", file);
-			return false;
-		}
-		if (!file.isFile()) {
-			logger.warn("File not usable - not a normal file: {}", file);
-			return false;
-		}
-		return true;
-	}
+    protected boolean isFileUsable(File file) {
+        if (!file.exists()) {
+            logger.warn("File not usable - does not exist: {}", file);
+            return false;
+        }
+        if (!file.canRead()) {
+            logger.warn("File not usable - cannot read: {}", file);
+            return false;
+        }
+        if (!file.isFile()) {
+            logger.warn("File not usable - not a normal file: {}", file);
+            return false;
+        }
+        return true;
+    }
 
-	protected void checkRootDir() {
-		File rootDir = getRootDir();
-		if (!isDirectoryUsable(rootDir)) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-					"Invalid root dir: %s", rootDir);
-		}
-	}
+    protected void checkRootDir() {
+        File rootDir = getRootDir();
+        if (!isDirectoryUsable(rootDir)) {
+            throw new MustacheException(
+                    MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
+                    "Invalid root dir: %s", rootDir);
+        }
+    }
 
 }

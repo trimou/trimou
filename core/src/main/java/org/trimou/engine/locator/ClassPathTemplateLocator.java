@@ -38,87 +38,87 @@ import org.trimou.exception.MustacheProblem;
  */
 public class ClassPathTemplateLocator extends FilePathTemplateLocator {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(ClassPathTemplateLocator.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ClassPathTemplateLocator.class);
 
-	private ClassLoader classLoader;
+    private ClassLoader classLoader;
 
-	/**
-	 *
-	 * @param priority
-	 * @param rootPath
-	 */
-	public ClassPathTemplateLocator(int priority, String rootPath) {
-		this(priority, rootPath, Thread.currentThread().getContextClassLoader());
-	}
+    /**
+     *
+     * @param priority
+     * @param rootPath
+     */
+    public ClassPathTemplateLocator(int priority, String rootPath) {
+        this(priority, rootPath, Thread.currentThread().getContextClassLoader());
+    }
 
-	/**
-	 *
-	 * @param priority
-	 * @param suffix
-	 * @param rootPath
-	 */
-	public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
-		this(priority, rootPath, suffix, Thread.currentThread()
-				.getContextClassLoader());
-	}
+    /**
+     *
+     * @param priority
+     * @param suffix
+     * @param rootPath
+     */
+    public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
+        this(priority, rootPath, suffix, Thread.currentThread()
+                .getContextClassLoader());
+    }
 
-	/**
-	 *
-	 * @param priority
-	 * @param suffix
-	 * @param rootPathname
-	 * @param classLoader
-	 */
-	private ClassPathTemplateLocator(int priority, String rootPath,
-			String suffix, ClassLoader classLoader) {
-		super(priority, rootPath, suffix);
-		this.classLoader = classLoader;
-		checkRootDir();
-	}
+    /**
+     *
+     * @param priority
+     * @param suffix
+     * @param rootPathname
+     * @param classLoader
+     */
+    private ClassPathTemplateLocator(int priority, String rootPath,
+            String suffix, ClassLoader classLoader) {
+        super(priority, rootPath, suffix);
+        this.classLoader = classLoader;
+        checkRootDir();
+    }
 
-	/**
-	 *
-	 * @param priority
-	 * @param rootPathname
-	 * @param classLoader
-	 */
-	private ClassPathTemplateLocator(int priority, String rootPath,
-			ClassLoader classLoader) {
-		super(priority, rootPath);
-		this.classLoader = classLoader;
-		checkRootDir();
-	}
+    /**
+     *
+     * @param priority
+     * @param rootPathname
+     * @param classLoader
+     */
+    private ClassPathTemplateLocator(int priority, String rootPath,
+            ClassLoader classLoader) {
+        super(priority, rootPath);
+        this.classLoader = classLoader;
+        checkRootDir();
+    }
 
-	@Override
-	public Reader locateRealPath(String realPath) {
-		InputStream in = classLoader.getResourceAsStream(getRootPath()
-				+ addSuffix(realPath));
-		if (in == null) {
-			return null;
-		}
-		logger.debug("Template located: {}", getRootPath() + realPath);
-		return new InputStreamReader(in);
-	}
+    @Override
+    public Reader locateRealPath(String realPath) {
+        InputStream in = classLoader.getResourceAsStream(getRootPath()
+                + addSuffix(realPath));
+        if (in == null) {
+            return null;
+        }
+        logger.debug("Template located: {}", getRootPath() + realPath);
+        return new InputStreamReader(in);
+    }
 
-	@Override
-	protected File getRootDir() {
+    @Override
+    protected File getRootDir() {
 
-		try {
+        try {
 
-			URL url = classLoader.getResource(getRootPath());
+            URL url = classLoader.getResource(getRootPath());
 
-			if (url == null) {
-				throw new MustacheException(
-						MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-						"Root path resource not found: %s", getRootPath());
-			}
-			return new File(URLDecoder.decode(url.getFile(), "UTF-8"));
+            if (url == null) {
+                throw new MustacheException(
+                        MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
+                        "Root path resource not found: %s", getRootPath());
+            }
+            return new File(URLDecoder.decode(url.getFile(), "UTF-8"));
 
-		} catch (UnsupportedEncodingException e) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION, e);
-		}
-	}
+        } catch (UnsupportedEncodingException e) {
+            throw new MustacheException(
+                    MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION, e);
+        }
+    }
 
 }

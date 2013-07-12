@@ -6,11 +6,11 @@ import org.junit.Test;
 
 public class HttpServletRequestResolverTest {
 
-	@Test
-	public void testNulltIsResolved() {
-		HttpServletRequestResolver resolver = new HttpServletRequestResolver();
-		assertNull(resolver.resolve("whatever", "request", null));
-		assertNull(resolver.resolve(null, "foo", null));
-	}
+    @Test
+    public void testNulltIsResolved() {
+        HttpServletRequestResolver resolver = new HttpServletRequestResolver();
+        assertNull(resolver.resolve("whatever", "request", null));
+        assertNull(resolver.resolve(null, "foo", null));
+    }
 
 }

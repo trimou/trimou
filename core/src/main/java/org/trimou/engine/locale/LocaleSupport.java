@@ -26,9 +26,9 @@ import org.trimou.engine.config.ConfigurationAware;
  */
 public interface LocaleSupport extends ConfigurationAware {
 
-	/**
-	 * @return the current locale
-	 */
-	public Locale getCurrentLocale();
+    /**
+     * @return the current locale
+     */
+    public Locale getCurrentLocale();
 
 }

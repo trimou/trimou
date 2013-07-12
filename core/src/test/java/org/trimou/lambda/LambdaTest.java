@@ -17,23 +17,24 @@ import com.google.common.collect.ImmutableMap;
  */
 public class LambdaTest extends AbstractEngineTest {
 
-	@Test
-	public void testReturnValueInterpolated() {
-		Lambda lambda = new InputProcessingLambda() {
-			@Override
-			public String invoke(String text) {
-				return "{{foo}}|{{foo}}";
-			}
-			@Override
-			public boolean isReturnValueInterpolated() {
-				return true;
-			}
-		};
-		assertEquals(
-				"true|true",
-				engine.compileMustache("lambda_return_interpolated",
-						"{{#lambda}}Hello{{/lambda}}").render(
-						ImmutableMap.of("foo", "true", "lambda", lambda)));
-	}
+    @Test
+    public void testReturnValueInterpolated() {
+        Lambda lambda = new InputProcessingLambda() {
+            @Override
+            public String invoke(String text) {
+                return "{{foo}}|{{foo}}";
+            }
+
+            @Override
+            public boolean isReturnValueInterpolated() {
+                return true;
+            }
+        };
+        assertEquals(
+                "true|true",
+                engine.compileMustache("lambda_return_interpolated",
+                        "{{#lambda}}Hello{{/lambda}}").render(
+                        ImmutableMap.of("foo", "true", "lambda", lambda)));
+    }
 
 }

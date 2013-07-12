@@ -25,71 +25,71 @@ import org.apache.commons.lang3.text.WordUtils;
  */
 public enum EngineConfigurationKey implements ConfigurationKey {
 
-	/**
-	 * The default start delimiter (e.g. <code>}}</code>).
-	 */
-	START_DELIMITER("{{"),
-	/**
-	 * The default end delimiter (e.g. <code>}}</code>).
-	 */
-	END_DELIMITER("}}"),
-	/**
-	 * <code>true</code> if precompilation of all available templates is
-	 * required, <code>false</code> otherwise.
-	 */
-	PRECOMPILE_ALL_TEMPLATES(false),
-	/**
-	 * <code>true</code> if standalone lines should be removed (see also
-	 * Mustache spec), <code>false</code> otherwise.
-	 */
-	REMOVE_STANDALONE_LINES(true),
-	/**
-	 * <code>true</code> if unnecessary segments should be removed (e.g.
-	 * comments), <code>false</code> otherwise.
-	 */
-	REMOVE_UNNECESSARY_SEGMENTS(true),
-	/**
-	 * <code>true</code> if lookup miss should result in exception,
-	 * <code>false</code> otherwise.
-	 */
-	NO_VALUE_INDICATES_PROBLEM(false),
-	/**
-	 * <code>true</code> in case of debug mode should be enabled,
-	 * <code>false</code> otherwise. Debug mode disables the template cache and
-	 * provides some more logging during template rendering.
-	 * */
-	DEBUG_MODE(false),
-	/**
-	 * <code>true</code> in case of the section-based literal blocks should be
-	 * cached (useful to optimize some lambdas processing scenarios, but memory
-	 * intensive), <code>false</code> otherwise.
-	 */
-	CACHE_SECTION_LITERAL_BLOCK(false),
-	/**
-	 * The limit of recursive template invocation; 0 - recursive invocation is
-	 * forbidden.
-	 */
-	TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10), ;
+    /**
+     * The default start delimiter (e.g. <code>}}</code>).
+     */
+    START_DELIMITER("{{"),
+    /**
+     * The default end delimiter (e.g. <code>}}</code>).
+     */
+    END_DELIMITER("}}"),
+    /**
+     * <code>true</code> if precompilation of all available templates is
+     * required, <code>false</code> otherwise.
+     */
+    PRECOMPILE_ALL_TEMPLATES(false),
+    /**
+     * <code>true</code> if standalone lines should be removed (see also
+     * Mustache spec), <code>false</code> otherwise.
+     */
+    REMOVE_STANDALONE_LINES(true),
+    /**
+     * <code>true</code> if unnecessary segments should be removed (e.g.
+     * comments), <code>false</code> otherwise.
+     */
+    REMOVE_UNNECESSARY_SEGMENTS(true),
+    /**
+     * <code>true</code> if lookup miss should result in exception,
+     * <code>false</code> otherwise.
+     */
+    NO_VALUE_INDICATES_PROBLEM(false),
+    /**
+     * <code>true</code> in case of debug mode should be enabled,
+     * <code>false</code> otherwise. Debug mode disables the template cache and
+     * provides some more logging during template rendering.
+     * */
+    DEBUG_MODE(false),
+    /**
+     * <code>true</code> in case of the section-based literal blocks should be
+     * cached (useful to optimize some lambdas processing scenarios, but memory
+     * intensive), <code>false</code> otherwise.
+     */
+    CACHE_SECTION_LITERAL_BLOCK(false),
+    /**
+     * The limit of recursive template invocation; 0 - recursive invocation is
+     * forbidden.
+     */
+    TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10), ;
 
-	private Object defaultValue;
+    private Object defaultValue;
 
-	private String key;
+    private String key;
 
-	EngineConfigurationKey(Object defaultValue) {
-		this.key = EngineConfigurationKey.class.getPackage().getName()
-				+ "."
-				+ WordUtils.uncapitalize(StringUtils.replace(
-						WordUtils.capitalizeFully(this.toString(), '_'), "_",
-						""));
-		this.defaultValue = defaultValue;
-	}
+    EngineConfigurationKey(Object defaultValue) {
+        this.key = EngineConfigurationKey.class.getPackage().getName()
+                + "."
+                + WordUtils.uncapitalize(StringUtils.replace(
+                        WordUtils.capitalizeFully(this.toString(), '_'), "_",
+                        ""));
+        this.defaultValue = defaultValue;
+    }
 
-	public String get() {
-		return key;
-	}
+    public String get() {
+        return key;
+    }
 
-	public Object getDefaultValue() {
-		return defaultValue;
-	}
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
 
 }

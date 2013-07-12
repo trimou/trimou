@@ -25,24 +25,25 @@ import org.trimou.engine.priority.WithPriority;
  */
 public interface Resolver extends WithPriority, ConfigurationAware {
 
-	/**
-	 * Resolve the value from specified context object and name. This method
-	 * should return as fast as possible. The best practice is to verify params
-	 * first and return <code>null</code> in case of the resolver is not capable
-	 * of resolving it.
-	 *
-	 * {@link ResolutionContext} allows to register a callback to release
-	 * all the relevant resources after the resolved value is used.
-	 *
-	 * @param contextObject
-	 *            The current context object (aka base object), may be <code>null</code>
-	 * @param name
-	 *            The name (the key or its part) is never <code>null</code>
-	 * @param context
-	 *            The current resolution context
-	 * @return the resolved object or <code>null</code>
-	 */
-	public Object resolve(Object contextObject, String name,
-			ResolutionContext context);
+    /**
+     * Resolve the value from specified context object and name. This method
+     * should return as fast as possible. The best practice is to verify params
+     * first and return <code>null</code> in case of the resolver is not capable
+     * of resolving it.
+     *
+     * {@link ResolutionContext} allows to register a callback to release all
+     * the relevant resources after the resolved value is used.
+     *
+     * @param contextObject
+     *            The current context object (aka base object), may be
+     *            <code>null</code>
+     * @param name
+     *            The name (the key or its part) is never <code>null</code>
+     * @param context
+     *            The current resolution context
+     * @return the resolved object or <code>null</code>
+     */
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context);
 
 }

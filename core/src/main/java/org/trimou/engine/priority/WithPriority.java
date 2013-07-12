@@ -22,13 +22,13 @@ package org.trimou.engine.priority;
  */
 public interface WithPriority {
 
-	public static final int BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY = 10;
-	public static final int BUILTIN_RESOLVERS_DEFAULT_PRIORITY = 20;
-	public static final int EXTENSION_RESOLVERS_DEFAULT_PRIORITY = 10;
+    public static final int BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY = 10;
+    public static final int BUILTIN_RESOLVERS_DEFAULT_PRIORITY = 20;
+    public static final int EXTENSION_RESOLVERS_DEFAULT_PRIORITY = 10;
 
-	/**
-	 * @return the priority value
-	 */
-	public int getPriority();
+    /**
+     * @return the priority value
+     */
+    public int getPriority();
 
 }

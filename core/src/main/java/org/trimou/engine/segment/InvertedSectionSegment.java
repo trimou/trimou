@@ -36,49 +36,49 @@ import org.trimou.engine.context.ValueWrapper;
 @Internal
 public class InvertedSectionSegment extends AbstractSectionSegment {
 
-	public InvertedSectionSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public InvertedSectionSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	public SegmentType getType() {
-		return SegmentType.INVERTED_SECTION;
-	}
+    public SegmentType getType() {
+        return SegmentType.INVERTED_SECTION;
+    }
 
-	public void execute(Appendable appendable, ExecutionContext context) {
+    public void execute(Appendable appendable, ExecutionContext context) {
 
-		ValueWrapper value = context.getValue(getText());
+        ValueWrapper value = context.getValue(getText());
 
-		try {
-			if (value.isNull()
-					|| processValue(appendable, context, value.get())) {
-				super.execute(appendable, context);
-			}
-		} finally {
-			value.release();
-		}
-	}
+        try {
+            if (value.isNull()
+                    || processValue(appendable, context, value.get())) {
+                super.execute(appendable, context);
+            }
+        } finally {
+            value.release();
+        }
+    }
 
-	@SuppressWarnings("rawtypes")
-	private boolean processValue(Appendable appendable,
-			ExecutionContext context, Object value) {
-		if (value instanceof Boolean) {
-			// Boolean
-			if (!(Boolean) value) {
-				return true;
-			}
-		} else if (value instanceof Iterable) {
-			// No elements to iterate
-			Iterator iterator = ((Iterable) value).iterator();
-			if (!iterator.hasNext()) {
-				return true;
-			}
-		} else if (value.getClass().isArray()) {
-			// Array is empty
-			if (Array.getLength(value) == 0) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @SuppressWarnings("rawtypes")
+    private boolean processValue(Appendable appendable,
+            ExecutionContext context, Object value) {
+        if (value instanceof Boolean) {
+            // Boolean
+            if (!(Boolean) value) {
+                return true;
+            }
+        } else if (value instanceof Iterable) {
+            // No elements to iterate
+            Iterator iterator = ((Iterable) value).iterator();
+            if (!iterator.hasNext()) {
+                return true;
+            }
+        } else if (value.getClass().isArray()) {
+            // Array is empty
+            if (Array.getLength(value) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

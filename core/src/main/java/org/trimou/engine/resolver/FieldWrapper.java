@@ -9,17 +9,17 @@ import java.lang.reflect.InvocationTargetException;
  */
 class FieldWrapper implements MemberWrapper {
 
-	private final Field field;
+    private final Field field;
 
-	FieldWrapper(Field field) {
-		super();
-		this.field = field;
-	}
+    FieldWrapper(Field field) {
+        super();
+        this.field = field;
+    }
 
-	@Override
-	public Object getValue(Object instance) throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		return field.get(instance);
-	}
+    @Override
+    public Object getValue(Object instance) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        return field.get(instance);
+    }
 
 }

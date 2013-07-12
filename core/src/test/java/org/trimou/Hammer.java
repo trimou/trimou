@@ -2,24 +2,24 @@ package org.trimou;
 
 public class Hammer {
 
-	public String nail = "NAIL";
+    public String nail = "NAIL";
 
-	public Integer age = Integer.valueOf(15);
+    public Integer age = Integer.valueOf(15);
 
-	public String getName() {
-		return "Edgar";
-	}
+    public String getName() {
+        return "Edgar";
+    }
 
-	public Integer getAge() {
-		return 10;
-	}
+    public Integer getAge() {
+        return 10;
+    }
 
-	public boolean isPersistent() {
-		return false;
-	}
+    public boolean isPersistent() {
+        return false;
+    }
 
-	public Integer getAgeForName(String name) {
-		return 20;
-	}
+    public Integer getAgeForName(String name) {
+        return 20;
+    }
 
 }

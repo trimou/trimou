@@ -10,11 +10,11 @@ import org.trimou.engine.MustacheEngineBuilder;
  */
 public abstract class AbstractEngineTest extends AbstractTest {
 
-	protected MustacheEngine engine;
+    protected MustacheEngine engine;
 
-	@Before
-	public void buildEngine() {
-		engine = MustacheEngineBuilder.newBuilder().build();
-	}
+    @Before
+    public void buildEngine() {
+        engine = MustacheEngineBuilder.newBuilder().build();
+    }
 
 }

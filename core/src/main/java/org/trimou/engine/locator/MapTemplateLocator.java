@@ -29,39 +29,39 @@ import org.trimou.engine.priority.WithPriority;
  */
 public class MapTemplateLocator extends AbstractTemplateLocator {
 
-	/**
-	 * Name to contents
-	 */
-	private Map<String, String> templates;
+    /**
+     * Name to contents
+     */
+    private Map<String, String> templates;
 
-	public MapTemplateLocator(int priority, Map<String, String> templates) {
-		super(priority);
-		this.templates = templates;
-	}
+    public MapTemplateLocator(int priority, Map<String, String> templates) {
+        super(priority);
+        this.templates = templates;
+    }
 
-	public MapTemplateLocator(Map<String, String> templates) {
-		super(WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY);
-		this.templates = templates;
-	}
+    public MapTemplateLocator(Map<String, String> templates) {
+        super(WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY);
+        this.templates = templates;
+    }
 
-	@Override
-	public Reader locate(String templateName) {
-		String templateContent = templates.get(templateName);
-		if (templateContent != null) {
-			return new StringReader(templateContent);
-		}
-		return null;
-	}
+    @Override
+    public Reader locate(String templateName) {
+        String templateContent = templates.get(templateName);
+        if (templateContent != null) {
+            return new StringReader(templateContent);
+        }
+        return null;
+    }
 
-	@Override
-	public Set<String> getAllIdentifiers() {
-		return templates.keySet();
-	}
+    @Override
+    public Set<String> getAllIdentifiers() {
+        return templates.keySet();
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s [priority: %s]", getClass().getName(),
-				getPriority());
-	}
+    @Override
+    public String toString() {
+        return String.format("%s [priority: %s]", getClass().getName(),
+                getPriority());
+    }
 
 }

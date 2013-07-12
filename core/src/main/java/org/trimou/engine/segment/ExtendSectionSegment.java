@@ -19,36 +19,38 @@ import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
- * Either defines a section to be extended/overrided, or an extending/defining section.
+ * Either defines a section to be extended/overrided, or an extending/defining
+ * section.
  *
  * @author Martin Kouba
  */
 @Internal
 public class ExtendSectionSegment extends AbstractSectionSegment {
 
-	public ExtendSectionSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public ExtendSectionSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.EXTEND_SECTION;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.EXTEND_SECTION;
+    }
 
-	@Override
-	public void execute(Appendable appendable, ExecutionContext context) {
+    @Override
+    public void execute(Appendable appendable, ExecutionContext context) {
 
-		ExtendSectionSegment defining = context.getDefiningSection(getText());
+        ExtendSectionSegment defining = context.getDefiningSection(getText());
 
-		if (defining != null) {
-			defining.executeNoDefiningLookup(appendable, context);
-		} else {
-			super.execute(appendable, context);
-		}
-	}
+        if (defining != null) {
+            defining.executeNoDefiningLookup(appendable, context);
+        } else {
+            super.execute(appendable, context);
+        }
+    }
 
-	protected void executeNoDefiningLookup(Appendable appendable, ExecutionContext context) {
-		super.execute(appendable, context);
-	}
+    protected void executeNoDefiningLookup(Appendable appendable,
+            ExecutionContext context) {
+        super.execute(appendable, context);
+    }
 
 }

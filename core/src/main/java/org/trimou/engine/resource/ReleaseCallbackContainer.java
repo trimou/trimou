@@ -22,11 +22,11 @@ package org.trimou.engine.resource;
  */
 public interface ReleaseCallbackContainer {
 
-	/**
-	 * Register a release callback.
-	 *
-	 * @param callback
-	 */
-	void registerReleaseCallback(ReleaseCallback callback);
+    /**
+     * Register a release callback.
+     *
+     * @param callback
+     */
+    void registerReleaseCallback(ReleaseCallback callback);
 
 }

@@ -34,43 +34,43 @@ import org.trimou.exception.MustacheProblem;
 @Internal
 public class ExtendSegment extends AbstractSectionSegment {
 
-	public ExtendSegment(String text, Origin origin) {
-		super(text, origin);
-	}
+    public ExtendSegment(String text, Origin origin) {
+        super(text, origin);
+    }
 
-	@Override
-	public SegmentType getType() {
-		return SegmentType.EXTEND;
-	}
+    @Override
+    public SegmentType getType() {
+        return SegmentType.EXTEND;
+    }
 
-	@Override
-	public void execute(Appendable appendable, ExecutionContext context) {
+    @Override
+    public void execute(Appendable appendable, ExecutionContext context) {
 
-		TemplateSegment extended = (TemplateSegment) getEngine().getMustache(
-				getText());
+        TemplateSegment extended = (TemplateSegment) getEngine().getMustache(
+                getText());
 
-		if (extended == null) {
-			throw new MustacheException(
-					MustacheProblem.RENDER_INVALID_EXTEND_KEY,
-					"No template to extend found for the given key: %s %s",
-					getText(), getOrigin());
-		}
+        if (extended == null) {
+            throw new MustacheException(
+                    MustacheProblem.RENDER_INVALID_EXTEND_KEY,
+                    "No template to extend found for the given key: %s %s",
+                    getText(), getOrigin());
+        }
 
-		context.push(TEMPLATE_INVOCATION, extended);
-		for (Segment extendSection : this) {
-			context.addDefiningSection(extendSection.getText(),
-					(ExtendSectionSegment) extendSection);
-		}
-		extended.execute(appendable, context);
-		context.pop(TEMPLATE_INVOCATION);
-	}
+        context.push(TEMPLATE_INVOCATION, extended);
+        for (Segment extendSection : this) {
+            context.addDefiningSection(extendSection.getText(),
+                    (ExtendSectionSegment) extendSection);
+        }
+        extended.execute(appendable, context);
+        context.pop(TEMPLATE_INVOCATION);
+    }
 
-	@Override
-	public void addSegment(Segment segment) {
-		if (SegmentType.EXTEND_SECTION.equals(segment.getType())) {
-			// Only add extending sections
-			super.addSegment(segment);
-		}
-	}
+    @Override
+    public void addSegment(Segment segment) {
+        if (SegmentType.EXTEND_SECTION.equals(segment.getType())) {
+            // Only add extending sections
+            super.addSegment(segment);
+        }
+    }
 
 }

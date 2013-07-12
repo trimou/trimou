@@ -16,26 +16,27 @@ import org.trimou.cdi.context.RenderingContext;
  */
 public class TrimouExtension implements Extension {
 
-	private RenderingContext renderingContext;
+    private RenderingContext renderingContext;
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(TrimouExtension.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(TrimouExtension.class);
 
-	/**
-	 *
-	 * @param event
-	 * @param beanManager
-	 */
-	public void observeAfterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager) {
-		logger.info("Register context for @RenderingScoped");
-		renderingContext = new RenderingContext();
-		event.addContext(renderingContext);
-		// Workaround to support CDI 1.0 and SE
-		BeanManagerLocator.setExtensionProvidedBeanManager(beanManager);
-	}
+    /**
+     *
+     * @param event
+     * @param beanManager
+     */
+    public void observeAfterBeanDiscovery(@Observes AfterBeanDiscovery event,
+            BeanManager beanManager) {
+        logger.info("Register context for @RenderingScoped");
+        renderingContext = new RenderingContext();
+        event.addContext(renderingContext);
+        // Workaround to support CDI 1.0 and SE
+        BeanManagerLocator.setExtensionProvidedBeanManager(beanManager);
+    }
 
-	public RenderingContext getRenderingContext() {
-		return renderingContext;
-	}
+    public RenderingContext getRenderingContext() {
+        return renderingContext;
+    }
 
 }

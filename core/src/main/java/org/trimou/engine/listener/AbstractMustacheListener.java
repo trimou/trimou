@@ -23,21 +23,21 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  * @author Martin Kouba
  */
 public abstract class AbstractMustacheListener extends
-		AbstractConfigurationAware implements MustacheListener {
+        AbstractConfigurationAware implements MustacheListener {
 
-	@Override
-	public void compilationFinished(MustacheCompilationEvent event) {
-		// No-op
-	}
+    @Override
+    public void compilationFinished(MustacheCompilationEvent event) {
+        // No-op
+    }
 
-	@Override
-	public void renderingStarted(MustacheRenderingEvent event) {
-		// No-op
-	}
+    @Override
+    public void renderingStarted(MustacheRenderingEvent event) {
+        // No-op
+    }
 
-	@Override
-	public void renderingFinished(MustacheRenderingEvent event) {
-		// No-op
-	}
+    @Override
+    public void renderingFinished(MustacheRenderingEvent event) {
+        // No-op
+    }
 
 }

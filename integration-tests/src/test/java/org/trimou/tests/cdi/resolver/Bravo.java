@@ -6,17 +6,17 @@ import javax.inject.Named;
 
 @Named("bravo")
 @ApplicationScoped
-public class Bravo extends BeanWithId  {
+public class Bravo extends BeanWithId {
 
-	private Integer age;
+    private Integer age;
 
-	@PostConstruct
-	public void initAge() {
-		age = 78;
-	}
+    @PostConstruct
+    public void initAge() {
+        age = 78;
+    }
 
-	public Integer getAge() {
-		return age;
-	}
+    public Integer getAge() {
+        return age;
+    }
 
 }

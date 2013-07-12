@@ -28,12 +28,12 @@ import org.trimou.engine.resolver.ThisResolver;
  */
 public class DefaultConfigurationExtension implements ConfigurationExtension {
 
-	@Override
-	public void register(ConfigurationExtensionBuilder builder) {
-		builder.addResolver(new ReflectionResolver())
-				.addResolver(new ThisResolver()).addResolver(new MapResolver())
-				.addResolver(new ListIndexResolver())
-				.addResolver(new ArrayIndexResolver());
-	}
+    @Override
+    public void register(ConfigurationExtensionBuilder builder) {
+        builder.addResolver(new ReflectionResolver())
+                .addResolver(new ThisResolver()).addResolver(new MapResolver())
+                .addResolver(new ListIndexResolver())
+                .addResolver(new ArrayIndexResolver());
+    }
 
 }

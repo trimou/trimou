@@ -29,62 +29,61 @@ import com.google.common.collect.ImmutableList;
  * @author Martin Kouba
  */
 abstract class AbstractContainerSegment extends AbstractSegment implements
-		ContainerSegment {
+        ContainerSegment {
 
-	protected List<Segment> segments = new ArrayList<Segment>();
+    protected List<Segment> segments = new ArrayList<Segment>();
 
-	/**
-	 *
-	 * @param name
-	 * @param template
-	 */
-	public AbstractContainerSegment(String name, Origin origin) {
-		super(name, origin);
-	}
+    /**
+     *
+     * @param name
+     * @param template
+     */
+    public AbstractContainerSegment(String name, Origin origin) {
+        super(name, origin);
+    }
 
-	public void execute(Appendable appendable, ExecutionContext context) {
-		for (Segment segment : segments) {
-			segment.execute(appendable, context);
-		}
-	}
+    public void execute(Appendable appendable, ExecutionContext context) {
+        for (Segment segment : segments) {
+            segment.execute(appendable, context);
+        }
+    }
 
-	@Override
-	public void performPostProcessing() {
-		for (Segment segment : segments) {
-			segment.performPostProcessing();
-		}
-	}
+    @Override
+    public void performPostProcessing() {
+        for (Segment segment : segments) {
+            segment.performPostProcessing();
+        }
+    }
 
-	public void addSegment(Segment segment) {
-		checkModificationAllowed();
-		segments.add(segment);
-	}
+    public void addSegment(Segment segment) {
+        checkModificationAllowed();
+        segments.add(segment);
+    }
 
-	@Override
-	public Iterator<Segment> iterator() {
-		return getSegments().iterator();
-	}
+    @Override
+    public Iterator<Segment> iterator() {
+        return getSegments().iterator();
+    }
 
-	public List<Segment> getSegments() {
-		return isReadOnly() ? ImmutableList.copyOf(segments)
-				: segments;
-	}
+    public List<Segment> getSegments() {
+        return isReadOnly() ? ImmutableList.copyOf(segments) : segments;
+    }
 
-	public int getSegmentsSize() {
-		return segments.size();
-	}
+    public int getSegmentsSize() {
+        return segments.size();
+    }
 
-	protected String getContainingLiteralBlock() {
-		StringBuilder literal = new StringBuilder();
-		for (Segment segment : segments) {
-			literal.append(segment.getLiteralBlock());
-		}
-		return literal.toString();
-	}
+    protected String getContainingLiteralBlock() {
+        StringBuilder literal = new StringBuilder();
+        for (Segment segment : segments) {
+            literal.append(segment.getLiteralBlock());
+        }
+        return literal.toString();
+    }
 
-	@Override
-	protected String getSegmentName() {
-		return getText();
-	}
+    @Override
+    protected String getSegmentName() {
+        return getText();
+    }
 
 }

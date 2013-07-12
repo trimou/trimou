@@ -40,141 +40,141 @@ import com.google.common.cache.LoadingCache;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CDIBeanResolver extends AbstractResolver {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(CDIBeanResolver.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(CDIBeanResolver.class);
 
-	public static final int CDI_BEAN_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int CDI_BEAN_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
-	public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-			CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
+    public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
+            CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
 
-	private BeanManager beanManager;
+    private BeanManager beanManager;
 
-	private LoadingCache<String, Optional<Bean>> beanCache;
+    private LoadingCache<String, Optional<Bean>> beanCache;
 
-	/**
-	 *
-	 */
-	public CDIBeanResolver() {
-		super();
-	}
+    /**
+     *
+     */
+    public CDIBeanResolver() {
+        super();
+    }
 
-	/**
-	 *
-	 * @param beanManager
-	 */
-	public CDIBeanResolver(BeanManager beanManager) {
-		super();
-		this.beanManager = beanManager;
-	}
+    /**
+     *
+     * @param beanManager
+     */
+    public CDIBeanResolver(BeanManager beanManager) {
+        super();
+        this.beanManager = beanManager;
+    }
 
-	@Override
-	public Object resolve(Object contextObject, String name,
-			ResolutionContext context) {
+    @Override
+    public Object resolve(Object contextObject, String name,
+            ResolutionContext context) {
 
-		if (contextObject != null) {
-			return null;
-		}
+        if (contextObject != null) {
+            return null;
+        }
 
-		Optional<Bean> bean = beanCache.getUnchecked(name);
+        Optional<Bean> bean = beanCache.getUnchecked(name);
 
-		if (!bean.isPresent()) {
-			// Unsuccessful lookup already performed
-			return null;
-		}
-		return getReference(bean.get(), context);
-	}
+        if (!bean.isPresent()) {
+            // Unsuccessful lookup already performed
+            return null;
+        }
+        return getReference(bean.get(), context);
+    }
 
-	@Override
-	public int getPriority() {
-		return CDI_BEAN_RESOLVER_PRIORITY;
-	}
+    @Override
+    public int getPriority() {
+        return CDI_BEAN_RESOLVER_PRIORITY;
+    }
 
-	@Override
-	public void init(Configuration configuration) {
+    @Override
+    public void init(Configuration configuration) {
 
-		if (beanManager == null) {
-			beanManager = BeanManagerLocator.locate();
-		}
+        if (beanManager == null) {
+            beanManager = BeanManagerLocator.locate();
+        }
 
-		if (beanManager == null) {
-			throw new IllegalStateException(
-					"BeanManager not set - invalid resolver configuration");
-		}
-		// Init cache max size
-		long beanCacheMaxSize = configuration
-				.getLongPropertyValue(BEAN_CACHE_MAX_SIZE_KEY);
-		beanCache = CacheBuilder.newBuilder().maximumSize(beanCacheMaxSize)
-				.build(new CacheLoader<String, Optional<Bean>>() {
+        if (beanManager == null) {
+            throw new IllegalStateException(
+                    "BeanManager not set - invalid resolver configuration");
+        }
+        // Init cache max size
+        long beanCacheMaxSize = configuration
+                .getLongPropertyValue(BEAN_CACHE_MAX_SIZE_KEY);
+        beanCache = CacheBuilder.newBuilder().maximumSize(beanCacheMaxSize)
+                .build(new CacheLoader<String, Optional<Bean>>() {
 
-					@Override
-					public Optional<Bean> load(String name) throws Exception {
+                    @Override
+                    public Optional<Bean> load(String name) throws Exception {
 
-						Set<Bean<?>> beans = beanManager.getBeans(name);
+                        Set<Bean<?>> beans = beanManager.getBeans(name);
 
-						// Check required for CDI 1.0
-						if (beans == null || beans.isEmpty()) {
-							return Optional.absent();
-						}
+                        // Check required for CDI 1.0
+                        if (beans == null || beans.isEmpty()) {
+                            return Optional.absent();
+                        }
 
-						try {
-							return Optional.of((Bean) beanManager
-									.resolve(beans));
-						} catch (AmbiguousResolutionException e) {
-							logger.warn(
-									"An ambiguous EL name exists [name: {}]",
-									name);
-							return Optional.absent();
-						}
-					}
-				});
-		logger.info("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
-	}
+                        try {
+                            return Optional.of((Bean) beanManager
+                                    .resolve(beans));
+                        } catch (AmbiguousResolutionException e) {
+                            logger.warn(
+                                    "An ambiguous EL name exists [name: {}]",
+                                    name);
+                            return Optional.absent();
+                        }
+                    }
+                });
+        logger.info("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
+    }
 
-	@Override
-	public Set<ConfigurationKey> getConfigurationKeys() {
-		return Collections
-				.<ConfigurationKey> singleton(BEAN_CACHE_MAX_SIZE_KEY);
-	}
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections
+                .<ConfigurationKey> singleton(BEAN_CACHE_MAX_SIZE_KEY);
+    }
 
-	private Object getReference(Bean bean, ResolutionContext context) {
+    private Object getReference(Bean bean, ResolutionContext context) {
 
-		CreationalContext creationalContext = beanManager
-				.createCreationalContext(bean);
+        CreationalContext creationalContext = beanManager
+                .createCreationalContext(bean);
 
-		if (Dependent.class.equals(bean.getScope())) {
-			Object reference = bean.create(creationalContext);
-			context.registerReleaseCallback(new DependentDestroyCallback(bean,
-					creationalContext, reference));
-			return reference;
+        if (Dependent.class.equals(bean.getScope())) {
+            Object reference = bean.create(creationalContext);
+            context.registerReleaseCallback(new DependentDestroyCallback(bean,
+                    creationalContext, reference));
+            return reference;
 
-		} else {
-			return beanManager.getReference(bean, Object.class,
-					creationalContext);
-		}
-	}
+        } else {
+            return beanManager.getReference(bean, Object.class,
+                    creationalContext);
+        }
+    }
 
-	static class DependentDestroyCallback implements ReleaseCallback {
+    static class DependentDestroyCallback implements ReleaseCallback {
 
-		private final Bean bean;
+        private final Bean bean;
 
-		private final CreationalContext creationalContext;
+        private final CreationalContext creationalContext;
 
-		private final Object instance;
+        private final Object instance;
 
-		private DependentDestroyCallback(Bean<?> bean,
-				CreationalContext<?> creationalContext, Object instance) {
-			super();
-			this.bean = bean;
-			this.creationalContext = creationalContext;
-			this.instance = instance;
-		}
+        private DependentDestroyCallback(Bean<?> bean,
+                CreationalContext<?> creationalContext, Object instance) {
+            super();
+            this.bean = bean;
+            this.creationalContext = creationalContext;
+            this.instance = instance;
+        }
 
-		@Override
-		public void release() {
-			bean.destroy(instance, creationalContext);
-		}
+        @Override
+        public void release() {
+            bean.destroy(instance, creationalContext);
+        }
 
-	}
+    }
 
 }

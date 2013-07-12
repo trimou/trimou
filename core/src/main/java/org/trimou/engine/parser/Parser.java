@@ -26,13 +26,13 @@ import org.trimou.annotations.Internal;
 @Internal
 public interface Parser {
 
-	/**
-	 *
-	 * @param name
-	 *            the template name
-	 * @param reader
-	 * @param handler
-	 */
-	public void parse(String name, Reader reader, ParsingHandler handler);
+    /**
+     *
+     * @param name
+     *            the template name
+     * @param reader
+     * @param handler
+     */
+    public void parse(String name, Reader reader, ParsingHandler handler);
 
 }

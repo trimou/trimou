@@ -33,96 +33,96 @@ import org.trimou.util.Strings;
  */
 abstract class AbstractSegment implements Segment {
 
-	private final Origin origin;
+    private final Origin origin;
 
-	private final String text;
+    private final String text;
 
-	/**
-	 *
-	 * @param text
-	 * @param template
-	 */
-	public AbstractSegment(String text, Origin origin) {
-		super();
-		this.text = text;
-		this.origin = origin;
-	}
+    /**
+     *
+     * @param text
+     * @param template
+     */
+    public AbstractSegment(String text, Origin origin) {
+        super();
+        this.text = text;
+        this.origin = origin;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public Origin getOrigin() {
-		return origin;
-	}
+    @Override
+    public Origin getOrigin() {
+        return origin;
+    }
 
-	@Override
-	public String getLiteralBlock() {
-		return getTagLiteral(getText());
-	}
+    @Override
+    public String getLiteralBlock() {
+        return getTagLiteral(getText());
+    }
 
-	@Override
-	public void performPostProcessing() {
-		// No-op by default
-	}
+    @Override
+    public void performPostProcessing() {
+        // No-op by default
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s:%s %s", getType(), getSegmentName(),
-				getOrigin());
-	}
+    @Override
+    public String toString() {
+        return String.format("%s:%s %s", getType(), getSegmentName(),
+                getOrigin());
+    }
 
-	public TemplateSegment getTemplate() {
-		return origin != null ? origin.getTemplate() : null;
-	}
+    public TemplateSegment getTemplate() {
+        return origin != null ? origin.getTemplate() : null;
+    }
 
-	protected boolean isReadOnly() {
-		return getTemplate().isReadOnly();
-	}
+    protected boolean isReadOnly() {
+        return getTemplate().isReadOnly();
+    }
 
-	protected MustacheEngine getEngine() {
-		return getTemplate().getEngine();
-	}
+    protected MustacheEngine getEngine() {
+        return getTemplate().getEngine();
+    }
 
-	protected Configuration getEngineConfiguration() {
-		return getEngine().getConfiguration();
-	}
+    protected Configuration getEngineConfiguration() {
+        return getEngine().getConfiguration();
+    }
 
-	protected String getDefaultStartDelimiter() {
-		return getEngineConfiguration().getStringPropertyValue(START_DELIMITER);
-	}
+    protected String getDefaultStartDelimiter() {
+        return getEngineConfiguration().getStringPropertyValue(START_DELIMITER);
+    }
 
-	protected String getDefaultEndDelimiter() {
-		return getEngineConfiguration().getStringPropertyValue(END_DELIMITER);
-	}
+    protected String getDefaultEndDelimiter() {
+        return getEngineConfiguration().getStringPropertyValue(END_DELIMITER);
+    }
 
-	protected String getTagLiteral(String content) {
-		return getDefaultStartDelimiter() + content + getDefaultEndDelimiter();
-	}
+    protected String getTagLiteral(String content) {
+        return getDefaultStartDelimiter() + content + getDefaultEndDelimiter();
+    }
 
-	/**
-	 *
-	 * @return the segment name
-	 */
-	protected String getSegmentName() {
-		return Strings.EMPTY;
-	}
+    /**
+     *
+     * @return the segment name
+     */
+    protected String getSegmentName() {
+        return Strings.EMPTY;
+    }
 
-	protected void append(Appendable appendable, String text) {
-		try {
-			appendable.append(text);
-		} catch (IOException e) {
-			throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
-		}
-	}
+    protected void append(Appendable appendable, String text) {
+        try {
+            appendable.append(text);
+        } catch (IOException e) {
+            throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
+        }
+    }
 
-	protected void checkModificationAllowed() {
-		if (isReadOnly()) {
-			throw new MustacheException(
-					MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED,
-					toString());
-		}
-	}
+    protected void checkModificationAllowed() {
+        if (isReadOnly()) {
+            throw new MustacheException(
+                    MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED,
+                    toString());
+        }
+    }
 
 }

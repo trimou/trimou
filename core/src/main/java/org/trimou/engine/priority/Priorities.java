@@ -24,11 +24,11 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class Priorities {
 
-	public static int after(int priority) {
-		return priority - 1;
-	}
+    public static int after(int priority) {
+        return priority - 1;
+    }
 
-	public static int before(int priority) {
-		return priority + 1;
-	}
+    public static int before(int priority) {
+        return priority + 1;
+    }
 }

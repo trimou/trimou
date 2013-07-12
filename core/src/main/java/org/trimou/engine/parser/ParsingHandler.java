@@ -26,47 +26,47 @@ import org.trimou.exception.MustacheException;
 @Internal
 public interface ParsingHandler {
 
-	/**
-	 * Parsing started.
-	 *
-	 * @param name
-	 * @param delimiters
-	 */
-	public void startTemplate(String name, Delimiters delimiters,
-			MustacheEngine engine);
+    /**
+     * Parsing started.
+     *
+     * @param name
+     * @param delimiters
+     */
+    public void startTemplate(String name, Delimiters delimiters,
+            MustacheEngine engine);
 
-	/**
-	 * Flush a text segment.
-	 *
-	 * @param text
-	 */
-	public void text(String text);
+    /**
+     * Flush a text segment.
+     *
+     * @param text
+     */
+    public void text(String text);
 
-	/**
-	 * Flush a tag.
-	 *
-	 * @param tag
-	 */
-	public void tag(ParsedTag tag);
+    /**
+     * Flush a tag.
+     *
+     * @param tag
+     */
+    public void tag(ParsedTag tag);
 
-	/**
-	 * Flush a line separator.
-	 *
-	 * @param separator
-	 */
-	public void lineSeparator(String separator);
+    /**
+     * Flush a line separator.
+     *
+     * @param separator
+     */
+    public void lineSeparator(String separator);
 
-	/**
-	 * Parsing ended.
-	 */
-	public void endTemplate();
+    /**
+     * Parsing ended.
+     */
+    public void endTemplate();
 
-	/**
-	 *
-	 * @return the compiled template
-	 * @throws MustacheException
-	 *             If not finished yet
-	 */
-	public Mustache getCompiledTemplate();
+    /**
+     *
+     * @return the compiled template
+     * @throws MustacheException
+     *             If not finished yet
+     */
+    public Mustache getCompiledTemplate();
 
 }
