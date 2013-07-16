@@ -29,45 +29,48 @@ import org.trimou.engine.resolver.Resolver;
  */
 public interface ConfigurationExtension {
 
-    /**
-     * Allows to register additional configuration components, e.g.
-     * {@link Resolver} and {@link MustacheListener} instances.
-     *
-     * @param builder
-     */
-    void register(ConfigurationExtensionBuilder builder);
+	/**
+	 * Allows to register additional configuration components, e.g.
+	 * {@link Resolver} and {@link MustacheListener} instances.
+	 *
+	 * @param builder
+	 */
+	void register(ConfigurationExtensionBuilder builder);
 
-    /**
-     *
-     * @author Martin Kouba
-     */
-    public interface ConfigurationExtensionBuilder {
+	/**
+	 *
+	 * @author Martin Kouba
+	 */
+	public interface ConfigurationExtensionBuilder {
 
-        /**
-         * Adds a value resolver.
-         *
-         * @param resolver
-         * @return self
-         */
-        ConfigurationExtensionBuilder addResolver(Resolver resolver);
+		/**
+		 * Adds a value resolver.
+		 *
+		 * @param resolver
+		 * @return self
+		 */
+		ConfigurationExtensionBuilder addResolver(Resolver resolver);
 
-        /**
-         * Adds a {@link Mustache} listener.
-         *
-         * @param listener
-         * @return self
-         */
-        ConfigurationExtensionBuilder addMustacheListener(
-                MustacheListener listener);
+		/**
+		 * Adds a {@link Mustache} listener. Extension listeners are always
+		 * registered after listeners added via
+		 * {@link MustacheEngineBuilder#addMustacheListener(MustacheListener)}.
+		 * Further ordering is not defined.
+		 *
+		 * @param listener
+		 * @return self
+		 */
+		ConfigurationExtensionBuilder addMustacheListener(
+				MustacheListener listener);
 
-        /**
-         * Adds a value (e.g. Lambda) that is available during execution of all
-         * templates.
-         *
-         * @param name
-         * @param value
-         * @return self
-         */
-        ConfigurationExtensionBuilder addGlobalData(String name, Object value);
-    }
+		/**
+		 * Adds a value (e.g. Lambda) that is available during execution of all
+		 * templates.
+		 *
+		 * @param name
+		 * @param value
+		 * @return self
+		 */
+		ConfigurationExtensionBuilder addGlobalData(String name, Object value);
+	}
 }

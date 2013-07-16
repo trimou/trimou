@@ -44,251 +44,252 @@ import org.trimou.engine.text.TextSupport;
  * @author Martin Kouba
  */
 public final class MustacheEngineBuilder implements
-        ConfigurationExtensionBuilder {
+		ConfigurationExtensionBuilder {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MustacheEngineBuilder.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(MustacheEngineBuilder.class);
 
-    private boolean omitServiceLoaderConfigurationExtensions = false;
+	private boolean omitServiceLoaderConfigurationExtensions = false;
 
-    private Set<Resolver> resolvers = null;
+	private Set<Resolver> resolvers = null;
 
-    private Set<TemplateLocator> templateLocators = null;
+	private Set<TemplateLocator> templateLocators = null;
 
-    private Map<String, Object> globalData = null;
+	private Map<String, Object> globalData = null;
 
-    private TextSupport textSupport = null;
+	private TextSupport textSupport = null;
 
-    private LocaleSupport localeSupport = null;
+	private LocaleSupport localeSupport = null;
 
-    private Map<String, Object> properties = new HashMap<String, Object>(
-            EngineConfigurationKey.values().length);
+	private Map<String, Object> properties = new HashMap<String, Object>(
+			EngineConfigurationKey.values().length);
 
-    private List<EngineBuiltCallback> engineReadyCallbacks = null;
+	private List<EngineBuiltCallback> engineReadyCallbacks = null;
 
-    private List<MustacheListener> mustacheListeners;
+	private List<MustacheListener> mustacheListeners;
 
-    /**
-     * Don't create a new instance.
-     */
-    private MustacheEngineBuilder() {
-    }
+	/**
+	 * Don't create a new instance.
+	 */
+	private MustacheEngineBuilder() {
+	}
 
-    /**
-     * Builds the engine instance. The builder cleanup is performed after the
-     * engine is built.
-     *
-     * @return the built engine
-     */
-    public MustacheEngine build() {
-        MustacheEngine engine = new DefaultMustacheEngine(this);
-        if (engineReadyCallbacks != null) {
-            for (EngineBuiltCallback callback : engineReadyCallbacks) {
-                callback.engineBuilt(engine);
-            }
-        }
-        Package pack = MustacheEngine.class.getPackage();
-        logger.info(
-                "Engine built {}\n{}",
-                StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
-                        : pack.getSpecificationVersion(), engine.toString());
-        performCleanup();
-        return engine;
-    }
+	/**
+	 * Builds the engine instance. The builder cleanup is performed after the
+	 * engine is built.
+	 *
+	 * @return the built engine
+	 */
+	public MustacheEngine build() {
+		MustacheEngine engine = new DefaultMustacheEngine(this);
+		if (engineReadyCallbacks != null) {
+			for (EngineBuiltCallback callback : engineReadyCallbacks) {
+				callback.engineBuilt(engine);
+			}
+		}
+		Package pack = MustacheEngine.class.getPackage();
+		logger.info(
+				"Engine built {}\n{}",
+				StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
+						: pack.getSpecificationVersion(), engine.toString());
+		performCleanup();
+		return engine;
+	}
 
-    /**
-     * Adds a value (e.g. Lambda) that is available during execution of all
-     * templates.
-     *
-     * Global values have to be thread-safe.
-     *
-     * @param value
-     * @param name
-     * @return self
-     */
-    public MustacheEngineBuilder addGlobalData(String name, Object value) {
-        if (this.globalData == null) {
-            this.globalData = new HashMap<String, Object>();
-        }
-        this.globalData.put(name, value);
-        return this;
-    }
+	/**
+	 * Adds a value (e.g. Lambda) that is available during execution of all
+	 * templates.
+	 *
+	 * Global values have to be thread-safe.
+	 *
+	 * @param value
+	 * @param name
+	 * @return self
+	 */
+	public MustacheEngineBuilder addGlobalData(String name, Object value) {
+		if (this.globalData == null) {
+			this.globalData = new HashMap<String, Object>();
+		}
+		this.globalData.put(name, value);
+		return this;
+	}
 
-    /**
-     * Adds a template locator.
-     *
-     * @param locator
-     * @return self
-     */
-    public MustacheEngineBuilder addTemplateLocator(TemplateLocator locator) {
-        if (this.templateLocators == null) {
-            this.templateLocators = new HashSet<TemplateLocator>();
-        }
-        this.templateLocators.add(locator);
-        return this;
-    }
+	/**
+	 * Adds a template locator.
+	 *
+	 * @param locator
+	 * @return self
+	 */
+	public MustacheEngineBuilder addTemplateLocator(TemplateLocator locator) {
+		if (this.templateLocators == null) {
+			this.templateLocators = new HashSet<TemplateLocator>();
+		}
+		this.templateLocators.add(locator);
+		return this;
+	}
 
-    /**
-     * Adds a value resolver.
-     *
-     * @param resolver
-     * @return self
-     */
-    public MustacheEngineBuilder addResolver(Resolver resolver) {
-        if (this.resolvers == null) {
-            this.resolvers = new HashSet<Resolver>();
-        }
-        this.resolvers.add(resolver);
-        return this;
-    }
+	/**
+	 * Adds a value resolver.
+	 *
+	 * @param resolver
+	 * @return self
+	 */
+	public MustacheEngineBuilder addResolver(Resolver resolver) {
+		if (this.resolvers == null) {
+			this.resolvers = new HashSet<Resolver>();
+		}
+		this.resolvers.add(resolver);
+		return this;
+	}
 
-    /**
-     * Sets a configuration property.
-     *
-     * @param key
-     * @param value
-     * @return self
-     */
-    public MustacheEngineBuilder setProperty(String key, Object value) {
-        this.properties.put(key, value);
-        return this;
-    }
+	/**
+	 * Sets a configuration property.
+	 *
+	 * @param key
+	 * @param value
+	 * @return self
+	 */
+	public MustacheEngineBuilder setProperty(String key, Object value) {
+		this.properties.put(key, value);
+		return this;
+	}
 
-    /**
-     * Sets a configuration property.
-     *
-     * @param configurationKey
-     * @param value
-     * @return self
-     */
-    public MustacheEngineBuilder setProperty(ConfigurationKey configurationKey,
-            Object value) {
-        setProperty(configurationKey.get(), value);
-        return this;
-    }
+	/**
+	 * Sets a configuration property.
+	 *
+	 * @param configurationKey
+	 * @param value
+	 * @return self
+	 */
+	public MustacheEngineBuilder setProperty(ConfigurationKey configurationKey,
+			Object value) {
+		setProperty(configurationKey.get(), value);
+		return this;
+	}
 
-    /**
-     * Sets a text support instance.
-     *
-     * @param textSupport
-     * @return selg
-     */
-    public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
-        this.textSupport = textSupport;
-        return this;
-    }
+	/**
+	 * Sets a text support instance.
+	 *
+	 * @param textSupport
+	 * @return selg
+	 */
+	public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
+		this.textSupport = textSupport;
+		return this;
+	}
 
-    /**
-     * Sets a locale support instance.
-     *
-     * @param localeSupport
-     * @return self
-     */
-    public MustacheEngineBuilder setLocaleSupport(LocaleSupport localeSupport) {
-        this.localeSupport = localeSupport;
-        return this;
-    }
+	/**
+	 * Sets a locale support instance.
+	 *
+	 * @param localeSupport
+	 * @return self
+	 */
+	public MustacheEngineBuilder setLocaleSupport(LocaleSupport localeSupport) {
+		this.localeSupport = localeSupport;
+		return this;
+	}
 
-    /**
-     * Callback is useful to configure a component instantiated before the
-     * engine is built.
-     *
-     * @param callback
-     * @return self
-     */
-    public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
-        checkArgumentNotNull(callback);
-        if (this.engineReadyCallbacks == null) {
-            this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
-        }
-        this.engineReadyCallbacks.add(callback);
-        return this;
-    }
+	/**
+	 * Callback is useful to configure a component instantiated before the
+	 * engine is built.
+	 *
+	 * @param callback
+	 * @return self
+	 */
+	public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
+		checkArgumentNotNull(callback);
+		if (this.engineReadyCallbacks == null) {
+			this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
+		}
+		this.engineReadyCallbacks.add(callback);
+		return this;
+	}
 
-    /**
-     * Adds a {@link Mustache} listener.
-     *
-     * @param listener
-     * @return self
-     */
-    public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
-        checkArgumentNotNull(listener);
-        if (this.mustacheListeners == null) {
-            this.mustacheListeners = new ArrayList<MustacheListener>();
-        }
-        this.mustacheListeners.add(listener);
-        return this;
-    }
+	/**
+	 * Adds a {@link Mustache} listener. Manually added listeners are always
+	 * registered before listeners added via configuration extensions.
+	 *
+	 * @param listener
+	 * @return self
+	 */
+	public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
+		checkArgumentNotNull(listener);
+		if (this.mustacheListeners == null) {
+			this.mustacheListeners = new ArrayList<MustacheListener>();
+		}
+		this.mustacheListeners.add(listener);
+		return this;
+	}
 
-    /**
-     * Don't use the ServiceLoader mechanism to load configuration extensions.
-     *
-     * @see ConfigurationExtension
-     */
-    public MustacheEngineBuilder omitServiceLoaderConfigurationExtensions() {
-        this.omitServiceLoaderConfigurationExtensions = true;
-        return this;
-    }
+	/**
+	 * Don't use the ServiceLoader mechanism to load configuration extensions.
+	 *
+	 * @see ConfigurationExtension
+	 */
+	public MustacheEngineBuilder omitServiceLoaderConfigurationExtensions() {
+		this.omitServiceLoaderConfigurationExtensions = true;
+		return this;
+	}
 
-    /**
-     *
-     * @return new instance of builder
-     */
-    public static MustacheEngineBuilder newBuilder() {
-        return new MustacheEngineBuilder();
-    }
+	/**
+	 *
+	 * @return new instance of builder
+	 */
+	public static MustacheEngineBuilder newBuilder() {
+		return new MustacheEngineBuilder();
+	}
 
-    /**
-     *
-     * @author Martin Kouba
-     */
-    public interface EngineBuiltCallback {
+	/**
+	 *
+	 * @author Martin Kouba
+	 */
+	public interface EngineBuiltCallback {
 
-        public void engineBuilt(MustacheEngine engine);
+		public void engineBuilt(MustacheEngine engine);
 
-    }
+	}
 
-    public Set<TemplateLocator> getTemplateLocators() {
-        return templateLocators;
-    }
+	public Set<TemplateLocator> getTemplateLocators() {
+		return templateLocators;
+	}
 
-    public Set<Resolver> getResolvers() {
-        return resolvers;
-    }
+	public Set<Resolver> getResolvers() {
+		return resolvers;
+	}
 
-    public Map<String, Object> getGlobalData() {
-        return globalData;
-    }
+	public Map<String, Object> getGlobalData() {
+		return globalData;
+	}
 
-    public TextSupport getTextSupport() {
-        return textSupport;
-    }
+	public TextSupport getTextSupport() {
+		return textSupport;
+	}
 
-    public LocaleSupport getLocaleSupport() {
-        return localeSupport;
-    }
+	public LocaleSupport getLocaleSupport() {
+		return localeSupport;
+	}
 
-    public boolean isOmitServiceLoaderConfigurationExtensions() {
-        return omitServiceLoaderConfigurationExtensions;
-    }
+	public boolean isOmitServiceLoaderConfigurationExtensions() {
+		return omitServiceLoaderConfigurationExtensions;
+	}
 
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
 
-    public List<MustacheListener> getMustacheListeners() {
-        return mustacheListeners;
-    }
+	public List<MustacheListener> getMustacheListeners() {
+		return mustacheListeners;
+	}
 
-    private void performCleanup() {
-        this.omitServiceLoaderConfigurationExtensions = false;
-        this.resolvers = null;
-        this.templateLocators = null;
-        this.globalData = null;
-        this.textSupport = null;
-        this.localeSupport = null;
-        this.properties.clear();
-        this.engineReadyCallbacks = null;
-    }
+	private void performCleanup() {
+		this.omitServiceLoaderConfigurationExtensions = false;
+		this.resolvers = null;
+		this.templateLocators = null;
+		this.globalData = null;
+		this.textSupport = null;
+		this.localeSupport = null;
+		this.properties.clear();
+		this.engineReadyCallbacks = null;
+	}
 
 }

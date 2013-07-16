@@ -533,12 +533,13 @@ You can set the custom +org.trimou.engine.locale.LocaleSupport+ instance with +o
 [[mustache_listener]]
 === MustacheListener
 
-Receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering.
+Receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering. Listeners are invoked in the order of their registration, except for +renderingFinished()+ method which is invoked in reverse order.
 
 There are two ways to register a custom listener:
 
-* automatically via +org.trimou.engine.config.ConfigurationExtension+,
-* +MustacheEngineBuilder.addMustacheListener()+ method.
+* +MustacheEngineBuilder.addMustacheListener()+ method,
+* automatically via +org.trimou.engine.config.ConfigurationExtension+ (extension listeners are always registered after manually added listeners).
+
 
 NOTE: Code inside a listener may throw an unchecked exception - this aborts further processing of template and no more listeners are invoked afterwards.
 
@@ -560,7 +561,7 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 
 ==== CDIBeanResolver
 
-Tries to lookup a normal-scoped CDI bean with the given name (key).
+Tries to resolve a CDI bean with the given name (i.e. annotated with +@Named+ or with a +@Named+ stereotype).
 
 ==== Rendering context
 
