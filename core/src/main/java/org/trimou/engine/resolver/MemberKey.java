@@ -33,13 +33,8 @@ final class MemberKey {
         return name;
     }
 
-    MemberKey(Object contextObject, String name) {
-        super();
-        if (contextObject instanceof Class<?>) {
-            this.clazz = (Class<?>) contextObject;
-        } else {
-            this.clazz = contextObject.getClass();
-        }
+    private MemberKey(Class<?> clazz, String name) {
+        this.clazz = clazz;
         this.name = name;
     }
 
@@ -76,7 +71,21 @@ final class MemberKey {
 
     @Override
     public String toString() {
-        return String.format("MemberKey [clazz=%s, name=%s]", clazz, name);
+        return String.format("MemberKey [clazz: %s, name: %s]", clazz, name);
+    }
+
+
+    /**
+     * Simple factory method to obtain a new instance for the given context object and name.
+     *
+     * @param contextObject
+     * @param name
+     * @return a new instance
+     */
+    static MemberKey newInstance(Object contextObject, String name) {
+        return (contextObject instanceof Class<?>) ? new MemberKey(
+                (Class<?>) contextObject, name) : new MemberKey(
+                contextObject.getClass(), name);
     }
 
 }

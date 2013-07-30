@@ -78,7 +78,7 @@ public class ReflectionResolver extends AbstractResolver implements
         }
 
         MemberWrapper wrapper = memberCache.getUnchecked(
-                new MemberKey(contextObject, name)).orNull();
+                MemberKey.newInstance(contextObject, name)).orNull();
 
         if (wrapper == null) {
             return null;
