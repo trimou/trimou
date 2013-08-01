@@ -13,30 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.exception;
+package org.trimou.engine.listener;
+
+import java.io.Reader;
 
 /**
  *
  * @author Martin Kouba
  */
-public enum MustacheProblem {
+public interface MustacheParsingEvent {
 
-    // Compilation problems
-    COMPILE_INVALID_DELIMITERS,
-    COMPILE_INVALID_TAG,
-    COMPILE_INVALID_SECTION_END,
-    COMPILE_INVALID_TEMPLATE,
-    // Template related problems
-    TEMPLATE_NOT_READY,
-    TEMPLATE_MODIFICATION_NOT_ALLOWED,
-    TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-    TEMPLATE_LOADING_ERROR,
-    // Rendering problems
-    RENDER_INVALID_PARTIAL_KEY,
-    RENDER_INVALID_EXTEND_KEY,
-    RENDER_IO_ERROR,
-    RENDER_REFLECT_INVOCATION_ERROR,
-    RENDER_NO_VALUE,
-    RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
+    /**
+     *
+     * @return the template name
+     */
+    public String getMustacheName();
+
+    /**
+     *
+     * @return the template contents
+     */
+    public Reader getMustacheContents();
+
+    /**
+     *
+     * @param contents
+     */
+    public void setMustacheContents(Reader contents);
 
 }

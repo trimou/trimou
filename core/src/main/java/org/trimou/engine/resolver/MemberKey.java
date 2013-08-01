@@ -74,9 +74,9 @@ final class MemberKey {
         return String.format("MemberKey [clazz: %s, name: %s]", clazz, name);
     }
 
-
     /**
-     * Simple factory method to obtain a new instance for the given context object and name.
+     * Simple factory method to obtain a new instance for the given context
+     * object and name.
      *
      * @param contextObject
      * @param name

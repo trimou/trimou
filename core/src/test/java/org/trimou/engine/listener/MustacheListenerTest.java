@@ -29,6 +29,7 @@ public class MustacheListenerTest extends AbstractEngineTest {
     @Test
     public void testListenersInvoked() {
 
+        final List<String> parsed = new ArrayList<String>();
         final List<String> compiled = new ArrayList<String>();
         final List<String> renderingStarts = new ArrayList<String>();
         final List<String> renderingEnds = new ArrayList<String>();
@@ -71,6 +72,11 @@ public class MustacheListenerTest extends AbstractEngineTest {
                 renderingEnds.add(event.getMustacheName() + "2");
             }
 
+            @Override
+            public void parsingStarted(MustacheParsingEvent event) {
+                parsed.add(event.getMustacheName() + "2");
+            }
+
         };
 
         assertEquals(
@@ -83,6 +89,7 @@ public class MustacheListenerTest extends AbstractEngineTest {
         // Template and lambda
         assertEquals(2, compiled.size());
         assertEquals("listeners", compiled.get(0));
+        // The second is one-off lambda name
 
         assertEquals(2, renderingStarts.size());
         assertEquals("listeners", renderingStarts.get(0));
@@ -90,6 +97,10 @@ public class MustacheListenerTest extends AbstractEngineTest {
         assertEquals(2, renderingEnds.size());
         assertEquals("listeners2", renderingEnds.get(0));
         assertEquals("listeners", renderingEnds.get(1));
+
+        assertEquals(2, parsed.size());
+        assertEquals("listeners2", parsed.get(0));
+        // The second is one-off lambda name
     }
 
     @Test

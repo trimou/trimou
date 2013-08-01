@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.listener;
 
+import java.io.Reader;
+
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.ConfigurationAware;
@@ -29,7 +31,7 @@ import org.trimou.lambda.Lambda;
  * reverse order.
  *
  * Code inside a listener may throw an unchecked exception - this aborts further
- * processing of template and no more listeners are invoked afterwards.
+ * processing of the template and no more listeners are invoked afterwards.
  *
  * @author Martin Kouba
  * @see MustacheEngineBuilder#addMustacheListener(MustacheListener)
@@ -56,14 +58,21 @@ public interface MustacheListener extends ConfigurationAware {
     void renderingStarted(MustacheRenderingEvent event);
 
     /**
-     * Rendering of a {@link Mustache} is about to finish.
-     *
-     * Always use
+     * Rendering of a {@link Mustache} is about to finish. Always use
      * {@link MustacheRenderingEvent#registerReleaseCallback(ReleaseCallback)}
      * to release all the necessary resources.
      *
      * @param event
      */
     void renderingFinished(MustacheRenderingEvent event);
+
+    /**
+     * Parsing of a {@link Mustache} is about to start. Listeners are allowed to
+     * modify the event payload, particularly the {@link Reader} object used by
+     * a parser to read the template contents.
+     *
+     * @param event
+     */
+    void parsingStarted(MustacheParsingEvent event);
 
 }

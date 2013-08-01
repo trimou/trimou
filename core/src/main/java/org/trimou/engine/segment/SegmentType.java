@@ -24,14 +24,18 @@ import org.trimou.engine.MustacheTagType;
 @Internal
 public enum SegmentType {
 
-    TEMPLATE(null), VALUE(MustacheTagType.VARIABLE), TEXT(null), SECTION(
-            MustacheTagType.SECTION), INVERTED_SECTION(
-            MustacheTagType.INVERTED_SECTION), COMMENT(MustacheTagType.COMMENT), LINE_SEPARATOR(
-            null), DELIMITERS(MustacheTagType.DELIMITER), PARTIAL(
-            MustacheTagType.PARTIAL),
+    TEMPLATE(null),
+    VALUE(MustacheTagType.VARIABLE),
+    TEXT(null),
+    SECTION(MustacheTagType.SECTION),
+    INVERTED_SECTION(MustacheTagType.INVERTED_SECTION),
+    COMMENT(MustacheTagType.COMMENT),
+    LINE_SEPARATOR(null),
+    DELIMITERS(MustacheTagType.DELIMITER),
+    PARTIAL(MustacheTagType.PARTIAL),
     // Spec extensions
-    EXTEND(MustacheTagType.EXTEND), EXTEND_SECTION(
-            MustacheTagType.EXTEND_SECTION);
+    EXTEND(MustacheTagType.EXTEND),
+    EXTEND_SECTION(MustacheTagType.EXTEND_SECTION);
 
     private MustacheTagType tagType;
 

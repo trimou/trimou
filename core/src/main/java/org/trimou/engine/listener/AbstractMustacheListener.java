@@ -40,4 +40,9 @@ public abstract class AbstractMustacheListener extends
         // No-op
     }
 
+    @Override
+    public void parsingStarted(MustacheParsingEvent event) {
+        // No-op
+    }
+
 }

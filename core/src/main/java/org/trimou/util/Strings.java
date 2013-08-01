@@ -40,6 +40,10 @@ public final class Strings {
     public static final String FILE_SEPARATOR = System
             .getProperty("file.separator");
 
-    public static final String KEY_SEPARATOR = ".";
+    public static final String DOT = ".";
+
+    public static final String UNDERSCORE = "_";
+
+    public static final String KEY_SEPARATOR = DOT;
 
 }

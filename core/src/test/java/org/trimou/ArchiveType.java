@@ -2,7 +2,9 @@ package org.trimou;
 
 public enum ArchiveType {
 
-    JAR, WAR, EAR;
+    JAR,
+    WAR,
+    EAR;
 
     public String getSuffix() {
         switch (this) {

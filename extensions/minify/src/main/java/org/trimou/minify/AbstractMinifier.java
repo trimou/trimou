@@ -13,30 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.exception;
+package org.trimou.minify;
+
+import java.io.Reader;
+
+import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
+ * Abstract no-op minifier.
  *
  * @author Martin Kouba
  */
-public enum MustacheProblem {
+public abstract class AbstractMinifier extends AbstractConfigurationAware
+        implements Minifier {
 
-    // Compilation problems
-    COMPILE_INVALID_DELIMITERS,
-    COMPILE_INVALID_TAG,
-    COMPILE_INVALID_SECTION_END,
-    COMPILE_INVALID_TEMPLATE,
-    // Template related problems
-    TEMPLATE_NOT_READY,
-    TEMPLATE_MODIFICATION_NOT_ALLOWED,
-    TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-    TEMPLATE_LOADING_ERROR,
-    // Rendering problems
-    RENDER_INVALID_PARTIAL_KEY,
-    RENDER_INVALID_EXTEND_KEY,
-    RENDER_IO_ERROR,
-    RENDER_REFLECT_INVOCATION_ERROR,
-    RENDER_NO_VALUE,
-    RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
+    @Override
+    public Reader minify(String mustacheName, Reader mustacheContents) {
+        return mustacheContents;
+    }
+
+    @Override
+    public String minify(String text) {
+        return text;
+    }
 
 }

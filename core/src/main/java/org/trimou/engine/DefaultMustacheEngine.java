@@ -29,6 +29,7 @@ import org.trimou.engine.config.ConfigurationFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.listener.MustacheCompilationEvent;
 import org.trimou.engine.listener.MustacheListener;
+import org.trimou.engine.listener.MustacheParsingEvent;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.parser.Parser;
 import org.trimou.engine.parser.ParserFactory;
@@ -168,12 +169,33 @@ class DefaultMustacheEngine implements MustacheEngine {
      * @return
      */
     private Mustache parse(String templateName, Reader reader) {
+
         ParsingHandler handler = new ParsingHandlerFactory()
                 .createParsingHandler();
 
+        reader = notifyListenersBeforeParsing(templateName, reader);
         parser.parse(templateName, reader, handler);
         Mustache mustache = handler.getCompiledTemplate();
+        notifyListenersAfterCompilation(mustache);
 
+        return mustache;
+    }
+
+    private Reader notifyListenersBeforeParsing(String templateName,
+            Reader reader) {
+        if (configuration.getMustacheListeners() != null) {
+            MustacheParsingEvent event = new DefaultMustacheParsingEvent(
+                    templateName, reader);
+            for (MustacheListener listener : configuration
+                    .getMustacheListeners()) {
+                listener.parsingStarted(event);
+            }
+            return event.getMustacheContents();
+        }
+        return reader;
+    }
+
+    private void notifyListenersAfterCompilation(Mustache mustache) {
         if (configuration.getMustacheListeners() != null) {
             MustacheCompilationEvent event = new DefaultMustacheCompilationEvent(
                     mustache);
@@ -182,7 +204,6 @@ class DefaultMustacheEngine implements MustacheEngine {
                 listener.compilationFinished(event);
             }
         }
-        return mustache;
     }
 
     @Override
@@ -226,6 +247,43 @@ class DefaultMustacheEngine implements MustacheEngine {
         @Override
         public Mustache getMustache() {
             return mustache;
+        }
+
+    }
+
+    /**
+     *
+     * @author Martin Kouba
+     */
+    private static class DefaultMustacheParsingEvent implements
+            MustacheParsingEvent {
+
+        private final String mustacheName;
+
+        private Reader reader;
+
+        /**
+         *
+         * @param mustacheName
+         */
+        public DefaultMustacheParsingEvent(String mustacheName, Reader reader) {
+            super();
+            this.mustacheName = mustacheName;
+            this.reader = reader;
+        }
+
+        public String getMustacheName() {
+            return mustacheName;
+        }
+
+        @Override
+        public Reader getMustacheContents() {
+            return reader;
+        }
+
+        @Override
+        public void setMustacheContents(Reader reader) {
+            this.reader = reader;
         }
 
     }

@@ -15,9 +15,6 @@
  */
 package org.trimou.engine.config;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-
 /**
  * Engine configuration keys.
  *
@@ -76,11 +73,8 @@ public enum EngineConfigurationKey implements ConfigurationKey {
     private String key;
 
     EngineConfigurationKey(Object defaultValue) {
-        this.key = EngineConfigurationKey.class.getPackage().getName()
-                + "."
-                + WordUtils.uncapitalize(StringUtils.replace(
-                        WordUtils.capitalizeFully(this.toString(), '_'), "_",
-                        ""));
+        this.key = ConfigurationProperties.buildPropertyKey(this.toString(),
+                new String[]{EngineConfigurationKey.class.getPackage().getName()});
         this.defaultValue = defaultValue;
     }
 

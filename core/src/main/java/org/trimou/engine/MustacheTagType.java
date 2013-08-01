@@ -6,9 +6,16 @@ package org.trimou.engine;
  */
 public enum MustacheTagType {
 
-    VARIABLE(null), UNESCAPE_VARIABLE('&'), SECTION('#'), INVERTED_SECTION('^'), SECTION_END(
-            '/'), COMMENT('!'), PARTIAL('>'), DELIMITER('='), EXTEND('<'), EXTEND_SECTION(
-            '$');
+    VARIABLE(null),
+    UNESCAPE_VARIABLE('&'),
+    SECTION('#'),
+    INVERTED_SECTION('^'),
+    SECTION_END('/'),
+    COMMENT('!'),
+    PARTIAL('>'),
+    DELIMITER('='),
+    EXTEND('<'),
+    EXTEND_SECTION('$');
 
     MustacheTagType(Character command) {
         this.command = command;
