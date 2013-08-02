@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.trimou.engine.config.Configuration;
+import org.trimou.util.Patterns;
 
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
@@ -30,26 +31,28 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
  */
 public class HtmlCompressorMinifier extends CompressorMinifier<HtmlCompressor> {
 
-    public HtmlCompressorMinifier() {
-        super(new HtmlCompressor());
-    }
+	public HtmlCompressorMinifier() {
+		super(new HtmlCompressor());
+	}
 
-    @Override
-    public void init(Configuration configuration) {
-        super.init(configuration);
+	@Override
+	public void init(Configuration configuration) {
+		super.init(configuration);
 
-        List<Pattern> preservePatterns = compressor.getPreservePatterns();
+		List<Pattern> preservePatterns = compressor.getPreservePatterns();
 
-        Pattern mustachePattern = Pattern.compile("TODO");
+		// Note that we only consider the configuration-based delimiters so that
+		// "set delimiters" tag might not work properly
+		Pattern mustachePattern = Patterns.newMustacheTagPattern(configuration);
 
-        if (preservePatterns == null) {
-            compressor.setPreservePatterns(Collections
-                    .singletonList(mustachePattern));
-        } else {
-            List<Pattern> newPatterns = new ArrayList<Pattern>(preservePatterns);
-            newPatterns.add(mustachePattern);
-            compressor.setPreservePatterns(newPatterns);
-        }
-    }
+		if (preservePatterns == null) {
+			compressor.setPreservePatterns(Collections
+					.singletonList(mustachePattern));
+		} else {
+			List<Pattern> newPatterns = new ArrayList<Pattern>(preservePatterns);
+			newPatterns.add(mustachePattern);
+			compressor.setPreservePatterns(newPatterns);
+		}
+	}
 
 }
