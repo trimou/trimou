@@ -23,7 +23,7 @@ package org.trimou.engine.config;
 public enum EngineConfigurationKey implements ConfigurationKey {
 
     /**
-     * The default start delimiter (e.g. <code>}}</code>).
+     * The default start delimiter (e.g. <code>{{</code>).
      */
     START_DELIMITER("{{"),
     /**

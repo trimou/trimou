@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +46,7 @@ import org.trimou.engine.segment.TextSegment;
 import org.trimou.engine.segment.ValueSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Patterns;
 
 /**
  * The default handler implementation that compiles the template. It's not
@@ -163,9 +163,19 @@ class DefaultParsingHandler implements ParsingHandler {
     }
 
     private void validateTag(ParsedTag tag) {
+
         if (StringUtils.isEmpty(tag.getContent())) {
             throw new MustacheException(COMPILE_INVALID_TAG,
-                    "Tag has no content [line: %s]", line);
+                    "Tag has no content [type: %s, line: %s]", tag.getType(),
+                    line);
+        }
+
+        if (MustacheTagType.contentMustBeNonWhitespaceCharacterSequence(tag
+                .getType()) && StringUtils.containsWhitespace(tag.getContent())) {
+            throw new MustacheException(
+                    COMPILE_INVALID_TAG,
+                    "Tag content must be a non-whitespace character sequence [type: %s, line: %s]",
+                    tag.getType(), line);
         }
     }
 
@@ -208,8 +218,8 @@ class DefaultParsingHandler implements ParsingHandler {
                     "Invalid set delimiters tag: %s [line: %s]", key, line);
         }
 
-        Matcher matcher = Pattern.compile("([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)")
-                .matcher(key.substring(1, key.length() - 1));
+        Matcher matcher = Patterns.newSetDelimitersContentPattern().matcher(
+                key.substring(1, key.length() - 1));
 
         if (matcher.find()) {
             delimiters.setNewValues(matcher.group(1), matcher.group(3));

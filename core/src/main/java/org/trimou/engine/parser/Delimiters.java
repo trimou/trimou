@@ -48,7 +48,7 @@ class Delimiters {
     }
 
     public String getStartPart(int index) {
-        return start.substring(0, index + 1);
+        return start.substring(0, index);
     }
 
     public char getEnd(int index) {
@@ -60,7 +60,7 @@ class Delimiters {
     }
 
     public String getEndPart(int index) {
-        return end.substring(0, index + 1);
+        return end.substring(0, index);
     }
 
     public boolean hasDefaultDelimitersSet() {

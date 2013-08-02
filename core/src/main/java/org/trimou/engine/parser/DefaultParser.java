@@ -24,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -32,10 +34,14 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
 
 /**
+ * Naive yet default parser implementation.
  *
  * @author Martin Kouba
  */
 class DefaultParser implements Parser {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(DefaultParser.class);
 
     private static final int TEXT = 0;
     // If start delim more than one char
@@ -71,8 +77,9 @@ class DefaultParser implements Parser {
 
         StringBuilder buffer = new StringBuilder();
         int state = TEXT;
-        // Delimiter index
+        // Delimiter index - used to match
         int delimiterIdx = 0;
+        int line = 1;
         boolean triple = false;
 
         try {
@@ -96,11 +103,11 @@ class DefaultParser implements Parser {
                             delimiterIdx++;
                         }
                     } else {
-                        // False alarm
+                        // False alarm - not a start delimiter
                         state = TEXT;
-                        delimiterIdx = 0;
                         buffer.append(delimiters.getStartPart(delimiterIdx));
                         buffer.append(character);
+                        delimiterIdx = 0;
                     }
                 } else if (state == TEXT) {
                     if (character == delimiters.getStart(0)) {
@@ -121,6 +128,7 @@ class DefaultParser implements Parser {
                         buffer = flushText(buffer, handler);
                         flushLineSeparator(Strings.LINUX_LINE_SEPARATOR,
                                 handler);
+                        line++;
                     } else if (character == Strings.WINDOWS_LINE_SEPARATOR
                             .charAt(0)) {
                         state = START_R;
@@ -147,7 +155,8 @@ class DefaultParser implements Parser {
                             delimiterIdx = 1;
                         }
                     } else {
-                        if (character == delimiters.getStart(0)) {
+                        if (character == delimiters.getStart(0)
+                                && buffer.length() == 0) {
                             // Most likely a triple mustache
                             triple = true;
                         }
@@ -164,9 +173,14 @@ class DefaultParser implements Parser {
                             delimiterIdx++;
                         }
                     } else {
-                        throw new MustacheException(
-                                MustacheProblem.COMPILE_INVALID_TAG,
-                                "Unexpected tag end: %s", character);
+                        // False alarm - not an end delimiter
+                        logger.warn(
+                                "Tag contains part of the end delimiter - most probably an invalid key [part: {}, line: {}]",
+                                delimiters.getStartPart(delimiterIdx), line);
+                        state = TAG;
+                        buffer.append(delimiters.getEndPart(delimiterIdx));
+                        buffer.append(character);
+                        delimiterIdx = 0;
                     }
                 } else if (state == START_R) {
                     if (character == Strings.WINDOWS_LINE_SEPARATOR.charAt(1)) {
@@ -175,6 +189,7 @@ class DefaultParser implements Parser {
                         buffer = flushText(buffer, handler);
                         flushLineSeparator(Strings.WINDOWS_LINE_SEPARATOR,
                                 handler);
+                        line++;
                     }
                 } else {
                     throw new IllegalStateException("Unknown parsing state");
@@ -226,7 +241,7 @@ class DefaultParser implements Parser {
     }
 
     private ParsedTag deriveTag(String buffer, Delimiters delimiters) {
-        MustacheTagType type = fromBuffer(buffer, delimiters);
+        MustacheTagType type = identifyTagType(buffer, delimiters);
         String key = extractContent(type, buffer);
         return new ParsedTag(key, type);
     }
@@ -238,7 +253,7 @@ class DefaultParser implements Parser {
      * @param delimiters
      * @return the tag type
      */
-    private MustacheTagType fromBuffer(String buffer, Delimiters delimiters) {
+    private MustacheTagType identifyTagType(String buffer, Delimiters delimiters) {
 
         if (buffer.length() == 0) {
             return MustacheTagType.VARIABLE;
