@@ -9,7 +9,7 @@
 [[intro]]
 == What is Trimou?
 
-Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. It's goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. So far there are three ready-to-use extensions  which provide integration with http://www.cdi-spec.org/[CDI], Servlets and http://ocpsoft.org/prettytime/[PrettyTime] (see <<extensions,Extensions>> section for more info).
+Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. It's goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. So far there are four ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime] and http://code.google.com/p/htmlcompressor/[HtmlCompressor] (see <<extensions,Extensions>> section for more info).
 
 NOTE: Trimou is available under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache License 2.0].
 
@@ -533,7 +533,7 @@ You can set the custom +org.trimou.engine.locale.LocaleSupport+ instance with +o
 [[mustache_listener]]
 === MustacheListener
 
-Receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering. Listeners are invoked in the order of their registration, except for +renderingFinished()+ method which is invoked in reverse order.
+Receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering. +parsingStarted()+ is invoked right before a template is processed by the parser. Listeners are invoked in the order of their registration, except for +renderingFinished()+ method which is invoked in reverse order.
 
 There are two ways to register a custom listener:
 
@@ -627,8 +627,72 @@ MustacheEngine engine = MustacheEngineBuilder
                              .build();
 Mustache mustache = engine.compileMustache("prettyTime","{{now.prettyTime}}");
 String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date()));
-// Renderds something similar:
+// Renders something similar:
 // moments from now
+----
+
+[[minify]]
+=== Minify
+
+Minify extension allows you to minify your HTML and XML templates (or any other type of content if you provide your own +org.trimou.minify.Minifier+ implementation). Trimou integrates small and efficient http://code.google.com/p/htmlcompressor/[HtmlCompressor] library. There are two ways to minify the templates. It's possible to register a special listener to minify templates before parsing/compilation or use a special lambda to minify some parts of the template contents. 
+
+TIP: It's recommended to use +org.trimou.minify.Minify+ helper methods to create the listeners and lambdas.
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-minify</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+==== MinifyListener
+
+.Simple example
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+                             .newBuilder()
+                             .addMustacheListener(Minify.htmlListener())
+                             .build();
+Mustache mustache = engine.compileMustache("minify_html","<html><body>     <!-- My comment -->{{foo}}  </body></html>");
+String output = mustache.render(ImmutableMap.<String, Object> of("foo", "FOO"));
+// Renders:
+// <html><body> FOO </body></html>
+----
+
+TIP: It's also possible to customize the underlying +com.googlecode.htmlcompressor.compressor.HtmlCompressor+ instance - see also our https://github.com/trimou/trimou/blob/master/extensions/minify/src/test/java/org/trimou/minify/MinifyListenerTest.java#L81[MinifyListenerTest].
+
+==== MinifyLambda
+
+.Simple example
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+                             .newBuilder()
+                             .build();
+Mustache mustache = engine.compileMustache("minify_html_lambda","<html><body><!-- Remains -->{{#mini}}<!-- Will be removed -->   FOO {{/mini}}</body></html>");
+String output = mustache.render(ImmutableMap.<String, Object> of("mini", Minify.htmlLambda()));
+// Renders:
+// <html><body><!-- Remains --> FOO </body></html>
+----
+
+==== Minifier interface
+
+You can also implement your own minifier and leverage existing infrastructure:
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+                             .newBuilder()
+                             .addMustacheListener(Minify.customListener(new AbstractMinifier() {
+                                @Override
+                                public Reader minify(String mustacheName, Reader mustacheContents) {
+                                    return mustacheName.endsWith("html") ? mySuperMinification(Reader mustacheContents) : mustacheContents;
+                                }
+                             }))).build();
 ----
 
 '''
