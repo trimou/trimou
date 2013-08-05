@@ -636,7 +636,9 @@ String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date
 
 Minify extension allows you to minify your HTML and XML templates (or any other type of content if you provide your own +org.trimou.minify.Minifier+ implementation). Trimou integrates small and efficient http://code.google.com/p/htmlcompressor/[HtmlCompressor] library. There are two ways to minify the templates. It's possible to register a special listener to minify templates before parsing/compilation or use a special lambda to minify some parts of the template contents. 
 
-TIP: It's recommended to use +org.trimou.minify.Minify+ helper methods to create the listeners and lambdas.
+TIP: +org.trimou.minify.Minify+ helper methods are useful to create the default listeners and lambdas (i.e. if you don't require some extra configuration).
+
+NOTE: From the performance point of view: both listener and lambda decrease the size of the rendered template. However listeners may also improve the rendering performance (template is minified only once - before the compilation). Whereas lambdas will likely make rendering performance worse (part of the template is minified every time the lambda is invoked).
 
 .Maven dependency
 [source,xml]
