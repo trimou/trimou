@@ -23,52 +23,52 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class PingService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(PingService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(PingService.class);
 
-	private AtomicLong generator = new AtomicLong(System.currentTimeMillis());
+    private AtomicLong generator = new AtomicLong(System.currentTimeMillis());
 
-	// Simple in-memory task store
-	private ConcurrentMap<Long, Ping> pings = new ConcurrentHashMap<Long, Ping>();
+    // Simple in-memory task store
+    private ConcurrentMap<Long, Ping> pings = new ConcurrentHashMap<Long, Ping>();
 
-	private Comparator<Ping> pingComparator = new Comparator<Ping>() {
+    private Comparator<Ping> pingComparator = new Comparator<Ping>() {
 
-		@Override
-		public int compare(Ping o1, Ping o2) {
-			return o1.getTime().compareTo(o2.getTime());
-		}
-	};
+        @Override
+        public int compare(Ping o1, Ping o2) {
+            return o1.getTime().compareTo(o2.getTime());
+        }
+    };
 
-	/**
-	 *
-	 * @param remoteAddr
-	 */
-	public void ping(String remoteAddr) {
-		Ping ping = new Ping(generator.incrementAndGet(), remoteAddr,
-				new Date());
-		pings.put(ping.getId(), ping);
-		logger.info("{}", ping);
-	}
+    /**
+     *
+     * @param remoteAddr
+     */
+    public void ping(String remoteAddr) {
+        Ping ping = new Ping(generator.incrementAndGet(), remoteAddr,
+                new Date());
+        pings.put(ping.getId(), ping);
+        logger.info("{}", ping);
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public List<Ping> getPings() {
-		List<Ping> result = new ArrayList<Ping>();
-		for (Ping task : pings.values()) {
-			result.add(task);
-		}
-		Collections.sort(result, pingComparator);
-		return result;
-	}
+    /**
+     *
+     * @return
+     */
+    public List<Ping> getPings() {
+        List<Ping> result = new ArrayList<Ping>();
+        for (Ping task : pings.values()) {
+            result.add(task);
+        }
+        Collections.sort(result, pingComparator);
+        return result;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public Ping getPing(Long id) {
-		return pings.get(id);
-	}
+    /**
+     *
+     * @return
+     */
+    public Ping getPing(Long id) {
+        return pings.get(id);
+    }
 
 }

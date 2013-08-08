@@ -19,28 +19,28 @@ import org.trimou.engine.MustacheEngine;
 @Path("/ping")
 public class PingResource {
 
-	@Inject
-	private PingService service;
+    @Inject
+    private PingService service;
 
-	@Inject
-	private MustacheEngine engine;
+    @Inject
+    private MustacheEngine engine;
 
-	@Context
-	private HttpServletRequest request;
+    @Context
+    private HttpServletRequest request;
 
-	/**
-	 *
-	 * @return
-	 */
-	@GET
-	@Produces(TEXT_HTML)
-	public String getPingLog() {
-		return engine.getMustache("pingLogCdi").render(null);
-	}
+    /**
+     *
+     * @return
+     */
+    @GET
+    @Produces(TEXT_HTML)
+    public String getPingLog() {
+        return engine.getMustache("pingLogCdi").render(null);
+    }
 
-	@POST
-	public void ping() {
-		service.ping(request.getRemoteAddr());
-	}
+    @POST
+    public void ping() {
+        service.ping(request.getRemoteAddr());
+    }
 
 }

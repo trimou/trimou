@@ -20,26 +20,26 @@ import com.google.common.collect.ImmutableMap;
 @WebServlet("/ping")
 public class PingServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	private MustacheEngine engine;
+    @Inject
+    private MustacheEngine engine;
 
-	@Inject
-	private PingService service;
+    @Inject
+    private PingService service;
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		service.ping(req.getRemoteAddr());
-	}
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        service.ping(req.getRemoteAddr());
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		// Note that we use the provided Writer instance
-		engine.getMustache("pingLogServlet").render(resp.getWriter(),
-				ImmutableMap.<String, Object> of("pings", service.getPings()));
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        // Note that we use the provided Writer instance
+        engine.getMustache("pingLogServlet").render(resp.getWriter(),
+                ImmutableMap.<String, Object> of("pings", service.getPings()));
+    }
 
 }

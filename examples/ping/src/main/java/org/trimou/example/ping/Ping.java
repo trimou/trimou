@@ -8,40 +8,40 @@ import java.util.Date;
  */
 public class Ping {
 
-	private Long id;
+    private Long id;
 
-	private final String remoteAddr;
+    private final String remoteAddr;
 
-	private final Date time;
+    private final Date time;
 
-	/**
-	 *
-	 * @param remoteAddr
-	 * @param time
-	 */
-	public Ping(Long id, String remoteAddr, Date time) {
-		super();
-		this.id = id;
-		this.remoteAddr = remoteAddr;
-		this.time = time;
-	}
+    /**
+     *
+     * @param remoteAddr
+     * @param time
+     */
+    public Ping(Long id, String remoteAddr, Date time) {
+        super();
+        this.id = id;
+        this.remoteAddr = remoteAddr;
+        this.time = time;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getRemoteAddr() {
-		return remoteAddr;
-	}
+    public String getRemoteAddr() {
+        return remoteAddr;
+    }
 
-	public Date getTime() {
-		return time;
-	}
+    public Date getTime() {
+        return time;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("Ping [id=%s, remoteAddr=%s, time=%s]", id,
-				remoteAddr, time);
-	}
+    @Override
+    public String toString() {
+        return String.format("Ping [id=%s, remoteAddr=%s, time=%s]", id,
+                remoteAddr, time);
+    }
 
 }
