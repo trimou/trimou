@@ -26,6 +26,10 @@ import org.apache.commons.lang3.math.NumberUtils;
  */
 public abstract class IndexResolver extends AbstractResolver {
 
+    public IndexResolver(int priority) {
+        super(priority);
+    }
+
     /**
      * @param name
      * @return <code>true</code> if the given key doesn't represent an index

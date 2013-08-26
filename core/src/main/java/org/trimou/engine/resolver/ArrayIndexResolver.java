@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.lang.reflect.Array;
 
@@ -32,7 +32,15 @@ import java.lang.reflect.Array;
  */
 public class ArrayIndexResolver extends IndexResolver {
 
-    public static final int ARRAY_RESOLVER_PRIORITY = after(ListIndexResolver.LIST_RESOLVER_PRIORITY);
+    public static final int ARRAY_RESOLVER_PRIORITY = rightAfter(ListIndexResolver.LIST_RESOLVER_PRIORITY);
+
+    public ArrayIndexResolver() {
+        this(ARRAY_RESOLVER_PRIORITY);
+    }
+
+    public ArrayIndexResolver(int priority) {
+        super(priority);
+    }
 
     @Override
     public Object resolve(Object contextObject, String name,
@@ -57,11 +65,6 @@ public class ArrayIndexResolver extends IndexResolver {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public int getPriority() {
-        return ARRAY_RESOLVER_PRIORITY;
     }
 
 }

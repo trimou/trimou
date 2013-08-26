@@ -29,6 +29,10 @@ public abstract class LocaleAwareResolver extends AbstractResolver {
 
     protected LocaleSupport localeSupport;
 
+    public LocaleAwareResolver(int priority) {
+        super(priority);
+    }
+
     @Override
     public void init(Configuration configuration) {
         localeSupport = configuration.getLocaleSupport();

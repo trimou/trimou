@@ -42,12 +42,7 @@ public class DefaultConfigurationTest extends AbstractEngineTest {
         engine = MustacheEngineBuilder
                 .newBuilder()
                 .setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY,
-                        "3000").addResolver(new AbstractResolver() {
-
-                    @Override
-                    public int getPriority() {
-                        return 0;
-                    }
+                        "3000").addResolver(new AbstractResolver(0) {
 
                     @Override
                     public Object resolve(Object contextObject, String name,
@@ -60,7 +55,6 @@ public class DefaultConfigurationTest extends AbstractEngineTest {
                         return ImmutableSet.<ConfigurationKey> of(
                                 testResolverKeyAlpha, testResolverKeyBravo);
                     }
-
                 }).build();
 
     }

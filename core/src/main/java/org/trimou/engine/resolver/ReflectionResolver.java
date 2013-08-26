@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.before;
+import static org.trimou.engine.priority.Priorities.rightBefore;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -53,7 +53,15 @@ public class ReflectionResolver extends AbstractResolver implements
     private static final Logger logger = LoggerFactory
             .getLogger(ReflectionResolver.class);
 
-    public static final int REFLECTION_RESOLVER_PRIORITY = before(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+
+    public ReflectionResolver() {
+        this(REFLECTION_RESOLVER_PRIORITY);
+    }
+
+    public ReflectionResolver(int priority) {
+        super(priority);
+    }
 
     /**
      * Limit the size of the cache (e.g. to avoid problems when dynamic class
@@ -90,11 +98,6 @@ public class ReflectionResolver extends AbstractResolver implements
             throw new MustacheException(
                     MustacheProblem.RENDER_REFLECT_INVOCATION_ERROR, e);
         }
-    }
-
-    @Override
-    public int getPriority() {
-        return REFLECTION_RESOLVER_PRIORITY;
     }
 
     @Override

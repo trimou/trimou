@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver.i18n;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,7 +50,7 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
     private static final Logger logger = LoggerFactory
             .getLogger(DateTimeFormatResolver.class);
 
-    public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey CUSTOM_PATTERN_KEY = new SimpleConfigurationKey(
             DateTimeFormatResolver.class.getName() + ".customPattern",
@@ -65,6 +65,15 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
     private static final String NAME_FORMAT_DATE = "formatDate";
 
     private String customPattern;
+
+
+    public DateTimeFormatResolver() {
+        this(DATE_TIME_FORMAT_RESOLVER_PRIORITY);
+    }
+
+    public DateTimeFormatResolver(int priority) {
+        super(priority);
+    }
 
     @Override
     public Object resolve(Object contextObject, String name,
@@ -91,11 +100,6 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
             return formatDate(DateFormat.MEDIUM, formattableObject);
         }
         return null;
-    }
-
-    @Override
-    public int getPriority() {
-        return DATE_TIME_FORMAT_RESOLVER_PRIORITY;
     }
 
     @Override

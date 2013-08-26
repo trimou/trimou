@@ -28,6 +28,13 @@ import org.trimou.engine.config.ConfigurationKey;
  */
 public abstract class AbstractResolver implements Resolver {
 
+    private final int priority;
+
+    public AbstractResolver(int priority) {
+        this.priority = priority;
+    }
+
+
     @Override
     public void init(Configuration configuration) {
         // No-op
@@ -37,6 +44,11 @@ public abstract class AbstractResolver implements Resolver {
     public Set<ConfigurationKey> getConfigurationKeys() {
         // No config keys by default
         return Collections.emptySet();
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 
     @Override

@@ -30,12 +30,7 @@ public class ValueReleaseCallbackTest extends AbstractTest {
         final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addResolver(new AbstractResolver() {
-
-                    @Override
-                    public int getPriority() {
-                        return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
-                    }
+                .addResolver(new AbstractResolver(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
 
                     @Override
                     public Object resolve(Object contextObject, String name,
@@ -77,12 +72,7 @@ public class ValueReleaseCallbackTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
                 .setProperty(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM,
-                        true).addResolver(new AbstractResolver() {
-
-                    @Override
-                    public int getPriority() {
-                        return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
-                    }
+                        true).addResolver(new AbstractResolver(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
 
                     @Override
                     public Object resolve(Object contextObject, String name,
@@ -117,12 +107,7 @@ public class ValueReleaseCallbackTest extends AbstractTest {
         final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addResolver(new AbstractResolver() {
-
-                    @Override
-                    public int getPriority() {
-                        return WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100;
-                    }
+                .addResolver(new AbstractResolver(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
 
                     @Override
                     public Object resolve(Object contextObject, String name,

@@ -1,6 +1,21 @@
+/*
+ * Copyright 2013 Martin Kouba
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.trimou.servlet.resolver;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,30 +30,33 @@ import org.trimou.servlet.RequestHolder;
  */
 public class HttpServletRequestResolver extends AbstractResolver {
 
-    public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+	public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
-    private static final String NAME_REQUEST = "request";
+	private static final String NAME_REQUEST = "request";
 
-    @Override
-    public int getPriority() {
-        return SERVLET_REQUEST_RESOLVER_PRIORITY;
-    }
+	public HttpServletRequestResolver() {
+		this(SERVLET_REQUEST_RESOLVER_PRIORITY);
+	}
 
-    @Override
-    public Object resolve(Object contextObject, String name,
-            ResolutionContext context) {
+	public HttpServletRequestResolver(int priority) {
+		super(priority);
+	}
 
-        if (contextObject != null) {
-            return null;
-        }
+	@Override
+	public Object resolve(Object contextObject, String name,
+			ResolutionContext context) {
 
-        if (NAME_REQUEST.equals(name)) {
-            HttpServletRequest request = RequestHolder.getCurrentRequest();
-            if (request != null) {
-                return new HttpServletRequestWrapper(request);
-            }
-        }
-        return null;
-    }
+		if (contextObject != null) {
+			return null;
+		}
+
+		if (NAME_REQUEST.equals(name)) {
+			HttpServletRequest request = RequestHolder.getCurrentRequest();
+			if (request != null) {
+				return new HttpServletRequestWrapper(request);
+			}
+		}
+		return null;
+	}
 
 }

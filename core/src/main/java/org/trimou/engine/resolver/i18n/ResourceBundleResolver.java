@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver.i18n;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.ResourceBundle;
 
@@ -36,17 +36,14 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
 
     private String baseName;
 
-    private int priority;
-
     /**
      *
      * @param baseName
      *            The base name of the resource bundle
      */
     public ResourceBundleResolver(String baseName) {
-        super();
+        super(rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY));
         this.baseName = baseName;
-        this.priority = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
     }
 
     /**
@@ -56,9 +53,8 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
      * @param priority
      */
     public ResourceBundleResolver(String baseName, int priority) {
-        super();
+        super(priority);
         this.baseName = baseName;
-        this.priority = priority;
     }
 
     @Override
@@ -76,11 +72,6 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
             }
         }
         return null;
-    }
-
-    @Override
-    public int getPriority() {
-        return priority;
     }
 
 }

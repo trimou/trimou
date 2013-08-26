@@ -15,18 +15,27 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.Map;
 
 /**
- * Resolves {@link Map} values.
+ * Resolves {@link Map} values. The key is expected to be an instance of a
+ * {@link String}.
  *
  * @author Martin Kouba
  */
 public class MapResolver extends AbstractResolver {
 
-    public static final int MAP_RESOLVER_PRIORITY = after(ThisResolver.THIS_RESOLVER_PRIORITY);
+    public static final int MAP_RESOLVER_PRIORITY = rightAfter(ThisResolver.THIS_RESOLVER_PRIORITY);
+
+    public MapResolver() {
+        this(MAP_RESOLVER_PRIORITY);
+    }
+
+    public MapResolver(int priority) {
+        super(priority);
+    }
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -39,11 +48,6 @@ public class MapResolver extends AbstractResolver {
 
         Map map = (Map) contextObject;
         return map.get(name);
-    }
-
-    @Override
-    public int getPriority() {
-        return MAP_RESOLVER_PRIORITY;
     }
 
 }

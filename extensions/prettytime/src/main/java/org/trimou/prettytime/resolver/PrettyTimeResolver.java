@@ -1,6 +1,21 @@
+/*
+ * Copyright 2013 Martin Kouba
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.trimou.prettytime.resolver;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -32,14 +47,22 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
     private static final Logger logger = LoggerFactory
             .getLogger(PrettyTimeResolver.class);
 
-    public static final int PRETTY_TIME_RESOLVER_PRIORITY = after(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int PRETTY_TIME_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
             PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
 
     private String matchName;
 
-    /**
+    public PrettyTimeResolver() {
+    	this(PRETTY_TIME_RESOLVER_PRIORITY);
+    }
+
+    public PrettyTimeResolver(int priority) {
+		super(priority);
+	}
+
+	/**
      * Lazy loading cache of PrettyTime instances
      */
     private LoadingCache<Locale, PrettyTime> prettyTimeCache;
@@ -60,11 +83,6 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
 
         return prettyTimeCache.getUnchecked(getCurrentLocale()).format(
                 formattableObject);
-    }
-
-    @Override
-    public int getPriority() {
-        return PRETTY_TIME_RESOLVER_PRIORITY;
     }
 
     @Override

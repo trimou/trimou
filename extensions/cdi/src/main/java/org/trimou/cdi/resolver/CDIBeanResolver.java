@@ -1,6 +1,21 @@
+/*
+ * Copyright 2013 Martin Kouba
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.trimou.cdi.resolver;
 
-import static org.trimou.engine.priority.Priorities.after;
+import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.Collections;
 import java.util.Set;
@@ -43,7 +58,7 @@ public class CDIBeanResolver extends AbstractResolver {
     private static final Logger logger = LoggerFactory
             .getLogger(CDIBeanResolver.class);
 
-    public static final int CDI_BEAN_RESOLVER_PRIORITY = after(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int CDI_BEAN_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
     public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
             CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
@@ -52,20 +67,22 @@ public class CDIBeanResolver extends AbstractResolver {
 
     private LoadingCache<String, Optional<Bean>> beanCache;
 
-    /**
-     *
-     */
     public CDIBeanResolver() {
-        super();
+        this(CDI_BEAN_RESOLVER_PRIORITY);
     }
 
-    /**
-     *
-     * @param beanManager
-     */
-    public CDIBeanResolver(BeanManager beanManager) {
-        super();
+    public CDIBeanResolver(int priority) {
+        super(priority);
+    }
+
+    public CDIBeanResolver(BeanManager beanManager, int priority) {
+    	this(priority);
         this.beanManager = beanManager;
+    }
+
+    public CDIBeanResolver(BeanManager beanManager) {
+    	this(CDI_BEAN_RESOLVER_PRIORITY);
+    	this.beanManager = beanManager;
     }
 
     @Override
@@ -83,11 +100,6 @@ public class CDIBeanResolver extends AbstractResolver {
             return null;
         }
         return getReference(bean.get(), context);
-    }
-
-    @Override
-    public int getPriority() {
-        return CDI_BEAN_RESOLVER_PRIORITY;
     }
 
     @Override

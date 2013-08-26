@@ -15,28 +15,16 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.rightAfter;
-
-import java.util.List;
+import java.util.Map;
 
 /**
- * Resolve index-based access to lists.
+ * Abstract resolver for maps with custom key types.
  *
- * E.g. get the first element of <code>myList</code>:
- *
- * <pre>
- * {{myList.0}}
- * </pre>
+ * @author Martin Kouba
  */
-public class ListIndexResolver extends IndexResolver {
+public abstract class MapCustomKeyResolver extends AbstractResolver {
 
-    public static final int LIST_RESOLVER_PRIORITY = rightAfter(MapResolver.MAP_RESOLVER_PRIORITY);
-
-    public ListIndexResolver() {
-        this(LIST_RESOLVER_PRIORITY);
-    }
-
-    public ListIndexResolver(int priority) {
+    public MapCustomKeyResolver(int priority) {
         super(priority);
     }
 
@@ -45,18 +33,27 @@ public class ListIndexResolver extends IndexResolver {
     public Object resolve(Object contextObject, String name,
             ResolutionContext context) {
 
-        if (contextObject == null || notAnIndex(name)
-                || !(contextObject instanceof List)) {
+        if (contextObject == null || !(contextObject instanceof Map)
+                || !matches(name)) {
             return null;
         }
-
-        List list = (List) contextObject;
-        Integer index = getIndexValue(name, list.size());
-
-        if (index != null) {
-            return list.get(index);
-        }
-        return null;
+        Map map = (Map) contextObject;
+        return map.get(convert(name));
     }
+
+    /**
+     *
+     * @param name
+     * @return <code>true</code> if this resolver matches (the lookup should be
+     *         performed) the given name, <code>false</code> otherwise
+     */
+    protected abstract boolean matches(String name);
+
+    /**
+     *
+     * @param name
+     * @return the converted key
+     */
+    protected abstract Object convert(String name);
 
 }
