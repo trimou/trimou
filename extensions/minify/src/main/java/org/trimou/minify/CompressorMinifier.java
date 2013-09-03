@@ -34,71 +34,71 @@ import com.googlecode.htmlcompressor.compressor.Compressor;
  * @param <T>
  */
 public abstract class CompressorMinifier<T extends Compressor> extends
-		AbstractMinifier {
+        AbstractMinifier {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(CompressorMinifier.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(CompressorMinifier.class);
 
-	T compressor;
+    T compressor;
 
-	/**
-	 *
-	 * @param compressor
-	 */
-	public CompressorMinifier(T compressor) {
-		this.compressor = compressor;
-	}
+    /**
+     *
+     * @param compressor
+     */
+    public CompressorMinifier(T compressor) {
+        this.compressor = compressor;
+    }
 
-	@Override
-	public void init(Configuration configuration) {
-		initCompressor(compressor, configuration);
-	}
+    @Override
+    public void init(Configuration configuration) {
+        initCompressor(compressor, configuration);
+    }
 
-	@Override
-	public Reader minify(String mustacheName, Reader mustacheContents) {
-		if (!match(mustacheName)) {
-			return mustacheContents;
-		}
-		try {
-			String source = IOUtils.toString(mustacheContents);
-			String compressed = compressor.compress(source);
-			logger.debug("Compression finished [saving: {} bytes]",
-					source.length() - compressed.length());
-			return new StringReader(compressed);
-		} catch (Exception e) {
-			throw new MustacheException(
-					"Unable to compress the template contents", e);
-		}
-	}
+    @Override
+    public Reader minify(String mustacheName, Reader mustacheContents) {
+        if (!match(mustacheName)) {
+            return mustacheContents;
+        }
+        try {
+            String source = IOUtils.toString(mustacheContents);
+            String compressed = compressor.compress(source);
+            logger.debug("Compression finished [saving: {} bytes]",
+                    source.length() - compressed.length());
+            return new StringReader(compressed);
+        } catch (Exception e) {
+            throw new MustacheException(
+                    "Unable to compress the template contents", e);
+        }
+    }
 
-	@Override
-	public String minify(String text) {
-		String compressed = compressor.compress(text);
-		logger.debug("Compression finished [saving: {} bytes]", text.length()
-				- compressed.length());
-		return compressed;
-	}
+    @Override
+    public String minify(String text) {
+        String compressed = compressor.compress(text);
+        logger.debug("Compression finished [saving: {} bytes]", text.length()
+                - compressed.length());
+        return compressed;
+    }
 
-	/**
-	 * Useful to filter out specific templates, e.g. to only minify files with
-	 * *.html suffix.
-	 *
-	 * @param mustacheName
-	 * @return <code>true</code> if the minifier should be applied to the given
-	 *         mustache name, <code>false</code> otherwise
-	 */
-	protected boolean match(String mustacheName) {
-		return true;
-	}
+    /**
+     * Useful to filter out specific templates, e.g. to only minify files with
+     * *.html suffix.
+     *
+     * @param mustacheName
+     * @return <code>true</code> if the minifier should be applied to the given
+     *         mustache name, <code>false</code> otherwise
+     */
+    protected boolean match(String mustacheName) {
+        return true;
+    }
 
-	/**
-	 * Initialize the compressor instance.
-	 *
-	 * @param compressor
-	 * @param configuration
-	 */
-	protected void initCompressor(T compressor, Configuration configuration) {
-		// No-op
-	}
+    /**
+     * Initialize the compressor instance.
+     *
+     * @param compressor
+     * @param configuration
+     */
+    protected void initCompressor(T compressor, Configuration configuration) {
+        // No-op
+    }
 
 }

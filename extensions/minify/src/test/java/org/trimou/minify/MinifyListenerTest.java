@@ -22,118 +22,118 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
  */
 public class MinifyListenerTest {
 
-	@Test
-	public void testDefaultHtmlListener() {
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.addMustacheListener(Minify.htmlListener()).build();
-		assertEquals(
-				"<html><body> <p>FOO</p> </body> </html>",
-				engine.compileMustache("minify_html",
-						"<html><body>   <!-- My comment -->  <p>{{foo}}</p>  </body>\n  </html>")
-						.render(ImmutableMap.<String, Object> of("foo", "FOO")));
-	}
+    @Test
+    public void testDefaultHtmlListener() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addMustacheListener(Minify.htmlListener()).build();
+        assertEquals(
+                "<html><body> <p>FOO</p> </body> </html>",
+                engine.compileMustache("minify_html",
+                        "<html><body>   <!-- My comment -->  <p>{{foo}}</p>  </body>\n  </html>")
+                        .render(ImmutableMap.<String, Object> of("foo", "FOO")));
+    }
 
-	@Test
-	public void testDefaultXmlListener() {
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.addMustacheListener(Minify.xmlListener()).build();
-		assertEquals(
-				"<foo><bar>Hey FOO!</bar></foo>",
-				engine.compileMustache("minify_xml",
-						"<foo> <!-- My comment -->  <bar>Hey {{foo}}!</bar> \n\n </foo>")
-						.render(ImmutableMap.<String, Object> of("foo", "FOO")));
-	}
+    @Test
+    public void testDefaultXmlListener() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addMustacheListener(Minify.xmlListener()).build();
+        assertEquals(
+                "<foo><bar>Hey FOO!</bar></foo>",
+                engine.compileMustache("minify_xml",
+                        "<foo> <!-- My comment -->  <bar>Hey {{foo}}!</bar> \n\n </foo>")
+                        .render(ImmutableMap.<String, Object> of("foo", "FOO")));
+    }
 
-	@Test
-	public void testPreservePattern() {
+    @Test
+    public void testPreservePattern() {
 
-		String template = "<html><body>{{ <!--foo--> }}</body>     </html>";
+        String template = "<html><body>{{ <!--foo--> }}</body>     </html>";
 
-		MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-				.addMustacheListener(Minify.htmlListener()).build();
-		assertEquals(
-				"<html><body>FOO</body> </html>",
-				engine.compileMustache("minify_html_preserve_pattern", template)
-						.render(ImmutableMap.<String, Object> of("<!--foo-->",
-								"FOO")));
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addMustacheListener(Minify.htmlListener()).build();
+        assertEquals(
+                "<html><body>FOO</body> </html>",
+                engine.compileMustache("minify_html_preserve_pattern", template)
+                        .render(ImmutableMap.<String, Object> of("<!--foo-->",
+                                "FOO")));
 
-		engine = MustacheEngineBuilder
-				.newBuilder()
-				.addMustacheListener(
-						Minify.customListener(new HtmlCompressorMinifier() {
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .addMustacheListener(
+                        Minify.customListener(new HtmlCompressorMinifier() {
 
-							@Override
-							public void init(Configuration configuration) {
-								// No custom preserve pattern
-							}
-						})).build();
-		try {
-			engine.compileMustache("minify_html_preserve_pattern", template);
-			fail("Compilation should fail!");
-		} catch (MustacheException e) {
-			if (!MustacheProblem.COMPILE_INVALID_TAG.equals(e.getCode())) {
-				fail("Unexpected problem code: " + e.getCode());
-			}
-		}
-	}
+                            @Override
+                            public void init(Configuration configuration) {
+                                // No custom preserve pattern
+                            }
+                        })).build();
+        try {
+            engine.compileMustache("minify_html_preserve_pattern", template);
+            fail("Compilation should fail!");
+        } catch (MustacheException e) {
+            if (!MustacheProblem.COMPILE_INVALID_TAG.equals(e.getCode())) {
+                fail("Unexpected problem code: " + e.getCode());
+            }
+        }
+    }
 
-	@Test
-	public void testCustomizedHtmlListener() {
+    @Test
+    public void testCustomizedHtmlListener() {
 
-		String contents = "<html><body><!-- My comment --></body></html>";
+        String contents = "<html><body><!-- My comment --></body></html>";
 
-		MustacheEngine engine = MustacheEngineBuilder
-				.newBuilder()
-				.addMustacheListener(
-						Minify.customListener(new HtmlCompressorMinifier() {
-							@Override
-							protected void initCompressor(
-									HtmlCompressor compressor,
-									Configuration configuration) {
-								compressor.setEnabled(false);
-							}
-						})).build();
-		// Compressor is disabled
-		assertEquals(contents,
-				engine.compileMustache("minify_html_customized", contents)
-						.render(null));
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addMustacheListener(
+                        Minify.customListener(new HtmlCompressorMinifier() {
+                            @Override
+                            protected void initCompressor(
+                                    HtmlCompressor compressor,
+                                    Configuration configuration) {
+                                compressor.setEnabled(false);
+                            }
+                        })).build();
+        // Compressor is disabled
+        assertEquals(contents,
+                engine.compileMustache("minify_html_customized", contents)
+                        .render(null));
 
-		engine = MustacheEngineBuilder
-				.newBuilder()
-				.addMustacheListener(
-						Minify.customListener(new HtmlCompressorMinifier() {
-							@Override
-							protected boolean match(String mustacheName) {
-								return mustacheName.endsWith("html");
-							}
-						})).build();
-		// Mustache name does not match
-		assertEquals(contents,
-				engine.compileMustache("minify_html_customized", contents)
-						.render(null));
-	}
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .addMustacheListener(
+                        Minify.customListener(new HtmlCompressorMinifier() {
+                            @Override
+                            protected boolean match(String mustacheName) {
+                                return mustacheName.endsWith("html");
+                            }
+                        })).build();
+        // Mustache name does not match
+        assertEquals(contents,
+                engine.compileMustache("minify_html_customized", contents)
+                        .render(null));
+    }
 
-	@Test
-	public void testCustomListener() {
+    @Test
+    public void testCustomListener() {
 
-		MustacheEngine engine = MustacheEngineBuilder
-				.newBuilder()
-				.addMustacheListener(
-						Minify.customListener(new AbstractMinifier() {
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addMustacheListener(
+                        Minify.customListener(new AbstractMinifier() {
 
-							@Override
-							public Reader minify(String mustacheName,
-									Reader mustacheContents) {
-								return mustacheName.endsWith("js") ? new StringReader(
-										"") : mustacheContents;
-							}
+                            @Override
+                            public Reader minify(String mustacheName,
+                                    Reader mustacheContents) {
+                                return mustacheName.endsWith("js") ? new StringReader(
+                                        "") : mustacheContents;
+                            }
 
-						})).build();
+                        })).build();
 
-		assertEquals("", engine.compileMustache("mustache.js", "whatever")
-				.render(null));
-		assertEquals("<html>",
-				engine.compileMustache("foo", "<html>").render(null));
-	}
+        assertEquals("", engine.compileMustache("mustache.js", "whatever")
+                .render(null));
+        assertEquals("<html>",
+                engine.compileMustache("foo", "<html>").render(null));
+    }
 
 }
