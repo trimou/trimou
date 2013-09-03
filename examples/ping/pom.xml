@@ -39,6 +39,11 @@
             <version>${version.trimou}</version>
         </dependency>
         <dependency>
+            <groupId>org.trimou</groupId>
+            <artifactId>trimou-extension-minify</artifactId>
+            <version>${version.trimou}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.spec</groupId>
             <artifactId>jboss-javaee-6.0</artifactId>
             <version>1.0.0.Final</version>

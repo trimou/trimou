@@ -6,6 +6,7 @@ import javax.enterprise.inject.Produces;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
+import org.trimou.minify.Minify;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
 /**
@@ -33,7 +34,9 @@ public class MustacheEngineProducer {
                 // ServletContextTemplateLocator is most suitable for webapp
                 .addTemplateLocator(
                         new ServletContextTemplateLocator(1,
-                                "/WEB-INF/templates", "html")).build();
+                                "/WEB-INF/templates", "html"))
+                // Minify all the templates
+                .addMustacheListener(Minify.htmlListener()).build();
     }
 
 }
