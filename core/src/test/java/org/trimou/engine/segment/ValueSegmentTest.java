@@ -68,4 +68,28 @@ public class ValueSegmentTest extends AbstractEngineTest {
                                 lambda)));
     }
 
+    @Test
+    public void testValueEscaping() {
+        String shouldBeEscaped = "<&>";
+        assertEquals(
+                "&lt;&amp;&gt;",
+                MustacheEngineBuilder
+                        .newBuilder()
+                        .build()
+                        .compileMustache("value_escaping", "{{foo}}")
+                        .render(ImmutableMap.<String, Object> of("foo",
+                                shouldBeEscaped)));
+        assertEquals(
+                shouldBeEscaped,
+                MustacheEngineBuilder
+                        .newBuilder()
+                        .setProperty(
+                                EngineConfigurationKey.SKIP_VALUE_ESCAPING,
+                                true)
+                        .build()
+                        .compileMustache("skip_value_escaping", "{{foo}}")
+                        .render(ImmutableMap.<String, Object> of("foo",
+                                shouldBeEscaped)));
+    }
+
 }

@@ -66,7 +66,12 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * The limit of recursive template invocation; 0 - recursive invocation is
      * forbidden.
      */
-    TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10), ;
+    TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10),
+    /**
+     * If <code>true</code> interpolated values are never escaped, i.e. org.trimou.engine.text.TextSupport.escapeHtml(String) is never called.
+     */
+    SKIP_VALUE_ESCAPING(false),
+    ;
 
     private Object defaultValue;
 

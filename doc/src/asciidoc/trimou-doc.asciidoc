@@ -75,7 +75,7 @@ However there are some differences:
 <5> The current index of the iteration block
 <6> "name" is resolved against the context object stack (iteration element, supplied data map)
 <7> render a comma if the iteration has more elements (iterHasNext is true)
-<8> it's also possible to invoke static methods; quxEnumClass is an enum class here and we iterate over the array returned from static method values() 
+<8> it's also possible to invoke static methods; quxEnumClass is an enum class here and we iterate over the array returned from static method values()
 
 NOTE: The set of resolvers may be extended - so in fact the above mentioned applies to the default set of resolvers only.
 
@@ -390,7 +390,7 @@ See also <<template_locator, TemplateLocator SPI>>.
 [[configuration]]
 === Configuration properties
 
-Trimou engine properties can be configured through system properties, +trimou.properties+ file or the property can be set manually with +MustacheEngineBuilder.setProperty(String, Object)+ method. Manually set properties have higher priority than system properties which have higher priority than properties from +trimou.properties+ file. 
+Trimou engine properties can be configured through system properties, +trimou.properties+ file or the property can be set manually with +MustacheEngineBuilder.setProperty(String, Object)+ method. Manually set properties have higher priority than system properties which have higher priority than properties from +trimou.properties+ file.
 
 NOTE: Trimou logs all configuration properties and values during engine initialization
 
@@ -454,6 +454,13 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 *org.trimou.engine.config.templateRecursiveInvocationLimit*
 |10
 |The limit of recursive template invocation (partials, template inheritance); 0 - recursive invocation is forbidden.
+
+
+|SKIP_VALUE_ESCAPING
+
+*org.trimou.engine.config.skipValueEscaping*
+|11
+|If +true+ interpolated values are never escaped, i.e. +org.trimou.engine.text.TextSupport.escapeHtml()+ is never called.
 
 |===
 
@@ -523,7 +530,7 @@ TIP: <<servlets,trimou-extension-servlet>> extension provides +org.trimou.servle
 [[text_support]]
 === TextSupport
 
-You can set the custom +org.trimou.engine.text.TextSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setTextSupport()+ method. So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance. 
+You can set the custom +org.trimou.engine.text.TextSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setTextSupport()+ method. So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance.
 
 [[locale_support]]
 === LocaleSupport
@@ -634,7 +641,7 @@ String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date
 [[minify]]
 === Minify
 
-Minify extension allows you to minify your HTML and XML templates (or any other type of content if you provide your own +org.trimou.minify.Minifier+ implementation). Trimou integrates small and efficient http://code.google.com/p/htmlcompressor/[HtmlCompressor] library. There are two ways to minify the templates. It's possible to register a special listener to minify templates before parsing/compilation or use a special lambda to minify some parts of the template contents. 
+Minify extension allows you to minify your HTML and XML templates (or any other type of content if you provide your own +org.trimou.minify.Minifier+ implementation). Trimou integrates small and efficient http://code.google.com/p/htmlcompressor/[HtmlCompressor] library. There are two ways to minify the templates. It's possible to register a special listener to minify templates before parsing/compilation or use a special lambda to minify some parts of the template contents.
 
 TIP: +org.trimou.minify.Minify+ helper methods are useful to create the default listeners and lambdas (i.e. if you don't require some extra configuration).
 

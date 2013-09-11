@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagType;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.CommentSegment;
 import org.trimou.engine.segment.ContainerSegment;
 import org.trimou.engine.segment.ExtendSectionSegment;
@@ -71,14 +72,16 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private int line = 1;
 
+    private boolean skipValueEscaping;
+
     @Override
     public void startTemplate(String name, Delimiters delimiters,
             MustacheEngine engine) {
-
         this.delimiters = delimiters;
         template = new TemplateSegment(name, engine);
         containerStack.addFirst(template);
-
+        skipValueEscaping = engine.getConfiguration().getBooleanPropertyValue(
+                EngineConfigurationKey.SKIP_VALUE_ESCAPING);
         start = System.currentTimeMillis();
         logger.debug("Start compilation of {}", new Object[] { name });
     }
@@ -104,12 +107,10 @@ class DefaultParsingHandler implements ParsingHandler {
 
         switch (tag.getType()) {
         case VARIABLE:
-            addSegment(new ValueSegment(tag.getContent(), new Origin(template,
-                    line), false));
+            addValueSegment(tag.getContent(), false);
             break;
         case UNESCAPE_VARIABLE:
-            addSegment(new ValueSegment(tag.getContent(), new Origin(template,
-                    line), true));
+            addValueSegment(tag.getContent(), true);
             break;
         case COMMENT:
             addSegment(new CommentSegment(tag.getContent(), new Origin(
@@ -261,6 +262,15 @@ class DefaultParsingHandler implements ParsingHandler {
         segments++;
         containerStack.peekFirst().addSegment(segment);
         logger.trace("Add {}", segment);
+    }
+
+    private void addValueSegment(String text, boolean unescape) {
+        if (skipValueEscaping) {
+            addSegment(new ValueSegment(text, new Origin(template, line), true));
+        } else {
+            addSegment(new ValueSegment(text, new Origin(template, line),
+                    unescape));
+        }
     }
 
     /**
