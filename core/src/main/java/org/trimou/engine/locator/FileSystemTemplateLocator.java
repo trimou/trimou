@@ -16,12 +16,16 @@
 package org.trimou.engine.locator;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
 
 /**
@@ -67,10 +71,12 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
                 return null;
             }
             logger.debug("Template located: {}", templateFile.getAbsolutePath());
-            return new FileReader(templateFile);
+            return new InputStreamReader(new FileInputStream(templateFile), getDefaultFileEncoding());
 
         } catch (FileNotFoundException e) {
             return null;
+        } catch (UnsupportedEncodingException e) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR, e);
         }
     }
 

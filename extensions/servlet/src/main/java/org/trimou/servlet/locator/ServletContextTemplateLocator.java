@@ -3,6 +3,7 @@ package org.trimou.servlet.locator;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -98,7 +99,11 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         }
         logger.debug("Template located: {}", templatePath);
 
-        return new InputStreamReader(in);
+        try {
+            return new InputStreamReader(in, getDefaultFileEncoding());
+        } catch (UnsupportedEncodingException e) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR, e);
+        }
     }
 
     @Override

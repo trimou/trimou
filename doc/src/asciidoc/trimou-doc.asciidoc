@@ -365,7 +365,7 @@ MustacheEngine engine = MustacheEngineBuilder
 [[use_template_locator]]
 === Make use of template cache and template locators
 
-Template locators automatically load the template contents for the given template name. So that it's not necessary to supply the template contents every time the template is compiled. Moreover the compiled template is automatically put in the template cache (no compilation happens the next time the template is requested).
+Template locators automatically locate the template contents for the given template id (name, path, ...). So that it's not necessary to supply the template contents every time the template is compiled. Moreover the compiled template is automatically put in the template cache (no compilation happens the next time the template is requested).
 
 NOTE: Template cache is required for <<partials,partials>>!
 
@@ -373,7 +373,7 @@ NOTE: Template cache is required for <<partials,partials>>!
 ----
 MustacheEngine engine = MustacheEngineBuilder
                            .newBuilder()
-                           .addTemplateLocator(new FilesystemTemplateLocator(1, "txt", "/home/trimou/resources")) <1>
+                           .addTemplateLocator(new FilesystemTemplateLocator(1, "/home/trimou/resources", "txt")) <1>
                            .build();
 Mustache mustache = engine.getMustache("foo"); <2>
 String output = mustache.render(null);
@@ -386,6 +386,12 @@ There may be more than one template locators registered with the engine. Locator
 TIP: Use +MustacheEngine#invalidateTemplateCache()+ to invalidate all template cache entries and force recompilation.
 
 See also <<template_locator, TemplateLocator SPI>>.
+
+==== Note about file encoding
+
+Trimou does not perform any file encoding detection and conversion. Instead any template locator must provide a +java.io.Reader+ instance which is able to convert between Unicode and a other character encodings. Built-in locators don't detect file encoding but use system file encoding by default. But it's possible (and recommended) to define the default file encoding with configuration property +EngineConfigurationKey.DEFAULT_FILE_ENCODING+ (see also <<configuration,configuration properties>>). 
+
+NOTE: Applications are encouraged to always define a default file encoding per every MustacheEngine instance.
 
 [[configuration]]
 === Configuration properties
@@ -461,6 +467,14 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 *org.trimou.engine.config.skipValueEscaping*
 |11
 |If +true+ interpolated values are never escaped, i.e. +org.trimou.engine.text.TextSupport.escapeHtml()+ is never called.
+
+
+|DEFAULT_FILE_ENCODING
+
+*org.trimou.engine.config.defaultFileEncoding*
+|12
+|The encoding every template locator should use if reading template from a file. System file encoding by default.
+
 
 |===
 

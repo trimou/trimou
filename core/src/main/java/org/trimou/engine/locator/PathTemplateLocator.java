@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.util.Strings;
 
@@ -49,9 +50,11 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
     private final String rootPath;
 
-    private String realPathSeparator;
+    private final String realPathSeparator;
 
     private String virtualPathSeparator;
+
+    private String defaultFileEncoding;
 
     /**
      *
@@ -82,8 +85,12 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     public void init(Configuration configuration) {
         this.virtualPathSeparator = configuration
                 .getStringPropertyValue(VIRTUAL_PATH_SEPARATOR_KEY);
-        logger.info("{} initialized [virtualPathSeparator: {}]", getClass()
-                .getSimpleName(), getVirtualPathSeparator());
+        this.defaultFileEncoding = configuration
+                .getStringPropertyValue(EngineConfigurationKey.DEFAULT_FILE_ENCODING);
+        logger.info(
+                "{} initialized [virtualPathSeparator: {}, defaultFileEncoding: {}]",
+                getClass().getSimpleName(), getVirtualPathSeparator(),
+                getDefaultFileEncoding());
     }
 
     @Override
@@ -114,6 +121,10 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
     protected String getVirtualPathSeparator() {
         return virtualPathSeparator;
+    }
+
+    protected String getDefaultFileEncoding() {
+        return defaultFileEncoding;
     }
 
     /**

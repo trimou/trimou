@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.config;
 
+import org.trimou.util.SecurityActions;
+
 /**
  * Engine configuration keys.
  *
@@ -71,6 +73,10 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * If <code>true</code> interpolated values are never escaped, i.e. org.trimou.engine.text.TextSupport.escapeHtml(String) is never called.
      */
     SKIP_VALUE_ESCAPING(false),
+    /**
+     * The encoding every template locator should use if reading template from a file.
+     */
+    DEFAULT_FILE_ENCODING(SecurityActions.getSystemProperty("file.encoding")),
     ;
 
     private Object defaultValue;

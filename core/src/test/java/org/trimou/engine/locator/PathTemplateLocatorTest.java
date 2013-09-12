@@ -10,7 +10,7 @@ import org.trimou.AbstractTest;
  *
  * @author Martin Kouba
  */
-public class PathTemplateLocatorTest extends AbstractTest {
+public abstract class PathTemplateLocatorTest extends AbstractTest {
 
     protected String read(Reader reader) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(reader);

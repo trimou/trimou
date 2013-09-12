@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
 
 /**
  *
@@ -47,10 +48,11 @@ public class ClassPathTemplateLocatorTest extends PathTemplateLocatorTest {
         MustacheEngineBuilder.newBuilder().addTemplateLocator(locator).build();
 
         Set<String> ids = locator.getAllIdentifiers();
-        assertEquals(5, ids.size());
+        assertEquals(6, ids.size());
         assertTrue(ids.contains("index.foo"));
         assertTrue(ids.contains("home.foo"));
         assertTrue(ids.contains("detail.html"));
+        assertTrue(ids.contains("encoding.html"));
         assertTrue(ids.contains("sub/bar.foo"));
         assertTrue(ids.contains("sub/subsub/qux.foo"));
 
@@ -60,5 +62,18 @@ public class ClassPathTemplateLocatorTest extends PathTemplateLocatorTest {
         assertEquals("{{foo}}", read(locator.locate("sub/bar.foo")));
         assertEquals("{{bar}}", read(locator.locate("sub/subsub/qux.foo")));
     }
+
+    @Test
+    public void testEncoding() throws IOException {
+        TemplateLocator locator = new ClassPathTemplateLocator(1,
+                "locator/file", "html");
+        // Just to init the locator
+        MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING,
+                        "windows-1250").addTemplateLocator(locator).build();
+        assertEquals("Hurá ěščřřžžýá!", read(locator.locate("encoding")));
+    }
+
 
 }

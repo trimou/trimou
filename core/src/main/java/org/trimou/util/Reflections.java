@@ -21,8 +21,6 @@ import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +61,7 @@ public final class Reflections {
 
         Method found = null;
 
-        for (Method method : getMethods(clazz)) {
+        for (Method method : SecurityActions.getMethods(clazz)) {
 
             if (!isMethodValid(method)) {
                 continue;
@@ -83,16 +81,6 @@ public final class Reflections {
         return found;
     }
 
-    private static Method[] getMethods(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
-
-            @Override
-            public Method[] run() {
-                return clazz.getMethods();
-            }
-        });
-    }
-
     /**
      * Tries to find a public field with the given name on the given class.
      *
@@ -107,7 +95,7 @@ public final class Reflections {
 
         Field found = null;
 
-        for (Field field : getFields(clazz)) {
+        for (Field field : SecurityActions.getFields(clazz)) {
             if (field.getName().equals(name)) {
                 found = field;
             }
@@ -115,16 +103,6 @@ public final class Reflections {
         logger.debug("{} field {}found [type: {}]", new Object[] { name,
                 found != null ? "" : "not ", clazz.getName() });
         return found;
-    }
-
-    private static Field[] getFields(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
-
-            @Override
-            public Field[] run() {
-                return clazz.getFields();
-            }
-        });
     }
 
     /**

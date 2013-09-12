@@ -6,10 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.trimou.tests.IntegrationTestUtils.createTestArchiveBase;
 import static org.trimou.tests.IntegrationTestUtils.getResolver;
 
+import java.io.File;
 import java.util.Set;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
@@ -42,6 +45,11 @@ public class ServletContextTemplateLocatorTest {
                 // templates
                 .addAsWebResource(new StringAsset("<html/>"),
                         "templates/bar.html")
+                .addAsWebResource(
+                        new FileAsset(
+                                new File(
+                                        "src/test/resources/locator/file/encoding.html")),
+                        "templates/encoding.html")
                 .addAsLibraries(
                         getResolver().artifact(
                                 "org.trimou:trimou-extension-servlet")
@@ -70,8 +78,9 @@ public class ServletContextTemplateLocatorTest {
         assertTrue(locator1Ids.contains("cool/charlie"));
 
         Set<String> locator2Ids = locator2.getAllIdentifiers();
-        assertEquals(1, locator2Ids.size());
+        assertEquals(2, locator2Ids.size());
         assertTrue(locator2Ids.contains("bar"));
+        assertTrue(locator2Ids.contains("encoding"));
 
         Set<String> locator3Ids = locator3.getAllIdentifiers();
         assertEquals(4, locator3Ids.size());
@@ -110,5 +119,22 @@ public class ServletContextTemplateLocatorTest {
         Mustache charlie = factory.getMustache("cool/charlie");
         assertNotNull(charlie);
         assertEquals("<html/>", charlie.render(null));
+    }
+
+    @Test
+    public void testEncoding() {
+
+        TemplateLocator locator = new ServletContextTemplateLocator(10,
+                "/templates", "html");
+
+        MustacheEngine factory = MustacheEngineBuilder
+                .newBuilder()
+                .addTemplateLocator(locator)
+                .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING,
+                        "windows-1250").build();
+
+        Mustache encoding = factory.getMustache("encoding");
+        assertNotNull(encoding);
+        assertEquals("Hurá ěščřřžžýá!", encoding.render(null));
     }
 }

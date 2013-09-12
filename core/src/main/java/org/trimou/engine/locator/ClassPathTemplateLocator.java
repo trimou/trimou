@@ -98,7 +98,12 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
             return null;
         }
         logger.debug("Template located: {}", getRootPath() + realPath);
-        return new InputStreamReader(in);
+        try {
+            return new InputStreamReader(in, getDefaultFileEncoding());
+        } catch (UnsupportedEncodingException e) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                    e);
+        }
     }
 
     @Override

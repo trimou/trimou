@@ -38,6 +38,7 @@ import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.engine.text.TextSupportFactory;
+import org.trimou.util.SecurityActions;
 import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
@@ -261,7 +262,7 @@ class DefaultConfiguration implements Configuration {
 
             if (value == null) {
                 // System properties
-                value = System.getProperty(key);
+                value = SecurityActions.getSystemProperty(key);
                 if (value == null) {
                     // Resource properties
                     value = resourceProperties.getProperty(key);
@@ -338,5 +339,6 @@ class DefaultConfiguration implements Configuration {
         components.add(textSupport);
         return components;
     }
+
 
 }
