@@ -20,7 +20,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.resolver.ResolutionContext;
@@ -30,7 +29,6 @@ import org.trimou.engine.segment.TemplateSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
-import org.trimou.util.Strings;
 
 /**
  * Abstract execution context.
@@ -38,6 +36,9 @@ import org.trimou.util.Strings;
  * @author Martin Kouba
  */
 abstract class AbstractExecutionContext implements ExecutionContext {
+
+    // Move to configuration if the KeySplitter becomes part of the public API
+    static final KeySplitter KEY_SPLITTER = new DotKeySplitter();
 
     /**
      * Immutable engine configuration
@@ -174,13 +175,8 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         return value;
     }
 
-    protected boolean isCompoundKey(String key) {
-        return !key.equals(Strings.KEY_SEPARATOR)
-                && key.contains(Strings.KEY_SEPARATOR);
-    }
-
-    protected String[] splitKey(String key) {
-        return StringUtils.split(key, Strings.KEY_SEPARATOR);
+    protected KeySplitter keySplitter() {
+        return KEY_SPLITTER;
     }
 
     private void pushTemplateInvocation(TemplateSegment template) {

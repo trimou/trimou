@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.context;
 
+import java.util.Iterator;
+
 import org.trimou.engine.config.Configuration;
 
 /**
@@ -31,31 +33,24 @@ class DefaultExecutionContext extends AbstractExecutionContext {
     public ValueWrapper getValue(String key) {
 
         ValueWrapper value = new ValueWrapper();
+        Object lastValue = null;
+        Iterator<String> parts = keySplitter().split(key);
 
-        if (isCompoundKey(key)) {
+        lastValue = resolveLeadingContextObject(parts.next(), value);
 
-            Object lastValue = null;
-            String[] parts = splitKey(key);
+        if (lastValue == null) {
+            // Not found - miss
+            return value;
+        }
 
-            lastValue = resolveLeadingContextObject(parts[0], value);
-
+        while (parts.hasNext()) {
+            lastValue = resolve(lastValue, parts.next(), value);
             if (lastValue == null) {
                 // Not found - miss
                 return value;
             }
-
-            for (int i = 1; i < parts.length; i++) {
-                lastValue = resolve(lastValue, parts[i], value);
-                if (lastValue == null) {
-                    // Not found - miss
-                    break;
-                }
-            }
-            value.set(lastValue);
-
-        } else {
-            value.set(resolveLeadingContextObject(key, value));
         }
+        value.set(lastValue);
         return value;
     }
 
