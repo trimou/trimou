@@ -32,7 +32,7 @@ public final class SecurityActions {
     /**
      *
      * @param key
-     * @return
+     * @return {@link System#getProperty(String)}
      */
     public static String getSystemProperty(final String key) {
         return AccessController.doPrivileged(new PrivilegedAction<String>() {
@@ -46,7 +46,7 @@ public final class SecurityActions {
     /**
      *
      * @param clazz
-     * @return
+     * @return {@link Class#getMethods()}
      */
     public static Method[] getMethods(final Class<?> clazz) {
         return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
@@ -61,7 +61,7 @@ public final class SecurityActions {
     /**
      *
      * @param clazz
-     * @return
+     * @return {@link Class#getFields()}
      */
     public static Field[] getFields(final Class<?> clazz) {
         return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {

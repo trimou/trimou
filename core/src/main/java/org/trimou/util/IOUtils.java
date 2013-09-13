@@ -34,7 +34,7 @@ public final class IOUtils {
     /**
      *
      * @param input
-     * @return
+     * @return the contents of a reader as a string
      * @throws IOException
      */
     public static String toString(final Reader input) throws IOException {
@@ -45,7 +45,7 @@ public final class IOUtils {
      *
      * @param input
      * @param bufferSize
-     * @return
+     * @return the contents of a reader as a string
      * @throws IOException
      */
     public static String toString(final Reader input, final int bufferSize)

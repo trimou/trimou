@@ -61,7 +61,7 @@ public final class ConfigurationProperties {
      * @param propertyName
      * @param delimiter
      * @param prefixParts
-     * @return
+     * @return the key
      */
     public static String buildPropertyKey(String propertyName,
             String delimiter, String[] prefixParts) {
