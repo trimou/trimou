@@ -1,11 +1,11 @@
 package org.trimou.engine.context;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Iterator;
 
 import org.junit.Test;
-
-import com.google.common.collect.Iterators;
 
 /**
  *
@@ -16,12 +16,21 @@ public class DotKeySplitterTest {
     @Test
     public void testSplit() {
         DotKeySplitter splitter = new DotKeySplitter();
-        assertEquals(3, Iterators.size(splitter.split("a..bar:.c")));
-        assertTrue(Iterators.contains(splitter.split("a..bar:.c"), "a"));
-        assertTrue(Iterators.contains(splitter.split("a..bar:.c"), "bar:"));
-        assertTrue(Iterators.contains(splitter.split("a..bar:.c"), "c"));
-        assertEquals(1, Iterators.size(splitter.split(". ")));
-        assertEquals(1, Iterators.size(splitter.split("foo")));
+        assertIterator(splitter.split("a..bar:.c"), "a", "bar:", "c");
+        assertIterator(splitter.split(". "), " ");
+        assertIterator(splitter.split("."), ".");
+        assertIterator(splitter.split("foo"), "foo");
+    }
+
+    private void assertIterator(Iterator<String> iterator, Object... elements) {
+        int idx = 0;
+        while (iterator.hasNext()) {
+            assertEquals(elements[idx], iterator.next());
+            idx++;
+        }
+        if(idx != elements.length) {
+            fail("Incorrect number of elements");
+        }
     }
 
 }

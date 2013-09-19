@@ -45,7 +45,9 @@ public class ThisResolver extends AbstractResolver {
             return null;
         }
 
-        if (NAME_THIS.equals(name) || Strings.KEY_SEPARATOR.equals(name)) {
+        // TODO this resolver should use the same key separator as the current
+        // org.trimou.engine.context.KeySplitter
+        if (NAME_THIS.equals(name) || Strings.DOT.equals(name)) {
             return contextObject;
         }
         return null;
