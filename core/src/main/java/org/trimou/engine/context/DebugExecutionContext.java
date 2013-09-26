@@ -23,6 +23,7 @@ import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
 
 /**
+ * Note that this execution context is much slower than the default implementation.
  *
  * @author Martin Kouba
  */

@@ -38,40 +38,46 @@ import org.trimou.util.Checker;
 abstract class AbstractExecutionContext implements ExecutionContext {
 
     // Move to configuration if the KeySplitter becomes part of the public API
-    static final KeySplitter KEY_SPLITTER = new DotKeySplitter();
+    private static final KeySplitter KEY_SPLITTER = new DotKeySplitter();
 
     /**
      * Immutable engine configuration
      */
-    protected Configuration configuration;
+    protected final Configuration configuration;
 
     /**
      * LIFO stack of context objects
      */
-    protected Deque<Object> contextObjectStack = new ArrayDeque<Object>(8);
+    protected final Deque<Object> contextObjectStack;
 
     /**
      * LIFO stack of template invocations
      */
-    protected Deque<TemplateSegment> templateInvocationStack = new ArrayDeque<TemplateSegment>(
-            8);
+    protected final Deque<TemplateSegment> templateInvocationStack;
 
     /**
-     * Map of defining/overriding sections
+     * Lazily initialized map of defining/overriding sections
      */
     protected Map<String, ExtendSectionSegment> definingSections = null;
 
     /**
      * @see EngineConfigurationKey#TEMPLATE_RECURSIVE_INVOCATION_LIMIT
      */
-    private int templateRecursiveInvocationLimit;
+    private final int templateRecursiveInvocationLimit;
+
+    private final Resolver[] resolvers;
 
     /**
      *
-     * @param resolvers
+     * @param configuration
      */
     protected AbstractExecutionContext(Configuration configuration) {
         this.configuration = configuration;
+        this.resolvers = configuration.getResolvers().toArray(new Resolver[configuration.getResolvers().size()]);
+
+        this.contextObjectStack =  new ArrayDeque<Object>();
+        this.templateInvocationStack = new ArrayDeque<TemplateSegment>();
+
         this.templateRecursiveInvocationLimit = configuration
                 .getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
     }
@@ -110,7 +116,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     public void addDefiningSection(String name, ExtendSectionSegment segment) {
         if (definingSections == null) {
             // Lazy init - ok, context is not thread-safe
-            definingSections = new HashMap<String, ExtendSectionSegment>(8);
+            definingSections = new HashMap<String, ExtendSectionSegment>();
         }
         if (!definingSections.containsKey(name)) {
             definingSections.put(name, segment);
@@ -166,8 +172,8 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     protected Object resolve(Object contextObject, String name,
             ResolutionContext context) {
         Object value = null;
-        for (Resolver resolver : configuration.getResolvers()) {
-            value = resolver.resolve(contextObject, name, context);
+        for (int i = 0; i < resolvers.length; i++) {
+            value = resolvers[i].resolve(contextObject, name, context);
             if (value != null) {
                 break;
             }
