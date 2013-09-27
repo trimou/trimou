@@ -17,7 +17,6 @@ package org.trimou.util;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.trimou.annotations.Internal;
@@ -50,7 +49,7 @@ public final class IOUtils {
      */
     public static String toString(final Reader input, final int bufferSize)
             throws IOException {
-        final StringWriter writer = new StringWriter();
+        final StringBuilderWriter writer = new StringBuilderWriter();
         copy(input, writer, bufferSize);
         return writer.toString();
     }

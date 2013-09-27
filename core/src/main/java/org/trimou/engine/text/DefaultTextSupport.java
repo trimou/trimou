@@ -15,8 +15,13 @@
  */
 package org.trimou.engine.text;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.trimou.engine.config.AbstractConfigurationAware;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
+import org.trimou.util.StringBuilderWriter;
 
 /**
  *
@@ -27,7 +32,13 @@ class DefaultTextSupport extends AbstractConfigurationAware implements
 
     @Override
     public String escapeHtml(String input) {
-        return StringEscapeUtils.escapeHtml3(input);
+        final StringBuilderWriter writer = new StringBuilderWriter(input.length());
+        try {
+            StringEscapeUtils.ESCAPE_HTML3.translate(input, writer);
+        } catch (IOException e) {
+            throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
+        }
+        return writer.toString();
     }
 
 }
