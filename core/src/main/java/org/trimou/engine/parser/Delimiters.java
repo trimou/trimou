@@ -21,7 +21,7 @@ import org.trimou.engine.config.EngineConfigurationKey;
  *
  * @author Martin Kouba
  */
-class Delimiters {
+final class Delimiters {
 
     private String start;
     private String end;

@@ -23,6 +23,11 @@ import static org.trimou.util.Checker.checkArgumentsNotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +38,10 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
- * Naive yet default parser implementation.
+ * The default parser. It's not thread-safe and may not be reused.
  *
  * @author Martin Kouba
  */
@@ -43,163 +50,70 @@ class DefaultParser implements Parser {
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultParser.class);
 
-    private static final int TEXT = 0;
-    // If start delim more than one char
-    private static final int START_TAG = 1;
-    // Inside the tag
-    private static final int TAG = 2;
-    // If end delim more than one char
-    private static final int END_TAG = 3;
-    // Windows line sep - \r found
-    private static final int START_R = 4;
-
     private MustacheEngine engine;
+
+    private State state;
+
+    private int line;
+
+    private int delimiterIdx;
+
+    private boolean triple;
+
+    private StringBuilder buffer;
+
+    private final Delimiters delimiters;
+
+    private ParsingHandler handler;
+
+    private final Set<String> supportedSeparators;
+
+    private List<String> lastMatchedSeparators;
+
+    private Set<Character> zeroIndexNonSeparatorCharacters;
+
+    private int separatorIdx;
 
     /**
      *
-     * @param configuration
-     * @param templateCache
+     * @param engine
      */
     public DefaultParser(MustacheEngine engine) {
-        super();
+        this.state = State.TEXT;
+        this.line = 1;
+        this.delimiterIdx = 0;
+        this.triple = false;
+        this.buffer = new StringBuilder();
+        this.separatorIdx = 0;
         this.engine = engine;
+        this.delimiters = new Delimiters(engine.getConfiguration()
+                .getStringPropertyValue(START_DELIMITER), engine
+                .getConfiguration().getStringPropertyValue(END_DELIMITER));
+        this.supportedSeparators = ImmutableSet.of(Strings.LINE_SEPARATOR_LF,
+                Strings.LINE_SEPARATOR_CR, Strings.LINE_SEPARATOR_CRLF);
+        this.zeroIndexNonSeparatorCharacters = new HashSet<Character>();
     }
 
     public void parse(String name, Reader reader, ParsingHandler handler) {
         checkArgumentNotEmpty(name);
         checkArgumentsNotNull(reader, handler);
-
+        this.handler = handler;
         reader = ensureBufferedReader(reader);
-
-        Delimiters delimiters = new Delimiters(engine.getConfiguration()
-                .getStringPropertyValue(START_DELIMITER), engine
-                .getConfiguration().getStringPropertyValue(END_DELIMITER));
-
-        StringBuilder buffer = new StringBuilder();
-        int state = TEXT;
-        // Delimiter index - used to match
-        int delimiterIdx = 0;
-        int line = 1;
-        boolean triple = false;
 
         try {
 
-            // Handle start of document
+            // Start of document
             handler.startTemplate(name, delimiters, engine);
 
             int val;
             while ((val = reader.read()) != -1) {
-
-                char character = (char) val;
-
-                if (state == START_TAG) {
-                    if (character == delimiters.getStart(delimiterIdx)) {
-                        if (delimiters.isStartOver(delimiterIdx)) {
-                            // Real tag start, flush text if any
-                            state = TAG;
-                            delimiterIdx = 0;
-                            buffer = flushText(buffer, handler);
-                        } else {
-                            delimiterIdx++;
-                        }
-                    } else {
-                        // False alarm - not a start delimiter
-                        state = TEXT;
-                        buffer.append(delimiters.getStartPart(delimiterIdx));
-                        buffer.append(character);
-                        delimiterIdx = 0;
-                    }
-                } else if (state == TEXT) {
-                    if (character == delimiters.getStart(0)) {
-                        if (delimiters.isStartOver(delimiterIdx)) {
-                            // Real tag start, flush text if any
-                            state = TAG;
-                            delimiterIdx = 0;
-                            buffer = flushText(buffer, handler);
-                        } else {
-                            // Starting tag
-                            state = START_TAG;
-                            delimiterIdx = 1;
-                        }
-                    } else if (character == Strings.LINUX_LINE_SEPARATOR
-                            .charAt(0)) {
-                        // Line separator - flush
-                        state = TEXT;
-                        buffer = flushText(buffer, handler);
-                        flushLineSeparator(Strings.LINUX_LINE_SEPARATOR,
-                                handler);
-                        line++;
-                    } else if (character == Strings.WINDOWS_LINE_SEPARATOR
-                            .charAt(0)) {
-                        state = START_R;
-                    } else {
-                        buffer.append(character);
-                    }
-                } else if (state == TAG) {
-                    // Process tag contents
-                    if (character == delimiters.getEnd(0)) {
-                        if (triple) {
-                            // Triple mustache detected - skip first ending
-                            // mustache
-                            buffer.append(character);
-                            triple = false;
-                        } else if (delimiters.isEndOver(delimiterIdx)) {
-                            // Real tag end - flush
-                            // One char delimiter
-                            state = TEXT;
-                            delimiterIdx = 0;
-                            buffer = flushTag(buffer, handler, delimiters);
-                        } else {
-                            // Ending tag
-                            state = END_TAG;
-                            delimiterIdx = 1;
-                        }
-                    } else {
-                        if (character == delimiters.getStart(0)
-                                && buffer.length() == 0) {
-                            // Most likely a triple mustache
-                            triple = true;
-                        }
-                        buffer.append(character);
-                    }
-                } else if (state == END_TAG) {
-                    if (character == delimiters.getEnd(delimiterIdx)) {
-                        if (delimiters.isEndOver(delimiterIdx)) {
-                            // Real tag end - flush
-                            state = TEXT;
-                            buffer = flushTag(buffer, handler, delimiters);
-                            delimiterIdx = 0;
-                        } else {
-                            delimiterIdx++;
-                        }
-                    } else {
-                        // False alarm - not an end delimiter
-                        logger.warn(
-                                "Tag contains part of the end delimiter - most probably an invalid key [part: {}, line: {}]",
-                                delimiters.getStartPart(delimiterIdx), line);
-                        state = TAG;
-                        buffer.append(delimiters.getEndPart(delimiterIdx));
-                        buffer.append(character);
-                        delimiterIdx = 0;
-                    }
-                } else if (state == START_R) {
-                    if (character == Strings.WINDOWS_LINE_SEPARATOR.charAt(1)) {
-                        // Line separator end - flush
-                        state = TEXT;
-                        buffer = flushText(buffer, handler);
-                        flushLineSeparator(Strings.WINDOWS_LINE_SEPARATOR,
-                                handler);
-                        line++;
-                    }
-                } else {
-                    throw new IllegalStateException("Unknown parsing state");
-                }
+                processCharacter((char) val);
             }
 
             if (buffer.length() > 0) {
-                if (state == TEXT) {
+                if (state == State.TEXT) {
                     // Flush the last text segment
-                    flushText(buffer, handler);
+                    flushText();
                 } else {
                     throw new MustacheException(
                             MustacheProblem.COMPILE_INVALID_TEMPLATE,
@@ -208,30 +122,188 @@ class DefaultParser implements Parser {
                 }
             }
 
-            // Handle end of document
+            if (state == State.LINE_SEPARATOR) {
+                // Flush the last line separator
+                lineSeparatorFound(lastMatchedSeparators.get(0));
+            }
+
+            // End of document
             handler.endTemplate();
 
         } catch (IOException e) {
-            throw new MustacheException(e);
+            throw new MustacheException(MustacheProblem.COMPILE_IO_ERROR, e);
         }
     }
 
-    private StringBuilder flushText(StringBuilder buffer, ParsingHandler handler) {
+    private void processCharacter(char character) {
+        switch (state) {
+        case TEXT:
+            text(character);
+            break;
+        case START_TAG:
+            startTag(character);
+            break;
+        case TAG:
+            tag(character);
+            break;
+        case END_TAG:
+            endTag(character);
+            break;
+        case LINE_SEPARATOR:
+            lineSeparator(character);
+            break;
+        default:
+            throw new IllegalStateException("Unknown parsing state");
+        }
+    }
+
+    private void text(char character) {
+        if (character == delimiters.getStart(0)) {
+            if (delimiters.isStartOver(delimiterIdx)) {
+                tagStartFound();
+            } else {
+                // Probably multi-char start tag
+                state = State.START_TAG;
+                delimiterIdx = 1;
+            }
+        } else if ((lastMatchedSeparators = findMatchingSeparators(character, 0))
+                .size() > 0) {
+            if (lastMatchedSeparators.size() == 1
+                    && lastMatchedSeparators.get(0).length() == 1) {
+                // Single-char separator
+                lineSeparatorFound(lastMatchedSeparators.get(0));
+            } else if ((lastMatchedSeparators.size() > 1)
+                    || (lastMatchedSeparators.size() == 1 && lastMatchedSeparators
+                            .get(0).length() > 1)) {
+                // Multiple separators or multi-char separator
+                state = State.LINE_SEPARATOR;
+                separatorIdx = 1;
+            }
+        } else {
+            buffer.append(character);
+        }
+    }
+
+    private void startTag(char character) {
+        if (character == delimiters.getStart(delimiterIdx)) {
+            if (delimiters.isStartOver(delimiterIdx)) {
+                tagStartFound();
+            } else {
+                delimiterIdx++;
+            }
+        } else {
+            // False alarm - not a start delimiter
+            state = State.TEXT;
+            buffer.append(delimiters.getStartPart(delimiterIdx));
+            delimiterIdx = 0;
+            processCharacter(character);
+        }
+    }
+
+    private void tag(char character) {
+        if (character == delimiters.getEnd(0)) {
+            if (triple) {
+                // Triple mustache detected - skip first ending
+                // mustache
+                buffer.append(character);
+                triple = false;
+            } else if (delimiters.isEndOver(delimiterIdx)) {
+                // One char delimiter
+                flushTag();
+            } else {
+                // Ending tag
+                state = State.END_TAG;
+                delimiterIdx = 1;
+            }
+        } else {
+            if (character == delimiters.getStart(0) && buffer.length() == 0) {
+                // Most likely a triple mustache
+                triple = true;
+            }
+            buffer.append(character);
+        }
+    }
+
+    private void endTag(char character) {
+        if (character == delimiters.getEnd(delimiterIdx)) {
+            if (delimiters.isEndOver(delimiterIdx)) {
+                flushTag();
+            } else {
+                delimiterIdx++;
+            }
+        } else {
+            // False alarm - not an end delimiter
+            logger.warn(
+                    "Tag contains part of the end delimiter - most probably an invalid key [part: {}, line: {}]",
+                    delimiters.getStartPart(delimiterIdx), line);
+            state = State.TAG;
+            buffer.append(delimiters.getEndPart(delimiterIdx));
+            buffer.append(character);
+            delimiterIdx = 0;
+        }
+    }
+
+    private void lineSeparator(char character) {
+
+        List<String> matched = findMatchingSeparators(character, separatorIdx);
+
+        if (matched.isEmpty()) {
+            // Single-char separator
+            for (String separator : lastMatchedSeparators) {
+                if (separator.length() == separatorIdx) {
+                    lineSeparatorFound(separator);
+                    processCharacter(character);
+                }
+            }
+        } else if (matched.size() == 1) {
+            // Multi-char separator
+            lineSeparatorFound(matched.get(0));
+        } else if (matched.size() > 1) {
+            lastMatchedSeparators = matched;
+            separatorIdx++;
+        }
+    }
+
+    /**
+     * Line separator end - flush.
+     *
+     * @param lineSeparator
+     */
+    private void lineSeparatorFound(String lineSeparator) {
+        flushText();
+        flushLineSeparator(lineSeparator);
+        line++;
+        state = State.TEXT;
+        separatorIdx = 0;
+    }
+
+    /**
+     * Real tag start, flush text if any.
+     */
+    private void tagStartFound() {
+        state = State.TAG;
+        delimiterIdx = 0;
+        flushText();
+    }
+
+    private void flushText() {
         if (buffer.length() > 0) {
             handler.text(buffer.toString());
-            return new StringBuilder();
-        } else {
-            return buffer;
+            clearBuffer();
         }
     }
 
-    private StringBuilder flushTag(StringBuilder buffer,
-            ParsingHandler handler, Delimiters delimiters) {
-        handler.tag(deriveTag(buffer.toString(), delimiters));
-        return new StringBuilder();
+    /**
+     * Real tag end - flush.
+     */
+    private void flushTag() {
+        state = State.TEXT;
+        handler.tag(deriveTag(buffer.toString()));
+        delimiterIdx = 0;
+        clearBuffer();
     }
 
-    private void flushLineSeparator(String separator, ParsingHandler handler) {
+    private void flushLineSeparator(String separator) {
         handler.lineSeparator(separator);
     }
 
@@ -240,8 +312,8 @@ class DefaultParser implements Parser {
                 reader);
     }
 
-    private ParsedTag deriveTag(String buffer, Delimiters delimiters) {
-        MustacheTagType type = identifyTagType(buffer, delimiters);
+    private ParsedTag deriveTag(String buffer) {
+        MustacheTagType type = identifyTagType(buffer);
         String key = extractContent(type, buffer);
         return new ParsedTag(key, type);
     }
@@ -253,7 +325,7 @@ class DefaultParser implements Parser {
      * @param delimiters
      * @return the tag type
      */
-    private MustacheTagType identifyTagType(String buffer, Delimiters delimiters) {
+    private MustacheTagType identifyTagType(String buffer) {
 
         if (buffer.length() == 0) {
             return MustacheTagType.VARIABLE;
@@ -306,6 +378,47 @@ class DefaultParser implements Parser {
         default:
             return null;
         }
+    }
+
+    private void clearBuffer() {
+        this.buffer = new StringBuilder();
+    }
+
+    /**
+     *
+     * @param character
+     * @param atIndex
+     * @return the list of matching line separators
+     */
+    private List<String> findMatchingSeparators(char character, int atIndex) {
+
+        if (atIndex == 0 && zeroIndexNonSeparatorCharacters.contains(character)) {
+            return Collections.emptyList();
+        }
+
+        List<String> matchedSeparators = new ArrayList<String>(
+                supportedSeparators.size());
+
+        for (String separator : supportedSeparators) {
+            if (separator.length() > atIndex
+                    && separator.charAt(atIndex) == character) {
+                matchedSeparators.add(separator);
+            }
+        }
+        if (atIndex == 0 && matchedSeparators.isEmpty()) {
+            zeroIndexNonSeparatorCharacters.add(character);
+        }
+        return matchedSeparators;
+    }
+
+    private enum State {
+
+        TEXT,
+        START_TAG,
+        TAG,
+        END_TAG,
+        LINE_SEPARATOR;
+
     }
 
 }

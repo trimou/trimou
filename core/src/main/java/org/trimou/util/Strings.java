@@ -31,9 +31,20 @@ public final class Strings {
     public static final String LINE_SEPARATOR = System
             .getProperty("line.separator");
 
-    public static final String LINUX_LINE_SEPARATOR = "\n";
+    /**
+     * Linux, BDS, etc.
+     */
+    public static final String LINE_SEPARATOR_LF = "\n";
 
-    public static final String WINDOWS_LINE_SEPARATOR = "\r\n";
+    /**
+     * DOS, OS/2, Microsoft Windows, etc.
+     */
+    public static final String LINE_SEPARATOR_CRLF = "\r\n";
+
+    /**
+     * Mac OS 9, ZX Spectrum :-), etc.
+     */
+    public static final String LINE_SEPARATOR_CR = "\r";
 
     public static final String SLASH = "/";
 

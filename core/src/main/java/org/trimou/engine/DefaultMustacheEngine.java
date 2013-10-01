@@ -31,7 +31,6 @@ import org.trimou.engine.listener.MustacheCompilationEvent;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.listener.MustacheParsingEvent;
 import org.trimou.engine.locator.TemplateLocator;
-import org.trimou.engine.parser.Parser;
 import org.trimou.engine.parser.ParserFactory;
 import org.trimou.engine.parser.ParsingHandler;
 import org.trimou.engine.parser.ParsingHandlerFactory;
@@ -55,7 +54,9 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     private Configuration configuration;
 
-    private Parser parser;
+    private ParserFactory parserFactory;
+
+    private ParsingHandlerFactory parsingHandlerFactory;
 
     /**
      * Make this type proxyable (CDI) so that it's possible to produce
@@ -110,9 +111,6 @@ class DefaultMustacheEngine implements MustacheEngine {
                     }
                 });
 
-        // Init parser
-        parser = new ParserFactory().createParser(this);
-
         // Precompile templates
         if (configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
@@ -127,6 +125,9 @@ class DefaultMustacheEngine implements MustacheEngine {
                 getTemplateFromCache(templateName);
             }
         }
+
+        this.parserFactory = new ParserFactory();
+        this.parsingHandlerFactory = new ParsingHandlerFactory();
     }
 
     public Mustache getMustache(String templateName) {
@@ -170,11 +171,10 @@ class DefaultMustacheEngine implements MustacheEngine {
      */
     private Mustache parse(String templateName, Reader reader) {
 
-        ParsingHandler handler = new ParsingHandlerFactory()
-                .createParsingHandler();
+        ParsingHandler handler = parsingHandlerFactory.createParsingHandler();
 
         reader = notifyListenersBeforeParsing(templateName, reader);
-        parser.parse(templateName, reader, handler);
+        parserFactory.createParser(this).parse(templateName, reader, handler);
         Mustache mustache = handler.getCompiledTemplate();
         notifyListenersAfterCompilation(mustache);
 

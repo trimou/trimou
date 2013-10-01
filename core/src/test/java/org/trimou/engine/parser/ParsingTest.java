@@ -112,19 +112,48 @@ public class ParsingTest extends AbstractEngineTest {
     public void testLineSeparator() {
 
         TemplateSegment template = (TemplateSegment) engine.compileMustache(
-                "parse_line_sep", "\nHello {{foo}}\r\n\n and {{& me}}!\n");
+                "parse_line_sep_01", "\nHello {{foo}}\r\n\n and {{& me}}!\nAND\r\r");
 
         List<Segment> segments = template.getSegments();
-        assertEquals(9, segments.size());
-        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(0).getType());
+        assertEquals(12, segments.size());
+        validateSegment(segments, 0, SegmentType.LINE_SEPARATOR, "\n");
         validateSegment(segments, 1, SegmentType.TEXT, "Hello ");
         validateSegment(segments, 2, SegmentType.VALUE, "foo");
-        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(3).getType());
-        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(4).getType());
+        validateSegment(segments, 3, SegmentType.LINE_SEPARATOR, "\r\n");
+        validateSegment(segments, 4, SegmentType.LINE_SEPARATOR, "\n");
         validateSegment(segments, 5, SegmentType.TEXT, " and ");
         validateSegment(segments, 6, SegmentType.VALUE, "me");
         validateSegment(segments, 7, SegmentType.TEXT, "!");
-        assertEquals(SegmentType.LINE_SEPARATOR, segments.get(8).getType());
+        validateSegment(segments, 8, SegmentType.LINE_SEPARATOR, "\n");
+        validateSegment(segments, 9, SegmentType.TEXT, "AND");
+        validateSegment(segments, 10, SegmentType.LINE_SEPARATOR, "\r");
+        validateSegment(segments, 11, SegmentType.LINE_SEPARATOR, "\r");
+
+
+        template = (TemplateSegment) engine.compileMustache(
+                "parse_line_sep_02", "\n\n ");
+
+        segments = template.getSegments();
+        assertEquals(3, segments.size());
+        validateSegment(segments, 0, SegmentType.LINE_SEPARATOR, "\n");
+        validateSegment(segments, 1, SegmentType.LINE_SEPARATOR, "\n");
+        validateSegment(segments, 2, SegmentType.TEXT, " ");
+
+
+        template = (TemplateSegment) engine.compileMustache(
+                "parse_line_sep_03", "\r\n\r\n\r\r\n\n \n\r ");
+
+        segments = template.getSegments();
+        assertEquals(9, segments.size());
+        validateSegment(segments, 0, SegmentType.LINE_SEPARATOR, "\r\n");
+        validateSegment(segments, 1, SegmentType.LINE_SEPARATOR, "\r\n");
+        validateSegment(segments, 2, SegmentType.LINE_SEPARATOR, "\r");
+        validateSegment(segments, 3, SegmentType.LINE_SEPARATOR, "\r\n");
+        validateSegment(segments, 4, SegmentType.LINE_SEPARATOR, "\n");
+        validateSegment(segments, 5, SegmentType.TEXT, " ");
+        validateSegment(segments, 6, SegmentType.LINE_SEPARATOR, "\n");
+        validateSegment(segments, 7, SegmentType.LINE_SEPARATOR, "\r");
+        validateSegment(segments, 8, SegmentType.TEXT, " ");
     }
 
     @Test
@@ -199,6 +228,20 @@ public class ParsingTest extends AbstractEngineTest {
         assertEquals(var1, segments.get(1).getText());
         assertEquals(SegmentType.VALUE, segments.get(2).getType());
         assertEquals(var2, segments.get(2).getText());
+    }
+
+    @Test
+    public void testLineSeparatorAfterIncompleteDelimiter() {
+
+        TemplateSegment template = (TemplateSegment) engine.compileMustache(
+                "parse_line_sep_incomplete_delim",
+                "{\nHello!");
+
+        List<Segment> segments = template.getSegments();
+        assertEquals(3, segments.size());
+        validateSegment(segments, 0, SegmentType.TEXT, "{");
+        validateSegment(segments, 1, SegmentType.LINE_SEPARATOR, "\n");
+        validateSegment(segments, 2, SegmentType.TEXT, "Hello!");
     }
 
     private void validateSegment(List<Segment> segments, int index,

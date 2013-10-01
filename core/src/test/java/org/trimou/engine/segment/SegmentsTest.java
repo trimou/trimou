@@ -18,10 +18,10 @@ public class SegmentsTest {
     public void testIsStandaloneLine() {
 
         assertTrue(Segments.isStandaloneLine(ImmutableList.<Segment> of(
-                new LineSeparatorSegment(Strings.LINUX_LINE_SEPARATOR, null),
+                new LineSeparatorSegment(Strings.LINE_SEPARATOR_LF, null),
                 new TextSegment(" ", null), new SectionSegment("test", null))));
         assertFalse(Segments.isStandaloneLine(ImmutableList.<Segment> of(
-                new LineSeparatorSegment(Strings.LINUX_LINE_SEPARATOR, null),
+                new LineSeparatorSegment(Strings.LINE_SEPARATOR_LF, null),
                 new TextSegment("Not empty", null), new SectionSegment("test",
                         null))));
     }
