@@ -3,12 +3,21 @@ package org.trimou.engine;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
 import org.trimou.Mustache;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.locator.AbstractTemplateLocator;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
@@ -90,6 +99,55 @@ public class MustacheEngineTest extends AbstractEngineTest {
                         new MapTemplateLocator(ImmutableMap.of("foo", "Hey!")))
                 .build();
         assertNotEquals(engine.getMustache("foo"), engine.getMustache("foo"));
+    }
+
+    @Test
+    public void testTemplateCacheExpirationTimeout()
+            throws InterruptedException {
+
+        Map<String, String> templates = new HashMap<String, String>();
+        templates.put("foo", "0");
+        long timeout = 2;
+
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(
+                        EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT,
+                        timeout)
+                .addTemplateLocator(new MapTemplateLocator(templates)).build();
+        assertEquals("0", engine.getMustache("foo").render(null));
+        templates.put("foo", "1");
+        assertEquals("0", engine.getMustache("foo").render(null));
+        Thread.sleep((2 * timeout) * 1000);
+        assertEquals("1", engine.getMustache("foo").render(null));
+    }
+
+    @Test
+    public void testTemplateCachDisabled() {
+
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED,
+                        false)
+                .addTemplateLocator(new AbstractTemplateLocator(10) {
+
+                    @Override
+                    public Reader locate(String templateId) {
+                        return new StringReader(UUID.randomUUID().toString());
+                    }
+
+                    @Override
+                    public Set<String> getAllIdentifiers() {
+                        return null;
+                    }
+                }).build();
+
+        int size = 10;
+        Set<String> values = new HashSet<String>(size);
+        for (int i = 0; i < size; i++) {
+            values.add(engine.getMustache("foo").render(null));
+        }
+        assertEquals(size, values.size());
     }
 
 }

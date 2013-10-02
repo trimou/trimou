@@ -35,22 +35,24 @@ public interface MustacheEngine {
      * template cache</li>
      * </ol>
      *
-     * @param templateName
+     * @param templateId
+     *            The template identifier
      * @return the compiled template with the given name or <code>null</code> if
      *         no such template exists
      * @see TemplateLocator
      */
-    public Mustache getMustache(String templateName);
+    public Mustache getMustache(String templateId);
 
     /**
      * Compile the given template. The compiled template is not cached and so
      * it's not available for partials and template inheritance.
      *
-     * @param templateName
+     * @param templateId
+     *            The template identifier
      * @param templateContent
      * @return the compiled template
      */
-    public Mustache compileMustache(String templateName, String templateContent);
+    public Mustache compileMustache(String templateId, String templateContent);
 
     /**
      * @return the engine configuration

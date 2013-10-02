@@ -152,7 +152,7 @@ public class ReflectionResolver extends AbstractResolver implements
     public void onRemoval(
             RemovalNotification<MemberKey, Optional<MemberWrapper>> notification) {
         logger.debug(
-                "Remove [type: {}, key: {}, cause: {}, memberCacheSize: {}]: ",
+                "Removed member [type: {}, key: {}, cause: {}, memberCacheSize: {}]",
                 notification.getKey().getClazz(), notification.getKey()
                         .getName(), notification.getCause(), memberCache.size());
     }

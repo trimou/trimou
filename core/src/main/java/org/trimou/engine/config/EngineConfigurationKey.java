@@ -17,6 +17,8 @@ package org.trimou.engine.config;
 
 import org.trimou.util.SecurityActions;
 
+import com.google.common.cache.CacheBuilder;
+
 /**
  * Engine configuration keys.
  *
@@ -70,14 +72,26 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      */
     TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10),
     /**
-     * If <code>true</code> interpolated values are never escaped, i.e. org.trimou.engine.text.TextSupport.escapeHtml(String) is never called.
+     * If <code>true</code> interpolated values are never escaped, i.e.
+     * org.trimou.engine.text.TextSupport.escapeHtml(String) is never called.
      */
     SKIP_VALUE_ESCAPING(false),
     /**
-     * The encoding every template locator should use if reading template from a file.
+     * The encoding every template locator should use if reading template from a
+     * file.
      */
     DEFAULT_FILE_ENCODING(SecurityActions.getSystemProperty("file.encoding")),
-    ;
+    /**
+     * If <code>true</code> the template cache is enabled.
+     */
+    TEMPLATE_CACHE_ENABLED(true),
+    /**
+     * The template cache expiration timeout in seconds. Zero and negative
+     * values mean no timeout.
+     *
+     * @see CacheBuilder#expireAfterWrite(long, java.util.concurrent.TimeUnit)
+     */
+    TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0l), ;
 
     private Object defaultValue;
 
@@ -85,7 +99,8 @@ public enum EngineConfigurationKey implements ConfigurationKey {
 
     EngineConfigurationKey(Object defaultValue) {
         this.key = ConfigurationProperties.buildPropertyKey(this.toString(),
-                new String[]{EngineConfigurationKey.class.getPackage().getName()});
+                new String[] { EngineConfigurationKey.class.getPackage()
+                        .getName() });
         this.defaultValue = defaultValue;
     }
 

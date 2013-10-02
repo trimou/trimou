@@ -22,7 +22,10 @@ import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationFactory;
@@ -42,13 +45,19 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 
 /**
  * Default Mustache engine.
  *
  * @author Martin Kouba
  */
-class DefaultMustacheEngine implements MustacheEngine {
+class DefaultMustacheEngine implements MustacheEngine,
+        RemovalListener<String, Mustache> {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(DefaultMustacheEngine.class);
 
     private LoadingCache<String, Optional<Mustache>> templateCache;
 
@@ -71,58 +80,23 @@ class DefaultMustacheEngine implements MustacheEngine {
      */
     DefaultMustacheEngine(MustacheEngineBuilder builder) {
 
+        // First create the engine configuration
         configuration = new ConfigurationFactory().createConfiguration(builder);
-
-        CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
 
         if (configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
-            // Disable template cache
-            cacheBuilder.maximumSize(0);
-        }
+            logger.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
+        } else {
 
-        // Template cache
-        templateCache = cacheBuilder
-                .build(new CacheLoader<String, Optional<Mustache>>() {
-
-                    @Override
-                    public Optional<Mustache> load(String key) throws Exception {
-
-                        if (configuration.getTemplateLocators() == null
-                                || configuration.getTemplateLocators()
-                                        .isEmpty()) {
-                            return Optional.absent();
-                        }
-
-                        Reader reader = null;
-
-                        for (TemplateLocator locator : configuration
-                                .getTemplateLocators()) {
-                            reader = locator.locate(key);
-                            if (reader != null) {
-                                break;
-                            }
-                        }
-
-                        if (reader == null) {
-                            return Optional.absent();
-                        }
-                        return Optional.of(parse(key, reader));
-                    }
-                });
-
-        // Precompile templates
-        if (configuration
-                .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
-
-            Set<String> templateNames = new HashSet<String>();
-
-            for (TemplateLocator locator : configuration.getTemplateLocators()) {
-                templateNames.addAll(locator.getAllIdentifiers());
-            }
-
-            for (String templateName : templateNames) {
-                getTemplateFromCache(templateName);
+            if (configuration
+                    .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
+                buildTemplateCache();
+                if (configuration
+                        .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
+                    precompileTemplates();
+                }
+            } else {
+                logger.info("Template cache explicitly disabled!");
             }
         }
 
@@ -130,15 +104,16 @@ class DefaultMustacheEngine implements MustacheEngine {
         this.parsingHandlerFactory = new ParsingHandlerFactory();
     }
 
-    public Mustache getMustache(String templateName) {
-        checkArgumentNotEmpty(templateName);
-        return getTemplateFromCache(templateName);
+    public Mustache getMustache(String templateId) {
+        checkArgumentNotEmpty(templateId);
+        return templateCache != null ? getTemplateFromCache(templateId)
+                : locateAndParse(templateId);
     }
 
-    public Mustache compileMustache(String templateName, String templateContent) {
-        checkArgumentNotEmpty(templateName);
+    public Mustache compileMustache(String templateId, String templateContent) {
+        checkArgumentNotEmpty(templateId);
         checkArgumentNotEmpty(templateContent);
-        return parse(templateName, new StringReader(templateContent));
+        return parse(templateId, new StringReader(templateContent));
     }
 
     /**
@@ -163,22 +138,97 @@ class DefaultMustacheEngine implements MustacheEngine {
         return templateCache;
     }
 
+    @Override
+    public void onRemoval(RemovalNotification<String, Mustache> notification) {
+        logger.debug("Removed template [templateId: {}, cause: {}]",
+                notification.getKey(), notification.getCause());
+    }
+
+    private void buildTemplateCache() {
+
+        CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
+        long expirationTimeout = configuration
+                .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
+
+        if (expirationTimeout > 0) {
+            logger.info("Template cache expiration timeout set: {} seconds",
+                    expirationTimeout);
+            cacheBuilder.expireAfterWrite(expirationTimeout, TimeUnit.SECONDS);
+            cacheBuilder.removalListener(this);
+        }
+
+        templateCache = cacheBuilder
+                .build(new CacheLoader<String, Optional<Mustache>>() {
+
+                    @Override
+                    public Optional<Mustache> load(String key) throws Exception {
+                        return Optional.fromNullable(locateAndParse(key));
+                    }
+                });
+    }
+
+    private void precompileTemplates() {
+
+        Set<String> templateNames = new HashSet<String>();
+
+        for (TemplateLocator locator : configuration.getTemplateLocators()) {
+            templateNames.addAll(locator.getAllIdentifiers());
+        }
+
+        for (String templateName : templateNames) {
+            getTemplateFromCache(templateName);
+        }
+    }
+
     /**
      *
-     * @param templateName
+     * @param templateId
      * @param reader
      * @return
      */
-    private Mustache parse(String templateName, Reader reader) {
+    private Mustache parse(String templateId, Reader reader) {
 
         ParsingHandler handler = parsingHandlerFactory.createParsingHandler();
 
-        reader = notifyListenersBeforeParsing(templateName, reader);
-        parserFactory.createParser(this).parse(templateName, reader, handler);
+        reader = notifyListenersBeforeParsing(templateId, reader);
+        parserFactory.createParser(this).parse(templateId, reader, handler);
         Mustache mustache = handler.getCompiledTemplate();
         notifyListenersAfterCompilation(mustache);
 
         return mustache;
+    }
+
+    /**
+     *
+     * @param templateId
+     * @return
+     */
+    private Reader locate(String templateId) {
+
+        if (configuration.getTemplateLocators() == null
+                || configuration.getTemplateLocators().isEmpty()) {
+            return null;
+        }
+
+        Reader reader = null;
+
+        for (TemplateLocator locator : configuration.getTemplateLocators()) {
+            reader = locator.locate(templateId);
+            if (reader != null) {
+                break;
+            }
+        }
+        return reader;
+    }
+
+    /**
+     *
+     * @param templateId
+     * @return
+     */
+    private Mustache locateAndParse(String templateId) {
+        Reader reader = locate(templateId);
+        return reader != null ? parse(templateId, reader) : null;
     }
 
     private Reader notifyListenersBeforeParsing(String templateName,
