@@ -15,8 +15,6 @@
  */
 package org.trimou.engine;
 
-import static org.trimou.util.Checker.checkArgumentNotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +35,7 @@ import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
+import org.trimou.util.Checker;
 
 /**
  * Builds a {@link MustacheEngine} instance.
@@ -107,6 +106,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder addGlobalData(String name, Object value) {
+        Checker.checkArgumentsNotNull(name, value);
         if (this.globalData == null) {
             this.globalData = new HashMap<String, Object>();
         }
@@ -121,6 +121,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder addTemplateLocator(TemplateLocator locator) {
+        Checker.checkArgumentNotNull(locator);
         if (this.templateLocators == null) {
             this.templateLocators = new HashSet<TemplateLocator>();
         }
@@ -135,6 +136,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder addResolver(Resolver resolver) {
+        Checker.checkArgumentNotNull(resolver);
         if (this.resolvers == null) {
             this.resolvers = new HashSet<Resolver>();
         }
@@ -150,6 +152,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder setProperty(String key, Object value) {
+        Checker.checkArgumentsNotNull(key, value);
         this.properties.put(key, value);
         return this;
     }
@@ -161,8 +164,9 @@ public final class MustacheEngineBuilder implements
      * @param value
      * @return self
      */
-    public MustacheEngineBuilder setProperty(ConfigurationKey configurationKey,
-            Object value) {
+    public <T extends ConfigurationKey> MustacheEngineBuilder setProperty(
+            T configurationKey, Object value) {
+        Checker.checkArgumentsNotNull(configurationKey, value);
         setProperty(configurationKey.get(), value);
         return this;
     }
@@ -174,6 +178,7 @@ public final class MustacheEngineBuilder implements
      * @return selg
      */
     public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
+        Checker.checkArgumentNotNull(textSupport);
         this.textSupport = textSupport;
         return this;
     }
@@ -185,6 +190,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder setLocaleSupport(LocaleSupport localeSupport) {
+        Checker.checkArgumentNotNull(localeSupport);
         this.localeSupport = localeSupport;
         return this;
     }
@@ -197,7 +203,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
-        checkArgumentNotNull(callback);
+        Checker.checkArgumentNotNull(callback);
         if (this.engineReadyCallbacks == null) {
             this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
         }
@@ -213,7 +219,7 @@ public final class MustacheEngineBuilder implements
      * @return self
      */
     public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
-        checkArgumentNotNull(listener);
+        Checker.checkArgumentNotNull(listener);
         if (this.mustacheListeners == null) {
             this.mustacheListeners = new ArrayList<MustacheListener>();
         }
