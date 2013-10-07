@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.trimou</groupId>
         <artifactId>trimou-parent</artifactId>
-        <version>1.3.2-SNAPSHOT</version>
+        <version>1.3.2.Final</version>
     </parent>
 
     <artifactId>trimou-core</artifactId>
