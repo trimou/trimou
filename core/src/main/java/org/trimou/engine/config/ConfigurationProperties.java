@@ -76,4 +76,23 @@ public final class ConfigurationProperties {
         return key.toString();
     }
 
+    /**
+     *
+     * @param defaultValueType
+     * @param value
+     * @return the converted value
+     */
+    public static Object convertConfigValue(Class<?> defaultValueType, Object value) {
+        if (defaultValueType.equals(String.class)) {
+            return value.toString();
+        } else if (defaultValueType.equals(Boolean.class)) {
+            return Boolean.valueOf(value.toString());
+        } else if (defaultValueType.equals(Long.class)) {
+            return Long.valueOf(value.toString());
+        } else if (defaultValueType.equals(Integer.class)) {
+            return Integer.valueOf(value.toString());
+        }
+        throw new IllegalStateException("Unsupported default value type: " + defaultValueType);
+    }
+
 }

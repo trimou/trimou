@@ -19,7 +19,7 @@ package org.trimou.exception;
  *
  * @author Martin Kouba
  */
-public enum MustacheProblem {
+public enum MustacheProblem implements ProblemCode {
 
     // Compilation problems
     COMPILE_INVALID_DELIMITERS,
@@ -39,5 +39,8 @@ public enum MustacheProblem {
     RENDER_REFLECT_INVOCATION_ERROR,
     RENDER_NO_VALUE,
     RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
+    // Configuration problems
+    CONFIG_PROPERTY_INVALID_VALUE,
+    ;
 
 }

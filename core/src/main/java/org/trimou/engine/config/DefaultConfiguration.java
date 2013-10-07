@@ -38,6 +38,8 @@ import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.engine.text.TextSupportFactory;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.util.SecurityActions;
 import org.trimou.util.Strings;
 
@@ -121,7 +123,8 @@ class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public Long getLongPropertyValue(ConfigurationKey configurationKey) {
+    public <T extends ConfigurationKey> Long getLongPropertyValue(
+            T configurationKey) {
 
         Long value = (Long) properties.get(configurationKey.get());
 
@@ -132,7 +135,8 @@ class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public Integer getIntegerPropertyValue(ConfigurationKey configurationKey) {
+    public <T extends ConfigurationKey> Integer getIntegerPropertyValue(
+            T configurationKey) {
 
         Integer value = (Integer) properties.get(configurationKey.get());
 
@@ -143,7 +147,8 @@ class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public String getStringPropertyValue(ConfigurationKey configurationKey) {
+    public <T extends ConfigurationKey> String getStringPropertyValue(
+            T configurationKey) {
 
         Object value = properties.get(configurationKey.get());
 
@@ -154,7 +159,8 @@ class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean getBooleanPropertyValue(ConfigurationKey configurationKey) {
+    public <T extends ConfigurationKey> Boolean getBooleanPropertyValue(
+            T configurationKey) {
 
         Boolean value = (Boolean) properties.get(configurationKey.get());
 
@@ -202,20 +208,6 @@ class DefaultConfiguration implements Configuration {
             builder.append(entry.getValue());
         }
         return builder.toString();
-    }
-
-    private Object getPropertyValue(Object defaultValue, Object suppliedValue) {
-
-        if (defaultValue instanceof String) {
-            return suppliedValue.toString();
-        } else if (defaultValue instanceof Boolean) {
-            return Boolean.valueOf(suppliedValue.toString());
-        } else if (defaultValue instanceof Long) {
-            return Long.valueOf(suppliedValue.toString());
-        } else if (defaultValue instanceof Integer) {
-            return Integer.valueOf(suppliedValue.toString());
-        }
-        throw new IllegalStateException("Unknown configuration value");
     }
 
     private void initializeConfigurationAwareComponents() {
@@ -268,11 +260,19 @@ class DefaultConfiguration implements Configuration {
                     value = resourceProperties.getProperty(key);
                 }
             }
-            properties.put(
-                    key,
-                    value != null ? getPropertyValue(
-                            configKey.getDefaultValue(), value) : configKey
-                            .getDefaultValue());
+
+            if (value != null) {
+                try {
+                    value = ConfigurationProperties.convertConfigValue(
+                            configKey.getDefaultValue().getClass(), value);
+                } catch (Exception e) {
+                    throw new MustacheException(
+                            MustacheProblem.CONFIG_PROPERTY_INVALID_VALUE, e);
+                }
+            } else {
+                value = configKey.getDefaultValue();
+            }
+            properties.put(key, value);
         }
     }
 
@@ -339,6 +339,5 @@ class DefaultConfiguration implements Configuration {
         components.add(textSupport);
         return components;
     }
-
 
 }

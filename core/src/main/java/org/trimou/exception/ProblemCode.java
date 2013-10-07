@@ -13,28 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.config;
+package org.trimou.exception;
 
-/**
- * A configuration key.
- *
- * @author Martin Kouba
- */
-public interface ConfigurationKey {
-
-    /**
-     *
-     * @return the key itself
-     */
-    String get();
-
-    /**
-     * The set of supported value types which can be automatically converted
-     * consist of {@link String}, {@link Boolean}, {@link Integer} and
-     * {@link Long}.
-     *
-     * @return the default value
-     */
-    Object getDefaultValue();
+public interface ProblemCode {
 
 }

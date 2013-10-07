@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Martin Kouba
  */
-public class DefaultConfigurationTest extends AbstractEngineTest {
+public class InitPropertiesTest extends AbstractEngineTest {
 
     private final ConfigurationKey testResolverKeyAlpha = new SimpleConfigurationKey(
             "test.key.alpha", true);

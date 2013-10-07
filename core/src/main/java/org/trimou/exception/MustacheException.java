@@ -23,19 +23,19 @@ public class MustacheException extends RuntimeException {
 
     private static final long serialVersionUID = -83740749228227269L;
 
-    private MustacheProblem code;
+    private ProblemCode code;
 
-    public MustacheException(MustacheProblem code) {
+    public MustacheException(ProblemCode code) {
         this.code = code;
     }
 
-    public MustacheException(MustacheProblem code, String message,
+    public MustacheException(ProblemCode code, String message,
             Object... params) {
         super(String.format(message, params));
         this.code = code;
     }
 
-    public MustacheException(MustacheProblem code, Throwable cause) {
+    public MustacheException(ProblemCode code, Throwable cause) {
         super(cause);
         this.code = code;
     }
@@ -52,7 +52,7 @@ public class MustacheException extends RuntimeException {
         super(cause);
     }
 
-    public MustacheProblem getCode() {
+    public ProblemCode getCode() {
         return code;
     }
 
