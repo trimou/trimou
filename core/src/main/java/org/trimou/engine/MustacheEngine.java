@@ -17,6 +17,7 @@ package org.trimou.engine;
 
 import org.trimou.Mustache;
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.TemplateLocator;
 
 /**
@@ -27,19 +28,22 @@ import org.trimou.engine.locator.TemplateLocator;
 public interface MustacheEngine {
 
     /**
-     * Get the compiled template with the given name.
+     * Get the compiled template with the given id.
      *
-     * <ol>
-     * <li>Try to get the template from the template cache</li>
-     * <li>If not found, try to locate its contents, compile it and put into the
-     * template cache</li>
-     * </ol>
+     * This method involves all template locators to locate the template
+     * contents. Locators with higher priority are called first.
+     *
+     * By default the compiled template is automatically put into the template
+     * cache so that no compilation happens the next time the template is
+     * requested.
      *
      * @param templateId
      *            The template identifier
      * @return the compiled template with the given name or <code>null</code> if
      *         no such template exists
      * @see TemplateLocator
+     * @see EngineConfigurationKey#TEMPLATE_CACHE_ENABLED
+     * @see EngineConfigurationKey#TEMPLATE_CACHE_EXPIRATION_TIMEOUT
      */
     public Mustache getMustache(String templateId);
 

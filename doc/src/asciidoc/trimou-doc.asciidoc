@@ -365,9 +365,9 @@ MustacheEngine engine = MustacheEngineBuilder
 [[use_template_locator]]
 === Make use of template cache and template locators
 
-Template locators automatically locate the template contents for the given template id (name, path, ...). So that it's not necessary to supply the template contents every time the template is compiled. Moreover the compiled template is automatically put in the template cache (no compilation happens the next time the template is requested).
+Template locators automatically locate the template contents for the given template id (name, path, ...). So that it's not necessary to supply the template contents every time the template is compiled. Moreover if the template cache is enabled the compiled template is automatically put in the cache and no compilation happens the next time the template is requested.
 
-NOTE: Template cache is required for <<partials,partials>>!
+NOTE: Template locators are required for <<partials,partials>>!
 
 [source,java]
 ----
@@ -465,16 +465,26 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 |SKIP_VALUE_ESCAPING
 
 *org.trimou.engine.config.skipValueEscaping*
-|11
+|false
 |If +true+ interpolated values are never escaped, i.e. +org.trimou.engine.text.TextSupport.escapeHtml()+ is never called.
 
 
 |DEFAULT_FILE_ENCODING
 
 *org.trimou.engine.config.defaultFileEncoding*
-|12
+|System property "file.encoding"
 |The encoding every template locator should use if reading template from a file. System file encoding by default.
 
+|TEMPLATE_CACHE_ENABLED
+
+*org.trimou.engine.config.templateCacheEnabled*
+|true
+|The template cache is enabled by default. If set to false every +MustacheEngine.getMustache()+ invocation results in template lookup.
+
+|TEMPLATE_CACHE_EXPIRATION_TIMEOUT
+*org.trimou.engine.config.templateCacheExpirationTimeout*
+|0
+|The template cache expiration timeout in seconds. Zero and negative values mean no timeout. The template cachec never expires by default.
 
 |===
 
