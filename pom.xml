@@ -47,6 +47,7 @@
         <module>extensions/servlet</module>
         <module>extensions/prettytime</module>
         <module>extensions/minify</module>
+        <module>extensions/gson</module>
     </modules>
 
     <properties>
@@ -185,7 +186,6 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${version.gson}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>

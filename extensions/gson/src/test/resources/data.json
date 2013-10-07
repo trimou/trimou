@@ -1,0 +1,21 @@
+{
+    "firstName": "Jan",
+    "lastName": "Novy",
+    "age": 30,
+    "address": {
+        "street": "Nova",
+        "city": "Prague",
+        "state": "CZE",
+        "postalCode": "11000"
+    },
+    "phoneNumbers": [
+        {
+            "type": "home",
+            "number": "+42002012345"
+        },
+        {
+            "type": "mobile",
+            "number": "+420728000111"
+        }
+    ]
+}
