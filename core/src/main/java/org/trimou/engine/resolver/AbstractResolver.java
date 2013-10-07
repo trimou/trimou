@@ -34,7 +34,6 @@ public abstract class AbstractResolver implements Resolver {
         this.priority = priority;
     }
 
-
     @Override
     public void init(Configuration configuration) {
         // No-op

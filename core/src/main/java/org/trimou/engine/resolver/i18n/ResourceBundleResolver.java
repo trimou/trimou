@@ -20,6 +20,7 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 import java.util.ResourceBundle;
 
 import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.DummyTransformResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.lambda.i18n.ResourceBundleLambda;
 
@@ -32,9 +33,7 @@ import org.trimou.lambda.i18n.ResourceBundleLambda;
  * @see ResourceBundle
  * @see ResourceBundleLambda
  */
-public class ResourceBundleResolver extends LocaleAwareResolver {
-
-    private String baseName;
+public class ResourceBundleResolver extends DummyTransformResolver {
 
     /**
      *
@@ -42,8 +41,7 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
      *            The base name of the resource bundle
      */
     public ResourceBundleResolver(String baseName) {
-        super(rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY));
-        this.baseName = baseName;
+        this(baseName, rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY));
     }
 
     /**
@@ -53,23 +51,16 @@ public class ResourceBundleResolver extends LocaleAwareResolver {
      * @param priority
      */
     public ResourceBundleResolver(String baseName, int priority) {
-        super(priority);
-        this.baseName = baseName;
+        super(priority, baseName);
     }
 
     @Override
-    public Object resolve(Object contextObject, String name,
+    public Object transform(Object contextObject, String name,
             ResolutionContext context) {
-
-        if (contextObject == null && baseName.equals(name)) {
-            return ResourceBundle.getBundle(baseName,
-                    localeSupport.getCurrentLocale());
-        } else if (contextObject != null
-                && (contextObject instanceof ResourceBundle)) {
-            ResourceBundle bundle = (ResourceBundle) contextObject;
-            if (bundle.containsKey(name)) {
-                return bundle.getObject(name);
-            }
+        ResourceBundle bundle = ResourceBundle.getBundle(matchingName(0),
+                getCurrentLocale());
+        if (bundle.containsKey(name)) {
+            return bundle.getObject(name);
         }
         return null;
     }

@@ -36,7 +36,16 @@ public abstract class IndexResolver extends AbstractResolver {
      *         (must only contain digits)
      */
     protected boolean notAnIndex(String name) {
-        return !NumberUtils.isDigits(name);
+        return !isAnIndex(name);
+    }
+
+    /**
+     * @param name
+     * @return <code>true</code> if the given key represents an index
+     *         (must only contain digits)
+     */
+    protected boolean isAnIndex(String name) {
+        return NumberUtils.isDigits(name);
     }
 
     /**

@@ -1,9 +1,12 @@
 package org.trimou.engine.resolver.i18n;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -24,9 +27,12 @@ import com.google.common.collect.ImmutableMap;
  */
 public class DateTimeFormatResolverTest extends AbstractEngineTest {
 
+    private DateTimeFormatResolver resolver;
+
     @Override
     @Before
     public void buildEngine() {
+        resolver = new DateTimeFormatResolver();
         engine = MustacheEngineBuilder
                 .newBuilder()
                 .setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY,
@@ -46,7 +52,19 @@ public class DateTimeFormatResolverTest extends AbstractEngineTest {
                     public Set<ConfigurationKey> getConfigurationKeys() {
                         return Collections.emptySet();
                     }
-                }).addResolver(new DateTimeFormatResolver()).build();
+                }).addResolver(resolver).build();
+    }
+
+    @Test
+    public void testResolution() {
+        assertNull(resolver.resolve(new Date(), "foo", null));
+        assertNull(resolver.resolve("5", "foo", null));
+        assertNotNull(resolver.resolve(5, DateTimeFormatResolver.NAME_FORMAT,
+                null));
+        assertNotNull(resolver.resolve(Calendar.getInstance(),
+                DateTimeFormatResolver.NAME_FORMAT_CUSTOM, null));
+        assertNotNull(resolver.resolve(new Date(),
+                DateTimeFormatResolver.NAME_FORMAT_DATE, null));
     }
 
     @Test

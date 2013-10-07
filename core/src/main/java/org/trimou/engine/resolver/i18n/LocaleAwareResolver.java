@@ -27,7 +27,7 @@ import org.trimou.engine.resolver.AbstractResolver;
  */
 public abstract class LocaleAwareResolver extends AbstractResolver {
 
-    protected LocaleSupport localeSupport;
+    private LocaleSupport localeSupport;
 
     public LocaleAwareResolver(int priority) {
         super(priority);

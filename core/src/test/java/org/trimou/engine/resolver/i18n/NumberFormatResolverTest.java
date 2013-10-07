@@ -1,9 +1,12 @@
 package org.trimou.engine.resolver.i18n;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
@@ -24,9 +27,12 @@ import com.google.common.collect.ImmutableMap;
  */
 public class NumberFormatResolverTest extends AbstractEngineTest {
 
+    private NumberFormatResolver resolver;
+
     @Override
     @Before
     public void buildEngine() {
+        resolver = new NumberFormatResolver();
         engine = MustacheEngineBuilder.newBuilder()
                 .setLocaleSupport(new LocaleSupport() {
                     @Override
@@ -42,8 +48,16 @@ public class NumberFormatResolverTest extends AbstractEngineTest {
                     public Set<ConfigurationKey> getConfigurationKeys() {
                         return Collections.emptySet();
                     }
-                }).addResolver(new NumberFormatResolver()).build();
+                }).addResolver(resolver).build();
 
+    }
+
+    @Test
+    public void testResolution() {
+        assertNull(resolver.resolve(new Date(), "foo", null));
+        assertNull(resolver.resolve(5, "foo", null));
+        assertNotNull(resolver.resolve(5, NumberFormatResolver.NAME_FORMAT,
+                null));
     }
 
     @Test

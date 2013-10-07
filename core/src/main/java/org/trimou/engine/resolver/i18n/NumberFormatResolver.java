@@ -21,6 +21,7 @@ import java.text.NumberFormat;
 
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.TransformResolver;
 
 /**
  * Basic number formatting resolver.
@@ -36,41 +37,50 @@ import org.trimou.engine.resolver.ResolutionContext;
  *
  * @author Martin Kouba
  */
-public class NumberFormatResolver extends LocaleAwareResolver {
+public class NumberFormatResolver extends TransformResolver {
 
     public static final int NUMBER_FORMAT_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
-    private static final String NAME_FORMAT = "format";
+    static final String NAME_FORMAT = "format";
 
-    private static final String NAME_FORMAT_PERCENT = "formatPercent";
+    static final String NAME_FORMAT_PERCENT = "formatPercent";
 
-    private static final String NAME_FORMAT_CURR = "formatCurrency";
+    static final String NAME_FORMAT_CURR = "formatCurrency";
 
+    /**
+     *
+     */
     public NumberFormatResolver() {
         this(NUMBER_FORMAT_RESOLVER_PRIORITY);
     }
 
+    /**
+     *
+     * @param priority
+     */
     public NumberFormatResolver(int priority) {
-        super(priority);
+        super(priority, NAME_FORMAT, NAME_FORMAT_CURR, NAME_FORMAT_PERCENT);
     }
 
     @Override
-    public Object resolve(Object contextObject, String name,
+    protected boolean matches(Object contextObject, String name) {
+        return super.matches(contextObject, name)
+                && (contextObject instanceof Number);
+    }
+
+    @Override
+    public Object transform(Object contextObject, String name,
             ResolutionContext context) {
 
-        if (contextObject == null || !(contextObject instanceof Number)) {
-            return null;
-        }
-
         if (NAME_FORMAT.equals(name)) {
-            return NumberFormat.getNumberInstance(
-                    localeSupport.getCurrentLocale()).format(contextObject);
+            return NumberFormat.getNumberInstance(getCurrentLocale()).format(
+                    contextObject);
         } else if (NAME_FORMAT_PERCENT.equals(name)) {
-            return NumberFormat.getPercentInstance(
-                    localeSupport.getCurrentLocale()).format(contextObject);
+            return NumberFormat.getPercentInstance(getCurrentLocale()).format(
+                    contextObject);
         } else if (NAME_FORMAT_CURR.equals(name)) {
-            return NumberFormat.getCurrencyInstance(
-                    localeSupport.getCurrentLocale()).format(contextObject);
+            return NumberFormat.getCurrencyInstance(getCurrentLocale()).format(
+                    contextObject);
         }
         return null;
     }

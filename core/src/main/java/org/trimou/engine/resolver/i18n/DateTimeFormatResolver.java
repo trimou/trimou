@@ -31,6 +31,7 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.TransformResolver;
 
 /**
  * Basic date and time formatting resolver.
@@ -45,7 +46,7 @@ import org.trimou.engine.resolver.ResolutionContext;
  *
  * @author Martin Kouba
  */
-public class DateTimeFormatResolver extends LocaleAwareResolver {
+public class DateTimeFormatResolver extends TransformResolver {
 
     private static final Logger logger = LoggerFactory
             .getLogger(DateTimeFormatResolver.class);
@@ -56,32 +57,35 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
             DateTimeFormatResolver.class.getName() + ".customPattern",
             "M/d/yy h:mm a");
 
-    private static final String NAME_FORMAT = "format";
+    static final String NAME_FORMAT = "format";
 
-    private static final String NAME_FORMAT_SHORT = "formatShort";
+    static final String NAME_FORMAT_SHORT = "formatShort";
 
-    private static final String NAME_FORMAT_CUSTOM = "formatCustom";
+    static final String NAME_FORMAT_CUSTOM = "formatCustom";
 
-    private static final String NAME_FORMAT_DATE = "formatDate";
+    static final String NAME_FORMAT_DATE = "formatDate";
 
     private String customPattern;
 
-
+    /**
+     *
+     */
     public DateTimeFormatResolver() {
         this(DATE_TIME_FORMAT_RESOLVER_PRIORITY);
     }
 
+    /**
+     *
+     * @param priority
+     */
     public DateTimeFormatResolver(int priority) {
-        super(priority);
+        super(priority, NAME_FORMAT, NAME_FORMAT_CUSTOM, NAME_FORMAT_DATE,
+                NAME_FORMAT_SHORT);
     }
 
     @Override
-    public Object resolve(Object contextObject, String name,
+    public Object transform(Object contextObject, String name,
             ResolutionContext context) {
-
-        if (contextObject == null) {
-            return null;
-        }
 
         Object formattableObject = getFormattableObject(contextObject);
 
@@ -125,18 +129,18 @@ public class DateTimeFormatResolver extends LocaleAwareResolver {
     }
 
     private String format(int style, Object object) {
-        return DateFormat.getDateTimeInstance(style, style,
-                localeSupport.getCurrentLocale()).format(object);
+        return DateFormat.getDateTimeInstance(style, style, getCurrentLocale())
+                .format(object);
     }
 
     private String formatDate(int style, Object object) {
-        return DateFormat.getDateInstance(style,
-                localeSupport.getCurrentLocale()).format(object);
+        return DateFormat.getDateInstance(style, getCurrentLocale()).format(
+                object);
     }
 
     private String formatCustom(Object object) {
-        return new SimpleDateFormat(customPattern,
-                localeSupport.getCurrentLocale()).format(object);
+        return new SimpleDateFormat(customPattern, getCurrentLocale())
+                .format(object);
     }
 
 }

@@ -31,7 +31,7 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
-import org.trimou.engine.resolver.i18n.LocaleAwareResolver;
+import org.trimou.engine.resolver.TransformResolver;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -42,7 +42,7 @@ import com.google.common.cache.LoadingCache;
  *
  * @author Martin Kouba
  */
-public class PrettyTimeResolver extends LocaleAwareResolver {
+public class PrettyTimeResolver extends TransformResolver {
 
     private static final Logger logger = LoggerFactory
             .getLogger(PrettyTimeResolver.class);
@@ -52,35 +52,35 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
     public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
             PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
 
-    private String matchName;
-
-    public PrettyTimeResolver() {
-    	this(PRETTY_TIME_RESOLVER_PRIORITY);
-    }
-
-    public PrettyTimeResolver(int priority) {
-		super(priority);
-	}
-
-	/**
+    /**
      * Lazy loading cache of PrettyTime instances
      */
     private LoadingCache<Locale, PrettyTime> prettyTimeCache;
 
-    @Override
-    public Object resolve(Object contextObject, String name,
-            ResolutionContext context) {
+    /**
+     *
+     */
+    public PrettyTimeResolver() {
+        this(PRETTY_TIME_RESOLVER_PRIORITY);
+    }
 
-        if (contextObject == null || !matchName.equals(name)) {
-            return null;
-        }
+    /**
+     *
+     * @param priority
+     */
+    public PrettyTimeResolver(int priority) {
+        super(priority);
+    }
+
+    @Override
+    public Object transform(Object contextObject, String name,
+            ResolutionContext context) {
 
         Date formattableObject = getFormattableObject(contextObject);
 
         if (formattableObject == null) {
             return null;
         }
-
         return prettyTimeCache.getUnchecked(getCurrentLocale()).format(
                 formattableObject);
     }
@@ -94,7 +94,7 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
     public void init(Configuration configuration) {
         super.init(configuration);
 
-        matchName = configuration.getStringPropertyValue(MATCH_NAME_KEY);
+        setMatchingNames(configuration.getStringPropertyValue(MATCH_NAME_KEY));
         prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
                 .build(new CacheLoader<Locale, PrettyTime>() {
 
@@ -103,7 +103,7 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
                         return new PrettyTime(locale);
                     }
                 });
-        logger.info("Initialized [matchName: {}]", matchName);
+        logger.info("Initialized [matchingName: {}]", matchingName(0));
     }
 
     private Date getFormattableObject(Object contextObject) {
