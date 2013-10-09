@@ -5,8 +5,10 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,10 +21,12 @@ import org.trimou.Mustache;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.AbstractTemplateLocator;
 import org.trimou.engine.locator.MapTemplateLocator;
+import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  *
@@ -123,7 +127,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
     }
 
     @Test
-    public void testTemplateCachDisabled() {
+    public void testTemplateCacheDisabled() {
 
         MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
@@ -150,4 +154,34 @@ public class MustacheEngineTest extends AbstractEngineTest {
         assertEquals(size, values.size());
     }
 
+    @Test
+    public void testPrecompileAllAvailableTemplates() {
+
+        final List<String> sequence = new ArrayList<String>();
+
+        TemplateLocator locator01 = new AbstractTemplateLocator(10) {
+
+            @Override
+            public Reader locate(String templateId) {
+                sequence.add("fooLocate");
+                return templateId.equals("foo") ? new StringReader("{{foo}}")
+                        : null;
+            }
+
+            @Override
+            public Set<String> getAllIdentifiers() {
+                sequence.add("fooGetAllIdentifiers");
+                return ImmutableSet.of("foo");
+            }
+        };
+
+        MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES,
+                        true).addTemplateLocator(locator01).build();
+
+        assertEquals(2, sequence.size());
+        assertEquals("fooGetAllIdentifiers", sequence.get(0));
+        assertEquals("fooLocate", sequence.get(1));
+    }
 }
