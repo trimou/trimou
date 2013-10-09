@@ -82,6 +82,8 @@ class DefaultMustacheEngine implements MustacheEngine,
 
         // First create the engine configuration
         configuration = new ConfigurationFactory().createConfiguration(builder);
+        parserFactory = new ParserFactory();
+        parsingHandlerFactory = new ParsingHandlerFactory();
 
         if (configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
@@ -99,9 +101,6 @@ class DefaultMustacheEngine implements MustacheEngine,
                 logger.info("Template cache explicitly disabled!");
             }
         }
-
-        this.parserFactory = new ParserFactory();
-        this.parsingHandlerFactory = new ParsingHandlerFactory();
     }
 
     public Mustache getMustache(String templateId) {
