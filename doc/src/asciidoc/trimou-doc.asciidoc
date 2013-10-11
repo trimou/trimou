@@ -324,6 +324,8 @@ String output = MustacheEngineBuilder
 <2> Compile the template
 <3> Render the text
 
+NOTE: Instances of +MustacheEngineBuilder+ are not reusable. The builder is considered immutable once the
+ +build()+ method is called - subsequent invocations of some +MustacheEngineBuilder+ methods result in +IllegalStateException+.
 
 ==== Provide your own Appendable
 
@@ -389,7 +391,7 @@ See also <<template_locator, TemplateLocator SPI>>.
 
 ==== Note about file encoding
 
-Trimou does not perform any file encoding detection and conversion. Instead any template locator must provide a +java.io.Reader+ instance which is able to convert between Unicode and a other character encodings. Built-in locators don't detect file encoding but use system file encoding by default. But it's possible (and recommended) to define the default file encoding with configuration property +EngineConfigurationKey.DEFAULT_FILE_ENCODING+ (see also <<configuration,configuration properties>>). 
+Trimou does not perform any file encoding detection and conversion. Instead any template locator must provide a +java.io.Reader+ instance which is able to convert between Unicode and a other character encodings. Built-in locators don't detect file encoding but use system file encoding by default. But it's possible (and recommended) to define the default file encoding with configuration property +EngineConfigurationKey.DEFAULT_FILE_ENCODING+ (see also <<configuration,configuration properties>>).
 
 NOTE: Applications are encouraged to always define a default file encoding per every MustacheEngine instance.
 

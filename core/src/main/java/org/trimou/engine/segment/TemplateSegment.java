@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
@@ -48,19 +49,19 @@ public class TemplateSegment extends AbstractContainerSegment implements
 
     private boolean readOnly = false;
 
+    private boolean debugMode;
+
     public TemplateSegment(String text, MustacheEngine engine) {
         super(text, null);
         this.engine = engine;
+        this.debugMode = engine.getConfiguration().getBooleanPropertyValue(
+                DEBUG_MODE);
     }
 
     @Override
     public void render(Appendable appendable, Map<String, Object> data) {
 
-        if (!isReadOnly()) {
-            throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
-                    "Template %s is not ready yet", getName());
-        }
-
+        checkIsReady();
         DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
                 getText());
 
@@ -69,7 +70,7 @@ public class TemplateSegment extends AbstractContainerSegment implements
             // Build execution context and push the template on the invocation
             // stack
             ExecutionContext context = new ExecutionContextBuilder(engine)
-                    .withData(data).build();
+                    .withData(data).build(debugMode);
             context.push(TargetStack.TEMPLATE_INVOCATION, this);
             // Execute the template
             super.execute(appendable, context);
@@ -174,6 +175,13 @@ public class TemplateSegment extends AbstractContainerSegment implements
             return mustacheName;
         }
 
+    }
+
+    private void checkIsReady() {
+        if (!isReadOnly()) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
+                    "Template %s is not ready yet", getName());
+        }
     }
 
 }

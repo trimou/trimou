@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -86,8 +85,14 @@ class DefaultConfiguration implements Configuration {
         identifyTextSupport(builder);
         identifyLocaleSupport(builder);
         identifyTemplateLocators(builder);
-        identifyMustacheListeners(builder);
-        initializeGlobalData(builder);
+        List<MustacheListener> listeners = builder.buildMustacheListeners();
+        if (!listeners.isEmpty()) {
+            this.mustacheListeners = listeners;
+        }
+        Map<String, Object> globalData = builder.buildGlobalData();
+        if (!globalData.isEmpty()) {
+            this.globalData = globalData;
+        }
         initializeProperties(builder);
         initializeConfigurationAwareComponents();
     }
@@ -217,19 +222,22 @@ class DefaultConfiguration implements Configuration {
     }
 
     private void identifyResolvers(MustacheEngineBuilder builder) {
-        resolvers = new ArrayList<Resolver>();
-        if (builder.getResolvers() != null) {
-            resolvers.addAll(builder.getResolvers());
+        Set<Resolver> builderResolvers = builder.buildResolvers();
+        if (!builderResolvers.isEmpty()) {
+            resolvers = new ArrayList<Resolver>();
+            resolvers.addAll(builderResolvers);
+            Collections.sort(resolvers, new HighPriorityComparator());
+            resolvers = ImmutableList.copyOf(resolvers);
         }
-        Collections.sort(resolvers, new HighPriorityComparator());
-        resolvers = ImmutableList.copyOf(resolvers);
     }
 
-    private void initializeProperties(MustacheEngineBuilder builder) {
+    private void initializeProperties(MustacheEngineBuilder engineBuilder) {
 
         Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess();
 
-        properties = new HashMap<String, Object>(keysToProcess.size());
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap
+                .builder();
+        Map<String, Object> builderProperties = engineBuilder.buildProperties();
         Properties resourceProperties = new Properties();
 
         try {
@@ -250,7 +258,7 @@ class DefaultConfiguration implements Configuration {
             String key = configKey.get();
 
             // Manually set properties
-            Object value = builder.getProperties().get(key);
+            Object value = builderProperties.get(key);
 
             if (value == null) {
                 // System properties
@@ -272,8 +280,9 @@ class DefaultConfiguration implements Configuration {
             } else {
                 value = configKey.getDefaultValue();
             }
-            properties.put(key, value);
+            builder.put(key, value);
         }
+        this.properties = builder.build();
     }
 
     private Set<ConfigurationKey> getConfigurationKeysToProcess() {
@@ -305,24 +314,13 @@ class DefaultConfiguration implements Configuration {
     }
 
     private void identifyTemplateLocators(MustacheEngineBuilder builder) {
-        if (builder.getTemplateLocators() != null) {
+        Set<TemplateLocator> builderTemplateLocators = builder
+                .buildTemplateLocators();
+        if (!builderTemplateLocators.isEmpty()) {
             List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
-                    builder.getTemplateLocators());
+                    builder.buildTemplateLocators());
             Collections.sort(locators, new HighPriorityComparator());
             this.templateLocators = ImmutableList.copyOf(locators);
-        }
-    }
-
-    private void initializeGlobalData(MustacheEngineBuilder builder) {
-        if (builder.getGlobalData() != null) {
-            this.globalData = ImmutableMap.copyOf(builder.getGlobalData());
-        }
-    }
-
-    private void identifyMustacheListeners(MustacheEngineBuilder builder) {
-        if (builder.getMustacheListeners() != null) {
-            this.mustacheListeners = ImmutableList.copyOf(builder
-                    .getMustacheListeners());
         }
     }
 

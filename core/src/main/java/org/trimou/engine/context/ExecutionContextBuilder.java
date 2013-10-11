@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.context;
 
-import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
 import static org.trimou.engine.context.ExecutionContext.TargetStack.CONTEXT;
 
 import java.util.Map;
@@ -54,13 +53,14 @@ public class ExecutionContextBuilder {
 
     /**
      *
+     * @param debugMode
      * @return the built execution context
      */
-    public ExecutionContext build() {
+    public ExecutionContext build(boolean debugMode) {
 
         ExecutionContext context = null;
 
-        if (engine.getConfiguration().getBooleanPropertyValue(DEBUG_MODE)) {
+        if (debugMode) {
             context = new DebugExecutionContext(engine.getConfiguration());
         } else {
             context = new DefaultExecutionContext(engine.getConfiguration());

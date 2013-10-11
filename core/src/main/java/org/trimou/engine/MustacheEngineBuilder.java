@@ -16,8 +16,6 @@
 package org.trimou.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +27,6 @@ import org.trimou.Mustache;
 import org.trimou.engine.config.ConfigurationExtension;
 import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBuilder;
 import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
@@ -37,8 +34,15 @@ import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.util.Checker;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
 /**
- * Builds a {@link MustacheEngine} instance.
+ * A builder for {@link MustacheEngine}. Instances are not reusable. Once the
+ * {@link #build()} method is called, the builder is considered immutable and
+ * subsequent invocation of some methods results in
+ * {@link IllegalStateException}.
  *
  * @author Martin Kouba
  */
@@ -50,22 +54,28 @@ public final class MustacheEngineBuilder implements
 
     private boolean omitServiceLoaderConfigurationExtensions = false;
 
-    private Set<Resolver> resolvers = null;
+    private ImmutableSet.Builder<Resolver> resolversBuilder = ImmutableSet
+            .builder();
 
-    private Set<TemplateLocator> templateLocators = null;
+    private ImmutableSet.Builder<TemplateLocator> templateLocators = ImmutableSet
+            .builder();
 
-    private Map<String, Object> globalData = null;
+    private ImmutableMap.Builder<String, Object> globalData = ImmutableMap
+            .builder();
 
     private TextSupport textSupport = null;
 
     private LocaleSupport localeSupport = null;
 
-    private Map<String, Object> properties = new HashMap<String, Object>(
-            EngineConfigurationKey.values().length);
+    private ImmutableMap.Builder<String, Object> properties = ImmutableMap
+            .builder();
 
     private List<EngineBuiltCallback> engineReadyCallbacks = null;
 
-    private List<MustacheListener> mustacheListeners;
+    private ImmutableList.Builder<MustacheListener> mustacheListeners = ImmutableList
+            .builder();
+
+    private boolean isMutable = false;
 
     /**
      * Don't create a new instance.
@@ -74,12 +84,12 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
-     * Builds the engine instance. The builder cleanup is performed after the
-     * engine is built.
+     * Builds the engine instance.
      *
      * @return the built engine
      */
     public MustacheEngine build() {
+        checkIsMutable("build()");
         MustacheEngine engine = new DefaultMustacheEngine(this);
         if (engineReadyCallbacks != null) {
             for (EngineBuiltCallback callback : engineReadyCallbacks) {
@@ -91,7 +101,7 @@ public final class MustacheEngineBuilder implements
                 "Engine built {}\n{}",
                 StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
                         : pack.getSpecificationVersion(), engine.toString());
-        performCleanup();
+        isMutable = false;
         return engine;
     }
 
@@ -107,9 +117,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addGlobalData(String name, Object value) {
         Checker.checkArgumentsNotNull(name, value);
-        if (this.globalData == null) {
-            this.globalData = new HashMap<String, Object>();
-        }
+        checkIsMutable("addGlobalData()");
         this.globalData.put(name, value);
         return this;
     }
@@ -122,9 +130,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addTemplateLocator(TemplateLocator locator) {
         Checker.checkArgumentNotNull(locator);
-        if (this.templateLocators == null) {
-            this.templateLocators = new HashSet<TemplateLocator>();
-        }
+        checkIsMutable("addTemplateLocator()");
         this.templateLocators.add(locator);
         return this;
     }
@@ -137,10 +143,8 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addResolver(Resolver resolver) {
         Checker.checkArgumentNotNull(resolver);
-        if (this.resolvers == null) {
-            this.resolvers = new HashSet<Resolver>();
-        }
-        this.resolvers.add(resolver);
+        checkIsMutable("addResolver()");
+        this.resolversBuilder.add(resolver);
         return this;
     }
 
@@ -153,6 +157,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setProperty(String key, Object value) {
         Checker.checkArgumentsNotNull(key, value);
+        checkIsMutable("setProperty()");
         this.properties.put(key, value);
         return this;
     }
@@ -167,6 +172,7 @@ public final class MustacheEngineBuilder implements
     public <T extends ConfigurationKey> MustacheEngineBuilder setProperty(
             T configurationKey, Object value) {
         Checker.checkArgumentsNotNull(configurationKey, value);
+        checkIsMutable("setProperty()");
         setProperty(configurationKey.get(), value);
         return this;
     }
@@ -179,6 +185,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
         Checker.checkArgumentNotNull(textSupport);
+        checkIsMutable("setTextSupport()");
         this.textSupport = textSupport;
         return this;
     }
@@ -191,6 +198,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setLocaleSupport(LocaleSupport localeSupport) {
         Checker.checkArgumentNotNull(localeSupport);
+        checkIsMutable("setLocaleSupport()");
         this.localeSupport = localeSupport;
         return this;
     }
@@ -204,6 +212,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
         Checker.checkArgumentNotNull(callback);
+        checkIsMutable("registerCallback()");
         if (this.engineReadyCallbacks == null) {
             this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
         }
@@ -220,9 +229,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
         Checker.checkArgumentNotNull(listener);
-        if (this.mustacheListeners == null) {
-            this.mustacheListeners = new ArrayList<MustacheListener>();
-        }
+        checkIsMutable("addMustacheListener()");
         this.mustacheListeners.add(listener);
         return this;
     }
@@ -233,6 +240,7 @@ public final class MustacheEngineBuilder implements
      * @see ConfigurationExtension
      */
     public MustacheEngineBuilder omitServiceLoaderConfigurationExtensions() {
+        checkIsMutable("omitServiceLoaderConfigurationExtensions()");
         this.omitServiceLoaderConfigurationExtensions = true;
         return this;
     }
@@ -256,16 +264,16 @@ public final class MustacheEngineBuilder implements
 
     }
 
-    public Set<TemplateLocator> getTemplateLocators() {
-        return templateLocators;
+    public Set<TemplateLocator> buildTemplateLocators() {
+        return templateLocators.build();
     }
 
-    public Set<Resolver> getResolvers() {
-        return resolvers;
+    public Set<Resolver> buildResolvers() {
+        return resolversBuilder.build();
     }
 
-    public Map<String, Object> getGlobalData() {
-        return globalData;
+    public Map<String, Object> buildGlobalData() {
+        return globalData.build();
     }
 
     public TextSupport getTextSupport() {
@@ -280,23 +288,20 @@ public final class MustacheEngineBuilder implements
         return omitServiceLoaderConfigurationExtensions;
     }
 
-    public Map<String, Object> getProperties() {
-        return properties;
+    public Map<String, Object> buildProperties() {
+        return properties.build();
     }
 
-    public List<MustacheListener> getMustacheListeners() {
-        return mustacheListeners;
+    public List<MustacheListener> buildMustacheListeners() {
+        return mustacheListeners.build();
     }
 
-    private void performCleanup() {
-        this.omitServiceLoaderConfigurationExtensions = false;
-        this.resolvers = null;
-        this.templateLocators = null;
-        this.globalData = null;
-        this.textSupport = null;
-        this.localeSupport = null;
-        this.properties.clear();
-        this.engineReadyCallbacks = null;
+    private void checkIsMutable(String methodName) {
+        if (!isMutable) {
+            throw new IllegalStateException(
+                    "Invalid method invocation - builder already built: "
+                            + methodName);
+        }
     }
 
 }
