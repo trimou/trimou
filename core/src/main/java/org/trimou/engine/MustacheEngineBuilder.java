@@ -75,7 +75,7 @@ public final class MustacheEngineBuilder implements
     private ImmutableList.Builder<MustacheListener> mustacheListeners = ImmutableList
             .builder();
 
-    private boolean isMutable = false;
+    private boolean isMutable = true;
 
     /**
      * Don't create a new instance.
