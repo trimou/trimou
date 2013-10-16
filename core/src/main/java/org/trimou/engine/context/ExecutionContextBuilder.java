@@ -17,8 +17,6 @@ package org.trimou.engine.context;
 
 import static org.trimou.engine.context.ExecutionContext.TargetStack.CONTEXT;
 
-import java.util.Map;
-
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheEngine;
 
@@ -31,7 +29,7 @@ public class ExecutionContextBuilder {
 
     private final MustacheEngine engine;
 
-    private Map<String, Object> data;
+    private Object data;
 
     /**
      *
@@ -46,7 +44,7 @@ public class ExecutionContextBuilder {
      * @param data
      * @return self
      */
-    public ExecutionContextBuilder withData(Map<String, Object> data) {
+    public ExecutionContextBuilder withData(Object data) {
         this.data = data;
         return this;
     }

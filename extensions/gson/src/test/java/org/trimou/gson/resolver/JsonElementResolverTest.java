@@ -13,7 +13,6 @@ import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
@@ -48,9 +47,8 @@ public class JsonElementResolverTest {
         Mustache mustache = engine
                 .compileMustache(
                         "json_element_test",
-                        "{{json.lastName}}|{{json.address.street}}|{{#json.phoneNumbers}}{{type}}{{#iterHasNext}},{{/iterHasNext}}{{/json.phoneNumbers}}|{{json.phoneNumbers.0.type}}");
-        assertEquals("Novy|Nova|home,mobile|home", mustache.render(ImmutableMap
-                .<String, Object> of("json", loadData())));
+                        "{{lastName}}|{{address.street}}|{{#phoneNumbers}}{{type}}{{#iterHasNext}},{{/iterHasNext}}{{/phoneNumbers}}|{{phoneNumbers.0.type}}");
+        assertEquals("Novy|Nova|home,mobile|home", mustache.render(loadJsonData()));
     }
 
     @Test
@@ -65,12 +63,11 @@ public class JsonElementResolverTest {
         Mustache mustache = engine
                 .compileMustache(
                         "json_element_unwrap_primitive_disabled_test",
-                        "{{json.firstName.asString.length}}|{{json.phoneNumbers.1.type.asString.toUpperCase}}");
-        assertEquals("3|MOBILE", mustache.render(ImmutableMap
-                .<String, Object> of("json", loadData())));
+                        "{{firstName.asString.length}}|{{phoneNumbers.1.type.asString.toUpperCase}}");
+        assertEquals("3|MOBILE", mustache.render(loadJsonData()));
     }
 
-    private JsonElement loadData() throws JsonIOException, JsonSyntaxException,
+    private JsonElement loadJsonData() throws JsonIOException, JsonSyntaxException,
             FileNotFoundException {
         return new JsonParser().parse(new FileReader(new File(
                 "src/test/resources/data.json")));

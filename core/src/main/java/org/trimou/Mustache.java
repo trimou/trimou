@@ -15,18 +15,16 @@
  */
 package org.trimou;
 
-import java.util.Map;
-
 /**
- * Compiled mustache template. Template is considered immutable once the
- * compilation is finished.
+ * A compiled mustache template. It is considered immutable once the compilation
+ * is finished.
  *
  * @author Martin Kouba
  */
 public interface Mustache {
 
     /**
-     * @return the template name
+     * @return the template name (identifier)
      */
     public String getName();
 
@@ -34,11 +32,11 @@ public interface Mustache {
      * Render the template.
      *
      * @param data
-     *            Optional context data (ideally immutable), may be
+     *            Optional context object (ideally immutable), may be
      *            <code>null</code>
      * @return the rendered template as string
      */
-    public String render(Map<String, Object> data);
+    public String render(Object data);
 
     /**
      * Render the template.
@@ -49,9 +47,9 @@ public interface Mustache {
      * @param appendable
      *            The appendable to append the rendered template to
      * @param data
-     *            Optional context data (ideally immutable), may be
+     *            Optional context object (ideally immutable), may be
      *            <code>null</code>
      */
-    public void render(Appendable appendable, Map<String, Object> data);
+    public void render(Appendable appendable, Object data);
 
 }

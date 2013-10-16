@@ -68,8 +68,8 @@ However there are some differences:
 {{/quxEnumClass.values}}
 ----
 
-<1> Try to get a value of key "foo" from supplied data map
-<2> If "foo" is an instance of Map, get the value of key "bar"; otherwise try to invoke bar(), getBar() or isBar() on the "foo" instance or get the value of the field with name "bar"
+<1> Try to get a value of key "foo" from the context object stack, e.g. if the supplied data context object is an instance of Map get the value of key "foo"
+<2> Try to get a value of key "bar" from the context object resolved in <1>, e.g. try to invoke bar(), getBar() or isBar() on the "foo" instance or get the value of the field with name "bar"
 <3> Get the first element
 <4> Get the sixth element
 <5> The current index of the iteration block
@@ -309,20 +309,24 @@ And now for something completely different...
 
 [source,java]
 ----
+String data = "Hello world!";
+String template = "{{this}}";
 MustacheEngine engine = MustacheEngineBuilder.newBuilder().build(); <1>
-Mustache mustache = engine.compileMustache("myTemplateName", "{{! empty template}}"); <2>
-String output = mustache.render(null); <3>
+Mustache mustache = engine.compileMustache("myTemplateName", template); <2>
+String output = mustache.render(data); <3>
 
 <1> <2> <3>
 String output = MustacheEngineBuilder
                   .newBuilder()
                   .build()
-                  .compileMustache("myTemplateName", "{{! empty template}}")
-                  .render(null);
+                  .compileMustache("myTemplateName", template)
+                  .render(data);
+                  
+// Both snippets will render "Hello world!"
 ----
 <1> Build the engine
 <2> Compile the template
-<3> Render the text
+<3> Render the template
 
 NOTE: Instances of +MustacheEngineBuilder+ are not reusable. The builder is considered immutable once the
  +build()+ method is called - subsequent invocations of some +MustacheEngineBuilder+ methods result in +IllegalStateException+.
@@ -781,11 +785,11 @@ NOTE: The JsonElementResolver is automatically loaded if you place the extension
 
 .Test template
 ----
-Last name: {{json.lastName}}
-Street: {{json.address.street}}
-Phone numbers: {{#json.phoneNumbers}}{{number}}{{#iterHasNext}}, {{/iterHasNext}}{{/json.phoneNumbers}}
-Type of the first phone number: {{json.phoneNumbers.0.type}}
-Type of the second phone number: {{json.phoneNumbers.1.type}}
+Last name: {{lastName}}
+Street: {{address.street}}
+Phone numbers: {{#phoneNumbers}}{{number}}{{#iterHasNext}}, {{/iterHasNext}}{{/phoneNumbers}}
+Type of the first phone number: {{phoneNumbers.0.type}}
+Type of the second phone number: {{phoneNumbers.1.type}}
 ----
 
 .Java code
@@ -798,7 +802,7 @@ MustacheEngine engine = MustacheEngineBuilder
                              .newBuilder()
                              .build();
 Mustache mustache = engine.getMustache("json_test.mustache");
-String output = mustache.render(ImmutableMap.<String, Object> of("json", jsonElement));
+String output = mustache.render(jsonElement);
 ----
 
 .Expected output

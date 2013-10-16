@@ -184,4 +184,11 @@ public class MustacheEngineTest extends AbstractEngineTest {
         assertEquals("fooGetAllIdentifiers", sequence.get(0));
         assertEquals("fooLocate", sequence.get(1));
     }
+
+    @Test
+    public void testHelloWorld() {
+        String data = "Hello world!";
+        assertEquals(data, MustacheEngineBuilder.newBuilder().build()
+                .compileMustache("myTemplateName", "{{this}}").render(data));
+    }
 }

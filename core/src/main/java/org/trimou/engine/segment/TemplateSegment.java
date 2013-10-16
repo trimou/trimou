@@ -20,7 +20,6 @@ import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
 import java.util.List;
-import java.util.Map;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
@@ -59,7 +58,7 @@ public class TemplateSegment extends AbstractContainerSegment implements
     }
 
     @Override
-    public void render(Appendable appendable, Map<String, Object> data) {
+    public void render(Appendable appendable, Object data) {
 
         checkIsReady();
         DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
@@ -81,11 +80,12 @@ public class TemplateSegment extends AbstractContainerSegment implements
     }
 
     @Override
-    public String render(Map<String, Object> data) {
+    public String render(Object data) {
         StringBuilder builder = new StringBuilder();
         render(builder, data);
         return builder.toString();
     }
+
 
     @Override
     public SegmentType getType() {
