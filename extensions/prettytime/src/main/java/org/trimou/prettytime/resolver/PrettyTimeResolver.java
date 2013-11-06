@@ -52,6 +52,8 @@ public class PrettyTimeResolver extends TransformResolver {
     public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
             PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
 
+    private final PrettyTimeFactory prettyTimeFactory;
+
     /**
      * Lazy loading cache of PrettyTime instances
      */
@@ -61,15 +63,16 @@ public class PrettyTimeResolver extends TransformResolver {
      *
      */
     public PrettyTimeResolver() {
-        this(PRETTY_TIME_RESOLVER_PRIORITY);
+        this(PRETTY_TIME_RESOLVER_PRIORITY, new DefaultPrettyTimeFactory());
     }
 
     /**
      *
      * @param priority
      */
-    public PrettyTimeResolver(int priority) {
+    public PrettyTimeResolver(int priority, PrettyTimeFactory prettyTimeFactory) {
         super(priority);
+        this.prettyTimeFactory = prettyTimeFactory;
     }
 
     @Override
@@ -100,7 +103,7 @@ public class PrettyTimeResolver extends TransformResolver {
 
                     @Override
                     public PrettyTime load(Locale locale) throws Exception {
-                        return new PrettyTime(locale);
+                        return prettyTimeFactory.createPrettyTime(locale);
                     }
                 });
         logger.info("Initialized [matchingName: {}]", matchingName(0));

@@ -11,7 +11,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Test;
+import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.TimeUnit;
 import org.ocpsoft.prettytime.i18n.Resources_en;
+import org.ocpsoft.prettytime.units.JustNow;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
@@ -130,6 +133,55 @@ public class PrettyTimeResolverTest {
         assertNull(resolver.resolve(null, "pretty", null));
         assertNull(resolver.resolve("foo", "pretty", null));
         assertNotNull(resolver.resolve(new Date(), "pretty", null));
+    }
+
+    @Test
+    public void testCustomPrettyTimeFactory() throws InterruptedException {
+
+        PrettyTimeResolver resolver = new PrettyTimeResolver(100,
+                new PrettyTimeFactory() {
+
+                    @Override
+                    public PrettyTime createPrettyTime(Locale locale) {
+
+                        PrettyTime prettyTime = new PrettyTime();
+                        for (TimeUnit t : prettyTime.getUnits()) {
+                            if (t instanceof JustNow) {
+                                ((JustNow) t).setMaxQuantity(1000L * 2L);
+                            }
+                        }
+                        return prettyTime;
+                    }
+                });
+
+        // Just to init the resolver
+        MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(new LocaleSupport() {
+
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return Locale.ENGLISH;
+                    }
+
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
+
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(resolver).build();
+
+        Resources_en bundle = new Resources_en();
+        assertEquals(bundle.getString("JustNowPastPrefix"), resolver.resolve(
+                new Date().getTime() - 1000l, "prettyTime", null));
+        assertEquals(
+                "4 " + bundle.getString("SecondPluralName")
+                        + bundle.getString("SecondPastSuffix"),
+                resolver.resolve(new Date().getTime() - 4000l, "prettyTime",
+                        null));
     }
 
 }
