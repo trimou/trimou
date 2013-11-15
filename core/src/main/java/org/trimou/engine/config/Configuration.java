@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
+import org.trimou.engine.interpolation.KeySplitter;
+import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
@@ -66,6 +68,16 @@ public interface Configuration {
      * @return the immutable list of {@link Mustache} listeners
      */
     public List<MustacheListener> getMustacheListeners();
+
+    /**
+     * @return the key splitter implementation
+     */
+    public KeySplitter getKeySplitter();
+
+    /**
+     * @return the missing value handler implementation
+     */
+    public MissingValueHandler getMissingValueHandler();
 
     /**
      *

@@ -27,6 +27,8 @@ import org.trimou.Mustache;
 import org.trimou.engine.config.ConfigurationExtension;
 import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBuilder;
 import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.interpolation.KeySplitter;
+import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
@@ -74,6 +76,10 @@ public final class MustacheEngineBuilder implements
 
     private ImmutableList.Builder<MustacheListener> mustacheListeners = ImmutableList
             .builder();
+
+    private KeySplitter keySplitter = null;
+
+    private MissingValueHandler missingValueHandler = null;
 
     private boolean isMutable = true;
 
@@ -181,7 +187,7 @@ public final class MustacheEngineBuilder implements
      * Sets a text support instance.
      *
      * @param textSupport
-     * @return selg
+     * @return self
      */
     public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
         Checker.checkArgumentNotNull(textSupport);
@@ -233,6 +239,31 @@ public final class MustacheEngineBuilder implements
         this.mustacheListeners.add(listener);
         return this;
     }
+
+    /**
+     *
+     * @param keySplitter
+     * @return self
+     */
+    public MustacheEngineBuilder setKeySplitter(KeySplitter keySplitter) {
+        Checker.checkArgumentNotNull(keySplitter);
+        checkIsMutable("setKeySplitter()");
+        this.keySplitter = keySplitter;
+        return this;
+    }
+
+    /**
+    *
+    * @param missingValueHandler
+    * @return self
+    */
+   public MustacheEngineBuilder setMissingValueHandler(MissingValueHandler missingValueHandler) {
+       Checker.checkArgumentNotNull(missingValueHandler);
+       checkIsMutable("setMissingValueHandler()");
+       this.missingValueHandler = missingValueHandler;
+       return this;
+   }
+
 
     /**
      * Don't use the ServiceLoader mechanism to load configuration extensions.
@@ -294,6 +325,14 @@ public final class MustacheEngineBuilder implements
 
     public List<MustacheListener> buildMustacheListeners() {
         return mustacheListeners.build();
+    }
+
+    public KeySplitter getKeySplitter() {
+        return keySplitter;
+    }
+
+    public MissingValueHandler getMissingValueHandler() {
+        return missingValueHandler;
     }
 
     private void checkIsMutable(String methodName) {

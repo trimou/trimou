@@ -28,7 +28,14 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.interpolation.NoOpMissingValueHandler;
+import org.trimou.engine.interpolation.DotKeySplitter;
+import org.trimou.engine.interpolation.KeySplitter;
+import org.trimou.engine.interpolation.MissingValueHandler;
+import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locale.LocaleSupportFactory;
@@ -51,6 +58,9 @@ import com.google.common.collect.ImmutableMap;
  */
 class DefaultConfiguration implements Configuration {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(DefaultConfiguration.class);
+
     private static final String RESOURCE_FILE = "/trimou.properties";
 
     private List<TemplateLocator> templateLocators = null;
@@ -66,6 +76,10 @@ class DefaultConfiguration implements Configuration {
     private Map<String, Object> properties;
 
     private List<MustacheListener> mustacheListeners;
+
+    private KeySplitter keySplitter;
+
+    private MissingValueHandler missingValueHandler;
 
     /**
      *
@@ -84,6 +98,8 @@ class DefaultConfiguration implements Configuration {
         identifyResolvers(builder);
         identifyTextSupport(builder);
         identifyLocaleSupport(builder);
+        identifyKeySplitter(builder);
+        identifyMissingValueHandler(builder);
         identifyTemplateLocators(builder);
         List<MustacheListener> listeners = builder.buildMustacheListeners();
         if (!listeners.isEmpty()) {
@@ -94,6 +110,7 @@ class DefaultConfiguration implements Configuration {
             this.globalData = globalData;
         }
         initializeProperties(builder);
+
         initializeConfigurationAwareComponents();
     }
 
@@ -125,6 +142,16 @@ class DefaultConfiguration implements Configuration {
     @Override
     public List<MustacheListener> getMustacheListeners() {
         return mustacheListeners;
+    }
+
+    @Override
+    public KeySplitter getKeySplitter() {
+        return keySplitter;
+    }
+
+    @Override
+    public MissingValueHandler getMissingValueHandler() {
+        return missingValueHandler;
     }
 
     @Override
@@ -235,8 +262,7 @@ class DefaultConfiguration implements Configuration {
 
         Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess();
 
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap
-                .builder();
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
         Map<String, Object> builderProperties = engineBuilder.buildProperties();
         Properties resourceProperties = new Properties();
 
@@ -280,6 +306,9 @@ class DefaultConfiguration implements Configuration {
             } else {
                 value = configKey.getDefaultValue();
             }
+            if (checkDeprecation(configKey, value, engineBuilder)) {
+                continue;
+            }
             builder.put(key, value);
         }
         this.properties = builder.build();
@@ -313,6 +342,24 @@ class DefaultConfiguration implements Configuration {
         }
     }
 
+    private void identifyKeySplitter(MustacheEngineBuilder builder) {
+        if (builder.getKeySplitter() != null) {
+            keySplitter = builder.getKeySplitter();
+        } else {
+            // TODO
+            keySplitter = new DotKeySplitter();
+        }
+    }
+
+    private void identifyMissingValueHandler(MustacheEngineBuilder builder) {
+        if (builder.getMissingValueHandler() != null) {
+            missingValueHandler = builder.getMissingValueHandler();
+        } else {
+            // TODO
+            missingValueHandler = new NoOpMissingValueHandler();
+        }
+    }
+
     private void identifyTemplateLocators(MustacheEngineBuilder builder) {
         Set<TemplateLocator> builderTemplateLocators = builder
                 .buildTemplateLocators();
@@ -335,7 +382,28 @@ class DefaultConfiguration implements Configuration {
         }
         components.add(localeSupport);
         components.add(textSupport);
+        components.add(keySplitter);
+        components.add(missingValueHandler);
         return components;
+    }
+
+    @SuppressWarnings("deprecation")
+    private boolean checkDeprecation(ConfigurationKey configKey, Object value,
+            MustacheEngineBuilder engineBuilder) {
+
+        if (EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM.equals(configKey)) {
+            if (engineBuilder.getMissingValueHandler() == null
+                    && Boolean.valueOf(value.toString())) {
+                logger.warn(
+                        "{}.{} is deprecated, use appropriate MissingValueHandler instance instead",
+                        EngineConfigurationKey.class.getSimpleName(),
+                        EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM);
+                // Simulate deprecated settings
+                missingValueHandler = new ThrowingExceptionMissingValueHandler();
+            }
+            return true;
+        }
+        return false;
     }
 
 }

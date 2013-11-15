@@ -15,13 +15,10 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.config.EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM;
-
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
+import org.trimou.engine.interpolation.MissingValueHandler.ValueSegmentInfo;
 import org.trimou.lambda.Lambda;
 
 /**
@@ -54,17 +51,14 @@ public class ValueSegment extends AbstractSegment {
         try {
 
             if (value.isNull()) {
-                if (getEngineConfiguration().getBooleanPropertyValue(
-                        NO_VALUE_INDICATES_PROBLEM)) {
-                    throw new MustacheException(
-                            MustacheProblem.RENDER_NO_VALUE,
-                            "No value for the given key found: %s %s",
-                            getText(), getOrigin());
+                Object replacement = getEngineConfiguration()
+                        .getMissingValueHandler().handle(getValueSegmentInfo());
+                if (replacement != null) {
+                    processValue(appendable, context, replacement);
                 }
-                // By default a variable miss returns an empty string
-                return;
+            } else {
+                processValue(appendable, context, value.get());
             }
-            processValue(appendable, context, value.get());
 
         } finally {
             value.release();
@@ -108,6 +102,31 @@ public class ValueSegment extends AbstractSegment {
         } else {
             writeValue(appendable, returnValue);
         }
+    }
+
+    private ValueSegmentInfo getValueSegmentInfo() {
+        return new ValueSegmentInfo() {
+
+            @Override
+            public boolean isUnescape() {
+                return unescape;
+            }
+
+            @Override
+            public String getTemplateName() {
+                return getOrigin().getTemplateName();
+            }
+
+            @Override
+            public int getLine() {
+                return getOrigin().getLine();
+            }
+
+            @Override
+            public String getKey() {
+                return getText();
+            }
+        };
     }
 
 }

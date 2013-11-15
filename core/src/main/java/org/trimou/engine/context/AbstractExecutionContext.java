@@ -37,9 +37,6 @@ import org.trimou.util.Checker;
  */
 abstract class AbstractExecutionContext implements ExecutionContext {
 
-    // Move to configuration if the KeySplitter becomes part of the public API
-    private static final KeySplitter KEY_SPLITTER = new DotKeySplitter();
-
     /**
      * Immutable engine configuration
      */
@@ -179,10 +176,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             }
         }
         return value;
-    }
-
-    protected KeySplitter keySplitter() {
-        return KEY_SPLITTER;
     }
 
     private void pushTemplateInvocation(TemplateSegment template) {

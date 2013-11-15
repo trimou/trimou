@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.context;
+package org.trimou.engine.interpolation;
 
-import java.util.Iterator;
+import org.trimou.engine.config.AbstractConfigurationAware;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
- * This interface may become part of the public API so that it's possible to
- * change the way a key is splitted. Not sure about the class name though.
  *
  * @author Martin Kouba
  */
-interface KeySplitter {
+public class ThrowingExceptionMissingValueHandler extends
+        AbstractConfigurationAware implements MissingValueHandler {
 
-    /**
-     * @param key
-     * @return an iterator over the parts of the key
-     */
-    public Iterator<String> split(String key);
+    @Override
+    public Object handle(ValueSegmentInfo info) {
+        throw new MustacheException(
+                MustacheProblem.RENDER_NO_VALUE,
+                "No value for the given key found: %s [template: %s, line: %s]",
+                info.getKey(), info.getTemplateName(), info.getLine());
+    }
 
 }

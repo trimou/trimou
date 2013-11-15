@@ -34,7 +34,7 @@ class DefaultExecutionContext extends AbstractExecutionContext {
 
         ValueWrapper value = new ValueWrapper();
         Object lastValue = null;
-        Iterator<String> parts = keySplitter().split(key);
+        Iterator<String> parts = configuration.getKeySplitter().split(key);
 
         lastValue = resolveLeadingContextObject(parts.next(), value);
 

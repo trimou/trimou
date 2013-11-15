@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.config;
 
+import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.util.SecurityActions;
 
 /**
@@ -50,7 +51,9 @@ public enum EngineConfigurationKey implements ConfigurationKey {
     /**
      * <code>true</code> if lookup miss should result in exception,
      * <code>false</code> otherwise.
+     * @deprecated see also {@link MissingValueHandler}
      */
+    @Deprecated
     NO_VALUE_INDICATES_PROBLEM(false),
     /**
      * <code>true</code> in case of debug mode should be enabled,
