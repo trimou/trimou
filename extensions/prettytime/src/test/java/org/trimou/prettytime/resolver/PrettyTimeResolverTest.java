@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.PrettyTime;
-import org.ocpsoft.prettytime.TimeUnit;
 import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.trimou.engine.MustacheEngine;
@@ -143,13 +142,8 @@ public class PrettyTimeResolverTest {
 
                     @Override
                     public PrettyTime createPrettyTime(Locale locale) {
-
-                        PrettyTime prettyTime = new PrettyTime();
-                        for (TimeUnit t : prettyTime.getUnits()) {
-                            if (t instanceof JustNow) {
-                                ((JustNow) t).setMaxQuantity(1000L * 2L);
-                            }
-                        }
+                        PrettyTime prettyTime = new PrettyTime(locale);
+                        prettyTime.getUnit(JustNow.class).setMaxQuantity(1000L * 2L);
                         return prettyTime;
                     }
                 });
