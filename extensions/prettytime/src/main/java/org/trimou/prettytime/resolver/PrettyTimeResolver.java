@@ -20,6 +20,7 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -31,6 +32,10 @@ import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.i18n.LocaleAwareResolver;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * PrettyTime resolver.
@@ -50,12 +55,17 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
     private String matchName;
 
     public PrettyTimeResolver() {
-        this(PRETTY_TIME_RESOLVER_PRIORITY);
+    	this(PRETTY_TIME_RESOLVER_PRIORITY);
     }
 
     public PrettyTimeResolver(int priority) {
-        super(priority);
-    }
+		super(priority);
+	}
+
+	/**
+     * Lazy loading cache of PrettyTime instances
+     */
+    private LoadingCache<Locale, PrettyTime> prettyTimeCache;
 
     @Override
     public Object resolve(Object contextObject, String name,
@@ -71,7 +81,7 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
             return null;
         }
 
-        return new PrettyTime(getCurrentLocale()).format(
+        return prettyTimeCache.getUnchecked(getCurrentLocale()).format(
                 formattableObject);
     }
 
@@ -85,6 +95,14 @@ public class PrettyTimeResolver extends LocaleAwareResolver {
         super.init(configuration);
 
         matchName = configuration.getStringPropertyValue(MATCH_NAME_KEY);
+        prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
+                .build(new CacheLoader<Locale, PrettyTime>() {
+
+                    @Override
+                    public PrettyTime load(Locale locale) throws Exception {
+                        return new PrettyTime(locale);
+                    }
+                });
         logger.info("Initialized [matchName: {}]", matchName);
     }
 
