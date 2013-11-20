@@ -1,4 +1,4 @@
-package org.trimou.engine.context;
+package org.trimou.engine.interpolation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -6,21 +6,25 @@ import static org.junit.Assert.fail;
 import java.util.Iterator;
 
 import org.junit.Test;
-import org.trimou.engine.interpolation.DotKeySplitter;
 
 /**
  *
  * @author Martin Kouba
  */
-public class DotKeySplitterTest {
+public class BracketDotKeySplitterTest {
 
     @Test
     public void testSplit() {
-        DotKeySplitter splitter = new DotKeySplitter();
+        BracketDotKeySplitter splitter = new BracketDotKeySplitter();
         assertIterator(splitter.split("a..bar:.c"), "a", "bar:", "c");
         assertIterator(splitter.split(". "), " ");
         assertIterator(splitter.split("."), ".");
         assertIterator(splitter.split("foo"), "foo");
+        assertIterator(splitter.split("foo[\"bar\"]"), "foo", "bar");
+        assertIterator(splitter.split("foo[\"a.b.c\"]"), "foo", "a.b.c");
+        assertIterator(splitter.split("foo[\"bar\"].baz"), "foo", "bar", "baz");
+        assertIterator(splitter.split("a[\"b\"].c.d[\"e\"][\"f\"]"), "a", "b",
+                "c", "d", "e", "f");
     }
 
     private void assertIterator(Iterator<String> iterator, Object... elements) {
@@ -29,7 +33,7 @@ public class DotKeySplitterTest {
             assertEquals(elements[idx], iterator.next());
             idx++;
         }
-        if(idx != elements.length) {
+        if (idx != elements.length) {
             fail("Incorrect number of elements");
         }
     }
