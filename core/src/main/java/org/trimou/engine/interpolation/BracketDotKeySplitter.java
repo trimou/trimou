@@ -52,19 +52,17 @@ public class BracketDotKeySplitter extends DotKeySplitter {
         final Matcher matcher = pattern.matcher(key);
         final StringBuffer buffer = new StringBuffer();
         final Map<String, String> literalMap;
+        int idx = 0;
 
         if (matches == 1) {
             if (matcher.find()) {
-                literalMap = Collections.singletonMap(PREFIX, matcher.group(2));
-                matcher.appendReplacement(buffer, "." + PREFIX);
+                literalMap = Collections.singletonMap(PREFIX + idx, matcher.group(2));
+                matcher.appendReplacement(buffer, "." + PREFIX + idx);
             } else {
                 literalMap = Collections.emptyMap();
             }
         } else {
-
-            int idx = 0;
             literalMap = new HashMap<String, String>(4);
-
             while (matcher.find()) {
                 String id = PREFIX + idx;
                 literalMap.put(id, matcher.group(2));
