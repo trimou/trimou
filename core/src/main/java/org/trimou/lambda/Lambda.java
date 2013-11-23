@@ -23,6 +23,12 @@ package org.trimou.lambda;
 public interface Lambda {
 
     /**
+     * Every time the return value is interpolated a new template is compiled.
+     * Its name will have this prefix.
+     */
+    String ONEOFF_LAMBDA_TEMPLATE_PREFIX = "oneoff_lambda_";
+
+    /**
      * @param text
      *            The section contents (unprocessed or processed - depends on
      *            the input type) in case of section tag, <code>null</code> in

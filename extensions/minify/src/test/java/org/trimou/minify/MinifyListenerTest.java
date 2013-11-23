@@ -12,6 +12,8 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.lambda.InputLiteralLambda;
+import org.trimou.lambda.Lambda;
 
 import com.google.common.collect.ImmutableMap;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
@@ -111,6 +113,33 @@ public class MinifyListenerTest {
         assertEquals(contents,
                 engine.compileMustache("minify_html_customized", contents)
                         .render(null));
+
+        // Skip lambdas
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .addMustacheListener(
+                        Minify.customListener(new HtmlCompressorMinifier() {
+                            @Override
+                            protected boolean match(String mustacheName) {
+                                return !mustacheName.startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
+                            }
+                        })).build();
+        assertEquals(
+                contents,
+                engine.compileMustache("minify_html_customized_skip_lambda",
+                        "<html><body>{{{lambda}}}</body></html>").render(
+                        ImmutableMap.of("lambda", new InputLiteralLambda() {
+
+                            @Override
+                            public boolean isReturnValueInterpolated() {
+                                return true;
+                            }
+
+                            @Override
+                            public String invoke(String text) {
+                                return "<!-- My comment -->";
+                            }
+                        })));
     }
 
     @Test

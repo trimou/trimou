@@ -18,6 +18,7 @@ package org.trimou.minify;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder.EngineBuiltCallback;
 import org.trimou.lambda.Lambda;
+import org.trimou.util.Checker;
 
 /**
  * This lambda is useful to minify parts of the template contents. Unlike
@@ -33,11 +34,11 @@ import org.trimou.lambda.Lambda;
  */
 public class MinifyLambda implements Lambda, EngineBuiltCallback {
 
-    private InputType inputType = InputType.PROCESSED;
+    private final InputType inputType;
 
-    private boolean isReturnValueInterpolated = false;
+    private final boolean isReturnValueInterpolated;
 
-    private Minifier minifier;
+    private final Minifier minifier;
 
     /**
      *
@@ -45,6 +46,8 @@ public class MinifyLambda implements Lambda, EngineBuiltCallback {
      */
     public MinifyLambda(Minifier minifier) {
         this.minifier = minifier;
+        this.inputType = InputType.PROCESSED;
+        this.isReturnValueInterpolated = false;
     }
 
     /**
@@ -55,6 +58,7 @@ public class MinifyLambda implements Lambda, EngineBuiltCallback {
      */
     public MinifyLambda(InputType inputType, boolean isReturnValueInterpolated,
             Minifier minifier) {
+        Checker.checkArgumentNotNull(inputType);
         this.inputType = inputType;
         this.isReturnValueInterpolated = isReturnValueInterpolated;
         this.minifier = minifier;

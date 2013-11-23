@@ -23,6 +23,7 @@ import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.listener.AbstractMustacheListener;
 import org.trimou.engine.listener.MustacheParsingEvent;
+import org.trimou.util.Checker;
 
 /**
  *
@@ -33,9 +34,10 @@ public class MinifyListener extends AbstractMustacheListener {
     private static final Logger logger = LoggerFactory
             .getLogger(MinifyListener.class);
 
-    private Minifier minifier;
+    private final Minifier minifier;
 
     MinifyListener(Minifier minifier) {
+        Checker.checkArgumentNotNull(minifier);
         this.minifier = minifier;
     }
 
