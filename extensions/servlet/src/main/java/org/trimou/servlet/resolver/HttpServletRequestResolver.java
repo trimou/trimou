@@ -19,20 +19,35 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.trimou.engine.listener.MustacheCompilationEvent;
+import org.trimou.engine.listener.MustacheListener;
+import org.trimou.engine.listener.MustacheParsingEvent;
+import org.trimou.engine.listener.MustacheRenderingEvent;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.servlet.RequestHolder;
 
 /**
+ * This resolver must be also registered as a {@link MustacheListener} in order
+ * to work correctly.
  *
  * @author Martin Kouba
  */
-public class HttpServletRequestResolver extends AbstractResolver {
+public class HttpServletRequestResolver extends AbstractResolver implements
+        MustacheListener {
 
     public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
     private static final String NAME_REQUEST = "request";
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(HttpServletRequestResolver.class);
+
+    private static final ThreadLocal<HttpServletRequestWrapper> REQUEST_WRAPPER = new ThreadLocal<HttpServletRequestWrapper>();
 
     public HttpServletRequestResolver() {
         this(SERVLET_REQUEST_RESOLVER_PRIORITY);
@@ -51,12 +66,48 @@ public class HttpServletRequestResolver extends AbstractResolver {
         }
 
         if (NAME_REQUEST.equals(name)) {
-            HttpServletRequest request = RequestHolder.getCurrentRequest();
-            if (request != null) {
-                return new HttpServletRequestWrapper(request);
+
+            // Wrapper is cached for each template execution/rendering
+            HttpServletRequestWrapper wrapper = REQUEST_WRAPPER.get();
+
+            if (wrapper == null) {
+                HttpServletRequest request = RequestHolder.getCurrentRequest();
+                if (request != null) {
+                    wrapper = new HttpServletRequestWrapper(request);
+                    REQUEST_WRAPPER.set(wrapper);
+                } else {
+                    logger.warn("Unable to get the current HTTP request");
+                }
             }
+            return wrapper;
         }
         return null;
+    }
+
+    @Override
+    public void renderingStarted(MustacheRenderingEvent event) {
+        event.registerReleaseCallback(new ReleaseCallback() {
+            @Override
+            public void release() {
+                REQUEST_WRAPPER.remove();
+            }
+        });
+
+    }
+
+    @Override
+    public void renderingFinished(MustacheRenderingEvent event) {
+        // No-op
+    }
+
+    @Override
+    public void compilationFinished(MustacheCompilationEvent event) {
+        // No-op
+    }
+
+    @Override
+    public void parsingStarted(MustacheParsingEvent event) {
+        // No-op
     }
 
 }

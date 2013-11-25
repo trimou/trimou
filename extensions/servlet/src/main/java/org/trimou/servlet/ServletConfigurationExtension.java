@@ -26,7 +26,9 @@ public class ServletConfigurationExtension implements ConfigurationExtension {
 
     @Override
     public void register(ConfigurationExtensionBuilder builder) {
-        builder.addResolver(new HttpServletRequestResolver());
+        final HttpServletRequestResolver resolver = new HttpServletRequestResolver();
+        builder.addResolver(resolver);
+        builder.addMustacheListener(resolver);
     }
 
 }

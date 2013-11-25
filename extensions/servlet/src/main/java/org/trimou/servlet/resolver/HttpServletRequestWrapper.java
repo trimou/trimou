@@ -34,7 +34,6 @@ public class HttpServletRequestWrapper {
      * @param request
      */
     protected HttpServletRequestWrapper(HttpServletRequest request) {
-        super();
         this.request = request;
     }
 

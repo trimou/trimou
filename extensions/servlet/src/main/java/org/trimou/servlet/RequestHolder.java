@@ -29,7 +29,7 @@ public final class RequestHolder {
 
     private static final ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
 
-    public static void requestInitialized(HttpServletRequest request) {
+    static void requestInitialized(HttpServletRequest request) {
         CURRENT_REQUEST.set(request);
     }
 
@@ -37,7 +37,7 @@ public final class RequestHolder {
         return CURRENT_REQUEST.get();
     }
 
-    public static void requestDestroyed() {
+    static void requestDestroyed() {
         CURRENT_REQUEST.remove();
     }
 
