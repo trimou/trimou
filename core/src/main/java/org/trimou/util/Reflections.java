@@ -118,23 +118,11 @@ public final class Reflections {
      * @return <code>true</code> if the given method is considered a read method
      */
     public static boolean isMethodValid(Method method) {
-
-        if (method == null) {
-            return false;
-        }
-
-        // Skip non-static methods with no parameters and void return type
-        if (!Modifier.isPublic(method.getModifiers())
-                || method.getParameterTypes().length != 0
-                || method.getReturnType().equals(Void.TYPE)) {
-            return false;
-        }
-
-        // Skip Object class methods
-        if (Object.class.equals(method.getDeclaringClass())) {
-            return false;
-        }
-        return true;
+        return method != null
+                && Modifier.isPublic(method.getModifiers())
+                && method.getParameterTypes().length == 0
+                && !method.getReturnType().equals(Void.TYPE)
+                && !Object.class.equals(method.getDeclaringClass());
     }
 
     private static boolean matchesPrefix(String name, String methodName,
