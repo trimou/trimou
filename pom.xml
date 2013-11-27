@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -58,7 +59,8 @@
         <version.junit>4.11</version.junit>
         <version.gson>2.2.2</version.gson>
         <version.arquillian>1.0.3.Final</version.arquillian>
-        <version.wildfly>8.0.0.Alpha2</version.wildfly>
+        <!-- Note that some configuration tweaks will be needed for the next WF8 version / see also CDI-377 -->
+        <version.wildfly>8.0.0.Beta1</version.wildfly>
         <version.arquillian.jetty>1.0.0.CR1</version.arquillian.jetty>
         <version.jetty>8.1.11.v20130520</version.jetty>
         <version.weld2>2.1.0.Final</version.weld2>
@@ -252,11 +254,11 @@
                 <version>${version.htmlcompressor}</version>
             </dependency>
             <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>${version.htmlunit}</version>
-            <scope>test</scope>
-        </dependency>
+                <groupId>net.sourceforge.htmlunit</groupId>
+                <artifactId>htmlunit</artifactId>
+                <version>${version.htmlunit}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
