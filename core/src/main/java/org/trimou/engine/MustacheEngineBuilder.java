@@ -104,9 +104,9 @@ public final class MustacheEngineBuilder implements
         }
         Package pack = MustacheEngine.class.getPackage();
         logger.info(
-                "Engine built {}\n{}",
+                "Engine built {}{}",
                 StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
-                        : pack.getSpecificationVersion(), engine.toString());
+                        : pack.getSpecificationVersion(), engine.getConfiguration().getInfo());
         isMutable = false;
         return engine;
     }

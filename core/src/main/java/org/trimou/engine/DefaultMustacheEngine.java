@@ -39,7 +39,6 @@ import org.trimou.engine.parser.ParsingHandler;
 import org.trimou.engine.parser.ParsingHandlerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.util.Strings;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -253,17 +252,6 @@ class DefaultMustacheEngine implements MustacheEngine,
                 listener.compilationFinished(event);
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
-        builder.append(this.getClass().getName());
-        builder.append("]");
-        builder.append(Strings.LINE_SEPARATOR);
-        builder.append(configuration.toString());
-        return builder.toString();
     }
 
     private Mustache getTemplateFromCache(String templateName) {

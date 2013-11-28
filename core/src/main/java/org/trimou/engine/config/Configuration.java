@@ -107,4 +107,9 @@ public interface Configuration {
      */
     public <T extends ConfigurationKey> Boolean getBooleanPropertyValue(T configurationKey);
 
+    /**
+     * @return the description info
+     */
+    public String getInfo();
+
 }

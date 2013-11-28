@@ -31,10 +31,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.interpolation.NoOpMissingValueHandler;
 import org.trimou.engine.interpolation.DotKeySplitter;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.engine.interpolation.MissingValueHandler;
+import org.trimou.engine.interpolation.NoOpMissingValueHandler;
 import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
@@ -202,35 +202,28 @@ class DefaultConfiguration implements Configuration {
         return value;
     }
 
-    public String toString() {
+    public String getInfo() {
         StringBuilder builder = new StringBuilder();
-        builder.append("----------");
-        builder.append(Strings.LINE_SEPARATOR);
-        builder.append("[");
-        builder.append(this.getClass().getName());
-        builder.append("]");
         if (templateLocators != null) {
-            builder.append(Strings.LINE_SEPARATOR);
-            builder.append("----------");
             builder.append(Strings.LINE_SEPARATOR);
             builder.append("[Template locators]");
             for (TemplateLocator locator : templateLocators) {
                 builder.append(Strings.LINE_SEPARATOR);
                 builder.append(locator.toString());
             }
-        }
-        if (resolvers != null) {
             builder.append(Strings.LINE_SEPARATOR);
             builder.append("----------");
+        }
+        if (resolvers != null) {
             builder.append(Strings.LINE_SEPARATOR);
             builder.append("[Resolvers]");
             for (Resolver resolver : resolvers) {
                 builder.append(Strings.LINE_SEPARATOR);
                 builder.append(resolver.toString());
             }
+            builder.append(Strings.LINE_SEPARATOR);
+            builder.append("----------");
         }
-        builder.append(Strings.LINE_SEPARATOR);
-        builder.append("----------");
         builder.append(Strings.LINE_SEPARATOR);
         builder.append("[Properties]");
         for (Entry<String, Object> entry : properties.entrySet()) {
@@ -239,6 +232,8 @@ class DefaultConfiguration implements Configuration {
             builder.append("=");
             builder.append(entry.getValue());
         }
+        builder.append(Strings.LINE_SEPARATOR);
+        builder.append("----------");
         return builder.toString();
     }
 
