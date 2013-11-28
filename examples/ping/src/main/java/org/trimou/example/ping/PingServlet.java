@@ -37,6 +37,8 @@ public class PingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding("UTF-8");
         // Note that we use the provided Writer instance
         engine.getMustache("pingLogServlet").render(resp.getWriter(),
                 ImmutableMap.<String, Object> of("pings", service.getPings()));

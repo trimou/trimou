@@ -7,6 +7,7 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
 import org.trimou.minify.Minify;
+import org.trimou.servlet.i18n.RequestLocaleSupport;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
 /**
@@ -35,6 +36,8 @@ public class MustacheEngineProducer {
                 .addTemplateLocator(
                         new ServletContextTemplateLocator(1,
                                 "/WEB-INF/templates", "html"))
+                // The current locale will be based on the Accept-Language header
+                .setLocaleSupport(new RequestLocaleSupport())
                 // Minify all the templates
                 .addMustacheListener(Minify.htmlListener()).build();
     }
