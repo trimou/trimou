@@ -29,14 +29,16 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
         MustacheEngineBuilder.newBuilder().addTemplateLocator(locator).build();
 
         Set<String> ids = locator.getAllIdentifiers();
-        assertEquals(4, ids.size());
+        assertEquals(5, ids.size());
         assertTrue(ids.contains("index"));
         assertTrue(ids.contains("home"));
+        assertTrue(ids.contains("foo"));
         assertTrue(ids.contains("sub/bar"));
         assertTrue(ids.contains("sub/subsub/qux"));
 
         assertEquals("{{foo}}", read(locator.locate("index")));
         assertEquals("bar", read(locator.locate("home")));
+        assertEquals("foo", read(locator.locate("foo")));
         assertEquals("{{foo}}", read(locator.locate("sub/bar")));
         assertEquals("{{bar}}", read(locator.locate("sub/subsub/qux")));
     }
@@ -51,9 +53,10 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
         MustacheEngineBuilder.newBuilder().addTemplateLocator(locator).build();
 
         Set<String> ids = locator.getAllIdentifiers();
-        assertEquals(6, ids.size());
+        assertEquals(7, ids.size());
         assertTrue(ids.contains("index.foo"));
         assertTrue(ids.contains("home.foo"));
+        assertTrue(ids.contains("foo.foo"));
         assertTrue(ids.contains("detail.html"));
         assertTrue(ids.contains("encoding.html"));
         assertTrue(ids.contains("sub/bar.foo"));
@@ -61,6 +64,7 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
 
         assertEquals("{{foo}}", read(locator.locate("index.foo")));
         assertEquals("bar", read(locator.locate("home.foo")));
+        assertEquals("foo", read(locator.locate("foo.foo")));
         assertEquals("<html/>", read(locator.locate("detail.html")));
         assertEquals("{{foo}}", read(locator.locate("sub/bar.foo")));
         assertEquals("{{bar}}", read(locator.locate("sub/subsub/qux.foo")));
@@ -93,9 +97,10 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
                         "*").build();
 
         Set<String> names = locator.getAllIdentifiers();
-        assertEquals(4, names.size());
+        assertEquals(5, names.size());
         assertTrue(names.contains("index"));
         assertTrue(names.contains("home"));
+        assertTrue(names.contains("foo"));
         assertTrue(names.contains("sub*bar"));
         assertTrue(names.contains("sub*subsub*qux"));
 
