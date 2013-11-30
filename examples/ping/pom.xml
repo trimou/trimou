@@ -1,80 +1,78 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.trimou</groupId>
-        <artifactId>trimou-parent</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
+  <parent>
+    <groupId>org.trimou</groupId>
+    <artifactId>trimou-parent</artifactId>
+    <version>1.5.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
 
-    <artifactId>trimou-example-ping</artifactId>
-    <description>Simple example showing all built-in extensions in action.</description>
-    <packaging>war</packaging>
+  <artifactId>trimou-example-ping</artifactId>
+  <description>Simple example showing all built-in extensions in action.</description>
+  <packaging>war</packaging>
 
-    <properties>
-        <version.trimou>1.4.0.Final</version.trimou>
-    </properties>
+  <properties>
+    <version.trimou>1.5.0-SNAPSHOT</version.trimou>
+    <version.rewrite>2.0.8.Final</version.rewrite>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.trimou</groupId>
-            <artifactId>trimou-core</artifactId>
-            <version>${version.trimou}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.trimou</groupId>
-            <artifactId>trimou-extension-servlet</artifactId>
-            <version>${version.trimou}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.trimou</groupId>
-            <artifactId>trimou-extension-cdi</artifactId>
-            <version>${version.trimou}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.trimou</groupId>
-            <artifactId>trimou-extension-prettytime</artifactId>
-            <version>${version.trimou}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.trimou</groupId>
-            <artifactId>trimou-extension-minify</artifactId>
-            <version>${version.trimou}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-6.0</artifactId>
-            <version>1.0.0.Final</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-            <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
 
-    <build>
-        <finalName>trimou-ping</finalName>
-    </build>
+    <dependency>
+      <groupId>org.trimou</groupId>
+      <artifactId>trimou-core</artifactId>
+      <version>${version.trimou}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.trimou</groupId>
+      <artifactId>trimou-extension-servlet</artifactId>
+      <version>${version.trimou}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.trimou</groupId>
+      <artifactId>trimou-extension-cdi</artifactId>
+      <version>${version.trimou}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.trimou</groupId>
+      <artifactId>trimou-extension-prettytime</artifactId>
+      <version>${version.trimou}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.trimou</groupId>
+      <artifactId>trimou-extension-minify</artifactId>
+      <version>${version.trimou}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-6.0</artifactId>
+      <version>1.0.0.Final</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ocpsoft.rewrite</groupId>
+      <artifactId>rewrite-servlet</artifactId>
+      <version>${version.rewrite}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ocpsoft.rewrite</groupId>
+      <artifactId>rewrite-integration-cdi</artifactId>
+      <version>${version.rewrite}</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <finalName>trimou-ping</finalName>
+  </build>
 
 </project>
