@@ -44,7 +44,9 @@ public class ServletContextTemplateLocatorTest {
                         "templates/cool/charlie.html")
                 // templates
                 .addAsWebResource(new StringAsset("<html/>"),
-                        "templates/bar.html")
+                        "templates/bart.html")
+                .addAsWebResource(new StringAsset("<html/>"),
+                        "templates/html.html")
                 .addAsWebResource(
                         new FileAsset(
                                 new File(
@@ -78,9 +80,10 @@ public class ServletContextTemplateLocatorTest {
         assertTrue(locator1Ids.contains("cool/charlie"));
 
         Set<String> locator2Ids = locator2.getAllIdentifiers();
-        assertEquals(2, locator2Ids.size());
-        assertTrue(locator2Ids.contains("bar"));
+        assertEquals(3, locator2Ids.size());
+        assertTrue(locator2Ids.contains("bart"));
         assertTrue(locator2Ids.contains("encoding"));
+        assertTrue(locator2Ids.contains("html"));
 
         Set<String> locator3Ids = locator3.getAllIdentifiers();
         assertEquals(4, locator3Ids.size());
@@ -108,7 +111,7 @@ public class ServletContextTemplateLocatorTest {
         assertNotNull(foo);
         assertEquals("<html/>", foo.render(null));
 
-        Mustache bar = factory.getMustache("bar");
+        Mustache bar = factory.getMustache("bart");
         assertNotNull(bar);
         assertEquals("<html/>", bar.render(null));
 

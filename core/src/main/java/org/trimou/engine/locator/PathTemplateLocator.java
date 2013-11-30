@@ -107,7 +107,7 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     }
 
     protected String stripSuffix(String filename) {
-        return suffix != null ? StringUtils.stripEnd(filename, "." + suffix)
+        return suffix != null ? StringUtils.removeEnd(filename, "." + suffix)
                 : filename;
     }
 

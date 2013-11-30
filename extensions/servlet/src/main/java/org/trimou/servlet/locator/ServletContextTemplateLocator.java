@@ -103,7 +103,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
         if (ctx == null) {
             throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                    "Servlet context not available outside HTTP request");
+                    "Servlet context not available");
         }
 
         InputStream in = ctx.getResourceAsStream(getRootPath()
@@ -151,7 +151,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         Set<String> resources = new HashSet<String>();
         Set<String> resourcePaths = ctx.getResourcePaths(path);
 
-        if (resources != null) {
+        if (resourcePaths != null) {
             for (String resourcePath : resourcePaths) {
                 if (resourcePath.endsWith(Strings.SLASH)) {
                     // Subdirectory
