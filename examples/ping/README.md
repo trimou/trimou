@@ -1,18 +1,22 @@
 Trimou - Ping Example
 =====================
 
-This example web application aims to show the basic usage of Trimou and built-in extensions for [CDI](http://www.cdi-spec.org/), Servlet and [PrettyTime integration](http://ocpsoft.org/prettytime/).
+This example web application aims to show the basic usage of Trimou, built-in extensions for [CDI](http://www.cdi-spec.org/), Servlet, [PrettyTime](http://ocpsoft.org/prettytime/) and [HtmlCompressor](http://code.google.com/p/htmlcompressor/), and [Rewrite](http://ocpsoft.org/rewrite/) integration.
 
 * [Partials](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/WEB-INF/templates/pingLogServlet.html#L8)
 * [Template inheritance](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/WEB-INF/templates/layout.html)
-* Servlet integration
-    * [ServletContext template locator configuration](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheEngineProducer.java#L29)
+* Servlet built-in extension
+    * [ServletContext template locator configuration](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheEngineProducer.java)
     * [HttpServletRequestResolver in action](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/WEB-INF/templates/layout.html#L16)
-* CDI integration
+* CDI built-in extension
     * [MustacheEngine producer](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheEngineProducer.java)
     * [CDI bean resolver in action](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/WEB-INF/templates/pingLogCdi.html#L8)
-* PrettyTime integration
+* PrettyTime built-in extension
     * [PrettyTime resolver in action](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/WEB-INF/templates/pingRow.html#L5)
+* Minify built-in extension
+    * [Minify html listener configuration](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheEngineProducer.java)
+* Rewrite integration
+    * [MustacheConfigurationProvider](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheConfigurationProvider.java) 
 
 The app contains two Java EE components - a servlet and a JAX-RS resource. Both provide the same functionality:
 
@@ -20,6 +24,8 @@ The app contains two Java EE components - a servlet and a JAX-RS resource. Both 
 2. Get "ping" requests HTML page
 
 However the JAX-RS resource is using CDI bean resolver whereas the servlet is not. Also note that the servlet is using the provided Writer instance.
+
+Rewrite configuration enables you to get rendered templates directly at some specific path - in our example the web app root.
 
 Build, deploy, test
 -------------------
@@ -38,3 +44,8 @@ To test JAX-RS components:
 
     curl -X POST http://localhost:8080/trimou-ping/rest/ping
     wget -O - http://localhost:8080/trimou-ping/rest/ping
+    
+To test Rewrite configuration:
+
+    wget -O - http://localhost:8080/trimou-ping/pingLogCdi.html
+    (you should get the same result as for the JAX-RS resource)
