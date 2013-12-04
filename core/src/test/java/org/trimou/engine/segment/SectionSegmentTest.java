@@ -108,4 +108,14 @@ public class SectionSegmentTest extends AbstractEngineTest {
                 mustache.render(Collections.singletonMap("test", null)));
     }
 
+    @Test
+    public void testFirstAndLast() {
+
+        String templateContents = "{{#this}}{{#iterIsFirst}}{{this}}|{{/iterIsFirst}}{{#iterIsLast}}{{this}}|{{/iterIsLast}}{{/this}}";
+        Mustache mustache = engine.compileMustache("iter_first_last",
+                templateContents);
+
+        assertEquals("1|3|", mustache.render(new String[] { "1", "2", "3" }));
+    }
+
 }

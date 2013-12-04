@@ -43,7 +43,7 @@ However there are some differences:
 ** find and invoke an accessible public method with no params, non-void return type and name +keypart+, +getKeypart+ or +isKeypart+ defined on the context object's class and its superclasses (except for +java.lang.Object+),
 ** find an accessible public field with name +keypart+ and get its value,
 * +java.util.List+ and array elements can be accessed via index (the key must be unsigned integer),
-* +iterIndex+ and +iterHasNext+ keywords can be used inside iteration block,
+* +iterIndex+, +iterHasNext+, +iterIsFirst+ and +iterIsLast+ keywords can be used inside an iteration block,
 * Trimou allows you to define a resolver that does not handle the context object stack at all (e.g. looks up a <<cdi,CDI bean>>).
 
 .Examples:
@@ -59,11 +59,13 @@ However there are some differences:
 
 {{#items}}
   {{iterIndex}} <5>
-  {{name}} <6>
-  {{iterHasNext}}, {{/iterHasNext}} <7>
+  {{#iterIsFirst}} The is the first one! {{/iterIsFirst}} <6>
+  {{#iterIsLast}} This is the last one! {{/iterIsLast}} <7>
+  {{name}} <8>
+  {{#iterHasNext}}, {{/iterHasNext}} <9>
 {{/items}}
 
-{{#quxEnumClass.values}} <8>
+{{#quxEnumClass.values}} <10>
   {{this}}
 {{/quxEnumClass.values}}
 ----
@@ -73,9 +75,11 @@ However there are some differences:
 <3> Get the first element
 <4> Get the sixth element
 <5> The current index of the iteration block
-<6> "name" is resolved against the context object stack (iteration element, supplied data map)
-<7> render a comma if the iteration has more elements (iterHasNext is true)
-<8> it's also possible to invoke static methods; quxEnumClass is an enum class here and we iterate over the array returned from static method values()
+<6> Render the text for the first iteration
+<7> Render the text for the last iteration
+<8> "name" is resolved against the context object stack (iteration element, supplied data map)
+<9> Render a comma if the iteration has more elements (iterHasNext is true)
+<10> It's also possible to invoke static methods; quxEnumClass is an enum class here and we iterate over the array returned from static method values()
 
 NOTE: The set of resolvers may be extended - so in fact the above mentioned applies to the default set of resolvers only.
 
@@ -321,7 +325,7 @@ String output = MustacheEngineBuilder
                   .build()
                   .compileMustache("myTemplateName", template)
                   .render(data);
-                  
+
 // Both snippets will render "Hello world!"
 ----
 <1> Build the engine

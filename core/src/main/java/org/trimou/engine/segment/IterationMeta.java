@@ -62,6 +62,22 @@ public final class IterationMeta {
         return iterator != null ? iterator.hasNext() : (index < length);
     }
 
+    /**
+     *
+     * @return <code>true</code> for the first iteration, <code>false</code> otherwise
+     */
+    public boolean getIterIsFirst() {
+        return index == 1;
+    }
+
+    /**
+     *
+     * @return <code>true</code> for the last iteration, <code>false</code> otherwise
+     */
+    public boolean getIterIsLast() {
+        return iterator != null ? !iterator.hasNext() : (index == length);
+    }
+
     void nextIteration() {
         index++;
     }
