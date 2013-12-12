@@ -107,9 +107,9 @@ public class SectionSegment extends AbstractSectionSegment {
 
     @SuppressWarnings("rawtypes")
     private void processIterable(Appendable appendable,
-            ExecutionContext context, Object value) {
+            ExecutionContext context, Object iterable) {
 
-        Iterator iterator = ((Iterable) value).iterator();
+        Iterator iterator = ((Iterable) iterable).iterator();
 
         if (!iterator.hasNext()) {
             return;
@@ -118,18 +118,15 @@ public class SectionSegment extends AbstractSectionSegment {
         IterationMeta meta = new IterationMeta(iterator);
         context.push(CONTEXT, meta);
         while (iterator.hasNext()) {
-            context.push(CONTEXT, iterator.next());
-            super.execute(appendable, context);
-            context.pop(CONTEXT);
-            meta.nextIteration();
+            processIteration(appendable, context, iterator.next(), meta);
         }
         context.pop(CONTEXT);
     }
 
     private void processArray(Appendable appendable, ExecutionContext context,
-            Object value) {
+            Object array) {
 
-        int length = Array.getLength(value);
+        int length = Array.getLength(array);
 
         if (length < 1) {
             return;
@@ -138,12 +135,17 @@ public class SectionSegment extends AbstractSectionSegment {
         IterationMeta meta = new IterationMeta(length);
         context.push(CONTEXT, meta);
         for (int i = 0; i < length; i++) {
-            context.push(CONTEXT, Array.get(value, i));
-            super.execute(appendable, context);
-            context.pop(CONTEXT);
-            meta.nextIteration();
+            processIteration(appendable, context, Array.get(array, i), meta);
         }
         context.pop(CONTEXT);
+    }
+
+    private void processIteration(Appendable appendable,
+            ExecutionContext context, Object value, IterationMeta meta) {
+        context.push(CONTEXT, value);
+        super.execute(appendable, context);
+        context.pop(CONTEXT);
+        meta.nextIteration();
     }
 
     private void processLambda(Appendable appendable, ExecutionContext context,

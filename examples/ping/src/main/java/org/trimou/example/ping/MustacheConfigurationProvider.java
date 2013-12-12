@@ -43,6 +43,8 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
 
         return ConfigurationBuilder.begin()
 
+                // Allows to serve all the templates separately
+                // The template name is dynamically resolved
                 .addRule()
                 .when(Direction.isInbound()
                         .and(Path.matches("/{name}.html"))
@@ -50,7 +52,13 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
                         .perform(
                                 Log.message(Level.INFO,
                                         "Client requested HTML file: {name}")
-                                        .and(TemplateOperation.render(engine, "{name}")));
+                                        .and(TemplateOperation.render(engine, "{name}")))
+                // Static rewrite rule to serve a specific template
+                .addRule()
+                .when(Direction.isInbound()
+                        .and(Path.matches("/cdi")))
+                        .perform(
+                                TemplateOperation.render(engine, "pingLogCdi"));
     }
 
     @Override
@@ -65,6 +73,8 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
 
         private final RegexParameterizedPatternBuilder templateNamePatternBuilder;
 
+        private final String templateName;
+
         public static TemplateOperation render(MustacheEngine engine,
                 String templateNamePattern) {
             return new TemplateOperation(engine, templateNamePattern);
@@ -73,8 +83,14 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
         private TemplateOperation(MustacheEngine engine,
                 String templateNamePattern) {
             this.engine = engine;
-            this.templateNamePatternBuilder = new RegexParameterizedPatternBuilder(
-                    templateNamePattern);
+            if (templateNamePattern.contains("{")) {
+                this.templateNamePatternBuilder = new RegexParameterizedPatternBuilder(
+                        templateNamePattern);
+                this.templateName = null;
+            } else {
+                this.templateNamePatternBuilder = null;
+                this.templateName = templateNamePattern;
+            }
         }
 
         @Override
@@ -87,9 +103,7 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
             response.setStatus(HttpServletResponse.SC_OK);
 
             try {
-                engine.getMustache(
-                        templateNamePatternBuilder.build(event, context))
-                        .render(response.getWriter(), null);
+                engine.getMustache(getTemplateName(event, context)).render(response.getWriter(), null);
                 response.flushBuffer();
             } catch (IOException e) {
                 throw new RewriteException(
@@ -106,6 +120,11 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
         @Override
         public void setParameterStore(ParameterStore store) {
             templateNamePatternBuilder.setParameterStore(store);
+        }
+
+        private String getTemplateName(HttpServletRewrite event,
+                EvaluationContext context) {
+            return templateNamePatternBuilder != null ? templateNamePatternBuilder.build(event, context) : templateName;
         }
     }
 
