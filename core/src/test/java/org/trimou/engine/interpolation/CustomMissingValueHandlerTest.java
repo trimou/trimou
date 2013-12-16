@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 
@@ -43,7 +44,7 @@ public class CustomMissingValueHandlerTest extends AbstractEngineTest {
                     }
 
                     @Override
-                    public Object handle(ValueSegmentInfo valueSegmentInfo) {
+                    public Object handle(MustacheTagInfo info) {
                         handlerInvoked.set(true);
                         return "FOO";
                     }

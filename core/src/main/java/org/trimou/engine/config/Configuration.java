@@ -27,6 +27,7 @@ import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
+import org.trimou.handlebars.Helper;
 
 /**
  * Mustache engine configuration.
@@ -78,6 +79,11 @@ public interface Configuration {
      * @return the missing value handler implementation
      */
     public MissingValueHandler getMissingValueHandler();
+
+    /**
+     * @return TODO
+     */
+    public Map<String, Helper> getHelpers();
 
     /**
      *

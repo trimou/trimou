@@ -21,7 +21,10 @@ import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
 import java.io.IOException;
 
 import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Strings;
@@ -55,6 +58,12 @@ abstract class AbstractSegment implements Segment {
     @Override
     public Origin getOrigin() {
         return origin;
+    }
+
+    @Override
+    public MustacheTagInfo getTagInfo() {
+        return new DefaultSegmentInfo(getType().getTagType(), getText(),
+                getOrigin().getLine(), getOrigin().getTemplateName());
     }
 
     @Override
@@ -101,6 +110,11 @@ abstract class AbstractSegment implements Segment {
         return getDefaultStartDelimiter() + content + getDefaultEndDelimiter();
     }
 
+    protected boolean isHandlebarsSupportEnabled() {
+        return getEngineConfiguration().getBooleanPropertyValue(
+                EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED);
+    }
+
     /**
      *
      * @return the segment name
@@ -123,6 +137,54 @@ abstract class AbstractSegment implements Segment {
                     MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED,
                     toString());
         }
+    }
+
+    class DefaultSegmentInfo implements MustacheTagInfo {
+
+        private final MustacheTagType type;
+
+        private final String text;
+
+        private final int line;
+
+        private final String templateName;
+
+        /**
+         *
+         * @param type
+         * @param text
+         * @param line
+         * @param templateName
+         */
+        public DefaultSegmentInfo(MustacheTagType type, String text, int line,
+                String templateName) {
+            super();
+            this.type = type;
+            this.text = text;
+            this.line = line;
+            this.templateName = templateName;
+        }
+
+        @Override
+        public MustacheTagType getType() {
+            return type;
+        }
+
+        @Override
+        public String getText() {
+            return text;
+        }
+
+        @Override
+        public int getLine() {
+            return line;
+        }
+
+        @Override
+        public String getTemplateName() {
+            return templateName;
+        }
+
     }
 
 }

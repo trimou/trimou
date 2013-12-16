@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
 
 import com.google.gson.JsonArray;
@@ -63,8 +64,12 @@ public final class SpecUtils {
                 MapTemplateLocator mockTemplateLocator = new MapTemplateLocator(
                         definition.getPartials());
 
-                MustacheEngine factory = MustacheEngineBuilder.newBuilder()
-                        .addTemplateLocator(mockTemplateLocator).build();
+                MustacheEngine factory = MustacheEngineBuilder
+                        .newBuilder()
+                        .addTemplateLocator(mockTemplateLocator)
+                        .setProperty(
+                                EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED,
+                                false).build();
 
                 idx++;
 

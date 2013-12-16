@@ -50,4 +50,14 @@ public enum MustacheTagType {
                 || EXTEND.equals(type) || EXTEND_SECTION.equals(type);
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     * @since 1.5
+     */
+    public static boolean contentMustBeValidated(
+            MustacheTagType type) {
+        return contentMustBeNonWhitespaceCharacterSequence(type);
+    }
 }

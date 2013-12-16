@@ -16,6 +16,7 @@
 package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda.InputType;
 
@@ -43,6 +44,12 @@ public interface Segment {
      *         segment is a template
      */
     public Origin getOrigin();
+
+    /**
+     *
+     * @return the info about original tag
+     */
+    public MustacheTagInfo getTagInfo();
 
     /**
      * @return the reconstructed literal block this segment represents (original

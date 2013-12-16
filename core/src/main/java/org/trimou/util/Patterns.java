@@ -52,12 +52,33 @@ public final class Patterns {
      * First and third groups contain one or more non-whitespace characters.
      * Second group contains one or more whitespace characters.
      *
-     * Originally we used the following pattern: <code>([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)</code>.
+     * Originally we used the following pattern:
+     * <code>([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)</code>.
      *
      * @return the pattern to match new delimiters in "set delimiters" tag
      */
     public static Pattern newSetDelimitersContentPattern() {
         return Pattern.compile("(\\S+)(\\s+)(\\S+)");
+    }
+
+    /**
+     * TODO add comment
+     *
+     * name param1 param2 hash1="value1" hash2=value2
+     *
+     * @return
+     */
+    public static Pattern newHandlebarsNameValidationPattern() {
+        return Pattern.compile("([\\p{L}\\p{Nd}_\".=\\-/\\[\\]]+[ ]*)+?");
+    }
+
+    /**
+     * TODO add comment
+     *
+     * @return
+     */
+    public static Pattern newStringLiteralPattern() {
+        return Pattern.compile("(\")(.*)(\")");
     }
 
 }

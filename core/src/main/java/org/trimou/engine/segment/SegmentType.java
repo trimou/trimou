@@ -50,13 +50,13 @@ public enum SegmentType {
         return tagType;
     }
 
-    public boolean isStandaloneCandidate() {
+    boolean isStandaloneCandidate() {
         return this.equals(COMMENT) || this.equals(SECTION)
                 || this.equals(INVERTED_SECTION) || this.equals(DELIMITERS)
                 || this.equals(PARTIAL);
     }
 
-    public boolean hasName() {
+    boolean hasName() {
         return this.equals(SECTION) || this.equals(INVERTED_SECTION)
                 || this.equals(PARTIAL) || this.equals(VALUE);
     }

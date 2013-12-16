@@ -6,10 +6,10 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -19,8 +19,12 @@ public class ValidationTest extends AbstractEngineTest {
 
     @Test
     public void testTagContentValidation() {
-        assertEquals("FOO", engine.compileMustache("engine", "{{foo{{}}")
-                .render(ImmutableMap.<String, Object> of("foo{{", "FOO")));
+
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED,
+                        false).build();
+
         testInvalidTemplate(engine, "{{foo}} {{ boo {{bar}}",
                 MustacheProblem.COMPILE_INVALID_TAG,
                 "not_a_nonwhitespace_character_sequence");
@@ -33,6 +37,26 @@ public class ValidationTest extends AbstractEngineTest {
         testInvalidTemplate(engine, "{{>fo .txt}}",
                 MustacheProblem.COMPILE_INVALID_TAG,
                 "not_a_nonwhitespace_character_sequence");
+        assertEquals(
+                "",
+                engine.compileMustache("engine", "{{! Hello there my friends}}")
+                        .render(null));
+        testInvalidTemplate(engine, "Hello\n\n\n{{}}",
+                MustacheProblem.COMPILE_INVALID_TAG, "invalid_tag01");
+
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED,
+                        true).build();
+
+        testInvalidTemplate(engine, "{{foo}} {{ boo {{bar}}",
+                MustacheProblem.COMPILE_INVALID_TAG,
+                "not_a_nonwhitespace_character_sequence");
+        testValidTemplate(engine, "{{foo and me}}");
+        testInvalidTemplate(engine, "{{#fo\no}}",
+                MustacheProblem.COMPILE_INVALID_TAG,
+                "not_a_nonwhitespace_character_sequence");
+        testValidTemplate(engine, "{{>fo .txt}}");
         assertEquals(
                 "",
                 engine.compileMustache("engine", "{{! Hello there my friends}}")
@@ -91,6 +115,10 @@ public class ValidationTest extends AbstractEngineTest {
         } catch (Exception e) {
             fail("Incorrect exception: " + e);
         }
+    }
+
+    private void testValidTemplate(MustacheEngine engine, String template) {
+        engine.compileMustache("validation", template);
     }
 
 }

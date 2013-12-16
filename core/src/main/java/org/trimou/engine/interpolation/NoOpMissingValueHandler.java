@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.interpolation;
 
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
@@ -26,7 +27,7 @@ public class NoOpMissingValueHandler extends AbstractConfigurationAware
         implements MissingValueHandler {
 
     @Override
-    public Object handle(ValueSegmentInfo info) {
+    public Object handle(MustacheTagInfo info) {
         return null;
     }
 

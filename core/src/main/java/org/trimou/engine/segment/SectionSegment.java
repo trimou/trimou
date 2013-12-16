@@ -57,10 +57,15 @@ import org.trimou.lambda.Lambda;
  * @see InvertedSectionSegment
  */
 @Internal
-public class SectionSegment extends AbstractSectionSegment {
+public class SectionSegment extends AbstractSectionSegment implements
+        HelperAwareSegment {
+
+    private final HelperExecutionHandler helperHandler;
 
     public SectionSegment(String text, Origin origin) {
         super(text, origin);
+        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
+                text, getEngineConfiguration(), this) : null;
     }
 
     public SegmentType getType() {
@@ -69,16 +74,30 @@ public class SectionSegment extends AbstractSectionSegment {
 
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        ValueWrapper value = context.getValue(getText());
+        if (helperHandler != null) {
+            helperHandler.execute(appendable, context);
+        } else {
 
-        try {
-            if (value.isNull()) {
-                return;
+            ValueWrapper value = context.getValue(getText());
+
+            try {
+                if (value.isNull()) {
+                    return;
+                }
+                processValue(appendable, context, value.get());
+            } finally {
+                value.release();
             }
-            processValue(appendable, context, value.get());
-        } finally {
-            value.release();
         }
+    }
+
+    /**
+     * TODO
+     *
+     * @param appendable
+     */
+    public void fn(Appendable appendable, ExecutionContext context) {
+        super.execute(appendable, context);
     }
 
     private void processValue(Appendable appendable, ExecutionContext context,

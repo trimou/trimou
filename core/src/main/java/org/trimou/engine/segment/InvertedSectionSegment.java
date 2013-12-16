@@ -15,20 +15,22 @@
  */
 package org.trimou.engine.segment;
 
-import java.lang.reflect.Array;
-import java.util.Iterator;
+import java.util.Collections;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.util.Checker;
 
 /**
  * Inverted section segment.
  *
  * <p>
  * The content is rendered if there is no object found in the context, or is a
- * {@link Boolean} of value <code>false</code>, or is an {@link Iterable} with
- * no elements, or is an empty array.
+ * {@link Boolean} of value <code>false</code>, or is an empty
+ * {@link Collections}, or is an {@link Iterable} with no elements, or is an
+ * empty array, or is an empty {@link CharSequence}, or is a number of value
+ * <code>0</code>.
  * </p>
  *
  * @author Martin Kouba
@@ -49,36 +51,12 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
         ValueWrapper value = context.getValue(getText());
 
         try {
-            if (value.isNull()
-                    || processValue(appendable, context, value.get())) {
+            if (value.isNull() || Checker.isFalsy(value.get())) {
                 super.execute(appendable, context);
             }
         } finally {
             value.release();
         }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private boolean processValue(Appendable appendable,
-            ExecutionContext context, Object value) {
-        if (value instanceof Boolean) {
-            // Boolean
-            if (!(Boolean) value) {
-                return true;
-            }
-        } else if (value instanceof Iterable) {
-            // No elements to iterate
-            Iterator iterator = ((Iterable) value).iterator();
-            if (!iterator.hasNext()) {
-                return true;
-            }
-        } else if (value.getClass().isArray()) {
-            // Array is empty
-            if (Array.getLength(value) == 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

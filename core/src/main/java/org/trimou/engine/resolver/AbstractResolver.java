@@ -15,34 +15,20 @@
  */
 package org.trimou.engine.resolver;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
  * Abstract resolver.
  *
  * @author Martin Kouba
  */
-public abstract class AbstractResolver implements Resolver {
+public abstract class AbstractResolver extends AbstractConfigurationAware
+        implements Resolver {
 
     private final int priority;
 
     public AbstractResolver(int priority) {
         this.priority = priority;
-    }
-
-    @Override
-    public void init(Configuration configuration) {
-        // No-op
-    }
-
-    @Override
-    public Set<ConfigurationKey> getConfigurationKeys() {
-        // No config keys by default
-        return Collections.emptySet();
     }
 
     @Override

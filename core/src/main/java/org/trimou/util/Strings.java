@@ -55,4 +55,6 @@ public final class Strings {
 
     public static final String UNDERSCORE = "_";
 
+    public static final String EQUALS = "=";
+
 }

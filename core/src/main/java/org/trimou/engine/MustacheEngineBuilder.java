@@ -34,6 +34,7 @@ import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
+import org.trimou.handlebars.Helper;
 import org.trimou.util.Checker;
 
 import com.google.common.collect.ImmutableList;
@@ -81,6 +82,9 @@ public final class MustacheEngineBuilder implements
 
     private MissingValueHandler missingValueHandler = null;
 
+    private ImmutableMap.Builder<String, Helper> helpers = ImmutableMap
+            .builder();
+
     private boolean isMutable = true;
 
     /**
@@ -106,7 +110,8 @@ public final class MustacheEngineBuilder implements
         logger.info(
                 "Engine built {}{}",
                 StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
-                        : pack.getSpecificationVersion(), engine.getConfiguration().getInfo());
+                        : pack.getSpecificationVersion(), engine
+                        .getConfiguration().getInfo());
         isMutable = false;
         return engine;
     }
@@ -253,17 +258,30 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
-    *
-    * @param missingValueHandler
-    * @return self
-    */
-   public MustacheEngineBuilder setMissingValueHandler(MissingValueHandler missingValueHandler) {
-       Checker.checkArgumentNotNull(missingValueHandler);
-       checkIsMutable("setMissingValueHandler()");
-       this.missingValueHandler = missingValueHandler;
-       return this;
-   }
+     *
+     * @param missingValueHandler
+     * @return self
+     */
+    public MustacheEngineBuilder setMissingValueHandler(
+            MissingValueHandler missingValueHandler) {
+        Checker.checkArgumentNotNull(missingValueHandler);
+        checkIsMutable("setMissingValueHandler()");
+        this.missingValueHandler = missingValueHandler;
+        return this;
+    }
 
+    /**
+     *
+     * @param name
+     * @param helper
+     * @return self
+     */
+    public MustacheEngineBuilder registerHelper(String name, Helper helper) {
+        Checker.checkArgumentsNotNull(name, helper);
+        checkIsMutable("registerHelper()");
+        this.helpers.put(name, helper);
+        return this;
+    }
 
     /**
      * Don't use the ServiceLoader mechanism to load configuration extensions.
@@ -333,6 +351,10 @@ public final class MustacheEngineBuilder implements
 
     public MissingValueHandler getMissingValueHandler() {
         return missingValueHandler;
+    }
+
+    public Map<String, Helper> buildHelpers() {
+        return helpers.build();
     }
 
     private void checkIsMutable(String methodName) {

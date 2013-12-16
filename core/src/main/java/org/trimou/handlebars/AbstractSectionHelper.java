@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.interpolation;
+package org.trimou.handlebars;
 
-import org.trimou.engine.MustacheTagInfo;
-import org.trimou.engine.config.AbstractConfigurationAware;
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
+import org.trimou.engine.MustacheTagType;
 
 /**
  *
+ *
  * @author Martin Kouba
  */
-public class ThrowingExceptionMissingValueHandler extends
-        AbstractConfigurationAware implements MissingValueHandler {
+public abstract class AbstractSectionHelper extends AbstractHelper {
 
     @Override
-    public Object handle(MustacheTagInfo info) {
-        throw new MustacheException(
-                MustacheProblem.RENDER_NO_VALUE,
-                "No value for the given key found: %s [template: %s, line: %s]",
-                info.getText(), info.getTemplateName(), info.getLine());
+    public void validate(HelperTagDefinition definition) {
+        HelperValidator.checkType(definition, MustacheTagType.SECTION);
+        HelperValidator.checkParams(definition, 1);
     }
 
 }

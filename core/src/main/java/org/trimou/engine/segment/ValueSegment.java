@@ -16,9 +16,9 @@
 package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
-import org.trimou.engine.interpolation.MissingValueHandler.ValueSegmentInfo;
 import org.trimou.lambda.Lambda;
 
 /**
@@ -27,13 +27,23 @@ import org.trimou.lambda.Lambda;
  * @author Martin Kouba
  */
 @Internal
-public class ValueSegment extends AbstractSegment {
+public class ValueSegment extends AbstractSegment implements HelperAwareSegment {
 
     private final boolean unescape;
 
+    private final HelperExecutionHandler helperHandler;
+
+    /**
+     *
+     * @param text
+     * @param origin
+     * @param unescape
+     */
     public ValueSegment(String text, Origin origin, boolean unescape) {
         super(text, origin);
         this.unescape = unescape;
+        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
+                text, getEngineConfiguration(), this) : null;
     }
 
     public SegmentType getType() {
@@ -46,23 +56,33 @@ public class ValueSegment extends AbstractSegment {
 
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        ValueWrapper value = context.getValue(getText());
+        if (helperHandler != null) {
+            helperHandler.execute(appendable, context);
+        } else {
 
-        try {
+            ValueWrapper value = context.getValue(getText());
 
-            if (value.isNull()) {
-                Object replacement = getEngineConfiguration()
-                        .getMissingValueHandler().handle(getValueSegmentInfo());
-                if (replacement != null) {
-                    processValue(appendable, context, replacement);
+            try {
+
+                if (value.isNull()) {
+                    Object replacement = getEngineConfiguration()
+                            .getMissingValueHandler().handle(getTagInfo());
+                    if (replacement != null) {
+                        processValue(appendable, context, replacement);
+                    }
+                } else {
+                    processValue(appendable, context, value.get());
                 }
-            } else {
-                processValue(appendable, context, value.get());
-            }
 
-        } finally {
-            value.release();
+            } finally {
+                value.release();
+            }
         }
+    }
+
+    @Override
+    public void fn(Appendable appendable, ExecutionContext context) {
+        // No-op
     }
 
     @Override
@@ -104,29 +124,17 @@ public class ValueSegment extends AbstractSegment {
         }
     }
 
-    private ValueSegmentInfo getValueSegmentInfo() {
-        return new ValueSegmentInfo() {
+    /**
+     * Info about {@link ValueSegment}.
+     */
+    public interface ValueSegmentInfo extends MustacheTagInfo {
 
-            @Override
-            public boolean isUnescape() {
-                return unescape;
-            }
+        /**
+         * @return <code>true</code> if the original value should not be
+         *         escaped, <code>false</code> otherwise
+         */
+        public boolean isUnescape();
 
-            @Override
-            public String getTemplateName() {
-                return getOrigin().getTemplateName();
-            }
-
-            @Override
-            public int getLine() {
-                return getOrigin().getLine();
-            }
-
-            @Override
-            public String getKey() {
-                return getText();
-            }
-        };
     }
 
 }

@@ -46,6 +46,8 @@ import org.trimou.engine.text.TextSupport;
 import org.trimou.engine.text.TextSupportFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.BuiltInHelper;
+import org.trimou.handlebars.Helper;
 import org.trimou.util.SecurityActions;
 import org.trimou.util.Strings;
 
@@ -81,6 +83,8 @@ class DefaultConfiguration implements Configuration {
 
     private MissingValueHandler missingValueHandler;
 
+    private Map<String, Helper> helpers;
+
     /**
      *
      * @param builder
@@ -109,8 +113,18 @@ class DefaultConfiguration implements Configuration {
         if (!globalData.isEmpty()) {
             this.globalData = globalData;
         }
+        ImmutableMap.Builder<String, Helper> helpersBuilder = ImmutableMap.builder();
+        registerBuiltinsHelpers(helpersBuilder);
+        helpersBuilder.putAll(builder.buildHelpers());
+        this.helpers = helpersBuilder.build();
+
+        // All configuration aware components must be availabe at this time
+        // so that it's possible to collect all configuration keys
         initializeProperties(builder);
 
+        if(!getBooleanPropertyValue(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED)) {
+            this.helpers = Collections.emptyMap();
+        }
         initializeConfigurationAwareComponents();
     }
 
@@ -152,6 +166,11 @@ class DefaultConfiguration implements Configuration {
     @Override
     public MissingValueHandler getMissingValueHandler() {
         return missingValueHandler;
+    }
+
+    @Override
+    public Map<String, Helper> getHelpers() {
+        return helpers;
     }
 
     @Override
@@ -379,6 +398,7 @@ class DefaultConfiguration implements Configuration {
         components.add(textSupport);
         components.add(keySplitter);
         components.add(missingValueHandler);
+        components.addAll(helpers.values());
         return components;
     }
 
@@ -399,6 +419,12 @@ class DefaultConfiguration implements Configuration {
             return true;
         }
         return false;
+    }
+
+    private void registerBuiltinsHelpers(ImmutableMap.Builder<String, Helper> builder) {
+        for (BuiltInHelper helper : BuiltInHelper.values()) {
+            builder.put(helper.getName(), helper.getInstance());
+        }
     }
 
 }

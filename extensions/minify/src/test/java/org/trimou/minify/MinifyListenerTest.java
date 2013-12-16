@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.InputLiteralLambda;
@@ -51,8 +52,11 @@ public class MinifyListenerTest {
 
         String template = "<html><body>{{ <!--foo--> }}</body>     </html>";
 
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addMustacheListener(Minify.htmlListener()).build();
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addMustacheListener(Minify.htmlListener())
+                .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED,
+                        false).build();
         assertEquals(
                 "<html><body>FOO</body> </html>",
                 engine.compileMustache("minify_html_preserve_pattern", template)
@@ -121,7 +125,8 @@ public class MinifyListenerTest {
                         Minify.customListener(new HtmlCompressorMinifier() {
                             @Override
                             protected boolean match(String mustacheName) {
-                                return !mustacheName.startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
+                                return !mustacheName
+                                        .startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
                             }
                         })).build();
         assertEquals(

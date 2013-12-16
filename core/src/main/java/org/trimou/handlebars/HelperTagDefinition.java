@@ -13,26 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.interpolation;
+package org.trimou.handlebars;
 
 import org.trimou.engine.MustacheTagInfo;
-import org.trimou.engine.config.AbstractConfigurationAware;
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
 
 /**
  *
  * @author Martin Kouba
+ * @since 1.5.0
  */
-public class ThrowingExceptionMissingValueHandler extends
-        AbstractConfigurationAware implements MissingValueHandler {
+public interface HelperTagDefinition extends HelperArguments {
 
-    @Override
-    public Object handle(MustacheTagInfo info) {
-        throw new MustacheException(
-                MustacheProblem.RENDER_NO_VALUE,
-                "No value for the given key found: %s [template: %s, line: %s]",
-                info.getText(), info.getTemplateName(), info.getLine());
+    /**
+     *
+     * @return the FQCN of the helper
+     */
+    public String getHelperClassName();
+
+    /**
+     *
+     * @return the info about the associated tag
+     */
+    public MustacheTagInfo getTagInfo();
+
+    /**
+     * A value placeholder represents an expression which will be evaluated
+     * right before the helper execution. The placeholder is then replaced with
+     * the actual value.
+     */
+    public interface ValuePlaceholder {
+
+        public String getName();
+
     }
 
 }

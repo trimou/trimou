@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -60,6 +61,9 @@ class DefaultParsingHandler implements ParsingHandler {
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultParsingHandler.class);
 
+    private static Pattern handlebarsNameValidationPattern = Patterns
+            .newHandlebarsNameValidationPattern();
+
     private Deque<ContainerSegment> containerStack = new ArrayDeque<ContainerSegment>();
 
     private TemplateSegment template;
@@ -74,6 +78,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private boolean skipValueEscaping;
 
+    private boolean handlebarsSupportEnabled;
+
     @Override
     public void startTemplate(String name, Delimiters delimiters,
             MustacheEngine engine) {
@@ -82,6 +88,9 @@ class DefaultParsingHandler implements ParsingHandler {
         containerStack.addFirst(template);
         skipValueEscaping = engine.getConfiguration().getBooleanPropertyValue(
                 EngineConfigurationKey.SKIP_VALUE_ESCAPING);
+        handlebarsSupportEnabled = engine.getConfiguration()
+                .getBooleanPropertyValue(
+                        EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED);
         start = System.currentTimeMillis();
         logger.debug("Start compilation of {}", new Object[] { name });
     }
@@ -171,18 +180,34 @@ class DefaultParsingHandler implements ParsingHandler {
                     line);
         }
 
-        if (MustacheTagType.contentMustBeNonWhitespaceCharacterSequence(tag
-                .getType()) && StringUtils.containsWhitespace(tag.getContent())) {
-            throw new MustacheException(
-                    COMPILE_INVALID_TAG,
-                    "Tag content must be a non-whitespace character sequence [type: %s, line: %s]",
-                    tag.getType(), line);
+        if (handlebarsSupportEnabled
+                && MustacheTagType.contentMustBeValidated(tag.getType())) {
+            if (!handlebarsNameValidationPattern.matcher(tag.getContent())
+                    .matches()) {
+                throw new MustacheException(
+                        COMPILE_INVALID_TAG,
+                        "Invalid tag content detected [template: %s, type: %s, line: %s]",
+                        template.getName(), tag.getType(), line);
+            }
+        } else {
+            if (MustacheTagType.contentMustBeNonWhitespaceCharacterSequence(tag
+                    .getType())
+                    && StringUtils.containsWhitespace(tag.getContent())) {
+                throw new MustacheException(
+                        COMPILE_INVALID_TAG,
+                        "Tag content must be a non-whitespace character sequence [template: %s, type: %s, line: %s]",
+                        template.getName(), tag.getType(), line);
+            }
         }
     }
 
     private void endSection(String key) {
         ContainerSegment container = pop();
-        if (container == null || !key.equals(container.getText())) {
+        // FIXME better check?
+        if (container == null
+                || (!handlebarsSupportEnabled
+                        && !key.equals(container.getText()) || (handlebarsSupportEnabled && !container
+                        .getText().startsWith(key)))) {
             StringBuilder msg = new StringBuilder();
             List<String> params = new ArrayList<String>();
             msg.append("Invalid section end: ");

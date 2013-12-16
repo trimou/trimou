@@ -13,25 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.interpolation;
+package org.trimou.handlebars;
 
-import org.trimou.engine.MustacheTagInfo;
-import org.trimou.engine.config.ConfigurationAware;
-import org.trimou.engine.segment.ValueSegment;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This component handles variable miss during interpolation of a
- * {@link ValueSegment}, aka variable tag.
  *
  * @author Martin Kouba
+ * @since 1.5.0
  */
-public interface MissingValueHandler extends ConfigurationAware {
+public interface HelperArguments {
 
     /**
      *
-     * @param tagInfo
-     * @return the replacement to process, may be <code>null</code>
+     * @return an immutable list of parameters
      */
-    public Object handle(MustacheTagInfo tagInfo);
+    public List<Object> getParameters();
+
+    /**
+     *
+     * @return an immutable "hash" map
+     */
+    public Map<String, Object> getHash();
 
 }

@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.interpolation;
+package org.trimou.handlebars;
 
-import org.trimou.engine.MustacheTagInfo;
-import org.trimou.engine.config.AbstractConfigurationAware;
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Checker;
 
 /**
+ * Conditionally renders a block if the first parameter is not "falsy".
  *
  * @author Martin Kouba
+ * @since 1.5.0
  */
-public class ThrowingExceptionMissingValueHandler extends
-        AbstractConfigurationAware implements MissingValueHandler {
+public class IfHelper extends AbstractSectionHelper {
 
     @Override
-    public Object handle(MustacheTagInfo info) {
-        throw new MustacheException(
-                MustacheProblem.RENDER_NO_VALUE,
-                "No value for the given key found: %s [template: %s, line: %s]",
-                info.getText(), info.getTemplateName(), info.getLine());
+    public void execute(Appendable appendable, Options options) {
+        if (!Checker.isFalsy(options.getParameters().get(0))) {
+            options.fn(appendable);
+        }
     }
 
 }

@@ -93,7 +93,12 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * @see com.google.common.cache.CacheBuilder#expireAfterWrite(long,
      *      java.util.concurrent.TimeUnit)
      */
-    TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0l), ;
+    TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0l),
+    /**
+     * TODO
+     */
+    HANDLEBARS_SUPPORT_ENABLED(true),
+    ;
 
     private Object defaultValue;
 

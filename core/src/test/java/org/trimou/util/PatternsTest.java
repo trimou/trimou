@@ -1,6 +1,8 @@
 package org.trimou.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +54,40 @@ public class PatternsTest {
         assertEquals(true, set3Matcher.find());
         assertEquals("=", set3Matcher.group(1));
         assertEquals("=", set3Matcher.group(3));
+    }
+
+    @Test
+    public void testHandlebarsNamePattern() {
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name param1 param2 hash1=\"value1\" hash2=value2")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name param1.dot.lookup")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name hash1=\"value1\"")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name.-1")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("foo/bar/path")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("kečup")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("foo[\"bar\"]")
+                .matches());
+        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name  \"param1\" \"param2\" hash1=\"value1\" hash2=value2.foo")
+                .matches());
+        assertFalse(Patterns.newHandlebarsNameValidationPattern()
+                .matcher("name {{ param1")
+                .matches());
     }
 
 }
