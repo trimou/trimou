@@ -28,13 +28,13 @@ public interface HelperTagDefinition extends HelperArguments {
      *
      * @return the FQCN of the helper
      */
-    public String getHelperClassName();
+    String getHelperClassName();
 
     /**
      *
      * @return the info about the associated tag
      */
-    public MustacheTagInfo getTagInfo();
+    MustacheTagInfo getTagInfo();
 
     /**
      * A value placeholder represents an expression which will be evaluated

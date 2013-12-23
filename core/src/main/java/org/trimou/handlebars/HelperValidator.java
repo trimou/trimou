@@ -28,6 +28,7 @@ import com.google.common.base.Preconditions;
 /**
  *
  * @author Martin Kouba
+ * @since 1.5.0
  */
 public final class HelperValidator {
 
@@ -53,7 +54,7 @@ public final class HelperValidator {
 
         if (size < paramSize) {
             throw new MustacheException(
-                    MustacheProblem.COMPILE_HELPER_INVALID_OPTIONS,
+                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
                     "Insufficient number of parameters for helper %s [expected: %s, current: %s, template: %s, line: %s]",
                     definition.getHelperClassName(), paramSize, size,
                     definition.getTagInfo().getTemplateName(), definition
@@ -83,7 +84,7 @@ public final class HelperValidator {
         if (!ArrayUtils.contains(allowedTypes, definition.getTagInfo()
                 .getType())) {
             throw new MustacheException(
-                    MustacheProblem.COMPILE_HELPER_INVALID_TYPE,
+                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
                     "Unsupported tag type [helper: %s, template: %s, line: %s]",
                     definition.getHelperClassName(), definition.getTagInfo()
                             .getTemplateName(), definition.getTagInfo()

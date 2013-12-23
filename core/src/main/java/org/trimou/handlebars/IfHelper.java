@@ -21,14 +21,14 @@ import org.trimou.util.Checker;
  * Conditionally renders a block if the first parameter is not "falsy".
  *
  * @author Martin Kouba
- * @since 1.5.0
+ * @since 1.5
  */
 public class IfHelper extends AbstractSectionHelper {
 
     @Override
-    public void execute(Appendable appendable, Options options) {
+    public void execute(Options options) {
         if (!Checker.isFalsy(options.getParameters().get(0))) {
-            options.fn(appendable);
+            options.fn();
         }
     }
 

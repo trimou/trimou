@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,9 +129,10 @@ class HelperExecutionHandler {
      */
     void execute(Appendable appendable, ExecutionContext executionContext) {
 
-        DefaultOptions options = optionsBuilder.build(executionContext);
+        DefaultOptions options = optionsBuilder.build(appendable,
+                executionContext);
         try {
-            helper.execute(appendable, options);
+            helper.execute(options);
         } finally {
             options.release();
         }
@@ -174,7 +176,8 @@ class HelperExecutionHandler {
             return hash;
         }
 
-        public DefaultOptions build(ExecutionContext executionContext) {
+        public DefaultOptions build(Appendable appendable,
+                ExecutionContext executionContext) {
 
             ImmutableList.Builder<ValueWrapper> valueWrappers = ImmutableList
                     .builder();
@@ -217,8 +220,8 @@ class HelperExecutionHandler {
                 optionalHash = Collections.unmodifiableMap(optionalHash);
             }
 
-            return new DefaultOptions(executionContext, segment, params,
-                    optionalHash, valueWrappers.build());
+            return new DefaultOptions(appendable, executionContext, segment,
+                    params, optionalHash, valueWrappers.build());
         }
 
     }
@@ -237,10 +240,13 @@ class HelperExecutionHandler {
 
         private final Map<String, Object> hash;
 
-        public DefaultOptions(ExecutionContext executionContext,
-                HelperAwareSegment segment, List<Object> parameters,
-                Map<String, Object> hash, List<ValueWrapper> valueWrappers) {
-            super();
+        private final Appendable appendable;
+
+        public DefaultOptions(Appendable appendable,
+                ExecutionContext executionContext, HelperAwareSegment segment,
+                List<Object> parameters, Map<String, Object> hash,
+                List<ValueWrapper> valueWrappers) {
+            this.appendable = appendable;
             this.executionContext = executionContext;
             this.segment = segment;
             this.parameters = parameters;
@@ -249,7 +255,16 @@ class HelperExecutionHandler {
         }
 
         @Override
-        public void fn(Appendable appendable) {
+        public void append(CharSequence sequence) {
+            try {
+                appendable.append(sequence);
+            } catch (IOException e) {
+                throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
+            }
+        }
+
+        @Override
+        public void fn() {
             segment.fn(appendable, executionContext);
         }
 

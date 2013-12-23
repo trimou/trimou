@@ -29,12 +29,12 @@ public interface HelperArguments {
      *
      * @return an immutable list of parameters
      */
-    public List<Object> getParameters();
+    List<Object> getParameters();
 
     /**
      *
      * @return an immutable "hash" map
      */
-    public Map<String, Object> getHash();
+    Map<String, Object> getHash();
 
 }

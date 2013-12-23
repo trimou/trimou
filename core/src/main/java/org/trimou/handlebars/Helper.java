@@ -15,13 +15,17 @@
  */
 package org.trimou.handlebars;
 
+import java.io.IOException;
+
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.ConfigurationAware;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * Handlebars-like helper. Must be thread safe.
  *
- * Member names in this package sometimes do not make much sense (e.g.
+ * Class member names in this package sometimes do not make much sense (e.g.
  * {@link Options#fn(Appendable)}), however we've tried to follow the original
  * handlebars terminology as much as possible.
  *
@@ -32,15 +36,20 @@ import org.trimou.engine.config.ConfigurationAware;
 public interface Helper extends ConfigurationAware {
 
     /**
+     * TODO comment
      *
-     * @param appendable
      * @param options
+     * @throws IOException
      */
-    public void execute(Appendable appendable, Options options);
+    public void execute(Options options);
 
     /**
      * Helper should validate the tag definition (e.g. number of parameters)
      * during compilation and fail fast if necessary.
+     *
+     * A {@link MustacheException} with code
+     * {@link MustacheProblem#COMPILE_HELPER_VALIDATION_FAILURE} should be
+     * thrown in case of validation failure occurs.
      *
      * @param definition
      */

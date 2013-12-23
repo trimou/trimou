@@ -19,6 +19,8 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 
 import org.trimou.engine.segment.IterationMeta;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  * TODO
@@ -30,22 +32,23 @@ public class EachHelper extends AbstractSectionHelper {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void execute(Appendable appendable, Options options) {
+    public void execute(Options options) {
 
         Object value = options.getParameters().get(0);
 
         if (value instanceof Iterable) {
-            processIterable((Iterable) value, appendable, options);
+            processIterable((Iterable) value, options);
         } else if (value.getClass().isArray()) {
-            processArray(value, appendable, options);
+            processArray(value, options);
         } else {
-            // TODO
+            throw new MustacheException(
+                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
+                    "%s is nor Iterable nor array instance", value);
         }
     }
 
     @SuppressWarnings("rawtypes")
-    private void processIterable(Iterable iterable, Appendable appendable,
-            Options options) {
+    private void processIterable(Iterable iterable, Options options) {
 
         Iterator iterator = iterable.iterator();
 
@@ -55,13 +58,12 @@ public class EachHelper extends AbstractSectionHelper {
         IterationMeta meta = new IterationMeta(iterator);
         options.push(meta);
         while (iterator.hasNext()) {
-            processIteration(appendable, options, iterator.next(), meta);
+            processIteration(options, iterator.next(), meta);
         }
         options.pop();
     }
 
-    private void processArray(Object array, Appendable appendable,
-            Options options) {
+    private void processArray(Object array, Options options) {
 
         int length = Array.getLength(array);
 
@@ -71,15 +73,15 @@ public class EachHelper extends AbstractSectionHelper {
         IterationMeta meta = new IterationMeta(length);
         options.push(meta);
         for (int i = 0; i < length; i++) {
-            processIteration(appendable, options, Array.get(array, i), meta);
+            processIteration(options, Array.get(array, i), meta);
         }
         options.pop();
     }
 
-    private void processIteration(Appendable appendable, Options options,
-            Object value, IterationMeta meta) {
+    private void processIteration(Options options, Object value,
+            IterationMeta meta) {
         options.push(value);
-        options.fn(appendable);
+        options.fn();
         options.pop();
         meta.nextIteration();
     }

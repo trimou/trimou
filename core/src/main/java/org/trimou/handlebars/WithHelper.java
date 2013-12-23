@@ -15,6 +15,7 @@
  */
 package org.trimou.handlebars;
 
+
 /**
  * Nested context.
  *
@@ -24,11 +25,11 @@ package org.trimou.handlebars;
 public class WithHelper extends AbstractSectionHelper {
 
     @Override
-    public void execute(Appendable appendable, Options options) {
+    public void execute(Options options) {
         Object value = options.getParameters().get(0);
         if (value != null) {
             options.push(value);
-            options.fn(appendable);
+            options.fn();
             options.pop();
         }
     }

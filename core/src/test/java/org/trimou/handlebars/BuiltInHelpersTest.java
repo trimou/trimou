@@ -32,9 +32,9 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         .render(ImmutableSet.of("foo", "bar")));
         assertCompilationFails(engine, "each_helper_fail1",
                 "{{#each}}{{this}}{{/each}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_OPTIONS);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "each_helper_fail2", "{{each}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_TYPE);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
 
     @Test
@@ -49,9 +49,9 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         .render(false));
         assertCompilationFails(engine, "if_helper_fail1",
                 "{{#if}}{{this}}{{/if}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_OPTIONS);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "if_helper_fail2", "{{if}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_TYPE);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
 
     @Test
@@ -67,9 +67,9 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         "{{#unless this}}hello{{/unless}}").render(true));
         assertCompilationFails(engine, "unless_helper_fail1",
                 "{{#unless}}{{this}}{{/unless}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_OPTIONS);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "unless_helper_fail2", "{{unless}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_TYPE);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
 
     @Test
@@ -80,9 +80,9 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         "{{#with this}}{{age}}{{/with}}").render(new Hammer()));
         assertCompilationFails(engine, "with_helper_fail1",
                 "{{#with}}{{this}}{{/with}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_OPTIONS);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "with_helper_fail2", "{{with}}",
-                MustacheProblem.COMPILE_HELPER_INVALID_TYPE);
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
 
     private void assertCompilationFails(MustacheEngine engine,

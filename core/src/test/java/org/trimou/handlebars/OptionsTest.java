@@ -26,7 +26,7 @@ public class OptionsTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override
-                    public void execute(Appendable appendable, Options options) {
+                    public void execute(Options options) {
                         List<Object> params = options.getParameters();
                         assertEquals(3, params.size());
                         assertEquals("1", params.get(0));
@@ -43,7 +43,7 @@ public class OptionsTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override
-                    public void execute(Appendable appendable, Options options) {
+                    public void execute(Options options) {
                         Map<String, Object> hash = options.getHash();
                         assertEquals(3, hash.size());
                         assertEquals("1", hash.get("first"));
@@ -60,9 +60,9 @@ public class OptionsTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override
-                    public void execute(Appendable appendable, Options options) {
+                    public void execute(Options options) {
                         options.push("OK");
-                        options.fn(appendable);
+                        options.fn();
                     }
                 }).build();
         assertEquals(
@@ -76,7 +76,7 @@ public class OptionsTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override
-                    public void execute(Appendable appendable, Options options) {
+                    public void execute(Options options) {
                         options.pop();
                     }
                 }).build();

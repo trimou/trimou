@@ -26,18 +26,23 @@ import org.trimou.exception.MustacheException;
 public interface Options extends HelperArguments {
 
     /**
-     * Execute the block template.
+     * Append the given sequence to the rendered template.
      *
-     * @param appendable
+     * @param sequence
      */
-    public void fn(Appendable appendable);
+    void append(CharSequence sequence);
+
+    /**
+     * Proceed with template execution (e.g. execute the block).
+     */
+    void fn();
 
     /**
      * Push the specified object on the context stack.
      *
      * @param contextObject
      */
-    public void push(Object contextObject);
+    void push(Object contextObject);
 
     /**
      * @return the object at the top of the context stack
@@ -45,6 +50,6 @@ public interface Options extends HelperArguments {
      *             In case of a helper tries to pop a context object it did not
      *             push previously
      */
-    public Object pop();
+    Object pop();
 
 }

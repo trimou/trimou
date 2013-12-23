@@ -26,9 +26,9 @@ import org.trimou.util.Checker;
 public class UnlessHelper extends AbstractSectionHelper {
 
     @Override
-    public void execute(Appendable appendable, Options options) {
+    public void execute(Options options) {
         if (Checker.isFalsy(options.getParameters().get(0))) {
-            options.fn(appendable);
+            options.fn();
         }
     }
 

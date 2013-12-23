@@ -15,8 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
@@ -25,9 +23,6 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  */
 public abstract class AbstractHelper extends AbstractConfigurationAware
         implements Helper {
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(AbstractHelper.class);
 
     @Override
     public void validate(HelperTagDefinition paramDefinition) {
