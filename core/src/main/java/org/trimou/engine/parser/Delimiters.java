@@ -63,6 +63,14 @@ final class Delimiters {
         return end.substring(0, index);
     }
 
+    public String getStart() {
+        return start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
     public boolean hasDefaultDelimitersSet() {
         return EngineConfigurationKey.START_DELIMITER.getDefaultValue().equals(
                 start)

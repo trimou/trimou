@@ -18,23 +18,46 @@ package org.trimou.handlebars;
 import java.util.List;
 import java.util.Map;
 
+import org.trimou.engine.MustacheTagInfo;
+
 /**
  *
  * @author Martin Kouba
  * @since 1.5.0
  */
-public interface HelperArguments {
+public interface HelperDefinition {
 
     /**
+     *
+     * @return the info about the associated tag
+     */
+    MustacheTagInfo getTagInfo();
+
+    /**
+     * The list may contain {@link ValuePlaceholder} instances during
+     * validation.
      *
      * @return an immutable list of parameters
      */
     List<Object> getParameters();
 
     /**
+     * The map may contain {@link ValuePlaceholder} instances during validation.
      *
      * @return an immutable "hash" map
      */
     Map<String, Object> getHash();
+
+    /**
+     * A value placeholder represents an expression which will be evaluated
+     * right before the helper execution. The placeholder is then replaced with
+     * the actual value. I.e. placeholders are only present during tag
+     * validation.
+     */
+    public interface ValuePlaceholder {
+
+        public String getName();
+
+    }
 
 }

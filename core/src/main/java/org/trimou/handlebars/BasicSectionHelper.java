@@ -15,36 +15,19 @@
  */
 package org.trimou.handlebars;
 
-import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.MustacheTagType;
 
 /**
  *
+ *
  * @author Martin Kouba
- * @since 1.5.0
  */
-public interface HelperTagDefinition extends HelperArguments {
+public abstract class BasicSectionHelper extends AbstractHelper {
 
-    /**
-     *
-     * @return the FQCN of the helper
-     */
-    String getHelperClassName();
-
-    /**
-     *
-     * @return the info about the associated tag
-     */
-    MustacheTagInfo getTagInfo();
-
-    /**
-     * A value placeholder represents an expression which will be evaluated
-     * right before the helper execution. The placeholder is then replaced with
-     * the actual value.
-     */
-    public interface ValuePlaceholder {
-
-        public String getName();
-
+    @Override
+    public void validate(HelperDefinition definition) {
+        HelperValidator.checkType(this.getClass(), definition, MustacheTagType.SECTION);
+        HelperValidator.checkParams(this.getClass(), definition, 1);
     }
 
 }

@@ -25,6 +25,9 @@ public class ValidationTest extends AbstractEngineTest {
                 .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED,
                         false).build();
 
+        testInvalidTemplate(engine, "{{fo{{o}}",
+                MustacheProblem.COMPILE_INVALID_TAG,
+                "tag_contains_start_delimiter");
         testInvalidTemplate(engine, "{{foo}} {{ boo {{bar}}",
                 MustacheProblem.COMPILE_INVALID_TAG,
                 "not_a_nonwhitespace_character_sequence");

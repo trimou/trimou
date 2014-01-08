@@ -18,12 +18,13 @@ package org.trimou.handlebars;
 import org.trimou.exception.MustacheException;
 
 /**
- * A new instance is created for every helper execution.
+ * Options represent a helper execution context - a new instance is created for
+ * every execution.
  *
  * @author Martin Kouba
  * @since 1.5.0
  */
-public interface Options extends HelperArguments {
+public interface Options extends HelperDefinition {
 
     /**
      * Append the given sequence to the rendered template.

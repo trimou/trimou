@@ -1,13 +1,11 @@
 package org.trimou.handlebars;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.trimou.AssertUtil.assertCompilationFails;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
-import org.trimou.engine.MustacheEngine;
-import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.collect.ImmutableSet;
@@ -83,19 +81,6 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "with_helper_fail2", "{{with}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
-    }
-
-    private void assertCompilationFails(MustacheEngine engine,
-            String templateName, String templateContents,
-            MustacheProblem expectedProblem) {
-        try {
-            engine.compileMustache(templateName, templateContents);
-            fail();
-        } catch (MustacheException e) {
-            if (!e.getCode().equals(expectedProblem)) {
-                fail();
-            }
-        }
     }
 
 }

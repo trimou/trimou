@@ -57,37 +57,52 @@ public class PatternsTest {
     }
 
     @Test
-    public void testHandlebarsNamePattern() {
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+    public void testHelperNameValidationPattern() {
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name param1 param2 hash1=\"value1\" hash2=value2")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name param1.dot.lookup")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name hash1=\"value1\"")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name.-1")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("foo/bar/path")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("kečup")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("foo[\"bar\"]")
                 .matches());
-        assertTrue(Patterns.newHandlebarsNameValidationPattern()
+        assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name  \"param1\" \"param2\" hash1=\"value1\" hash2=value2.foo")
                 .matches());
-        assertFalse(Patterns.newHandlebarsNameValidationPattern()
-                .matcher("name {{ param1")
+        assertTrue(Patterns.newHelperNameValidationPattern()
+                .matcher("name  hash1=\"DD-MM-yyyy HH:mm\"")
                 .matches());
     }
+
+    @Test
+    public void testHelperStringLiteralPattern() {
+        assertTrue(Patterns.newHelperStringLiteralPattern()
+                .matcher("\"foo\"")
+                .matches());
+        assertTrue(Patterns.newHelperStringLiteralPattern()
+                .matcher("\"DD-MM-yyyy HH:mm\"")
+                .matches());
+        assertFalse(Patterns.newHelperStringLiteralPattern()
+                .matcher("\"foo")
+                .matches());
+    }
+
+
 
 }

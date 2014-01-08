@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.handlebars;
+package org.trimou.handlebars.i18n;
 
-import org.trimou.engine.MustacheTagType;
+import java.util.Locale;
+
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.handlebars.BasicValueHelper;
 
 /**
  *
- *
  * @author Martin Kouba
  */
-public abstract class AbstractValueHelper extends AbstractHelper {
+public abstract class LocaleAwareValueHelper extends BasicValueHelper {
+
+    private LocaleSupport localeSupport;
 
     @Override
-    public void validate(HelperTagDefinition definition) {
-        HelperValidator.checkType(definition, MustacheTagType.VARIABLE, MustacheTagType.UNESCAPE_VARIABLE);
-        HelperValidator.checkParams(definition, 1);
+    public void init(Configuration configuration) {
+        localeSupport = configuration.getLocaleSupport();
+    }
+
+    protected Locale getCurrentLocale() {
+        return localeSupport.getCurrentLocale();
     }
 
 }

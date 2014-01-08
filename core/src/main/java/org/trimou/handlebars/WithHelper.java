@@ -22,7 +22,7 @@ package org.trimou.handlebars;
  * @author Martin Kouba
  * @since 1.5.0
  */
-public class WithHelper extends AbstractSectionHelper {
+public class WithHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {

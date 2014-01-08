@@ -23,12 +23,16 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 /**
- * TODO
+ * <code>
+ * {{#each items}}
+ * {{name}}
+ * {{/each}}
+ * </code>
  *
  * @author Martin Kouba
  * @since 1.5.0
  */
-public class EachHelper extends AbstractSectionHelper {
+public class EachHelper extends BasicSectionHelper {
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -43,7 +47,9 @@ public class EachHelper extends AbstractSectionHelper {
         } else {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "%s is nor Iterable nor array instance", value);
+                    "%s is nor an Iterable nor an array [template: %s, line: %s]",
+                    value, options.getTagInfo().getTemplateName(), options
+                            .getTagInfo().getLine());
         }
     }
 

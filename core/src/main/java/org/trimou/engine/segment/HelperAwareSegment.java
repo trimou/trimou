@@ -16,9 +16,11 @@
 package org.trimou.engine.segment;
 
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.handlebars.Helper;
 import org.trimou.handlebars.Options;
 
 /**
+ * A {@link Segment} which may have a {@link Helper} associated.
  *
  * @author Martin Kouba
  */
@@ -28,7 +30,7 @@ interface HelperAwareSegment extends Segment {
      *
      * @param appendable
      * @param context
-     * @see Options#fn(Appendable)
+     * @see Options#fn()
      */
     void fn(Appendable appendable, ExecutionContext context);
 

@@ -34,8 +34,8 @@ import org.trimou.engine.context.ValueWrapper;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
-import org.trimou.handlebars.HelperTagDefinition;
-import org.trimou.handlebars.HelperTagDefinition.ValuePlaceholder;
+import org.trimou.handlebars.HelperDefinition;
+import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 import org.trimou.handlebars.Options;
 import org.trimou.util.Checker;
 import org.trimou.util.Patterns;
@@ -46,19 +46,19 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * TODO add comment
+ * Wraps {@link Helper} instance and handles its execution (e.g. builds
+ * {@link Options} instance).
  *
  * @author Martin Kouba
+ * @see HelperAwareSegment
  */
 class HelperExecutionHandler {
-
-    private static Splitter helperNameSplitter = Splitter.on(" ")
-            .omitEmptyStrings();
 
     private static Splitter hashEntrySplitter = Splitter.on(Strings.EQUALS)
             .omitEmptyStrings();
 
-    private static Pattern literalPattern = Patterns.newStringLiteralPattern();
+    private static Pattern literalPattern = Patterns
+            .newHelperStringLiteralPattern();
 
     private final Helper helper;
 
@@ -75,7 +75,7 @@ class HelperExecutionHandler {
     static HelperExecutionHandler from(String name,
             Configuration configuration, HelperAwareSegment segment) {
 
-        Iterator<String> result = helperNameSplitter.split(name).iterator();
+        Iterator<String> result = splitHelperName(name);
         String firstToken = result.next();
 
         Helper helper = configuration.getHelpers().get(firstToken);
@@ -93,22 +93,22 @@ class HelperExecutionHandler {
                 Iterator<String> hashResult = hashEntrySplitter.split(
                         paramOrHash).iterator();
                 hash.put(hashResult.next(),
-                        getLiteralOrLookup(hashResult.next()));
+                        getLiteralOrPlaceholder(hashResult.next()));
             } else {
-                params.add(getLiteralOrLookup(paramOrHash));
+                params.add(getLiteralOrPlaceholder(paramOrHash));
             }
         }
 
-        OptionsBuilder optionsBuilder = new OptionsBuilder(helper.getClass()
-                .getName(), params.build(), hash.build(), segment);
+        OptionsBuilder optionsBuilder = new OptionsBuilder(params.build(),
+                hash.build(), segment);
 
-        // Let the helper validate params
+        // Let the helper validate the tag definition
         helper.validate(optionsBuilder);
 
         return new HelperExecutionHandler(helper, optionsBuilder);
     }
 
-    private static Object getLiteralOrLookup(String value) {
+    private static Object getLiteralOrPlaceholder(String value) {
         Matcher matcher = literalPattern.matcher(value);
         if (matcher.matches()) {
             return matcher.group(2);
@@ -138,9 +138,7 @@ class HelperExecutionHandler {
         }
     }
 
-    private static class OptionsBuilder implements HelperTagDefinition {
-
-        private final String helperClassName;
+    private static class OptionsBuilder implements HelperDefinition {
 
         private final List<Object> parameters;
 
@@ -148,17 +146,11 @@ class HelperExecutionHandler {
 
         private final HelperAwareSegment segment;
 
-        private OptionsBuilder(String helperClassName, List<Object> parameters,
+        private OptionsBuilder(List<Object> parameters,
                 Map<String, Object> hash, HelperAwareSegment segment) {
-            this.helperClassName = helperClassName;
             this.parameters = parameters;
             this.hash = hash;
             this.segment = segment;
-        }
-
-        @Override
-        public String getHelperClassName() {
-            return helperClassName;
         }
 
         @Override
@@ -294,6 +286,11 @@ class HelperExecutionHandler {
                     MustacheProblem.RENDER_HELPER_INVALID_POP_OPERATION);
         }
 
+        @Override
+        public MustacheTagInfo getTagInfo() {
+            return segment.getTagInfo();
+        }
+
         void release() {
             for (ValueWrapper wrapper : valueWrappers) {
                 wrapper.release();
@@ -314,6 +311,49 @@ class HelperExecutionHandler {
             return name;
         }
 
+    }
+
+    /**
+     * TODO possibly rewrite as this implementation is quite naive.
+     *
+     * @param name
+     * @return
+     */
+    static Iterator<String> splitHelperName(String name) {
+
+        boolean literal = false;
+        boolean whitespace = false;
+        List<String> parts = new ArrayList<String>();
+        StringBuilder buffer = new StringBuilder();
+
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == ' ') {
+                if (!whitespace) {
+                    if (!literal) {
+                        parts.add(buffer.toString());
+                        buffer = new StringBuilder();
+                        whitespace = true;
+                    } else {
+                        buffer.append(name.charAt(i));
+                    }
+                }
+            } else {
+                if (name.charAt(i) == '"') {
+                    if (literal) {
+                        literal = false;
+                    } else {
+                        literal = true;
+                    }
+                }
+                whitespace = false;
+                buffer.append(name.charAt(i));
+            }
+        }
+
+        if (buffer.length() > 0) {
+            parts.add(buffer.toString());
+        }
+        return parts.iterator();
     }
 
 }

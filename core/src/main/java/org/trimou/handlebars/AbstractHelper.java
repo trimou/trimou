@@ -25,8 +25,11 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
         implements Helper {
 
     @Override
-    public void validate(HelperTagDefinition paramDefinition) {
+    public void validate(HelperDefinition definition) {
         // No-op by default
     }
 
+    protected Object getHashValue(Options  options,String key) {
+        return options.getHash().isEmpty() ? null : options.getHash().get(key);
+    }
 }

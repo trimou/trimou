@@ -16,7 +16,6 @@
 package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
-import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.lambda.Lambda;
@@ -122,19 +121,6 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         } else {
             writeValue(appendable, returnValue);
         }
-    }
-
-    /**
-     * Info about {@link ValueSegment}.
-     */
-    public interface ValueSegmentInfo extends MustacheTagInfo {
-
-        /**
-         * @return <code>true</code> if the original value should not be
-         *         escaped, <code>false</code> otherwise
-         */
-        public boolean isUnescape();
-
     }
 
 }

@@ -21,9 +21,9 @@ import org.trimou.util.Checker;
  * Conditionally renders a block if the first parameter is not "falsy".
  *
  * @author Martin Kouba
- * @since 1.5
+ * @since 1.5.0
  */
-public class IfHelper extends AbstractSectionHelper {
+public class IfHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {

@@ -15,7 +15,12 @@
  */
 package org.trimou.handlebars;
 
+import org.trimou.engine.config.EngineConfigurationKey;
+
 /**
+ * Basic built-in helpers are registered automatically if
+ * {@link EngineConfigurationKey#HANDLEBARS_SUPPORT_ENABLED} set to
+ * <code>true</code>.
  *
  * @author Martin Kouba
  */
@@ -24,8 +29,7 @@ public enum BuiltInHelper {
     EACH("each", new EachHelper()),
     IF("if", new IfHelper()),
     UNLESS("unless", new UnlessHelper()),
-    WITH("with", new WithHelper()),
-    ;
+    WITH("with", new WithHelper()), ;
 
     private String name;
 

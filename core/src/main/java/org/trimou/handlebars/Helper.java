@@ -36,7 +36,7 @@ import org.trimou.exception.MustacheProblem;
 public interface Helper extends ConfigurationAware {
 
     /**
-     * TODO comment
+     * Execute the helper.
      *
      * @param options
      * @throws IOException
@@ -53,6 +53,6 @@ public interface Helper extends ConfigurationAware {
      *
      * @param definition
      */
-    public void validate(HelperTagDefinition definition);
+    public void validate(HelperDefinition definition);
 
 }

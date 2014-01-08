@@ -22,12 +22,13 @@ import org.trimou.engine.MustacheTagType;
  *
  * @author Martin Kouba
  */
-public abstract class AbstractSectionHelper extends AbstractHelper {
+public abstract class BasicValueHelper extends AbstractHelper {
 
     @Override
-    public void validate(HelperTagDefinition definition) {
-        HelperValidator.checkType(definition, MustacheTagType.SECTION);
-        HelperValidator.checkParams(definition, 1);
+    public void validate(HelperDefinition definition) {
+        HelperValidator.checkType(this.getClass(), definition,
+                MustacheTagType.VARIABLE, MustacheTagType.UNESCAPE_VARIABLE);
+        HelperValidator.checkParams(this.getClass(), definition, 1);
     }
 
 }

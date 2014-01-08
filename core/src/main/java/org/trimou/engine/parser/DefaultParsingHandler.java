@@ -62,7 +62,7 @@ class DefaultParsingHandler implements ParsingHandler {
             .getLogger(DefaultParsingHandler.class);
 
     private static Pattern handlebarsNameValidationPattern = Patterns
-            .newHandlebarsNameValidationPattern();
+            .newHelperNameValidationPattern();
 
     private Deque<ContainerSegment> containerStack = new ArrayDeque<ContainerSegment>();
 
@@ -180,6 +180,13 @@ class DefaultParsingHandler implements ParsingHandler {
                     line);
         }
 
+        if (tag.getContent().contains(delimiters.getStart())) {
+            throw new MustacheException(
+                    COMPILE_INVALID_TAG,
+                    "Tag content contains current start delimiter [type: %s, line: %s, delimiter: %s]",
+                    tag.getType(), line, delimiters.getStart());
+        }
+
         if (handlebarsSupportEnabled
                 && MustacheTagType.contentMustBeValidated(tag.getType())) {
             if (!handlebarsNameValidationPattern.matcher(tag.getContent())
@@ -203,7 +210,7 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private void endSection(String key) {
         ContainerSegment container = pop();
-        // FIXME better check?
+        // TODO better check?
         if (container == null
                 || (!handlebarsSupportEnabled
                         && !key.equals(container.getText()) || (handlebarsSupportEnabled && !container

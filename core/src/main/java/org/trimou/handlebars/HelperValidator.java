@@ -40,12 +40,14 @@ public final class HelperValidator {
 
     /**
      *
+     * @param helperClazz
      * @param definition
      * @param paramSize
      * @throws MustacheException
      *             If the helper tag params
      */
-    public static void checkParams(HelperTagDefinition definition, int paramSize) {
+    public static void checkParams(Class<?> helperClazz,
+            HelperDefinition definition, int paramSize) {
         Checker.checkArgumentNotNull(definition);
         Preconditions.checkArgument(paramSize >= 0,
                 "Helper may only require zero or more params");
@@ -56,37 +58,38 @@ public final class HelperValidator {
             throw new MustacheException(
                     MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
                     "Insufficient number of parameters for helper %s [expected: %s, current: %s, template: %s, line: %s]",
-                    definition.getHelperClassName(), paramSize, size,
-                    definition.getTagInfo().getTemplateName(), definition
+                    helperClazz.getName(), paramSize, size, definition
+                            .getTagInfo().getTemplateName(), definition
                             .getTagInfo().getLine());
         }
 
         if (size > paramSize) {
             logger.warn(
                     "{} unused parameters detected [helper: %s, template: %s, line: %s]",
-                    size - paramSize, definition.getHelperClassName(),
-                    definition.getTagInfo().getTemplateName(), definition
+                    size - paramSize, helperClazz.getName(), definition
+                            .getTagInfo().getTemplateName(), definition
                             .getTagInfo().getLine());
         }
     }
 
     /**
      *
+     * @param helperClazz
      * @param definition
      * @param allowedTypes
      * @throws MustacheException
      *             If the helper tag type does not match any one of the
      *             specified types
      */
-    public static void checkType(HelperTagDefinition definition,
-            MustacheTagType... allowedTypes) {
+    public static void checkType(Class<?> helperClazz,
+            HelperDefinition definition, MustacheTagType... allowedTypes) {
         Checker.checkArgumentsNotNull(definition, allowedTypes);
         if (!ArrayUtils.contains(allowedTypes, definition.getTagInfo()
                 .getType())) {
             throw new MustacheException(
                     MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
                     "Unsupported tag type [helper: %s, template: %s, line: %s]",
-                    definition.getHelperClassName(), definition.getTagInfo()
+                    helperClazz.getName(), definition.getTagInfo()
                             .getTemplateName(), definition.getTagInfo()
                             .getLine());
         }

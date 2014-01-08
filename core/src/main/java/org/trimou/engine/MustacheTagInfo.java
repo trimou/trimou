@@ -20,6 +20,7 @@ package org.trimou.engine;
  * Info about a tag.
  *
  * @author Martin Kouba
+ * @since 1.5.0
  */
 public interface MustacheTagInfo {
 

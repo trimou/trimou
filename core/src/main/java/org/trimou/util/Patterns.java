@@ -62,22 +62,16 @@ public final class Patterns {
     }
 
     /**
-     * TODO add comment
-     *
-     * name param1 param2 hash1="value1" hash2=value2
-     *
-     * @return
+     * @return the pattern to validate a helper name
      */
-    public static Pattern newHandlebarsNameValidationPattern() {
-        return Pattern.compile("([\\p{L}\\p{Nd}_\".=\\-/\\[\\]]+[ ]*)+?");
+    public static Pattern newHelperNameValidationPattern() {
+        return Pattern.compile("([\\p{L}\\p{Nd}\\p{P}=]+[ ]*)+?");
     }
 
     /**
-     * TODO add comment
-     *
-     * @return
+     * @return the pattern to macth a string literal in a helper name
      */
-    public static Pattern newStringLiteralPattern() {
+    public static Pattern newHelperStringLiteralPattern() {
         return Pattern.compile("(\")(.*)(\")");
     }
 

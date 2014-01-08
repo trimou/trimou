@@ -23,7 +23,7 @@ import org.trimou.util.Checker;
  * @author Martin Kouba
  * @since 1.5.0
  */
-public class UnlessHelper extends AbstractSectionHelper {
+public class UnlessHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
