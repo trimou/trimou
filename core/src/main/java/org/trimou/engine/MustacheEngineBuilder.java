@@ -271,6 +271,9 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * Each helper must be registered with a unique name. If there are more
+     * helpers registered with the same name an {@link IllegalArgumentException}
+     * is thrown during {@link #build()}.
      *
      * @param name
      * @param helper

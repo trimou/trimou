@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
 /**
  *
  * @author Martin Kouba
- * @since 1.5.0
+ * @since 1.5
  */
 public final class HelperValidator {
 

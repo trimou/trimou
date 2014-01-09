@@ -30,7 +30,7 @@ import org.trimou.exception.MustacheProblem;
  * </code>
  *
  * @author Martin Kouba
- * @since 1.5.0
+ * @since 1.5
  */
 public class EachHelper extends BasicSectionHelper {
 

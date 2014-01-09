@@ -22,7 +22,7 @@ import org.trimou.exception.MustacheException;
  * every execution.
  *
  * @author Martin Kouba
- * @since 1.5.0
+ * @since 1.5
  */
 public interface Options extends HelperDefinition {
 

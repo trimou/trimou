@@ -21,12 +21,19 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
 
 /**
- * TODO
+ * This is an alternative to {@link DateTimeFormatResolver}. The main advantage
+ * lies in the ability to specify custom pattern per tag:
+ * <code>
+ * {{formatTime now pattern="DD-MM-yyyy HH:mm"}}
+ * {{formatTime now pattern="HH:mm"}}
+ * ...
+ * </code>
  *
  * @author Martin Kouba
  */

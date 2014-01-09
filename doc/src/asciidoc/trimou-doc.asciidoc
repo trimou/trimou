@@ -289,6 +289,13 @@ Lalala...
 <3> section "content" has the default content
 <4> "super" end
 
+[[helpers]]
+=== Built-in helpers
+
+Since version 1.5.0 handlebars-like helpers are supported. There are four helpers registered automatically: +if+, +unless+, +each+, +with+ (see http://handlebarsjs.com for examples :-). Other helpers may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. See also <<custom_helpers,Helper>> section.
+
+NOTE: Handlebars support is enabled by default. See +HANDLEBARS_SUPPORT_ENABLED+ in <<configuration,Configuration properties>>.
+
 [[how_to_use]]
 == How to use
 
@@ -496,6 +503,12 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 |0
 |The template cache expiration timeout in seconds. Zero and negative values mean no timeout. The template cachec never expires by default.
 
+
+|HANDLEBARS_SUPPORT_ENABLED
+*org.trimou.engine.config.handlebarsSupportEnabled*
+|true
+|Handlebars support is enabled by default. Right now only handlebars-like helpers are supported.
+
 |===
 
 [[i18n]]
@@ -581,8 +594,16 @@ There are two ways to register a custom listener:
 * +MustacheEngineBuilder.addMustacheListener()+ method,
 * automatically via +org.trimou.engine.config.ConfigurationExtension+ (extension listeners are always registered after manually added listeners).
 
-
 NOTE: Code inside a listener may throw an unchecked exception - this aborts further processing of template and no more listeners are invoked afterwards.
+
+[[custom_helpers]]
+=== Helper
+
++org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand the helper is able to validate the tag definition (see +Helper.validate(HelperDefinition)+) and fail fast if there's invalid number of arguments etc.
+
+Helper may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. Each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. 
+
+NOTE: Trimou provides some useful helpers which are not automatically registered: +org.trimou.handlebars.i18n.ResourceBundleHelper+, +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+. Read javadoc for more info.
 
 [[extensions]]
 == Extensions

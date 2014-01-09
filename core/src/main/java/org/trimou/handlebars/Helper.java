@@ -26,12 +26,12 @@ import org.trimou.exception.MustacheProblem;
  * Handlebars-like helper. Must be thread safe.
  *
  * Class member names in this package sometimes do not make much sense (e.g.
- * {@link Options#fn(Appendable)}), however we've tried to follow the original
+ * {@link Options#fn()}), however we've tried to follow the original
  * handlebars terminology as much as possible.
  *
  * @author Martin Kouba
  * @see MustacheEngineBuilder#registerHelper(String, Helper)
- * @since 1.5.0
+ * @since 1.5
  */
 public interface Helper extends ConfigurationAware {
 

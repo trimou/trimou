@@ -16,6 +16,7 @@
 package org.trimou.engine.config;
 
 import org.trimou.engine.interpolation.MissingValueHandler;
+import org.trimou.handlebars.Helper;
 import org.trimou.util.SecurityActions;
 
 /**
@@ -73,7 +74,7 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      */
     TEMPLATE_RECURSIVE_INVOCATION_LIMIT(10),
     /**
-     * If <code>true</code> interpolated values are never escaped, i.e.
+     * If set to <code>true</code> interpolated values are never escaped, i.e.
      * org.trimou.engine.text.TextSupport.escapeHtml(String) is never called.
      */
     SKIP_VALUE_ESCAPING(false),
@@ -83,7 +84,7 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      */
     DEFAULT_FILE_ENCODING(SecurityActions.getSystemProperty("file.encoding")),
     /**
-     * If <code>true</code> the template cache is enabled.
+     * If set to <code>true</code> the template cache is enabled.
      */
     TEMPLATE_CACHE_ENABLED(true),
     /**
@@ -95,7 +96,9 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      */
     TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0l),
     /**
-     * TODO
+     * If set to <code>true</code> handlebars-like helpers are supported.
+     *
+     * @see Helper
      */
     HANDLEBARS_SUPPORT_ENABLED(true),
     ;
