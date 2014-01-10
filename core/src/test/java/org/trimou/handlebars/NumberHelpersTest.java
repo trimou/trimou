@@ -23,7 +23,13 @@ public class NumberHelpersTest extends AbstractTest {
                 "even",
                 engine.compileMustache("isEven_value",
                         "{{#this}}{{isEven iterIndex \"even\"}}{{/this}}")
-                        .render(new String[] { "0", "1", "2" }));
+                        .render(new String[] { "1", "2", "3" }));
+
+        assertEquals(
+                "oddevenodd",
+                engine.compileMustache("isEven_value_else",
+                        "{{#this}}{{isEven iterIndex \"even\" \"odd\"}}{{/this}}")
+                        .render(new String[] { "1", "2", "3" }));
         assertEquals(
                 "",
                 engine.compileMustache("isEven_section",
@@ -46,7 +52,12 @@ public class NumberHelpersTest extends AbstractTest {
                 "oddodd",
                 engine.compileMustache("isOdd_value",
                         "{{#this}}{{isOdd iterIndex \"odd\"}}{{/this}}")
-                        .render(new String[] { "0", "1", "2" }));
+                        .render(new String[] { "1", "2", "3" }));
+        assertEquals(
+                "oddevenodd",
+                engine.compileMustache("isOdd_value",
+                        "{{#this}}{{isOdd iterIndex \"odd\" \"even\"}}{{/this}}")
+                        .render(new String[] { "1", "2", "3" }));
         assertEquals(
                 "",
                 engine.compileMustache("isOdd_section",

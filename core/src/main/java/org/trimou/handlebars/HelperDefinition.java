@@ -51,7 +51,7 @@ public interface HelperDefinition {
     /**
      * A value placeholder represents an expression which will be evaluated
      * right before the helper execution. The placeholder is then replaced with
-     * the actual value. I.e. placeholders are only present during tag
+     * the actual value, i.e. placeholders are only present during tag
      * validation.
      */
     public interface ValuePlaceholder {

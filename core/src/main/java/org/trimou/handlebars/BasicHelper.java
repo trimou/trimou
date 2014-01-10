@@ -18,19 +18,30 @@ package org.trimou.handlebars;
 import org.trimou.engine.MustacheTagType;
 
 /**
- *
+ * Basic validating helper.
  *
  * @author Martin Kouba
  */
-public abstract class BasicValueHelper extends BasicHelper {
+public abstract class BasicHelper extends AbstractHelper {
 
-    protected static final MustacheTagType[] VALUE_TAG_TYPES = new MustacheTagType[] {
-        MustacheTagType.VARIABLE,
-        MustacheTagType.UNESCAPE_VARIABLE };
+    protected static final MustacheTagType[] HELPER_TAG_TYPES = new MustacheTagType[] {
+            MustacheTagType.SECTION, MustacheTagType.VARIABLE,
+            MustacheTagType.UNESCAPE_VARIABLE };
 
     @Override
+    public void validate(HelperDefinition definition) {
+        HelperValidator.checkType(this.getClass(), definition,
+                allowedTagTypes());
+        HelperValidator.checkParams(this.getClass(), definition,
+                numberOfRequiredParameters());
+    }
+
     protected MustacheTagType[] allowedTagTypes() {
-        return VALUE_TAG_TYPES;
+        return HELPER_TAG_TYPES;
+    }
+
+    protected int numberOfRequiredParameters() {
+        return 1;
     }
 
 }

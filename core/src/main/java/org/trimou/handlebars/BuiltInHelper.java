@@ -29,7 +29,8 @@ public enum BuiltInHelper {
     EACH("each", new EachHelper()),
     IF("if", new IfHelper()),
     UNLESS("unless", new UnlessHelper()),
-    WITH("with", new WithHelper()), ;
+    WITH("with", new WithHelper()),
+    IS("is", new IsHelper()),;
 
     private String name;
 

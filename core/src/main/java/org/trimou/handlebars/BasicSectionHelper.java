@@ -22,12 +22,13 @@ import org.trimou.engine.MustacheTagType;
  *
  * @author Martin Kouba
  */
-public abstract class BasicSectionHelper extends AbstractHelper {
+public abstract class BasicSectionHelper extends BasicHelper {
+
+    protected static final MustacheTagType[] SECTION_TYPES = new MustacheTagType[] { MustacheTagType.SECTION };
 
     @Override
-    public void validate(HelperDefinition definition) {
-        HelperValidator.checkType(this.getClass(), definition, MustacheTagType.SECTION);
-        HelperValidator.checkParams(this.getClass(), definition, 1);
+    protected MustacheTagType[] allowedTagTypes() {
+        return SECTION_TYPES;
     }
 
 }

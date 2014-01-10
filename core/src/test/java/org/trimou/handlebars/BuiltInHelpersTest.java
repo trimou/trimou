@@ -83,4 +83,18 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
 
+    @Test
+    public void testIsHelper() {
+        assertEquals(
+                "bye",
+                engine.compileMustache("is_helper1",
+                        "{{is this \"hello\" \"bye\"}}").render(false));
+        assertEquals("",
+                engine.compileMustache("is_helper2", "{{is this \"hello\"}}")
+                        .render(false));
+        assertEquals("hello",
+                engine.compileMustache("is_helper3", "{{is this \"hello\"}}")
+                        .render(true));
+    }
+
 }

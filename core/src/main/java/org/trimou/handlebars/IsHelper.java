@@ -18,21 +18,37 @@ package org.trimou.handlebars;
 import org.trimou.util.Checker;
 
 /**
+ * Renders the second param if the first param is not falsy, or (optionally,
+ * i.e. if set) the third param. Note that params do not have to be string
+ * literals.
+ *
  * <code>
- * {{#if item.active}}
- * {{item.name}}
- * {{/if}}
+ * {{is item.active "active"}}
+ * </code>
+ *
+ * <code>
+ * {{is item.active "active" "notActive"}}
  * </code>
  *
  * @author Martin Kouba
+ * @see Checker#isFalsy(Object)
  * @since 1.5
  */
-public class IfHelper extends BasicSectionHelper {
+public class IsHelper extends BasicValueHelper {
+
+    @Override
+    protected int numberOfRequiredParameters() {
+        return 2;
+    }
 
     @Override
     public void execute(Options options) {
         if (!Checker.isFalsy(options.getParameters().get(0))) {
-            options.fn();
+            options.append(options.getParameters().get(1).toString());
+        } else {
+            if (options.getParameters().size() > 2) {
+                options.append(options.getParameters().get(2).toString());
+            }
         }
     }
 

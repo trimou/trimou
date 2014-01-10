@@ -15,6 +15,7 @@
  */
 package org.trimou.handlebars;
 
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
@@ -29,7 +30,17 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
         // No-op by default
     }
 
-    protected Object getHashValue(Options  options,String key) {
+    protected Object getHashValue(Options options, String key) {
         return options.getHash().isEmpty() ? null : options.getHash().get(key);
+    }
+
+    protected boolean isSection(Options options) {
+        return options.getTagInfo().getType().equals(MustacheTagType.SECTION);
+    }
+
+    protected boolean isVariable(Options options) {
+        return options.getTagInfo().getType().equals(MustacheTagType.VARIABLE)
+                || options.getTagInfo().getType()
+                        .equals(MustacheTagType.UNESCAPE_VARIABLE);
     }
 }
