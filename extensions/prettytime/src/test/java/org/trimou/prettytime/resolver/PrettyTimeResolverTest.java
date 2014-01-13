@@ -20,6 +20,7 @@ import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.MapResolver;
+import org.trimou.prettytime.PrettyTimeFactory;
 
 import com.google.common.collect.ImmutableMap;
 

@@ -32,6 +32,8 @@ import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.TransformResolver;
+import org.trimou.prettytime.DefaultPrettyTimeFactory;
+import org.trimou.prettytime.PrettyTimeFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
