@@ -32,7 +32,6 @@ import org.trimou.util.Checker;
  *
  * @author Martin Kouba
  * @see Checker#isFalsy(Object)
- * @since 1.5
  */
 public class IsHelper extends BasicValueHelper {
 

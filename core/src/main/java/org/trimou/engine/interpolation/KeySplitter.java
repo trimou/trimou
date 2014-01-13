@@ -25,6 +25,7 @@ import org.trimou.engine.segment.ValueSegment;
  *
  * @author Martin Kouba
  * @see ValueSegment
+ * @since 1.5
  */
 public interface KeySplitter extends ConfigurationAware {
 

@@ -599,11 +599,13 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 [[custom_helpers]]
 === Helper
 
-+org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand the helper is able to validate the tag definition (see +Helper.validate(HelperDefinition)+) and fail fast if there's invalid number of arguments etc.
++org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate(HelperDefinition)+) and fail fast if there's invalid number of arguments etc.
 
-Helper may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. Each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build.
+Helper may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
 
-NOTE: Trimou provides some useful helpers which are not automatically registered: +org.trimou.handlebars.i18n.ResourceBundleHelper+, +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+. Read javadoc for more info.
+Trimou also provides some useful helpers which are not automatically registered: +org.trimou.handlebars.i18n.ResourceBundleHelper+, +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+. Read javadoc for more info.
+
+NOTE: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
 
 [[extensions]]
 == Extensions

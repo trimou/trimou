@@ -25,7 +25,6 @@ import org.trimou.util.Checker;
  * </code>
  *
  * @author Martin Kouba
- * @since 1.5
  */
 public class IfHelper extends BasicSectionHelper {
 

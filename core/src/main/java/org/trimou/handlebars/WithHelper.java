@@ -20,7 +20,6 @@ package org.trimou.handlebars;
  * Nested context.
  *
  * @author Martin Kouba
- * @since 1.5
  */
 public class WithHelper extends BasicSectionHelper {
 

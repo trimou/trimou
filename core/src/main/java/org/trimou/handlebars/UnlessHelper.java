@@ -21,7 +21,6 @@ import org.trimou.util.Checker;
  * Conditionally renders a block if the first parameter is "falsy".
  *
  * @author Martin Kouba
- * @since 1.5
  */
 public class UnlessHelper extends BasicSectionHelper {
 

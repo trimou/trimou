@@ -1,88 +1,93 @@
 body {
-	font-family: "Helvetica Neue", Arial, sans-serif;
-	font-size: 1em;
-	padding: 50px;
-	text-rendering: optimizelegibility;
-	/*width: 70%;*/
-	width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-	line-height: 1.6;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 1em;
+    padding: 50px;
+    text-rendering: optimizelegibility;
+    /*width: 70%;*/
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+div.listingblock pre .tag .title {
+    color:white;
 }
 
 /*div#toc {
-	position: fixed;
+    position: fixed;
 }*/
 
 /*div#content {
-	margin-left: 20%;
+    margin-left: 20%;
 }*/
 
 div.listingblock div.content {
-	background-color: #F8F8F8;
-	/*background-color: #2f2f2f;*/
-	/*color: white;*/
-	padding: 15px;
-	border-radius: 6px;
-	border-style: solid;
-	border-color: silver;
-	border-width: 4px;
-	font-family: Cousine, ​ "Liberation Mono", ​monospace;
+    background-color: #161616;
+    /*background-color: #F8F8F8;*/
+    /*background-color: #2f2f2f;*/
+    color: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-style: solid;
+    border-color: silver;
+    border-width: 4px;
+    font-family: Cousine, ​ "Liberation Mono", ​monospace;
 }
 
 div.listingblock div.content pre {
-	background-color: none;
-	font-size: 1.3em;
+    background-color: none;
+    font-size: 1.3em;
 }
 
 div.listingblock .title {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 h1,h2,h3,h4 {
-	/*color: #404040;*/
-	color: #6CAE37;
-	font-family: Verdana, Georgia, ​​Helvetica, ​Arial, ​sans-serif;
+    /*color: #404040;*/
+    color: #6CAE37;
+    font-family: Verdana, Georgia, ​​Helvetica, ​Arial, ​sans-serif;
 }
 
 h2,h3,h4 {
-	margin-top: 1.6em;
+    margin-top: 1.6em;
 }
 
 h2 {
-	/*border-bottom: 1px dashed #6CAE37;*/
+    /*border-bottom: 1px dashed #6CAE37;*/
 }
 
 div.admonitionblock {
-	background-color: #f9f9f9;
-	border-radius: 4px 4px 4px 4px;
-	/*border-top: 1px dotted #4f9854;*/
+    background-color: #f9f9f9;
+    border-radius: 4px 4px 4px 4px;
+    /*border-top: 1px dotted #4f9854;*/
 }
 
 div.admonitionblock .icon .title {
-	font-weight: bold;
-	/*text-transform: uppercase;*/
-	color: #404040;
-	border-right: 1px solid silver;
-	padding: 10px;
+    font-weight: bold;
+    /*text-transform: uppercase;*/
+    color: #404040;
+    border-right: 1px solid silver;
+    padding: 10px;
 }
 
 div.admonitionblock .content {
-	padding: 15px;
+    padding: 15px;
 }
 
 div.colist {
-	font-family: monospace;
-	font-size: 1.3em;
+    font-family: monospace;
+    font-size: 1.3em;
 }
 
 a, a:active, a:visited {
-	color: #6CAE37;
-	text-decoration: underline;
+    color: #6CAE37;
+    text-decoration: underline;
 }
 
 a:hover {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 p code, p tt, p tt, td.content tt {
@@ -96,15 +101,17 @@ p code, p tt, p tt, td.content tt {
 }
 
 pre {
-	overflow: auto;
+    overflow: auto;
 }
 
 #content pre code {
-	background: none repeat scroll 0 0 #F8F8F8;
+    background: none repeat scroll 0 0 #161616;
+    color: white;
+    /*background: none repeat scroll 0 0 #F8F8F8;*/
 }
 
 #toc ol {
-	list-style: none;
+    list-style: none;
 }
 
 table.tableblock {
