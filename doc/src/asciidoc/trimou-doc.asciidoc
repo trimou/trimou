@@ -1,6 +1,6 @@
 = Trimou Documentation - {version}
 :toc:
-:toclevels: 4
+:toclevels: 5
 //:toc-title:
 :stylesheet: style.css
 :source-highlighter: highlightjs
@@ -780,11 +780,23 @@ Gson extension brings some basic support for http://www.json.org/[JSON format] b
 
 ==== JsonElementResolver
 
-+org.trimou.gson.resolver.JsonElementResolver+ makes it easier to work with +com.google.gson.JsonElement+. In particular it allows you to access +JsonObject+ properties via dot notation (e.g. if foo is an instance of JsonObject then +foo.bar+ is translated to +foo.get("bar")+), handles +JsonNull+, automatically unwraps +JsonPrimitive+ (e.g. if foo is an instance of JsonPrimitive and contains a boolean value then "foo" is translated to "foo.getAsBoolean()"; this can be disabled - see JsonElementResolver javadoc) and +JsonArray+ elements can be accessed via index (e.g. if foo is an instance of JsonArray then "foo.1" is translated to "foo.get(1)").
++org.trimou.gson.resolver.JsonElementResolver+ makes it easier to work with +com.google.gson.JsonElement+ instances. It is automatically loaded if you place the extension jar on the classpath.
 
-NOTE: The JsonElementResolver is automatically loaded if you place the extension jar on the classpath.
+* It allows you to access +JsonObject+ properties via dot notation
+** e.g. if foo is an instance of +JsonObject+ then +foo.bar+ is translated to +foo.get("bar")+
+* +JsonArray+ elements can be accessed via index
+** e.g. if foo is an instance of +JsonArray+ then +foo.1+ is translated to +foo.get(1)+
 
-.Test data
++JsonNull+ is resolved as a +null+ and +JsonPrimitive+ is automatically unwrapped. E.g. +foo.bar+ in +JsonObject+ example is translated to +foo.get("bar").getAsNumber()+ if bar is an instance of a +java.lang.Number+. This can be disabled - see +JsonElementResolver+ javadoc.
+
+However unwrapping only works if +JsonElementResolver+ is involved! So for example if you iterate over +["Jim", true, 5]+, a special keyword +unwrapThis+ must be used so that the primitives are unwrapped:
+----
+{{#jsonArray}}{{unwrapThis}}{{/jsonArray}}
+----
+
+===== Example code
+
+.Example data
 [source,json]
 ----
 {
@@ -810,7 +822,7 @@ NOTE: The JsonElementResolver is automatically loaded if you place the extension
 }
 ----
 
-.Test template
+.Example template
 ----
 Last name: {{lastName}}
 Street: {{address.street}}

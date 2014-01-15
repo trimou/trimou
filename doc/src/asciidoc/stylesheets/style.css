@@ -44,13 +44,13 @@ div.listingblock .title {
     font-weight: bold;
 }
 
-h1,h2,h3,h4 {
+h1,h2,h3,h4,h5 {
     /*color: #404040;*/
     color: #6CAE37;
     font-family: Verdana, Georgia, ​​Helvetica, ​Arial, ​sans-serif;
 }
 
-h2,h3,h4 {
+h2,h3,h4,h5 {
     margin-top: 1.6em;
 }
 
