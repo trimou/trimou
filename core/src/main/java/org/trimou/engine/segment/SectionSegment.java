@@ -23,6 +23,7 @@ import java.util.Iterator;
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.handlebars.Options;
 import org.trimou.lambda.Lambda;
 
 /**
@@ -92,9 +93,10 @@ public class SectionSegment extends AbstractSectionSegment implements
     }
 
     /**
-     * TODO
      *
      * @param appendable
+     * @param context
+     * @see Options#fn()
      */
     public void fn(Appendable appendable, ExecutionContext context) {
         super.execute(appendable, context);

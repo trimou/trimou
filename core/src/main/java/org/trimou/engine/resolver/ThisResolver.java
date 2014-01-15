@@ -40,13 +40,9 @@ public class ThisResolver extends AbstractResolver {
     @Override
     public Object resolve(Object contextObject, String name,
             ResolutionContext context) {
-
         if (contextObject == null) {
             return null;
         }
-
-        // TODO this resolver should use the same key separator as the current
-        // org.trimou.engine.context.KeySplitter
         if (NAME_THIS.equals(name) || Strings.DOT.equals(name)) {
             return contextObject;
         }
