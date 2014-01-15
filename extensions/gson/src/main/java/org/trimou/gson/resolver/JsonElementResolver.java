@@ -42,6 +42,8 @@ public class JsonElementResolver extends IndexResolver {
 
     public static final int JSON_ELEMENT_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
+    public static final String NAME_UNWRAP_THIS = "unwrapThis";
+
     public static final ConfigurationKey UNWRAP_JSON_PRIMITIVE_KEY = new SimpleConfigurationKey(
             JsonElementResolver.class.getName() + ".unwrapJsonPrimitive", true);
 
@@ -75,31 +77,21 @@ public class JsonElementResolver extends IndexResolver {
         if (element.isJsonNull()) {
             return null;
         } else if (element.isJsonArray() && isAnIndex(name)) {
+
             JsonArray jsonArray = (JsonArray) element;
-            return jsonArray.get(getIndexValue(name, jsonArray.size()));
+            // #26 Unwrap the element if necessary
+            return unwrapJsonPrimitiveIfNecessary(jsonArray.get(getIndexValue(
+                    name, jsonArray.size())));
+
         } else if (element.isJsonObject()) {
+
             JsonObject jsonObject = (JsonObject) element;
             JsonElement member = jsonObject.get(name);
             if (member != null) {
-                if (member.isJsonPrimitive() && unwrapJsonPrimitive) {
-                    return unwrapJsonPrimitive((JsonPrimitive) member);
-                } else {
-                    return member;
-                }
+                return unwrapJsonPrimitiveIfNecessary(member);
             }
-        } else if (element.isJsonPrimitive() && unwrapJsonPrimitive) {
-            return unwrapJsonPrimitive((JsonPrimitive) element);
-        }
-        return null;
-    }
-
-    private Object unwrapJsonPrimitive(JsonPrimitive jsonPrimitive) {
-        if (jsonPrimitive.isBoolean()) {
-            return jsonPrimitive.getAsBoolean();
-        } else if (jsonPrimitive.isString()) {
-            return jsonPrimitive.getAsString();
-        } else if (jsonPrimitive.isNumber()) {
-            return jsonPrimitive.getAsNumber();
+        } else if (name.equals(NAME_UNWRAP_THIS)) {
+            return unwrapJsonPrimitiveIfNecessary(element);
         }
         return null;
     }
@@ -113,6 +105,24 @@ public class JsonElementResolver extends IndexResolver {
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
         return Collections.singleton(UNWRAP_JSON_PRIMITIVE_KEY);
+    }
+
+    private Object unwrapJsonPrimitiveIfNecessary(JsonElement jsonElement) {
+        if (unwrapJsonPrimitive && jsonElement.isJsonPrimitive()) {
+            return unwrapJsonPrimitive((JsonPrimitive) jsonElement);
+        }
+        return jsonElement;
+    }
+
+    private Object unwrapJsonPrimitive(JsonPrimitive jsonPrimitive) {
+        if (jsonPrimitive.isBoolean()) {
+            return jsonPrimitive.getAsBoolean();
+        } else if (jsonPrimitive.isString()) {
+            return jsonPrimitive.getAsString();
+        } else if (jsonPrimitive.isNumber()) {
+            return jsonPrimitive.getAsNumber();
+        }
+        return null;
     }
 
 }

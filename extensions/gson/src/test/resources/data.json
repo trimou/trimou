@@ -17,5 +17,6 @@
             "type": "mobile",
             "number": "+420728000111"
         }
-    ]
+    ],
+    "aliases": ["Jim", true, 5]
 }
