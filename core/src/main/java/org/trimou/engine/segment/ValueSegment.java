@@ -42,7 +42,7 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         super(text, origin);
         this.unescape = unescape;
         this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
-                text, getEngineConfiguration(), this) : null;
+                text, getEngine(), this) : null;
     }
 
     public SegmentType getType() {

@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.segment;
 
+import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,8 +28,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ExecutionContext.TargetStack;
 import org.trimou.engine.context.ValueWrapper;
@@ -72,13 +74,13 @@ class HelperExecutionHandler {
      * @return a handler for the given name or <code>null</code> if no such
      *         helper exists
      */
-    static HelperExecutionHandler from(String name,
-            Configuration configuration, HelperAwareSegment segment) {
+    static HelperExecutionHandler from(String name, MustacheEngine engine,
+            HelperAwareSegment segment) {
 
         Iterator<String> result = splitHelperName(name);
         String firstToken = result.next();
 
-        Helper helper = configuration.getHelpers().get(firstToken);
+        Helper helper = engine.getConfiguration().getHelpers().get(firstToken);
 
         if (helper == null) {
             return null;
@@ -100,7 +102,7 @@ class HelperExecutionHandler {
         }
 
         OptionsBuilder optionsBuilder = new OptionsBuilder(params.build(),
-                hash.build(), segment);
+                hash.build(), segment, engine);
 
         // Let the helper validate the tag definition
         helper.validate(optionsBuilder);
@@ -146,11 +148,15 @@ class HelperExecutionHandler {
 
         private final HelperAwareSegment segment;
 
+        private final MustacheEngine engine;
+
         private OptionsBuilder(List<Object> parameters,
-                Map<String, Object> hash, HelperAwareSegment segment) {
+                Map<String, Object> hash, HelperAwareSegment segment,
+                MustacheEngine engine) {
             this.parameters = parameters;
             this.hash = hash;
             this.segment = segment;
+            this.engine = engine;
         }
 
         @Override
@@ -213,12 +219,14 @@ class HelperExecutionHandler {
             }
 
             return new DefaultOptions(appendable, executionContext, segment,
-                    params, optionalHash, valueWrappers.build());
+                    params, optionalHash, valueWrappers.build(), engine);
         }
 
     }
 
     private static class DefaultOptions implements Options {
+
+        private final MustacheEngine engine;
 
         private final List<ValueWrapper> valueWrappers;
 
@@ -237,13 +245,14 @@ class HelperExecutionHandler {
         public DefaultOptions(Appendable appendable,
                 ExecutionContext executionContext, HelperAwareSegment segment,
                 List<Object> parameters, Map<String, Object> hash,
-                List<ValueWrapper> valueWrappers) {
+                List<ValueWrapper> valueWrappers, MustacheEngine engine) {
             this.appendable = appendable;
             this.executionContext = executionContext;
             this.segment = segment;
             this.parameters = parameters;
             this.hash = hash;
             this.valueWrappers = valueWrappers;
+            this.engine = engine;
         }
 
         @Override
@@ -258,6 +267,26 @@ class HelperExecutionHandler {
         @Override
         public void fn() {
             segment.fn(appendable, executionContext);
+        }
+
+        @Override
+        public void partial(String templateId) {
+            Checker.checkArgumentNotEmpty(templateId);
+
+            TemplateSegment partialTemplate = (TemplateSegment) engine
+                    .getMustache(templateId);
+
+            if (partialTemplate == null) {
+                throw new MustacheException(
+                        MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
+                        "No partial found for the given key: %s %s",
+                        templateId, segment.getOrigin());
+            }
+
+            executionContext.push(TEMPLATE_INVOCATION, partialTemplate);
+            // Indentation is not supported
+            partialTemplate.execute(appendable, executionContext);
+            executionContext.pop(TEMPLATE_INVOCATION);
         }
 
         @Override

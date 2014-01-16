@@ -34,9 +34,18 @@ public interface Options extends HelperDefinition {
     void append(CharSequence sequence);
 
     /**
-     * Proceed with template execution (e.g. execute the block).
+     * Proceed with template execution, i.e. execute the block. This is no-op
+     * for variable tag helpers.
      */
     void fn();
+
+    /**
+     * Render the given template with the current context and append the result
+     * to the rendered template.
+     *
+     * @param templateId
+     */
+    void partial(String templateId);
 
     /**
      * Push the specified object on the context stack.

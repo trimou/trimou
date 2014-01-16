@@ -12,8 +12,11 @@ import org.trimou.AbstractTest;
 import org.trimou.Hammer;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -90,6 +93,20 @@ public class OptionsTest extends AbstractTest {
                 fail();
             }
         }
+    }
+
+    @Test
+    public void testPartial() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(new MapTemplateLocator(ImmutableMap.of("foo", "{{this}}")))
+                .registerHelper("test", new AbstractHelper() {
+                    @Override
+                    public void execute(Options options) {
+                        options.partial("foo");;
+                    }
+                }).build();
+        assertEquals("HELLO", engine.compileMustache("helper_partial", "{{test}}").render(
+                "HELLO"));
     }
 
 }

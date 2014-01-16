@@ -66,7 +66,7 @@ public class SectionSegment extends AbstractSectionSegment implements
     public SectionSegment(String text, Origin origin) {
         super(text, origin);
         this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
-                text, getEngineConfiguration(), this) : null;
+                text, getEngine(), this) : null;
     }
 
     public SegmentType getType() {

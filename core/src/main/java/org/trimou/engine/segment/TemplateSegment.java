@@ -126,7 +126,7 @@ public class TemplateSegment extends AbstractContainerSegment implements
 
     @Override
     public String toString() {
-        return String.format("%s: %s]", getType(), getName());
+        return String.format("%s: [%s]", getType(), getName());
     }
 
     protected MustacheEngine getEngine() {
