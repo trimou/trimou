@@ -64,8 +64,8 @@ public final class HelperValidator {
         }
 
         if (size > paramSize) {
-            logger.warn(
-                    "{} unused parameters detected [helper: %s, template: %s, line: %s]",
+            logger.debug(
+                    "{} superfluous parameters detected [helper: %s, template: %s, line: %s]",
                     size - paramSize, helperClazz.getName(), definition
                             .getTagInfo().getTemplateName(), definition
                             .getTagInfo().getLine());
