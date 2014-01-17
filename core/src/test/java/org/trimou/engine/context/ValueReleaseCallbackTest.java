@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
@@ -29,27 +29,30 @@ public class ValueReleaseCallbackTest extends AbstractTest {
 
         final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addResolver(new AbstractResolver(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addResolver(
+                        new AbstractResolver(
+                                WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
 
-                    @Override
-                    public Object resolve(Object contextObject, String name,
-                            ResolutionContext context) {
+                            @Override
+                            public Object resolve(Object contextObject,
+                                    String name, ResolutionContext context) {
 
-                        if ("bar".equals(name)) {
-                            context.registerReleaseCallback(new ReleaseCallback() {
+                                if ("bar".equals(name)) {
+                                    context.registerReleaseCallback(new ReleaseCallback() {
 
-                                @Override
-                                public void release() {
-                                    callbackInvoked.set(true);
+                                        @Override
+                                        public void release() {
+                                            callbackInvoked.set(true);
+                                        }
+                                    });
+                                    return "foo";
+                                } else {
+                                    return null;
                                 }
-                            });
-                            return "foo";
-                        } else {
-                            return null;
-                        }
-                    }
-                }).build();
+                            }
+                        }).build();
 
         assertEquals("foo",
                 engine.compileMustache("release_callback_invoked1", "{{bar}}")
@@ -71,23 +74,26 @@ public class ValueReleaseCallbackTest extends AbstractTest {
 
         MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
-                .setProperty(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM,
-                        true).addResolver(new AbstractResolver(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
-
-                    @Override
-                    public Object resolve(Object contextObject, String name,
-                            ResolutionContext context) {
-
-                        context.registerReleaseCallback(new ReleaseCallback() {
+                .setMissingValueHandler(
+                        new ThrowingExceptionMissingValueHandler())
+                .addResolver(
+                        new AbstractResolver(
+                                WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
 
                             @Override
-                            public void release() {
-                                callbackInvoked.set(true);
+                            public Object resolve(Object contextObject,
+                                    String name, ResolutionContext context) {
+
+                                context.registerReleaseCallback(new ReleaseCallback() {
+
+                                    @Override
+                                    public void release() {
+                                        callbackInvoked.set(true);
+                                    }
+                                });
+                                return null;
                             }
-                        });
-                        return null;
-                    }
-                }).build();
+                        }).build();
 
         try {
             engine.compileMustache("release_callback_invoked_rendering_fails",
@@ -106,30 +112,33 @@ public class ValueReleaseCallbackTest extends AbstractTest {
 
         final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addResolver(new AbstractResolver(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
-
-                    @Override
-                    public Object resolve(Object contextObject, String name,
-                            ResolutionContext context) {
-
-                        context.registerReleaseCallback(new ReleaseCallback() {
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addResolver(
+                        new AbstractResolver(
+                                WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
 
                             @Override
-                            public void release() {
-                                throw new NullPointerException();
-                            }
-                        });
-                        context.registerReleaseCallback(new ReleaseCallback() {
+                            public Object resolve(Object contextObject,
+                                    String name, ResolutionContext context) {
 
-                            @Override
-                            public void release() {
-                                callbackInvoked.set(true);
+                                context.registerReleaseCallback(new ReleaseCallback() {
+
+                                    @Override
+                                    public void release() {
+                                        throw new NullPointerException();
+                                    }
+                                });
+                                context.registerReleaseCallback(new ReleaseCallback() {
+
+                                    @Override
+                                    public void release() {
+                                        callbackInvoked.set(true);
+                                    }
+                                });
+                                return null;
                             }
-                        });
-                        return null;
-                    }
-                }).build();
+                        }).build();
 
         assertEquals(
                 "",

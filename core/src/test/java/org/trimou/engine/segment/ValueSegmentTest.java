@@ -26,6 +26,8 @@ public class ValueSegmentTest extends AbstractEngineTest {
     public void buildEngine() {
     }
 
+    @SuppressWarnings("deprecation")
+    // EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM used intentionally to test backwards compatibility
     @Test
     public void testNoValueProblem() {
         try {

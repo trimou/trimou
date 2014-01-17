@@ -17,12 +17,15 @@ package org.trimou.engine.interpolation;
 
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.config.AbstractConfigurationAware;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 /**
+ * Throws an exception when a variable miss occurs.
  *
  * @author Martin Kouba
+ * @see EngineConfigurationKey#NO_VALUE_INDICATES_PROBLEM
  */
 public class ThrowingExceptionMissingValueHandler extends
         AbstractConfigurationAware implements MissingValueHandler {
