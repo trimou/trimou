@@ -16,18 +16,13 @@
 package org.trimou.handlebars.i18n;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -38,7 +33,7 @@ import org.trimou.handlebars.Options;
  * First register the helper instance:
  * </p>
  * <code>
- * MustacheEngineBuilder.newBuilder().registerHelper("msg", new ResourceBundleHelper("messages")).build();
+ * MustacheEngineBuilder.newBuilder().registerHelper("msg", new ResourceBundleHelper("msg")).build();
  * </code>
  * <p>
  * Than use the helper in the template:
@@ -77,10 +72,6 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
 
     private static final String OPTION_KEY_FORMAT = "format";
 
-    public static final ConfigurationKey DEFAULT_FORMAT_KEY = new SimpleConfigurationKey(
-            ResourceBundleHelper.class.getName() + ".defaultFormat",
-            Format.PRINTF.toString().toLowerCase());
-
     private final String defaultBaseName;
 
     private Format defaultFormat;
@@ -90,8 +81,18 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
      * @param defaultBaseName
      */
     public ResourceBundleHelper(String defaultBaseName) {
-        this.defaultBaseName = defaultBaseName;
+        this(defaultBaseName, Format.PRINTF);
     }
+
+    /**
+    *
+    * @param defaultBaseName
+    * @param defaultFormat
+    */
+   public ResourceBundleHelper(String defaultBaseName, Format defaultFormat) {
+       this.defaultBaseName = defaultBaseName;
+       this.defaultFormat = defaultFormat;
+   }
 
     @Override
     public void execute(Options options) {
@@ -126,24 +127,6 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
                 }
             }
         }
-    }
-
-    @Override
-    public void init(Configuration configuration) {
-        super.init(configuration);
-        String defaultFormatValue = configuration
-                .getStringPropertyValue(DEFAULT_FORMAT_KEY);
-        defaultFormat = Format.parse(defaultFormatValue);
-        if (defaultFormat == null) {
-            throw new MustacheException(
-                    MustacheProblem.CONFIG_PROPERTY_INVALID_VALUE,
-                    "Invalid default format: %s", defaultFormatValue);
-        }
-    }
-
-    @Override
-    public Set<ConfigurationKey> getConfigurationKeys() {
-        return Collections.singleton(DEFAULT_FORMAT_KEY);
     }
 
     private Format getFormat(Map<String, Object> hash) {

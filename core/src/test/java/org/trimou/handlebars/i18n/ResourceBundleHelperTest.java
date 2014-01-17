@@ -29,8 +29,7 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
     @Override
     @Before
     public void buildEngine() {
-        engine = MustacheEngineBuilder
-                .newBuilder()
+        engine = MustacheEngineBuilder.newBuilder()
                 .setLocaleSupport(new LocaleSupport() {
                     @Override
                     public Locale getCurrentLocale() {
@@ -45,10 +44,8 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
                     public Set<ConfigurationKey> getConfigurationKeys() {
                         return Collections.emptySet();
                     }
-                })
-                .registerHelper("msg", new ResourceBundleHelper("messages"))
-                .setProperty(ResourceBundleHelper.DEFAULT_FORMAT_KEY,
-                        ResourceBundleHelper.Format.PRINTF.getValue()).build();
+                }).registerHelper("msg", new ResourceBundleHelper("messages"))
+                .build();
 
     }
 
