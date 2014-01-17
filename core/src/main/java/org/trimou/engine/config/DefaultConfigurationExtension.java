@@ -20,6 +20,7 @@ import org.trimou.engine.resolver.ListIndexResolver;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ThisResolver;
+import org.trimou.handlebars.BuiltInHelper;
 
 /**
  * Registers the default resolvers.
@@ -30,10 +31,15 @@ public class DefaultConfigurationExtension implements ConfigurationExtension {
 
     @Override
     public void register(ConfigurationExtensionBuilder builder) {
+        // Add built-in resolvers
         builder.addResolver(new ReflectionResolver())
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new ListIndexResolver())
                 .addResolver(new ArrayIndexResolver());
+        // Register built-in helpers
+        for (BuiltInHelper helper : BuiltInHelper.values()) {
+            builder.registerHelper(helper.getName(), helper.getInstance());
+        }
     }
 
 }

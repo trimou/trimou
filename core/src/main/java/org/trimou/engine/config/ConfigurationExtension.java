@@ -19,6 +19,7 @@ import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.resolver.Resolver;
+import org.trimou.handlebars.Helper;
 
 /**
  * Configuration extensions are automatically loaded during the engine
@@ -72,5 +73,15 @@ public interface ConfigurationExtension {
          * @return self
          */
         ConfigurationExtensionBuilder addGlobalData(String name, Object value);
+
+        /**
+         * Register a helper instance.
+         *
+         * @param name
+         * @param helper
+         * @return self
+         */
+        ConfigurationExtensionBuilder registerHelper(String name, Helper helper);
+
     }
 }

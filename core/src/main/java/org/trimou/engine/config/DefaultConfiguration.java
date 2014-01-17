@@ -46,7 +46,6 @@ import org.trimou.engine.text.TextSupport;
 import org.trimou.engine.text.TextSupportFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.handlebars.BuiltInHelper;
 import org.trimou.handlebars.Helper;
 import org.trimou.util.SecurityActions;
 import org.trimou.util.Strings;
@@ -114,7 +113,6 @@ class DefaultConfiguration implements Configuration {
             this.globalData = globalData;
         }
         ImmutableMap.Builder<String, Helper> helpersBuilder = ImmutableMap.builder();
-        registerBuiltinsHelpers(helpersBuilder);
         helpersBuilder.putAll(builder.buildHelpers());
         this.helpers = helpersBuilder.build();
 
@@ -419,12 +417,6 @@ class DefaultConfiguration implements Configuration {
             return true;
         }
         return false;
-    }
-
-    private void registerBuiltinsHelpers(ImmutableMap.Builder<String, Helper> builder) {
-        for (BuiltInHelper helper : BuiltInHelper.values()) {
-            builder.put(helper.getName(), helper.getInstance());
-        }
     }
 
 }
