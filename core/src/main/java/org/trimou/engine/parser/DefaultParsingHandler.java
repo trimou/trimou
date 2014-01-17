@@ -210,11 +210,17 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private void endSection(String key) {
         ContainerSegment container = pop();
-        // TODO better check?
+
         if (container == null
                 || (!handlebarsSupportEnabled
                         && !key.equals(container.getText()) || (handlebarsSupportEnabled && !container
                         .getText().startsWith(key)))) {
+            // a) No container on the stack
+            // b) Handlebars support not enabled and section start key does not
+            // equal to section end key
+            // c) Handlebars support enabled and section start key does not
+            // start with section end key
+
             StringBuilder msg = new StringBuilder();
             List<String> params = new ArrayList<String>();
             msg.append("Invalid section end: ");
@@ -307,8 +313,6 @@ class DefaultParsingHandler implements ParsingHandler {
 
     /**
      * Validate the compiled template.
-     *
-     * TODO add more validations
      */
     private void validate() {
 

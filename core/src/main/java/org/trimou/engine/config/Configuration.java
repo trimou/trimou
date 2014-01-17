@@ -81,7 +81,7 @@ public interface Configuration {
     public MissingValueHandler getMissingValueHandler();
 
     /**
-     * @return TODO
+     * @return the immutable map of registered helpers
      */
     public Map<String, Helper> getHelpers();
 

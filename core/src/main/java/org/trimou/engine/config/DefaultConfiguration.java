@@ -358,7 +358,7 @@ class DefaultConfiguration implements Configuration {
         if (builder.getKeySplitter() != null) {
             keySplitter = builder.getKeySplitter();
         } else {
-            // TODO
+            // Factory does not make sense here
             keySplitter = new DotKeySplitter();
         }
     }
@@ -367,7 +367,7 @@ class DefaultConfiguration implements Configuration {
         if (builder.getMissingValueHandler() != null) {
             missingValueHandler = builder.getMissingValueHandler();
         } else {
-            // TODO
+            // Factory does not make sense here
             missingValueHandler = new NoOpMissingValueHandler();
         }
     }

@@ -343,7 +343,7 @@ class HelperExecutionHandler {
     }
 
     /**
-     * TODO possibly rewrite as this implementation is quite naive.
+     * This implementation is quite naive and should be possibly rewritten.
      *
      * @param name
      * @return
