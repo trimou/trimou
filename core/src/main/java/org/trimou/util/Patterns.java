@@ -65,7 +65,7 @@ public final class Patterns {
      * @return the pattern to validate a helper name
      */
     public static Pattern newHelperNameValidationPattern() {
-        return Pattern.compile("([\\p{L}\\p{Nd}\\p{P}=]+[ ]*)+?");
+        return Pattern.compile("([\\p{L}\\p{Nd}\\p{P}\\p{S}=]+[ ]*)+?");
     }
 
     /**

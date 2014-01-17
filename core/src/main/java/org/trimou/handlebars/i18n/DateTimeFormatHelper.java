@@ -28,8 +28,7 @@ import org.trimou.handlebars.Options;
 
 /**
  * This is an alternative to {@link DateTimeFormatResolver}. The main advantage
- * lies in the ability to specify custom pattern per tag:
- * <code>
+ * lies in the ability to specify custom pattern per tag: <code>
  * {{formatTime now pattern="DD-MM-yyyy HH:mm"}}
  * {{formatTime now pattern="HH:mm"}}
  * ...
@@ -69,13 +68,13 @@ public class DateTimeFormatHelper extends LocaleAwareValueHelper {
 
     private void appendStyle(Options options, Object formattableObject,
             int style) {
-        options.append(format(style, formattableObject));
+        append(options, format(style, formattableObject));
     }
 
     private void appendCustom(Options options, Object object) {
-        options.append(new SimpleDateFormat(options.getHash()
-                .get(OPTION_KEY_PATTERN).toString(), getCurrentLocale())
-                .format(object));
+        append(options,
+                new SimpleDateFormat(options.getHash().get(OPTION_KEY_PATTERN)
+                        .toString(), getCurrentLocale()).format(object));
     }
 
     private Object getFormattableObject(Options options) {

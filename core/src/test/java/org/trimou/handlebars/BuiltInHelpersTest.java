@@ -95,6 +95,14 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals("hello",
                 engine.compileMustache("is_helper3", "{{is this \"hello\"}}")
                         .render(true));
+        assertEquals(
+                "&lt;html&gt;",
+                engine.compileMustache("is_helper4",
+                        "{{is this \"<html>\"}}").render(true));
+        assertEquals(
+                "<html>",
+                engine.compileMustache("is_helper5",
+                        "{{{is this \"<html>\"}}}").render(true));
     }
 
 }

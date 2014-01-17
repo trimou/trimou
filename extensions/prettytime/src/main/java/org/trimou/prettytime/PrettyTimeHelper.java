@@ -71,8 +71,8 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
 
     @Override
     public void execute(Options options) {
-        options.append(prettyTimeCache.getUnchecked(getCurrentLocale()).format(
-                getFormattableObject(options)));
+        append(options, prettyTimeCache.getUnchecked(getCurrentLocale())
+                .format(getFormattableObject(options)));
     }
 
     private Date getFormattableObject(Options options) {

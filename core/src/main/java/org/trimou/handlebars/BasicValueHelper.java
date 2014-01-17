@@ -25,8 +25,7 @@ import org.trimou.engine.MustacheTagType;
 public abstract class BasicValueHelper extends BasicHelper {
 
     protected static final MustacheTagType[] VALUE_TAG_TYPES = new MustacheTagType[] {
-        MustacheTagType.VARIABLE,
-        MustacheTagType.UNESCAPE_VARIABLE };
+            MustacheTagType.VARIABLE, MustacheTagType.UNESCAPE_VARIABLE };
 
     @Override
     protected MustacheTagType[] allowedTagTypes() {

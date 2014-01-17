@@ -40,6 +40,8 @@ abstract class AbstractSegment implements Segment {
 
     private final String text;
 
+    private MustacheTagInfo info = null;
+
     /**
      *
      * @param text
@@ -61,9 +63,13 @@ abstract class AbstractSegment implements Segment {
     }
 
     @Override
-    public MustacheTagInfo getTagInfo() {
-        return new DefaultSegmentInfo(getType().getTagType(), getText(),
-                getOrigin().getLine(), getOrigin().getTemplateName());
+    public synchronized MustacheTagInfo getTagInfo() {
+        // Lazy init - most of the segments will not need this
+        if (info == null) {
+            info = new DefaultSegmentInfo(getTagType(), getText(), getOrigin()
+                    .getLine(), getOrigin().getTemplateName());
+        }
+        return info;
     }
 
     @Override
@@ -137,6 +143,10 @@ abstract class AbstractSegment implements Segment {
                     MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED,
                     toString());
         }
+    }
+
+    protected MustacheTagType getTagType() {
+        return getType().getTagType();
     }
 
     class DefaultSegmentInfo implements MustacheTagInfo {

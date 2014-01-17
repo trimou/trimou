@@ -16,6 +16,7 @@
 package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.lambda.Lambda;
@@ -87,6 +88,12 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
     @Override
     protected String getSegmentName() {
         return getText();
+    }
+
+    @Override
+    protected MustacheTagType getTagType() {
+        // Because of one segment is used for both a variable and an unescape variable
+        return unescape ? MustacheTagType.UNESCAPE_VARIABLE : MustacheTagType.VARIABLE;
     }
 
     private void processValue(Appendable appendable, ExecutionContext context,

@@ -25,6 +25,7 @@ import org.trimou.engine.MustacheTagType;
 public enum SegmentType {
 
     TEMPLATE(null),
+    // One segment is used for both a variable and an unescape variable
     VALUE(MustacheTagType.VARIABLE),
     TEXT(null),
     SECTION(MustacheTagType.SECTION),

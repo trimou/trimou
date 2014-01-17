@@ -17,6 +17,9 @@ package org.trimou.handlebars;
 
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.AbstractConfigurationAware;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.text.TextSupport;
 
 /**
  *
@@ -25,9 +28,20 @@ import org.trimou.engine.config.AbstractConfigurationAware;
 public abstract class AbstractHelper extends AbstractConfigurationAware
         implements Helper {
 
+    private TextSupport textSupport;
+
     @Override
     public void validate(HelperDefinition definition) {
         // No-op by default
+    }
+
+    @Override
+    public void init(Configuration configuration) {
+        super.init(configuration);
+        if (!configuration
+                .getBooleanPropertyValue(EngineConfigurationKey.SKIP_VALUE_ESCAPING)) {
+            textSupport = configuration.getTextSupport();
+        }
     }
 
     protected Object getHashValue(Options options, String key) {
@@ -42,5 +56,25 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
         return options.getTagInfo().getType().equals(MustacheTagType.VARIABLE)
                 || options.getTagInfo().getType()
                         .equals(MustacheTagType.UNESCAPE_VARIABLE);
+    }
+
+    protected boolean isUnescapeVariable(Options options) {
+        return options.getTagInfo().getType()
+                .equals(MustacheTagType.UNESCAPE_VARIABLE);
+    }
+
+    /**
+     * Escape appended sequence if needed.
+     *
+     * @param options
+     * @param sequence
+     * @see TextSupport
+     */
+    protected void append(Options options, CharSequence sequence) {
+        if (isUnescapeVariable(options) || textSupport == null) {
+            options.append(sequence);
+        } else {
+            options.append(textSupport.escapeHtml(sequence.toString()));
+        }
     }
 }

@@ -109,15 +109,15 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
             String stringValue = bundle.getString(key);
 
             if (Format.NO_FORMAT.equals(format)) {
-                options.append(stringValue);
+                append(options, stringValue);
             } else {
                 Object[] formatParams = getFormatParams(options.getParameters());
                 try {
                     if (Format.PRINTF.equals(format)) {
-                        options.append(String.format(bundle.getString(key),
+                        append(options, String.format(bundle.getString(key),
                                 formatParams));
                     } else if (Format.MESSAGE.equals(format)) {
-                        options.append(MessageFormat.format(
+                        append(options, MessageFormat.format(
                                 bundle.getString(key), formatParams));
                     }
                 } catch (Exception e) {

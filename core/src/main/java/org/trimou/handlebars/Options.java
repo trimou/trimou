@@ -27,7 +27,8 @@ import org.trimou.exception.MustacheException;
 public interface Options extends HelperDefinition {
 
     /**
-     * Append the given sequence to the rendered template.
+     * Append the given sequence to the rendered template. The seqence is not
+     * modified in any way.
      *
      * @param sequence
      */

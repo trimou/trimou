@@ -31,6 +31,7 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
 
     @Override
     public void init(Configuration configuration) {
+        super.init(configuration);
         localeSupport = configuration.getLocaleSupport();
     }
 

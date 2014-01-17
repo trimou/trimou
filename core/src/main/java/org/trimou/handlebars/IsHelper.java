@@ -43,10 +43,10 @@ public class IsHelper extends BasicValueHelper {
     @Override
     public void execute(Options options) {
         if (!Checker.isFalsy(options.getParameters().get(0))) {
-            options.append(options.getParameters().get(1).toString());
+            append(options, options.getParameters().get(1).toString());
         } else {
             if (options.getParameters().size() > 2) {
-                options.append(options.getParameters().get(2).toString());
+                append(options, options.getParameters().get(2).toString());
             }
         }
     }

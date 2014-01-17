@@ -88,6 +88,9 @@ public class PatternsTest {
         assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name  hash1=\"DD-MM-yyyy HH:mm\"")
                 .matches());
+        assertTrue(Patterns.newHelperNameValidationPattern()
+                .matcher("name  hash1=\"<html>\"")
+                .matches());
     }
 
     @Test

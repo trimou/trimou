@@ -1,6 +1,5 @@
 package org.trimou.handlebars;
 
-import org.trimou.engine.MustacheTagType;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
@@ -21,15 +20,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class NumberIsOddHelper extends AbstractHelper {
-
-    @Override
-    public void validate(HelperDefinition definition) {
-        HelperValidator.checkType(this.getClass(), definition,
-                MustacheTagType.VARIABLE, MustacheTagType.UNESCAPE_VARIABLE,
-                MustacheTagType.SECTION);
-        HelperValidator.checkParams(this.getClass(), definition, 1);
-    }
+public class NumberIsOddHelper extends BasicHelper {
 
     @Override
     public void execute(Options options) {
@@ -43,7 +34,7 @@ public class NumberIsOddHelper extends AbstractHelper {
                     options.fn();
                 } else {
                     if (options.getParameters().size() > 1) {
-                        options.append(options.getParameters().get(1)
+                        append(options, options.getParameters().get(1)
                                 .toString());
                     } else {
                         throw new MustacheException(
@@ -56,7 +47,7 @@ public class NumberIsOddHelper extends AbstractHelper {
                 }
             } else {
                 if (isVariable(options) && options.getParameters().size() > 2) {
-                    options.append(options.getParameters().get(2).toString());
+                    append(options, options.getParameters().get(2).toString());
                 }
             }
         }
