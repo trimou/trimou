@@ -22,4 +22,9 @@ public class Hammer {
         return 20;
     }
 
+    @Override
+    public String toString() {
+        return "HAMMER";
+    }
+
 }

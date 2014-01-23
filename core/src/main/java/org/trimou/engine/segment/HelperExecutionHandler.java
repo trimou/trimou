@@ -28,6 +28,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
@@ -226,6 +228,9 @@ class HelperExecutionHandler {
 
     private static class DefaultOptions implements Options {
 
+        private static final Logger logger = LoggerFactory
+                .getLogger(DefaultOptions.class);
+
         private final MustacheEngine engine;
 
         private final List<ValueWrapper> valueWrappers;
@@ -323,6 +328,18 @@ class HelperExecutionHandler {
         void release() {
             for (ValueWrapper wrapper : valueWrappers) {
                 wrapper.release();
+            }
+            if (pushed > 0) {
+                // Remove all remaining pushed objects at the end of helper execution
+                for (int i = 0; i < pushed; i++) {
+                    executionContext.pop(TargetStack.CONTEXT);
+
+                }
+                logger.warn(
+                        "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
+                        new Object[] { pushed,
+                                splitHelperName(getTagInfo().getText()).next(),
+                                getTagInfo().getTemplateName() });
             }
         }
 

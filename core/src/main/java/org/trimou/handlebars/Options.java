@@ -49,7 +49,9 @@ public interface Options extends HelperDefinition {
     void partial(String templateId);
 
     /**
-     * Push the specified object on the context stack.
+     * Push the specified object on the context stack. Helper should pop all
+     * pushed objects at the end of its execution. Otherwise all remaining
+     * objects will be removed automatically.
      *
      * @param contextObject
      */

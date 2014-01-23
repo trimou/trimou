@@ -81,6 +81,10 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "with_helper_fail2", "{{with}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
+        assertEquals(
+                "10",
+                engine.compileMustache("with_helper_nested",
+                        "{{#with this}}{{#with age}}{{intValue}}{{/with}}{{/with}}").render(new Hammer()));
     }
 
     @Test

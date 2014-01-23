@@ -69,9 +69,9 @@ public class OptionsTest extends AbstractTest {
                     }
                 }).build();
         assertEquals(
-                "OK",
+                "OK|HAMMER",
                 engine.compileMustache("helper_params",
-                        "{{#test}}{{this}}{{/test}}").render(new Hammer()));
+                        "{{#test}}{{this}}{{/test}}|{{this}}").render(new Hammer()));
     }
 
     @Test
