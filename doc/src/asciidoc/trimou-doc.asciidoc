@@ -365,8 +365,11 @@ You may want to:
 * Add thread-safe global data objects (available during execution of all templates)
 * Add custom resolvers; see also <<resolver>>
 * Add template listeners; see also <<mustache_listener>>
+* Register additional helpers; see also <<custom_helpers>>
 * Set custom +TextSupport+ implementation; see <<text_support>>
 * Set custom +LocaleSupport+ implementation; see <<locale_support>>
+* Set custom +MissingValueHandler+; see <<missingvaluehandler>>
+* Set custom +KeySplitter+; see <<keysplitter>>
 * Set configuration properties; see <<configuration>>
 
 Simply use appropriate +MustacheEngineBuilder+ methods, e.g.:
@@ -577,17 +580,18 @@ TIP: <<servlets,trimou-extension-servlet>> extension provides +org.trimou.servle
 [[text_support]]
 === TextSupport
 
-You can set the custom +org.trimou.engine.text.TextSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setTextSupport()+ method. So far there's only one method to implement - +escapeHtml(String)+ (see also <<escaping_hml>>). Implement your own logic to extend functionality or improve performance.
++org.trimou.engine.text.TextSupport+ is used to escape variable text if necessary (see also <<escaping_hml>>). You can set the custom instance with +org.trimou.engine.MustacheEngineBuilder.setTextSupport()+ method. Implement your own logic to extend functionality or improve performance!
 
 [[locale_support]]
 === LocaleSupport
 
-You can set the custom +org.trimou.engine.locale.LocaleSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setLocaleSupport()+ method. It allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+.
++org.trimou.engine.locale.LocaleSupport+ allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+. You can set the custom +org.trimou.engine.locale.LocaleSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setLocaleSupport()+ method.
+
 
 [[mustache_listener]]
 === MustacheListener
 
-Receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering. +parsingStarted()+ is invoked right before a template is processed by the parser. Listeners are invoked in the order of their registration, except for +renderingFinished()+ method which is invoked in reverse order.
+Any registered +org.trimou.engine.listener.MustacheListener+ receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering. +parsingStarted()+ is invoked right before a template is processed by the parser. Listeners are invoked in the order of their registration, except for +renderingFinished()+ method which is invoked in reverse order.
 
 There are two ways to register a custom listener:
 
@@ -601,11 +605,33 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 
 +org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate(HelperDefinition)+) and fail fast if there's invalid number of arguments etc.
 
-Helper may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
+A helper may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
 
-Trimou also provides some useful helpers which are not automatically registered: +org.trimou.handlebars.i18n.ResourceBundleHelper+, +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+. Read javadoc for more info.
+The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Suppose we have a resource bundle +messages.properties+ with the following key/value pair: +my.message.key=My name is %s!+ We can use a +org.trimou.handlebars.i18n.ResourceBundleHelper+ to render the message:
+
+.Template
+----
+{{msg "my.message.key" "Martin" baseName="messages" format="printf"}}
+----
+
+.Expected output
+----
+My name is Martin!
+----
+
+Trimou provides other useful helpers which are not automatically registered: +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+. See also javadoc for more info.
 
 NOTE: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
+
+[[missingvaluehandler]]
+=== MissingValueHandler
+
++org.trimou.engine.interpolation.MissingValueHandler+ handles variable miss (no value found) during interpolation of a variable tag. By default +org.trimou.engine.interpolation.NoOpMissingValueHandler+ is used so that a miss does not result in any special operation. However you can set your own handler through the +MustacheEngineBuilder.setMissingValueHandler()+ method. There is also +org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler+ which throws an exception in case of a miss (actually it replaces deprecated configuration property +EngineConfigurationKey#NO_VALUE_INDICATES_PROBLEM+).
+
+[[keysplitter]]
+=== KeySplitter
+
++org.trimou.engine.interpolation.KeySplitter+ is responsible for splitting a variable key. +org.trimou.engine.interpolation.DotKeySplitter+ which follows the dot notation is used by default. +org.trimou.engine.interpolation.BracketDotKeySplitter+ enables to use bracket notation and literals in variable keys. E.g. +{{messages["my.message.key"]}}+. You can set your own splitter through the +MustacheEngineBuilder.setKeySplitter()+ method.
 
 [[extensions]]
 == Extensions
