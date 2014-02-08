@@ -20,6 +20,7 @@ import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.lambda.Lambda;
+import org.trimou.util.Strings;
 
 /**
  * Value segment (aka variable tag).
@@ -42,8 +43,8 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
     public ValueSegment(String text, Origin origin, boolean unescape) {
         super(text, origin);
         this.unescape = unescape;
-        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
-                text, getEngine(), this) : null;
+        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
+                .from(text, getEngine(), this) : null;
     }
 
     public SegmentType getType() {
@@ -92,8 +93,10 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
 
     @Override
     protected MustacheTagType getTagType() {
-        // Because of one segment is used for both a variable and an unescape variable
-        return unescape ? MustacheTagType.UNESCAPE_VARIABLE : MustacheTagType.VARIABLE;
+        // Because of one segment is used for both a variable and an unescape
+        // variable
+        return unescape ? MustacheTagType.UNESCAPE_VARIABLE
+                : MustacheTagType.VARIABLE;
     }
 
     private void processValue(Appendable appendable, ExecutionContext context,
@@ -116,17 +119,26 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         Lambda lambda = (Lambda) value;
         String returnValue = lambda.invoke(null);
 
-        if (lambda.isReturnValueInterpolated()) {
-            // Parse and interpolate the return value
-            StringBuilder interpolated = new StringBuilder();
-            TemplateSegment temp = (TemplateSegment) getEngine()
-                    .compileMustache(
-                            Lambdas.constructLambdaOneoffTemplateName(this),
-                            returnValue);
-            temp.execute(interpolated, context);
-            writeValue(appendable, interpolated.toString());
-        } else {
-            writeValue(appendable, returnValue);
+        if (returnValue == null) {
+            Object replacement = getEngineConfiguration()
+                    .getMissingValueHandler().handle(getTagInfo());
+            if (replacement != null) {
+                processValue(appendable, context, replacement);
+                return;
+            }
+        } else if (!returnValue.equals(Strings.EMPTY)) {
+            if (lambda.isReturnValueInterpolated()) {
+                // Parse and interpolate the return value
+                StringBuilder interpolated = new StringBuilder();
+                TemplateSegment temp = (TemplateSegment) getEngine()
+                        .compileMustache(
+                                Lambdas.constructLambdaOneoffTemplateName(this),
+                                returnValue);
+                temp.execute(interpolated, context);
+                writeValue(appendable, interpolated.toString());
+            } else {
+                writeValue(appendable, returnValue);
+            }
         }
     }
 

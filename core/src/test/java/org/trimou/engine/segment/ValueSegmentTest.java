@@ -9,10 +9,12 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.InputProcessingLambda;
 import org.trimou.lambda.Lambda;
+import org.trimou.lambda.SpecCompliantLambda;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -27,7 +29,8 @@ public class ValueSegmentTest extends AbstractEngineTest {
     }
 
     @SuppressWarnings("deprecation")
-    // EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM used intentionally to test backwards compatibility
+    // EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM used intentionally to
+    // test backwards compatibility
     @Test
     public void testNoValueProblem() {
         try {
@@ -92,6 +95,31 @@ public class ValueSegmentTest extends AbstractEngineTest {
                         .compileMustache("skip_value_escaping", "{{foo}}")
                         .render(ImmutableMap.<String, Object> of("foo",
                                 shouldBeEscaped)));
+    }
+
+    @Test
+    public void testMissingValueHandlerUsedForLambda() {
+        Lambda lambda = new SpecCompliantLambda() {
+
+            @Override
+            public String invoke(String text) {
+                return null;
+            }
+        };
+        try {
+            MustacheEngineBuilder
+                    .newBuilder()
+                    .setMissingValueHandler(
+                            new ThrowingExceptionMissingValueHandler())
+                    .build()
+                    .compileMustache("value_lambda_missing_value_handler",
+                            "{{this}}").render(lambda);
+            fail();
+        } catch (MustacheException e) {
+            if (!MustacheProblem.RENDER_NO_VALUE.equals(e.getCode())) {
+                fail("Unexpected problem");
+            }
+        }
     }
 
 }
