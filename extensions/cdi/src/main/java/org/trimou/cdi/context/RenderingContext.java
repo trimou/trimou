@@ -75,7 +75,7 @@ public final class RenderingContext implements Context {
     }
 
     void initialize(MustacheRenderingEvent event) {
-        logger.debug("Rendering started - init context [mustache: {}]",
+        logger.debug("Rendering started - init context [template: {}]",
                 event.getMustacheName());
         contextualInstanceStore.set(new ContextualInstanceStore());
     }
@@ -85,11 +85,11 @@ public final class RenderingContext implements Context {
         ContextualInstanceStore store = contextualInstanceStore.get();
 
         if (store == null) {
-            logger.warn("Cannot destroy context - contextual instances map is null");
+            logger.warn("Cannot destroy context - contextual instance store is null");
             return;
         }
 
-        logger.debug("Rendering finished - destroy context [mustache: {}]",
+        logger.debug("Rendering finished - destroy context [template: {}]",
                 event.getMustacheName());
 
         try {

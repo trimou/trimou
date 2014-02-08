@@ -36,7 +36,6 @@ public final class RenderingContextListener extends AbstractMustacheListener {
      * @param renderingContext
      */
     public RenderingContextListener(RenderingContext renderingContext) {
-        super();
         Checker.checkArgumentNotNull(renderingContext);
         this.renderingContext = renderingContext;
     }

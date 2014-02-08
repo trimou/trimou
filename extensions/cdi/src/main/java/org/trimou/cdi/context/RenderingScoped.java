@@ -31,8 +31,8 @@ import org.trimou.Mustache;
 
 /**
  * The rendering scope is active during rendering of the template, i.e. during
- * {@link Mustache#render(java.util.Map)} and
- * {@link Mustache#render(Appendable, java.util.Map)} invocations.
+ * {@link Mustache#render(Object))} and
+ * {@link Mustache#render(Appendable, Object)} invocations.
  *
  * @author Martin Kouba
  */
