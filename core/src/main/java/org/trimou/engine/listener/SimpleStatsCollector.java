@@ -46,14 +46,14 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Martin Kouba
  */
-public class SimpleStatisticsCollector extends AbstractMustacheListener {
+public class SimpleStatsCollector extends AbstractMustacheListener {
 
     /**
      * Skip templates used for Lambda return value interpolation.
      *
      * @see Lambda#ONEOFF_LAMBDA_TEMPLATE_PREFIX
      */
-    public static final Predicate<String> SKIP_ONEOFF_LAMBA_TEMPLATES = new Predicate<String>() {
+    public static final Predicate<String> IS_NOT_ONEOFF_LAMBA_TEMPLATE = new Predicate<String>() {
         @Override
         public boolean apply(String input) {
             return !input.startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
@@ -62,7 +62,7 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
 
     protected final TimeUnit timeUnit;
 
-    protected final Predicate<String> templateMatcher;
+    protected final Predicate<String> templatePredicate;
 
     /**
      * Data: name -> (time -> amount)
@@ -72,20 +72,20 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
     /**
      *
      */
-    public SimpleStatisticsCollector() {
-        this(SKIP_ONEOFF_LAMBA_TEMPLATES, TimeUnit.MILLISECONDS);
+    public SimpleStatsCollector() {
+        this(IS_NOT_ONEOFF_LAMBA_TEMPLATE, TimeUnit.MILLISECONDS);
     }
 
     /**
      *
-     * @param templateMatcher
+     * @param templatePredicate
      * @param timeUnit
      */
-    public SimpleStatisticsCollector(Predicate<String> templateMatcher,
+    public SimpleStatsCollector(Predicate<String> templatePredicate,
             TimeUnit timeUnit) {
-        Checker.checkArgumentsNotNull(templateMatcher, timeUnit);
+        Checker.checkArgumentsNotNull(templatePredicate, timeUnit);
         this.timeUnit = timeUnit;
-        this.templateMatcher = templateMatcher;
+        this.templatePredicate = templatePredicate;
         // Use LoadingCache because of concurrent access is required and the
         // data set is not known beforehand
         this.data = CacheBuilder.newBuilder().build(
@@ -107,7 +107,7 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
 
     @Override
     public void renderingStarted(final MustacheRenderingEvent event) {
-        if (templateMatcher.apply(event.getMustacheName())) {
+        if (templatePredicate.apply(event.getMustacheName())) {
             final long start = System.nanoTime();
             event.registerReleaseCallback(new ReleaseCallback() {
                 @Override
@@ -167,10 +167,10 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
      * @param templateId
      * @return a simple statistics for the given template
      */
-    public SimpleTemplateStatistics getSimpleStatistics(String templateId) {
+    public SimpleStats getSimpleStats(String templateId) {
         LoadingCache<Long, AtomicLong> entry = data.getIfPresent(templateId);
         if (entry != null) {
-            return new SimpleTemplateStatistics(templateId, entry.asMap());
+            return new SimpleStats(templateId, entry.asMap());
         }
         return null;
     }
@@ -179,23 +179,22 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
      *
      * @return all available simple statistics
      */
-    public Set<SimpleTemplateStatistics> getSimpleStatistics() {
+    public Set<SimpleStats> getSimpleStats() {
         if (data.size() == 0) {
             return Collections.emptySet();
         }
-        ImmutableSet.Builder<SimpleTemplateStatistics> buidler = ImmutableSet
-                .builder();
+        ImmutableSet.Builder<SimpleStats> buidler = ImmutableSet.builder();
         for (Entry<String, LoadingCache<Long, AtomicLong>> entry : data.asMap()
                 .entrySet()) {
-            buidler.add(new SimpleTemplateStatistics(entry.getKey(), entry
-                    .getValue().asMap()));
+            buidler.add(new SimpleStats(entry.getKey(), entry.getValue()
+                    .asMap()));
         }
         return buidler.build();
     }
 
     /**
      *
-     * @return
+     * @return the time unit used for measurements
      */
     public TimeUnit getTimeUnit() {
         return timeUnit;
@@ -210,7 +209,7 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
         return builder.build();
     }
 
-    public class SimpleTemplateStatistics {
+    public class SimpleStats {
 
         private final String name;
 
@@ -224,7 +223,7 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
 
         private final long maxTime;
 
-        SimpleTemplateStatistics(String name, Map<Long, AtomicLong> data) {
+        SimpleStats(String name, Map<Long, AtomicLong> data) {
             this.name = name;
             long executions = 0l;
             long totalTime = 0l;
@@ -274,7 +273,7 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            SimpleTemplateStatistics other = (SimpleTemplateStatistics) obj;
+            SimpleStats other = (SimpleStats) obj;
             if (name == null) {
                 if (other.name != null) {
                     return false;
@@ -288,7 +287,7 @@ public class SimpleStatisticsCollector extends AbstractMustacheListener {
         @Override
         public String toString() {
             return String
-                    .format("SimpleTemplateStatistics [name: %s, executions: %s, totalTime: %s, meanTime: %s, minTime: %s, maxTime: %s, timeUnit: %s]",
+                    .format("SimpleStats [name: %s, executions: %s, totalTime: %s, meanTime: %s, minTime: %s, maxTime: %s, timeUnit: %s]",
                             name, executions, totalTime, meanTime, minTime,
                             maxTime, timeUnit);
         }

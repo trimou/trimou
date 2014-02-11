@@ -14,7 +14,7 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.listener.SimpleStatisticsCollector.SimpleTemplateStatistics;
+import org.trimou.engine.listener.SimpleStatsCollector.SimpleStats;
 import org.trimou.lambda.InputLiteralLambda;
 import org.trimou.lambda.Lambda;
 
@@ -24,7 +24,7 @@ import com.google.common.base.Predicates;
  *
  * @author Martin Kouba
  */
-public class SimpleStatisticsCollectorTest extends AbstractEngineTest {
+public class SimpleStatsCollectorTest extends AbstractEngineTest {
 
     @Override
     @Before
@@ -34,7 +34,7 @@ public class SimpleStatisticsCollectorTest extends AbstractEngineTest {
     @Test
     public void testDataCollecting() {
 
-        SimpleStatisticsCollector collector = new SimpleStatisticsCollector();
+        SimpleStatsCollector collector = new SimpleStatsCollector();
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addMustacheListener(collector).build();
         Lambda sleeper = new InputLiteralLambda() {
@@ -62,13 +62,13 @@ public class SimpleStatisticsCollectorTest extends AbstractEngineTest {
             mustache.render(sleeper);
         }
 
-        assertNull(collector.getSimpleStatistics("unknown"));
-        SimpleTemplateStatistics statistics = collector
-                .getSimpleStatistics("foo");
+        assertNull(collector.getSimpleStats("unknown"));
+        SimpleStats statistics = collector
+                .getSimpleStats("foo");
         assertNotNull(statistics);
         assertEquals(loop, statistics.getExecutions());
         System.out.println(statistics);
-        assertEquals(1, collector.getSimpleStatistics().size());
+        assertEquals(1, collector.getSimpleStats().size());
 
         assertNull(collector.getData("fooooo"));
         Map<Long, Long> data = collector.getData("foo");
@@ -83,24 +83,24 @@ public class SimpleStatisticsCollectorTest extends AbstractEngineTest {
 
     @Test
     public void testClearData() {
-        SimpleStatisticsCollector collector = new SimpleStatisticsCollector();
+        SimpleStatsCollector collector = new SimpleStatsCollector();
         Mustache mustache = MustacheEngineBuilder.newBuilder()
                 .addMustacheListener(collector).build()
                 .compileMustache("bar", "BAR");
         mustache.render(null);
-        assertEquals(1, collector.getSimpleStatistics("bar").getExecutions());
+        assertEquals(1, collector.getSimpleStats("bar").getExecutions());
         collector.clearData();
-        assertNull(collector.getSimpleStatistics("bar"));
+        assertNull(collector.getSimpleStats("bar"));
     }
 
     @Test
-    public void testCustomMatcher() {
-        SimpleStatisticsCollector collector = new SimpleStatisticsCollector(Predicates.<String>alwaysFalse(), TimeUnit.DAYS);
+    public void testCustomPredicate() {
+        SimpleStatsCollector collector = new SimpleStatsCollector(Predicates.<String>alwaysFalse(), TimeUnit.DAYS);
         Mustache mustache = MustacheEngineBuilder.newBuilder()
                 .addMustacheListener(collector).build()
                 .compileMustache("qux", "Oops");
         mustache.render(null);
-        assertNull(collector.getSimpleStatistics("qux"));
+        assertNull(collector.getSimpleStats("qux"));
     }
 
 }
