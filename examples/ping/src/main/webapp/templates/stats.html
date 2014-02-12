@@ -1,0 +1,34 @@
+{{<layout}}
+
+   {{$title}}Simple stats{{/title}}
+   {{$header}}Simple stats{{/header}}
+
+   {{$content}}
+   <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Template</th>
+          <th>Executions</th>
+          <th>Total</th>
+          <th>Mean</th>
+          <th>Min</th>
+          <th>Max</th>
+        </tr>
+      </thead>
+      {{#this}}
+        <tr class="{{isOdd iterIndex "odd" "even"}}">
+            <td>{{iterIndex}}. </td>
+            <td>{{name}}</td>
+            <td>{{executions}}</td>
+            <td>{{totalTime}} ms</td>
+            <td>{{meanTime}} ms</td>
+            <!-- Min and max time getters are not in 1.5.1.Final -->
+            <!-- td>{{minTime}} ms</td-->
+            <!-- td>{{maxTime}} ms</td-->
+        </tr>
+      {{/this}}
+   </table>
+   {{/content}}
+
+{{/layout}}

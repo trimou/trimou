@@ -1,6 +1,7 @@
 package org.trimou.example.ping;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -114,12 +115,14 @@ public class MustacheConfigurationProvider extends HttpConfigurationProvider {
 
         @Override
         public Set<String> getRequiredParameterNames() {
-            return templateNamePatternBuilder.getRequiredParameterNames();
+            return templateNamePatternBuilder != null ? templateNamePatternBuilder.getRequiredParameterNames() : Collections.<String>emptySet();
         }
 
         @Override
         public void setParameterStore(ParameterStore store) {
-            templateNamePatternBuilder.setParameterStore(store);
+            if(templateNamePatternBuilder != null) {
+                templateNamePatternBuilder.setParameterStore(store);
+            }
         }
 
         private String getTemplateName(HttpServletRewrite event,
