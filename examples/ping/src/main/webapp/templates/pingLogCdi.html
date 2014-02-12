@@ -5,9 +5,9 @@
 
 {{$rows}}
   {{! PingService is a CDI bean...}}
-  {{#pingService.pings}}
+  {{#each pingService.pings}}
     {{> pingRow}}
-  {{/pingService.pings}}
+  {{/each}}
 {{/rows}}
 
 {{/pingListLayout}}

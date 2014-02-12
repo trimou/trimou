@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class Ping {
 
-    private Long id;
+    private final Long id;
 
     private final String remoteAddr;
 
@@ -16,11 +16,11 @@ public class Ping {
 
     /**
      *
+     * @param id
      * @param remoteAddr
      * @param time
      */
     public Ping(Long id, String remoteAddr, Date time) {
-        super();
         this.id = id;
         this.remoteAddr = remoteAddr;
         this.time = time;

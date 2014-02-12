@@ -8,8 +8,8 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.listener.SimpleStatsCollector;
-import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
 import org.trimou.handlebars.NumberIsOddHelper;
+import org.trimou.handlebars.i18n.DateTimeFormatHelper;
 import org.trimou.minify.Minify;
 import org.trimou.servlet.i18n.RequestLocaleSupport;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
@@ -31,22 +31,24 @@ public class MustacheEngineProducer {
 
         if (engine == null) {
 
-            // 1. CDI, servlet and PrettyTime resolvers are registered
-            // automatically
+            // 1. CDI, servlet and PrettyTime resolvers are registered automatically
             // 2. Precompile all available templates
-            // 3. Register NumberIsOddHelper
-            // 4. Add basic date and time formatting resolver
-            // 5. ServletContextTemplateLocator is most suitable for webapp
-            // 6. The current locale will be based on the Accept-Language header
-            // 7. Minify all the templates
-            // 8. Collect some basic rendering statistics
+            // 3. Do not escape values
+            // 4. Register NumberIsOddHelper
+            // 5. Register basic date and time formatting helper
+            // 6. ServletContextTemplateLocator is most suitable for webapps
+            // 7. The current locale will be based on the Accept-Language header
+            // 8. Minify all the templates
+            // 9. Collect some basic rendering statistics
             engine = MustacheEngineBuilder
                     .newBuilder()
                     .setProperty(
                             EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES,
                             true)
+                    .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING,
+                            true)
                     .registerHelper("isOdd", new NumberIsOddHelper())
-                    .addResolver(new DateTimeFormatResolver())
+                    .registerHelper("format", new DateTimeFormatHelper())
                     .addTemplateLocator(
                             new ServletContextTemplateLocator(1, "/templates",
                                     "html", servletContext))
