@@ -71,7 +71,7 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
      * @see TextSupport
      */
     protected void append(Options options, CharSequence sequence) {
-        if (isUnescapeVariable(options) || textSupport == null) {
+        if (textSupport == null || isUnescapeVariable(options)) {
             options.append(sequence);
         } else {
             options.append(textSupport.escapeHtml(sequence.toString()));
