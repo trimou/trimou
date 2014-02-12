@@ -254,6 +254,14 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
             return meanTime;
         }
 
+        public long getMinTime() {
+            return minTime;
+        }
+
+        public long getMaxTime() {
+            return maxTime;
+        }
+
         @Override
         public int hashCode() {
             final int prime = 31;
