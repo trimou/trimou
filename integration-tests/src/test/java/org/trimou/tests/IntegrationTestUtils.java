@@ -19,21 +19,35 @@ public final class IntegrationTestUtils {
 
     private static final String[] SERVLET_CONTAINER_CLASSES = { "org.jboss.arquillian.container.jetty.embedded_7.JettyEmbeddedContainer" };
 
+    // See also http://weld.cdi-spec.org/documentation/#4
+    private static final StringAsset CDI11_JBOSSALL_WORKAROUND_ASSET = new StringAsset(
+            "<jboss xmlns=\"urn:jboss:1.0\"><weld xmlns=\"urn:jboss:weld:1.0\" require-bean-descriptor=\"true\"/></jboss>");
+
     public static MavenDependencyResolver getResolver() {
         return DependencyResolvers.use(MavenDependencyResolver.class)
                 .loadMetadataFromPom("pom.xml").goOffline();
     }
 
     public static WebArchive createCDITestArchiveBase() {
-        return createTestArchiveBase().addAsWebInfResource(EmptyAsset.INSTANCE,
-                "beans.xml");
+
+        WebArchive testArchive = createTestArchiveBase();
+
+        testArchive.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
+        return testArchive;
     }
 
     public static WebArchive createTestArchiveBase() {
 
         WebArchive testArchive = ShrinkWrap.create(WebArchive.class);
 
+        testArchive.addAsManifestResource(CDI11_JBOSSALL_WORKAROUND_ASSET,
+                "jboss-all.xml");
+
+        // Workaround for embedded containers
         if (isServletContainer()) {
+            testArchive.addAsLibraries(getResolver().artifact(
+                    "org.jboss.weld.servlet:weld-servlet").resolveAsFiles());
             testArchive.setWebXML(new StringAsset(Descriptors
                     .create(WebAppDescriptor.class)
                     .version(WebAppVersionType._3_0)
@@ -42,6 +56,7 @@ public final class IntegrationTestUtils {
                             "org.jboss.weld.environment.servlet.Listener").up()
                     .exportAsString()));
         }
+
         return testArchive;
     }
 
