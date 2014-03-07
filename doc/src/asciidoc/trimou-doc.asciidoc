@@ -340,7 +340,7 @@ String output = MustacheEngineBuilder
 <3> Render the template
 
 NOTE: Instances of +MustacheEngineBuilder+ are not reusable. The builder is considered immutable once the
- +build()+ method is called - subsequent invocations of some +MustacheEngineBuilder+ methods result in +IllegalStateException+.
+ +build()+ method is called - subsequent invocations of any modifying method or +build()+ methods result in +IllegalStateException+.
 
 ==== Provide your own Appendable
 

@@ -42,10 +42,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * A builder for {@link MustacheEngine}. Instances are not reusable. Once the
- * {@link #build()} method is called, the builder is considered immutable and
- * subsequent invocation of some methods results in
- * {@link IllegalStateException}.
+ * A builder for {@link MustacheEngine}. It's not thread-safe until
+ * {@link #build()} method is called - the builder is considered immutable
+ * afterwards and subsequent invocations of any modifying method or
+ * {@link #build()} results in {@link IllegalStateException}. Thus it's not
+ * reusable.
  *
  * @author Martin Kouba
  */
@@ -55,42 +56,45 @@ public final class MustacheEngineBuilder implements
     private static final Logger logger = LoggerFactory
             .getLogger(MustacheEngineBuilder.class);
 
-    private boolean omitServiceLoaderConfigurationExtensions = false;
+    private boolean omitServiceLoaderConfigurationExtensions;
 
-    private ImmutableSet.Builder<Resolver> resolversBuilder = ImmutableSet
-            .builder();
+    private boolean isMutable;
 
-    private ImmutableSet.Builder<TemplateLocator> templateLocators = ImmutableSet
-            .builder();
+    private final ImmutableSet.Builder<Resolver> resolversBuilder;
 
-    private ImmutableMap.Builder<String, Object> globalData = ImmutableMap
-            .builder();
+    private final ImmutableSet.Builder<TemplateLocator> templateLocators;
 
-    private TextSupport textSupport = null;
+    private final ImmutableMap.Builder<String, Object> globalData;
 
-    private LocaleSupport localeSupport = null;
+    private TextSupport textSupport;
 
-    private ImmutableMap.Builder<String, Object> properties = ImmutableMap
-            .builder();
+    private LocaleSupport localeSupport;
 
-    private List<EngineBuiltCallback> engineReadyCallbacks = null;
+    private final ImmutableMap.Builder<String, Object> properties;
 
-    private ImmutableList.Builder<MustacheListener> mustacheListeners = ImmutableList
-            .builder();
+    private final List<EngineBuiltCallback> engineReadyCallbacks;
 
-    private KeySplitter keySplitter = null;
+    private final ImmutableList.Builder<MustacheListener> mustacheListeners;
 
-    private MissingValueHandler missingValueHandler = null;
+    private KeySplitter keySplitter;
 
-    private ImmutableMap.Builder<String, Helper> helpers = ImmutableMap
-            .builder();
+    private MissingValueHandler missingValueHandler;
 
-    private boolean isMutable = true;
+    private final ImmutableMap.Builder<String, Helper> helpers;
 
     /**
      * Don't create a new instance.
      */
     private MustacheEngineBuilder() {
+        this.omitServiceLoaderConfigurationExtensions = false;
+        this.isMutable = true;
+        this.resolversBuilder = ImmutableSet.builder();
+        this.templateLocators = ImmutableSet.builder();
+        this.globalData = ImmutableMap.builder();
+        this.properties = ImmutableMap.builder();
+        this.mustacheListeners = ImmutableList.builder();
+        this.helpers = ImmutableMap.builder();
+        this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
     }
 
     /**
@@ -101,10 +105,8 @@ public final class MustacheEngineBuilder implements
     public MustacheEngine build() {
         checkIsMutable("build()");
         MustacheEngine engine = new DefaultMustacheEngine(this);
-        if (engineReadyCallbacks != null) {
-            for (EngineBuiltCallback callback : engineReadyCallbacks) {
-                callback.engineBuilt(engine);
-            }
+        for (EngineBuiltCallback callback : engineReadyCallbacks) {
+            callback.engineBuilt(engine);
         }
         Package pack = MustacheEngine.class.getPackage();
         logger.info(
@@ -224,9 +226,6 @@ public final class MustacheEngineBuilder implements
     public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
         Checker.checkArgumentNotNull(callback);
         checkIsMutable("registerCallback()");
-        if (this.engineReadyCallbacks == null) {
-            this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
-        }
         this.engineReadyCallbacks.add(callback);
         return this;
     }
