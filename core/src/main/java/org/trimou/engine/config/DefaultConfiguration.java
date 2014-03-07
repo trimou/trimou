@@ -47,7 +47,6 @@ import org.trimou.engine.text.TextSupportFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
-import org.trimou.util.SecurityActions;
 import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;

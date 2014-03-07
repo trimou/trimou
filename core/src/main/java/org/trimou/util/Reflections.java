@@ -21,6 +21,8 @@ import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,19 +38,16 @@ public final class Reflections {
     private static final Logger logger = LoggerFactory
             .getLogger(Reflections.class);
 
-    private static final String GET_PREFIX = "get";
-    private static final String IS_PREFIX = "is";
+    public static final String GET_PREFIX = "get";
+    public static final String IS_PREFIX = "is";
 
     private Reflections() {
     }
 
     /**
      * First tries to find a method with the same name, afterwards method
-     * following JavaBean naming convention.
-     *
-     * If the name of the method starts with <b>get/is</b> prefix (JavaBean
-     * naming convention), the key in the map is the name of the corresponding
-     * property.
+     * following JavaBean naming convention (the method starts with
+     * <b>get/is</b> prefix).
      *
      * @param clazz
      * @param name
@@ -59,7 +58,9 @@ public final class Reflections {
         checkArgumentNotNull(clazz);
         checkArgumentNotNull(name);
 
-        Method found = null;
+        Method foundMatch = null;
+        Method foundGetMatch = null;
+        Method foundIsMatch = null;
 
         for (Method method : SecurityActions.getMethods(clazz)) {
 
@@ -67,18 +68,27 @@ public final class Reflections {
                 continue;
             }
 
-            String methodName = method.getName();
+            if (method.isBridge()) {
+                logger.warn("Skipping bridge method {0}", method);
+                continue;
+            }
 
-            if (methodName.equals(name)
-                    || matchesPrefix(name, methodName, GET_PREFIX)
-                    || matchesPrefix(name, methodName, IS_PREFIX)) {
-                found = method;
-                break;
+            if (name.equals(method.getName())) {
+                foundMatch = method;
+            } else if (matchesPrefix(name, method.getName(), GET_PREFIX)) {
+                foundGetMatch = method;
+            } else if (matchesPrefix(name, method.getName(), IS_PREFIX)) {
+                foundIsMatch = method;
             }
         }
+
+        if (foundMatch == null) {
+            foundMatch = (foundGetMatch != null ? foundGetMatch : foundIsMatch);
+        }
+
         logger.debug("{} method {}found [type: {}]", new Object[] { name,
-                found != null ? "" : "not ", clazz.getName() });
-        return found;
+                foundMatch != null ? "" : "not ", clazz.getName() });
+        return foundMatch;
     }
 
     /**
@@ -118,22 +128,67 @@ public final class Reflections {
      * @return <code>true</code> if the given method is considered a read method
      */
     public static boolean isMethodValid(Method method) {
-        return method != null
-                && Modifier.isPublic(method.getModifiers())
+        return method != null && Modifier.isPublic(method.getModifiers())
                 && method.getParameterTypes().length == 0
                 && !method.getReturnType().equals(Void.TYPE)
                 && !Object.class.equals(method.getDeclaringClass());
+    }
+
+    /**
+     *
+     * @param clazz
+     * @return the found methods
+     */
+    public static Set<Method> getMethods(Class<?> clazz) {
+
+        checkArgumentNotNull(clazz);
+        Set<Method> found = new HashSet<Method>();
+
+        for (Method method : SecurityActions.getMethods(clazz)) {
+
+            if (!isMethodValid(method)) {
+                continue;
+            }
+
+            if (method.isBridge()) {
+                logger.warn("Skipping bridge method {0}", method);
+                continue;
+            }
+
+            found.add(method);
+        }
+        logger.debug("{} methods found [type: {}]", new Object[] {
+                found.size(), clazz.getName() });
+        return found;
+    }
+
+    /**
+     *
+     * @param clazz
+     * @return the found methods
+     */
+    public static Set<Field> getFields(Class<?> clazz) {
+
+        checkArgumentNotNull(clazz);
+        Set<Field> found = new HashSet<Field>();
+
+        for (Field field : SecurityActions.getFields(clazz)) {
+            found.add(field);
+        }
+        logger.debug("{} field found [type: {}]", new Object[] { found.size(),
+                clazz.getName() });
+        return found;
+    }
+
+    public static String decapitalize(String methodName, String prefix) {
+        return Introspector.decapitalize(methodName.substring(prefix.length(),
+                methodName.length()));
     }
 
     private static boolean matchesPrefix(String name, String methodName,
             String prefix) {
         return methodName.startsWith(prefix)
                 && decapitalize(methodName, prefix).equals(name);
-    }
-
-    private static String decapitalize(String methodName, String prefix) {
-        return Introspector.decapitalize(methodName.substring(prefix.length(),
-                methodName.length()));
     }
 
 }

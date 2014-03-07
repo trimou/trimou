@@ -17,7 +17,6 @@ package org.trimou.engine.config;
 
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.handlebars.Helper;
-import org.trimou.util.SecurityActions;
 
 /**
  * Engine configuration keys.

@@ -20,37 +20,24 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.trimou.annotations.Internal;
-
 /**
  *
  * @author Martin Kouba
  */
-@Internal
-public final class SecurityActions {
-
-    /**
-     *
-     * @param key
-     * @return {@link System#getProperty(String)}
-     */
-    public static String getSystemProperty(final String key) {
-        return AccessController.doPrivileged(new PrivilegedAction<String>() {
-            @Override
-            public String run() {
-                return System.getProperty(key);
-            }
-        });
-    }
+final class SecurityActions {
 
     /**
      *
      * @param clazz
      * @return {@link Class#getMethods()}
      */
-    public static Method[] getMethods(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+    static Method[] getMethods(final Class<?> clazz) {
 
+        if (System.getSecurityManager() == null) {
+            return clazz.getMethods();
+        }
+
+        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
             @Override
             public Method[] run() {
                 return clazz.getMethods();
@@ -63,9 +50,12 @@ public final class SecurityActions {
      * @param clazz
      * @return {@link Class#getFields()}
      */
-    public static Field[] getFields(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
+    static Field[] getFields(final Class<?> clazz) {
 
+        if (System.getSecurityManager() == null) {
+            return clazz.getFields();
+        }
+        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
             @Override
             public Field[] run() {
                 return clazz.getFields();
