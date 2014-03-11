@@ -36,4 +36,14 @@ public abstract class AbstractConfigurationAware implements ConfigurationAware {
         return Collections.emptySet();
     }
 
+    /**
+     * @throws IllegalStateException
+     *             If the isInitializedExpression evaluates to true
+     */
+    protected void checkNotInitialized(boolean isInitializedExpression) {
+        if (isInitializedExpression) {
+            throw new IllegalStateException("Component is already initialized!");
+        }
+    }
+
 }

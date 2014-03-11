@@ -33,7 +33,7 @@ final class MemberKey {
         return name;
     }
 
-    private MemberKey(Class<?> clazz, String name) {
+    MemberKey(Class<?> clazz, String name) {
         this.clazz = clazz;
         this.name = name;
     }

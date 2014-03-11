@@ -112,4 +112,17 @@ public class DateTimeFormatResolverTest extends AbstractEngineTest {
                         .render(data));
     }
 
+    @Test(expected=IllegalStateException.class)
+    public void testMultipleInit() {
+
+        DateTimeFormatResolver resolver = new DateTimeFormatResolver();
+
+        // Just to init the resolver
+        MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(resolver).build();
+
+        resolver.init(null);
+    }
+
 }

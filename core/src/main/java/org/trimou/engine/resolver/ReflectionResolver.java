@@ -18,8 +18,11 @@ package org.trimou.engine.resolver;
 import static org.trimou.engine.priority.Priorities.rightBefore;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -33,6 +36,7 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Reflections;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -103,6 +107,8 @@ public class ReflectionResolver extends AbstractResolver implements
     @Override
     public void init(Configuration configuration) {
 
+        checkNotInitialized(memberCache != null);
+
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
         logger.info("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);
@@ -155,6 +161,31 @@ public class ReflectionResolver extends AbstractResolver implements
                 "Removed member [type: {}, key: {}, cause: {}, memberCacheSize: {}]",
                 notification.getKey().getClazz(), notification.getKey()
                         .getName(), notification.getCause(), memberCache.size());
+    }
+
+    /**
+     * The member cache may theoretically cause memory leaks due to using hard
+     * references to {@link Class} and {@link Member} instances. As a temporary
+     * workaround we provide a way to invalidate the cache or some of its
+     * entries (e.g. for a concrete classloader).
+     *
+     * @param predicate
+     *            If null, all cache entries are discarded, otherwise an entry
+     *            is only discarded if the given predicate returns
+     *            <code>true</code> for the {@link MemberKey#getClass()}
+     */
+    public void invalidateMemberCache(Predicate<Class<?>> predicate) {
+        if (predicate == null) {
+            memberCache.invalidateAll();
+        } else {
+            List<MemberKey> keys = new ArrayList<MemberKey>();
+            for (MemberKey key : memberCache.asMap().keySet()) {
+                if (predicate.apply(key.getClazz())) {
+                    keys.add(key);
+                }
+            }
+            memberCache.invalidateAll(keys);
+        }
     }
 
 }

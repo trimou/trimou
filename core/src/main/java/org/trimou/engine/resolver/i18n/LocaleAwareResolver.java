@@ -35,6 +35,7 @@ public abstract class LocaleAwareResolver extends AbstractResolver {
 
     @Override
     public void init(Configuration configuration) {
+        checkNotInitialized(localeSupport != null);
         localeSupport = configuration.getLocaleSupport();
     }
 

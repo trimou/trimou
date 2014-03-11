@@ -45,13 +45,14 @@ public final class Reflections {
     }
 
     /**
-     * First tries to find a method with the same name, afterwards method
+     * First tries to find a valid method with the same name, afterwards method
      * following JavaBean naming convention (the method starts with
      * <b>get/is</b> prefix).
      *
      * @param clazz
      * @param name
      * @return the found method or <code>null</code>
+     * @see Reflections#isMethodValid(Method)
      */
     public static Method findMethod(Class<?> clazz, String name) {
 
@@ -180,6 +181,12 @@ public final class Reflections {
         return found;
     }
 
+    /**
+     *
+     * @param methodName
+     * @param prefix
+     * @return the decapitalized method name
+     */
     public static String decapitalize(String methodName, String prefix) {
         return Introspector.decapitalize(methodName.substring(prefix.length(),
                 methodName.length()));

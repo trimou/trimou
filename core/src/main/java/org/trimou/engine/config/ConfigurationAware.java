@@ -32,6 +32,8 @@ public interface ConfigurationAware {
      * likely not fully initialized yet. It's only safe to inspect properties
      * and global data.
      *
+     * This method must not be called directly by the application.
+     *
      * @param configuration
      */
     public void init(Configuration configuration);
