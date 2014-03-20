@@ -289,7 +289,7 @@ class HelperExecutionHandler {
                         templateId, segment.getOrigin());
             }
 
-            executionContext.push(TEMPLATE_INVOCATION, partialTemplate.getRootSegment());
+            executionContext.push(TEMPLATE_INVOCATION, partialTemplate);
             // Indentation is not supported
             partialTemplate.getRootSegment().execute(appendable, executionContext);
             executionContext.pop(TEMPLATE_INVOCATION);

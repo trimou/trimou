@@ -59,7 +59,7 @@ public class PartialSegment extends AbstractSegment {
                     getOrigin());
         }
 
-        context.push(TEMPLATE_INVOCATION, partialTemplate.getRootSegment());
+        context.push(TEMPLATE_INVOCATION, partialTemplate);
         if (indentation == null) {
             partialTemplate.getRootSegment().execute(appendable, context);
         } else {

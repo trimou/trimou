@@ -45,7 +45,7 @@ public class RootSegment extends AbstractContainerSegment {
 
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
-        context.push(TargetStack.TEMPLATE_INVOCATION, this);
+        context.push(TargetStack.TEMPLATE_INVOCATION, getTemplate());
         super.execute(appendable, context);
     }
 

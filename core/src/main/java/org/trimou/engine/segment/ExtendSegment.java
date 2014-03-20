@@ -49,8 +49,7 @@ public class ExtendSegment extends AbstractSectionSegment {
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        Template extended = (Template) getEngine().getMustache(
-                getText());
+        Template extended = (Template) getEngine().getMustache(getText());
 
         if (extended == null) {
             throw new MustacheException(
@@ -59,7 +58,7 @@ public class ExtendSegment extends AbstractSectionSegment {
                     getText(), getOrigin());
         }
 
-        context.push(TEMPLATE_INVOCATION, extended.getRootSegment());
+        context.push(TEMPLATE_INVOCATION, extended);
         for (Segment extendSection : this) {
             context.addDefiningSection(extendSection.getText(),
                     (ExtendSectionSegment) extendSection);
