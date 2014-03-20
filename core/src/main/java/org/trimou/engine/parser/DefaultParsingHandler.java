@@ -81,8 +81,6 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private long start;
 
-    private int segments = 0;
-
     private int line = 1;
 
     private boolean skipValueEscaping;
@@ -129,7 +127,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
         logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
                 new Object[] { templateName,
-                        System.currentTimeMillis() - start, segments });
+                        System.currentTimeMillis() - start,
+                        template.getRootSegment().getSegmentsSize(true) });
 
         rootSegmentBase = null;
     }
@@ -175,8 +174,7 @@ class DefaultParsingHandler implements ParsingHandler {
 
     @Override
     public void lineSeparator(String separator) {
-        addSegment(new SegmentBase(SegmentType.LINE_SEPARATOR, separator,
-                line));
+        addSegment(new SegmentBase(SegmentType.LINE_SEPARATOR, separator, line));
         line++;
     }
 
@@ -315,7 +313,6 @@ class DefaultParsingHandler implements ParsingHandler {
      * @param segment
      */
     private void addSegment(SegmentBase segment) {
-        segments++;
         containerStack.peekFirst().addSegment(segment);
         logger.trace("Add {}", segment);
     }
