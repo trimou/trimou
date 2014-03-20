@@ -66,9 +66,4 @@ public interface Segment {
      */
     public void execute(Appendable appendable, ExecutionContext context);
 
-    /**
-     * Perform compilation post processing, e.g. optimization.
-     */
-    public void performPostProcessing();
-
 }

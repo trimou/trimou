@@ -17,8 +17,11 @@ package org.trimou.engine.segment;
 
 import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
 
+import java.util.List;
+
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.parser.Template;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
@@ -34,8 +37,8 @@ import org.trimou.exception.MustacheProblem;
 @Internal
 public class ExtendSegment extends AbstractSectionSegment {
 
-    public ExtendSegment(String text, Origin origin) {
-        super(text, origin);
+    public ExtendSegment(String text, Origin origin, List<Segment> segments) {
+        super(text, origin, segments);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class ExtendSegment extends AbstractSectionSegment {
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        TemplateSegment extended = (TemplateSegment) getEngine().getMustache(
+        Template extended = (Template) getEngine().getMustache(
                 getText());
 
         if (extended == null) {
@@ -56,21 +59,13 @@ public class ExtendSegment extends AbstractSectionSegment {
                     getText(), getOrigin());
         }
 
-        context.push(TEMPLATE_INVOCATION, extended);
+        context.push(TEMPLATE_INVOCATION, extended.getRootSegment());
         for (Segment extendSection : this) {
             context.addDefiningSection(extendSection.getText(),
                     (ExtendSectionSegment) extendSection);
         }
-        extended.execute(appendable, context);
+        extended.getRootSegment().execute(appendable, context);
         context.pop(TEMPLATE_INVOCATION);
-    }
-
-    @Override
-    public void addSegment(Segment segment) {
-        if (SegmentType.EXTEND_SECTION.equals(segment.getType())) {
-            // Only add extending sections
-            super.addSegment(segment);
-        }
     }
 
 }

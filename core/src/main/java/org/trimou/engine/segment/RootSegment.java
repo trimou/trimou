@@ -19,40 +19,39 @@ import java.util.List;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.context.ExecutionContext.TargetStack;
 
 /**
- * Either defines a section to be extended/overrided, or an extending/defining
- * section.
+ * The root segment.
  *
  * @author Martin Kouba
  */
 @Internal
-public class ExtendSectionSegment extends AbstractSectionSegment {
+public class RootSegment extends AbstractContainerSegment {
 
-    public ExtendSectionSegment(String text, Origin origin, List<Segment> segments) {
-        super(text, origin, segments);
+    public RootSegment(Origin origin, List<Segment> segments) {
+        super(SegmentType.ROOT.toString(), origin, segments);
     }
 
     @Override
     public SegmentType getType() {
-        return SegmentType.EXTEND_SECTION;
+        return SegmentType.ROOT;
+    }
+
+    @Override
+    public String getLiteralBlock() {
+        return getContainingLiteralBlock();
     }
 
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
-
-        ExtendSectionSegment defining = context.getDefiningSection(getText());
-
-        if (defining != null) {
-            defining.executeNoDefiningLookup(appendable, context);
-        } else {
-            super.execute(appendable, context);
-        }
+        context.push(TargetStack.TEMPLATE_INVOCATION, this);
+        super.execute(appendable, context);
     }
 
-    protected void executeNoDefiningLookup(Appendable appendable,
-            ExecutionContext context) {
-        super.execute(appendable, context);
+    @Override
+    public String toString() {
+        return String.format("%s", getType());
     }
 
 }

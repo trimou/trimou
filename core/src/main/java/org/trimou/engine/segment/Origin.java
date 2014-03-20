@@ -1,6 +1,7 @@
 package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.parser.Template;
 
 /**
  * A segment origin.
@@ -10,7 +11,7 @@ import org.trimou.annotations.Internal;
 @Internal
 public class Origin {
 
-    private final TemplateSegment template;
+    private final Template template;
 
     /**
      * The original line where the segment comes from (we cannot calculate this
@@ -23,7 +24,7 @@ public class Origin {
      *
      * @param template
      */
-    public Origin(TemplateSegment template) {
+    public Origin(Template template) {
         super();
         this.template = template;
         this.line = null;
@@ -34,13 +35,13 @@ public class Origin {
      * @param template
      * @param line
      */
-    public Origin(TemplateSegment template, int line) {
+    public Origin(Template template, int line) {
         super();
         this.template = template;
         this.line = line;
     }
 
-    public TemplateSegment getTemplate() {
+    public Template getTemplate() {
         return template;
     }
 

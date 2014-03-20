@@ -18,14 +18,9 @@ package org.trimou.engine.segment;
 import static org.trimou.util.Strings.LINE_SEPARATOR;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link Segment} utils.
@@ -34,134 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 final class Segments {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(Segments.class);
-
     private Segments() {
-    }
-
-    static void removeStandaloneLines(TemplateSegment template) {
-
-        List<List<Segment>> lines = readSegmentLines(template);
-
-        // First identify the segments to remove
-        Set<Segment> segmentsToRemove = new HashSet<Segment>();
-        int idx = 0;
-        for (List<Segment> line : lines) {
-            idx++;
-            if (isStandaloneLine(line)) {
-
-                // Extract indentation for standalone partial segment
-                extractIndentationForPartial(line);
-
-                for (Segment segment : line) {
-                    if (segment instanceof AbstractContainerSegment
-                            || SegmentType.PARTIAL.equals(segment.getType())) {
-                        continue;
-                    }
-                    segmentsToRemove.add(segment);
-                }
-                logger.trace("Segment line {} is standalone", idx);
-            }
-        }
-
-        // Then remove segments
-        if (!segmentsToRemove.isEmpty()) {
-            removeSegments(segmentsToRemove, template);
-            logger.debug("{} segments removed", segmentsToRemove.size());
-        }
-
-    }
-
-    /**
-     *
-     * @param standaloneLine
-     */
-    static void extractIndentationForPartial(List<Segment> standaloneLine) {
-
-        if (SegmentType.TEXT.equals(standaloneLine.get(0).getType())) {
-
-            // First segment is whitespace - try to find partial
-            PartialSegment partial = null;
-            for (Segment segment : standaloneLine) {
-                if (SegmentType.PARTIAL.equals(segment.getType())) {
-                    partial = (PartialSegment) segment;
-                    break;
-                }
-            }
-
-            if (partial != null) {
-                partial.setIndentation(standaloneLine.get(0).getText());
-            }
-        }
-    }
-
-    static void removeUnnecessarySegments(AbstractContainerSegment container) {
-
-        for (Iterator<Segment> iterator = container.iterator(); iterator
-                .hasNext();) {
-            Segment segment = iterator.next();
-            if (segment instanceof AbstractContainerSegment) {
-                removeUnnecessarySegments((AbstractContainerSegment) segment);
-            } else {
-                if (SegmentType.COMMENT.equals(segment.getType())
-                        || SegmentType.DELIMITERS.equals(segment.getType())) {
-                    iterator.remove();
-                }
-            }
-        }
-    }
-
-    static void removeSegments(Set<Segment> segmentsToRemove,
-            AbstractContainerSegment container) {
-
-        for (Iterator<Segment> iterator = container.iterator(); iterator
-                .hasNext();) {
-            Segment segment = iterator.next();
-            if (segment instanceof AbstractContainerSegment) {
-                removeSegments(segmentsToRemove,
-                        (AbstractContainerSegment) segment);
-            } else {
-                if (segmentsToRemove.contains(segment)) {
-                    iterator.remove();
-                }
-            }
-        }
-    }
-
-    static boolean isStandaloneLine(List<Segment> line) {
-
-        boolean standaloneCandidate = false;
-
-        for (Segment segment : line) {
-            if (SegmentType.VALUE.equals(segment.getType())) {
-                // Value segment
-                return false;
-            } else if (SegmentType.TEXT.equals(segment.getType())) {
-                if (!StringUtils.isWhitespace(segment.getText())) {
-                    // Text segment with non-whitespace character
-                    return false;
-                }
-            } else if (segment.getType().isStandaloneCandidate()) {
-                standaloneCandidate = true;
-            }
-        }
-        return standaloneCandidate;
-    }
-
-    /**
-     * Read segment lines recursively.
-     *
-     * @param container
-     * @return
-     */
-    static List<List<Segment>> readSegmentLines(
-            AbstractContainerSegment container) {
-        List<List<Segment>> lines = new ArrayList<List<Segment>>();
-        // Add the last line manually - there is no line separator to trigger
-        // flush
-        lines.add(readSegmentLines(lines, null, container));
-        return lines;
     }
 
     /**
@@ -200,7 +68,7 @@ final class Segments {
             currentLine = new ArrayList<Segment>();
         }
 
-        if (!SegmentType.TEMPLATE.equals(container.getType())) {
+        if (!SegmentType.ROOT.equals(container.getType())) {
             // Simulate the start tag
             currentLine.add(container);
         }
@@ -219,7 +87,7 @@ final class Segments {
             }
         }
 
-        if (!SegmentType.TEMPLATE.equals(container.getType())) {
+        if (!SegmentType.ROOT.equals(container.getType())) {
             // Simulate the end tag
             currentLine.add(container);
         }
@@ -244,8 +112,8 @@ final class Segments {
             tree.append(StringUtils.repeat(" ", level - 1));
         }
         tree.append("+");
-        if (!SegmentType.TEMPLATE.equals(container.getType())) {
-            tree.append(container.getTemplate().getText());
+        if (!SegmentType.ROOT.equals(container.getType())) {
+            tree.append(container.getTemplate().getName());
             tree.append(":");
         }
         tree.append(container.getType());

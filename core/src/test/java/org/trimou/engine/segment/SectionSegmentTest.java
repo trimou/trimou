@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
 import org.trimou.Mustache;
+import org.trimou.engine.parser.Template;
 import org.trimou.lambda.InputProcessingLambda;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
@@ -116,6 +117,13 @@ public class SectionSegmentTest extends AbstractEngineTest {
                 templateContents);
 
         assertEquals("1|3|", mustache.render(new String[] { "1", "2", "3" }));
+    }
+
+    @Test
+    public void testSegmentSize() {
+        Template template = (Template) engine.compileMustache("foo",
+                "{{foo}}bar\nbaz{{#qux}}lala{{/qux}}");
+        assertEquals(6, template.getRootSegment().getSegmentsSize(true));
     }
 
 }

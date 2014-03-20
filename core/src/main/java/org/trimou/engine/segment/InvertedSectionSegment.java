@@ -16,6 +16,7 @@
 package org.trimou.engine.segment;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
@@ -38,8 +39,8 @@ import org.trimou.util.Checker;
 @Internal
 public class InvertedSectionSegment extends AbstractSectionSegment {
 
-    public InvertedSectionSegment(String text, Origin origin) {
-        super(text, origin);
+    public InvertedSectionSegment(String text, Origin origin, List<Segment> segments) {
+        super(text, origin, segments);
     }
 
     public SegmentType getType() {

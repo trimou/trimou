@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2014 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,70 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.segment;
+package org.trimou.engine.parser;
 
 import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
-import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
-import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
 
 import java.util.List;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.context.ExecutionContext.TargetStack;
 import org.trimou.engine.context.ExecutionContextBuilder;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.listener.MustacheRenderingEvent;
 import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
+import org.trimou.engine.segment.RootSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.collect.Lists;
 
 /**
- * Template segment (aka Mustache template).
+ * Mustache template.
  *
  * @author Martin Kouba
  */
 @Internal
-public class TemplateSegment extends AbstractContainerSegment implements
-        Mustache {
+public class Template implements Mustache {
+
+    private final String name;
 
     private final MustacheEngine engine;
 
-    private boolean readOnly = false;
+    private final boolean debugMode;
 
-    private boolean debugMode;
+    private RootSegment rootSegment;
 
-    public TemplateSegment(String text, MustacheEngine engine) {
-        super(text, null);
+    /**
+     *
+     * @param name
+     * @param engine
+     */
+    public Template(String name, MustacheEngine engine) {
+        this.name = name;
         this.engine = engine;
         this.debugMode = engine.getConfiguration().getBooleanPropertyValue(
                 DEBUG_MODE);
     }
 
     @Override
-    public void render(Appendable appendable, Object data) {
-
-        checkIsReady();
-        DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
-                getText());
-
-        try {
-            renderingStarted(event);
-            // Build execution context and push the template on the invocation
-            // stack
-            ExecutionContext context = new ExecutionContextBuilder(engine)
-                    .withData(data).build(debugMode);
-            context.push(TargetStack.TEMPLATE_INVOCATION, this);
-            // Execute the template
-            super.execute(appendable, context);
-            renderingFinished(event);
-        } finally {
-            event.release();
-        }
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -86,50 +72,38 @@ public class TemplateSegment extends AbstractContainerSegment implements
         return builder.toString();
     }
 
-
     @Override
-    public SegmentType getType() {
-        return SegmentType.TEMPLATE;
-    }
+    public void render(Appendable appendable, Object data) {
 
-    @Override
-    public String getLiteralBlock() {
-        return getContainingLiteralBlock();
-    }
+        DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
+                name);
 
-    @Override
-    public String getName() {
-        return getText();
-    }
+        try {
+            renderingStarted(event);
 
-    @Override
-    public void performPostProcessing() {
+            // Build the execution context and execute the root segment
+            rootSegment.execute(appendable, new ExecutionContextBuilder(engine)
+                    .withData(data).build(debugMode));
 
-        if (engine.getConfiguration().getBooleanPropertyValue(
-                REMOVE_STANDALONE_LINES)) {
-            Segments.removeStandaloneLines(this);
+            renderingFinished(event);
+        } finally {
+            event.release();
         }
-        if (engine.getConfiguration().getBooleanPropertyValue(
-                REMOVE_UNNECESSARY_SEGMENTS)) {
-            Segments.removeUnnecessarySegments(this);
+    }
+
+    public RootSegment getRootSegment() {
+        return rootSegment;
+    }
+
+    public void setRootSegment(RootSegment rootSegment) {
+        if (this.rootSegment != null) {
+            throw new MustacheException(
+                    MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
         }
-        super.performPostProcessing();
-        readOnly = true;
+        this.rootSegment = rootSegment;
     }
 
-    /**
-     * @return <code>true</code> if read only, <code>false</code> otherwise
-     */
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s: [%s]", getType(), getName());
-    }
-
-    protected MustacheEngine getEngine() {
+    public MustacheEngine getEngine() {
         return engine;
     }
 
@@ -175,13 +149,6 @@ public class TemplateSegment extends AbstractContainerSegment implements
             return mustacheName;
         }
 
-    }
-
-    private void checkIsReady() {
-        if (!isReadOnly()) {
-            throw new MustacheException(MustacheProblem.TEMPLATE_NOT_READY,
-                    "Template %s is not ready yet", getName());
-        }
     }
 
 }

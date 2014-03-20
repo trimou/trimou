@@ -22,6 +22,7 @@ import java.util.List;
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.parser.Template;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
@@ -33,10 +34,11 @@ import org.trimou.exception.MustacheProblem;
 @Internal
 public class PartialSegment extends AbstractSegment {
 
-    private String indentation;
+    private final String indentation;
 
-    public PartialSegment(String text, Origin origin) {
+    public PartialSegment(String text, Origin origin, String indentation) {
         super(text, origin);
+        this.indentation = indentation;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class PartialSegment extends AbstractSegment {
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        TemplateSegment partialTemplate = (TemplateSegment) getEngine()
+        Template partialTemplate = (Template) getEngine()
                 .getMustache(getText());
 
         if (partialTemplate == null) {
@@ -57,9 +59,9 @@ public class PartialSegment extends AbstractSegment {
                     getOrigin());
         }
 
-        context.push(TEMPLATE_INVOCATION, partialTemplate);
+        context.push(TEMPLATE_INVOCATION, partialTemplate.getRootSegment());
         if (indentation == null) {
-            partialTemplate.execute(appendable, context);
+            partialTemplate.getRootSegment().execute(appendable, context);
         } else {
             prependIndentation(appendable, context, partialTemplate);
         }
@@ -76,16 +78,11 @@ public class PartialSegment extends AbstractSegment {
         return getText();
     }
 
-    public void setIndentation(String indentation) {
-        checkModificationAllowed();
-        this.indentation = indentation;
-    }
-
     private void prependIndentation(Appendable appendable,
-            ExecutionContext context, TemplateSegment partialTemplate) {
+            ExecutionContext context, Template partialTemplate) {
 
         List<List<Segment>> partialLines = Segments
-                .readSegmentLinesBeforeRendering(partialTemplate);
+                .readSegmentLinesBeforeRendering(partialTemplate.getRootSegment());
         TextSegment indent = new TextSegment(indentation, new Origin(
                 getTemplate()));
 

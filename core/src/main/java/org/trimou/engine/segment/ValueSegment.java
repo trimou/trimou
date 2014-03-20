@@ -19,6 +19,7 @@ import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.engine.parser.Template;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Strings;
 
@@ -130,11 +131,11 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
             if (lambda.isReturnValueInterpolated()) {
                 // Parse and interpolate the return value
                 StringBuilder interpolated = new StringBuilder();
-                TemplateSegment temp = (TemplateSegment) getEngine()
+                Template temp = (Template) getEngine()
                         .compileMustache(
                                 Lambdas.constructLambdaOneoffTemplateName(this),
                                 returnValue);
-                temp.execute(interpolated, context);
+                temp.getRootSegment().execute(interpolated, context);
                 writeValue(appendable, interpolated.toString());
             } else {
                 writeValue(appendable, returnValue);

@@ -19,10 +19,12 @@ import static org.trimou.engine.context.ExecutionContext.TargetStack.CONTEXT;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.List;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.engine.parser.Template;
 import org.trimou.handlebars.Options;
 import org.trimou.lambda.Lambda;
 
@@ -63,8 +65,8 @@ public class SectionSegment extends AbstractSectionSegment implements
 
     private final HelperExecutionHandler helperHandler;
 
-    public SectionSegment(String text, Origin origin) {
-        super(text, origin);
+    public SectionSegment(String text, Origin origin, List<Segment> segments) {
+        super(text, origin, segments);
         this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
                 text, getEngine(), this) : null;
     }
@@ -193,11 +195,11 @@ public class SectionSegment extends AbstractSectionSegment implements
 
         if (lambda.isReturnValueInterpolated()) {
             // Parse and interpolate the return value
-            TemplateSegment temp = (TemplateSegment) getEngine()
+            Template temp = (Template) getEngine()
                     .compileMustache(
                             Lambdas.constructLambdaOneoffTemplateName(this),
                             returnValue);
-            temp.execute(appendable, context);
+            temp.getRootSegment().execute(appendable, context);
         } else {
             append(appendable, returnValue);
         }

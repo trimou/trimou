@@ -24,8 +24,8 @@ import org.trimou.engine.MustacheTagType;
 @Internal
 public enum SegmentType {
 
-    TEMPLATE(null),
-    // One segment is used for both a variable and an unescape variable
+    ROOT(null),
+    // Note that one segment is used for both a variable and an unescape variable
     VALUE(MustacheTagType.VARIABLE),
     TEXT(null),
     SECTION(MustacheTagType.SECTION),
@@ -51,15 +51,22 @@ public enum SegmentType {
         return tagType;
     }
 
-    boolean isStandaloneCandidate() {
-        return this.equals(COMMENT) || this.equals(SECTION)
-                || this.equals(INVERTED_SECTION) || this.equals(DELIMITERS)
-                || this.equals(PARTIAL);
-    }
-
     boolean hasName() {
         return this.equals(SECTION) || this.equals(INVERTED_SECTION)
                 || this.equals(PARTIAL) || this.equals(VALUE);
     }
+
+    public static SegmentType fromTag(MustacheTagType tagType) {
+        for (SegmentType type : values()) {
+            if(tagType.equals(type.getTagType())) {
+                return type;
+            }
+        }
+        if(MustacheTagType.UNESCAPE_VARIABLE.equals(tagType)) {
+            return VALUE;
+        }
+        throw new IllegalStateException("Unsupported tag type");
+    }
+
 
 }

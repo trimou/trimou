@@ -35,6 +35,7 @@ import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ExecutionContext.TargetStack;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.engine.parser.Template;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
@@ -278,7 +279,7 @@ class HelperExecutionHandler {
         public void partial(String templateId) {
             Checker.checkArgumentNotEmpty(templateId);
 
-            TemplateSegment partialTemplate = (TemplateSegment) engine
+            Template partialTemplate = (Template) engine
                     .getMustache(templateId);
 
             if (partialTemplate == null) {
@@ -288,9 +289,9 @@ class HelperExecutionHandler {
                         templateId, segment.getOrigin());
             }
 
-            executionContext.push(TEMPLATE_INVOCATION, partialTemplate);
+            executionContext.push(TEMPLATE_INVOCATION, partialTemplate.getRootSegment());
             // Indentation is not supported
-            partialTemplate.execute(appendable, executionContext);
+            partialTemplate.getRootSegment().execute(appendable, executionContext);
             executionContext.pop(TEMPLATE_INVOCATION);
         }
 

@@ -15,13 +15,10 @@
  */
 package org.trimou.engine.segment;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.trimou.engine.context.ExecutionContext;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Abstract container segment.
@@ -31,15 +28,17 @@ import com.google.common.collect.ImmutableList;
 abstract class AbstractContainerSegment extends AbstractSegment implements
         ContainerSegment {
 
-    protected List<Segment> segments = new ArrayList<Segment>();
+    private final List<Segment> segments;
 
     /**
      *
      * @param name
-     * @param template
+     * @param origin
+     * @param segments
      */
-    public AbstractContainerSegment(String name, Origin origin) {
+    public AbstractContainerSegment(String name, Origin origin, List<Segment> segments) {
         super(name, origin);
+        this.segments = segments;
     }
 
     public void execute(Appendable appendable, ExecutionContext context) {
@@ -49,27 +48,25 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
     }
 
     @Override
-    public void performPostProcessing() {
-        for (Segment segment : segments) {
-            segment.performPostProcessing();
-        }
-    }
-
-    public void addSegment(Segment segment) {
-        checkModificationAllowed();
-        segments.add(segment);
-    }
-
-    @Override
     public Iterator<Segment> iterator() {
         return getSegments().iterator();
     }
 
     public List<Segment> getSegments() {
-        return isReadOnly() ? ImmutableList.copyOf(segments) : segments;
+        return segments;
     }
 
-    public int getSegmentsSize() {
+    public int getSegmentsSize(boolean recursive) {
+        if(recursive) {
+            int count = 0;
+            for (Segment segment : this) {
+                count++;
+                if (segment instanceof ContainerSegment) {
+                    count += ((ContainerSegment) segment).getSegmentsSize(true);
+                }
+            }
+            return count;
+        }
         return segments.size();
     }
 

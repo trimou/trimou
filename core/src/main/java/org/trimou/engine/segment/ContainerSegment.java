@@ -14,20 +14,15 @@ public interface ContainerSegment extends Segment, Iterable<Segment> {
 
     /**
      *
-     * @param segment
-     */
-    public void addSegment(Segment segment);
-
-    /**
-     *
-     * @return the list of contained segments
+     * @return the immutable list of segments
      */
     public List<Segment> getSegments();
 
     /**
      *
-     * @return the number of contained segments
+     * @param recursive
+     * @return the number of segments
      */
-    public int getSegmentsSize();
+    public int getSegmentsSize(boolean recursive);
 
 }

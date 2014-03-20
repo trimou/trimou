@@ -1,5 +1,7 @@
 package org.trimou.engine.segment;
 
+import java.util.List;
+
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.EngineConfigurationKey;
 
@@ -12,10 +14,17 @@ import org.trimou.engine.config.EngineConfigurationKey;
  */
 abstract class AbstractSectionSegment extends AbstractContainerSegment {
 
-    private String cachedContainingLiteralBlock = null;
+    private final String cachedContainingLiteralBlock;
 
-    public AbstractSectionSegment(String name, Origin origin) {
-        super(name, origin);
+    public AbstractSectionSegment(String name, Origin origin,
+            List<Segment> segments) {
+        super(name, origin, segments);
+        if (getEngineConfiguration().getBooleanPropertyValue(
+                EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK)) {
+            this.cachedContainingLiteralBlock = getContainingLiteralBlock();
+        } else {
+            this.cachedContainingLiteralBlock = null;
+        }
     }
 
     @Override
@@ -35,15 +44,6 @@ abstract class AbstractSectionSegment extends AbstractContainerSegment {
             return cachedContainingLiteralBlock;
         }
         return super.getContainingLiteralBlock();
-    }
-
-    @Override
-    public void performPostProcessing() {
-        if (getEngineConfiguration().getBooleanPropertyValue(
-                EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK)) {
-            cachedContainingLiteralBlock = getContainingLiteralBlock();
-        }
-        super.performPostProcessing();
     }
 
 }

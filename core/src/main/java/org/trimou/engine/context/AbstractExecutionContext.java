@@ -25,7 +25,7 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
-import org.trimou.engine.segment.TemplateSegment;
+import org.trimou.engine.segment.RootSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
@@ -50,7 +50,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     /**
      * LIFO stack of template invocations
      */
-    protected final Deque<TemplateSegment> templateInvocationStack;
+    protected final Deque<RootSegment> templateInvocationStack;
 
     /**
      * Lazily initialized map of defining/overriding sections
@@ -73,7 +73,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         this.resolvers = configuration.getResolvers().toArray(new Resolver[configuration.getResolvers().size()]);
 
         this.contextObjectStack =  new ArrayDeque<Object>();
-        this.templateInvocationStack = new ArrayDeque<TemplateSegment>();
+        this.templateInvocationStack = new ArrayDeque<RootSegment>();
 
         this.templateRecursiveInvocationLimit = configuration
                 .getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
@@ -89,7 +89,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             contextObjectStack.addFirst(object);
             break;
         case TEMPLATE_INVOCATION:
-            pushTemplateInvocation((TemplateSegment) object);
+            pushTemplateInvocation((RootSegment) object);
             break;
         default:
             throw new IllegalStateException("Invalid stack type");
@@ -178,7 +178,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         return value;
     }
 
-    private void pushTemplateInvocation(TemplateSegment template) {
+    private void pushTemplateInvocation(RootSegment template) {
 
         Checker.checkArgumentNotNull(template);
 
@@ -191,9 +191,9 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         templateInvocationStack.addFirst(template);
     }
 
-    private int getTemplateInvocations(TemplateSegment template) {
+    private int getTemplateInvocations(RootSegment template) {
         int invocations = 0;
-        for (TemplateSegment segment : templateInvocationStack) {
+        for (RootSegment segment : templateInvocationStack) {
             if (segment.equals(template)) {
                 invocations++;
             }
