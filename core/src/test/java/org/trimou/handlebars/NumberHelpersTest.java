@@ -18,7 +18,8 @@ public class NumberHelpersTest extends AbstractTest {
     @Test
     public void testIsEven() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .registerHelper("isEven", new NumberIsEvenHelper()).build();
+                .registerHelpers(HelpersBuilder.empty().addIsEven().build())
+                .build();
         assertEquals(
                 "even",
                 engine.compileMustache("isEven_value",
@@ -33,13 +34,13 @@ public class NumberHelpersTest extends AbstractTest {
         assertEquals(
                 "",
                 engine.compileMustache("isEven_section",
-                        "{{#isEven this}}even{{/isEven}}")
-                        .render(Integer.valueOf(3)));
+                        "{{#isEven this}}even{{/isEven}}").render(
+                        Integer.valueOf(3)));
         assertEquals(
                 "even",
                 engine.compileMustache("isEven_section",
-                        "{{#isEven this}}even{{/isEven}}")
-                        .render(Integer.valueOf(2)));
+                        "{{#isEven this}}even{{/isEven}}").render(
+                        Integer.valueOf(2)));
         assertCompilationFails(engine, "isEven_fail", "{{isEven}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
@@ -47,7 +48,8 @@ public class NumberHelpersTest extends AbstractTest {
     @Test
     public void testIsOdd() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .registerHelper("isOdd", new NumberIsOddHelper()).build();
+                .registerHelpers(HelpersBuilder.empty().addIsOdd().build())
+                .build();
         assertEquals(
                 "oddodd",
                 engine.compileMustache("isOdd_value",
@@ -61,13 +63,13 @@ public class NumberHelpersTest extends AbstractTest {
         assertEquals(
                 "",
                 engine.compileMustache("isOdd_section",
-                        "{{#isOdd this}}odd{{/isOdd}}")
-                        .render(Integer.valueOf(4)));
+                        "{{#isOdd this}}odd{{/isOdd}}").render(
+                        Integer.valueOf(4)));
         assertEquals(
                 "odd",
                 engine.compileMustache("isOdd_section",
-                        "{{#isOdd this}}odd{{/isOdd}}")
-                        .render(Integer.valueOf(9)));
+                        "{{#isOdd this}}odd{{/isOdd}}").render(
+                        Integer.valueOf(9)));
         assertCompilationFails(engine, "isOdd_fail", "{{isOdd}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }

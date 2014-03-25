@@ -65,7 +65,7 @@ public final class HelperValidator {
 
         if (size > paramSize) {
             logger.debug(
-                    "{} superfluous parameters detected [helper: %s, template: %s, line: %s]",
+                    "{} superfluous parameters detected [helper: {}, template: {}, line: {}]",
                     size - paramSize, helperClazz.getName(), definition
                             .getTagInfo().getTemplateName(), definition
                             .getTagInfo().getLine());
@@ -94,5 +94,39 @@ public final class HelperValidator {
                             .getLine());
         }
     }
+
+    /**
+    *
+    * @param helperClazz
+    * @param definition
+    * @param hashSize
+    * @throws MustacheException
+    *             If the helper tag params
+    */
+   public static void checkHash(Class<?> helperClazz,
+           HelperDefinition definition, int hashSize) {
+       Checker.checkArgumentNotNull(definition);
+       Preconditions.checkArgument(hashSize >= 0,
+               "Helper may only require zero or more hash entries");
+
+       int size = definition.getHash().size();
+
+       if (size < hashSize) {
+           throw new MustacheException(
+                   MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                   "Insufficient number of hash entries for helper %s [expected: %s, current: %s, template: %s, line: %s]",
+                   helperClazz.getName(), hashSize, size, definition
+                           .getTagInfo().getTemplateName(), definition
+                           .getTagInfo().getLine());
+       }
+
+       if (size > hashSize) {
+           logger.debug(
+                   "{} superfluous hash entries detected [helper: {}, template: {}, line: {}]",
+                   size - hashSize, helperClazz.getName(), definition
+                           .getTagInfo().getTemplateName(), definition
+                           .getTagInfo().getLine());
+       }
+   }
 
 }

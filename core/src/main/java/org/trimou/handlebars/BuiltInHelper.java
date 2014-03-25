@@ -23,14 +23,16 @@ import org.trimou.engine.config.EngineConfigurationKey;
  * <code>true</code>.
  *
  * @author Martin Kouba
+ * @deprecated The {@link HelpersBuilder} should be used instead
  */
+@Deprecated
 public enum BuiltInHelper {
 
-    EACH("each", new EachHelper()),
-    IF("if", new IfHelper()),
-    UNLESS("unless", new UnlessHelper()),
-    WITH("with", new WithHelper()),
-    IS("is", new IsHelper()),;
+    EACH(HelpersBuilder.EACH, new EachHelper()),
+    IF(HelpersBuilder.IF, new IfHelper()),
+    UNLESS(HelpersBuilder.UNLESS, new UnlessHelper()),
+    WITH(HelpersBuilder.WITH, new WithHelper()),
+    IS(HelpersBuilder.IS, new IsHelper()),;
 
     private String name;
 

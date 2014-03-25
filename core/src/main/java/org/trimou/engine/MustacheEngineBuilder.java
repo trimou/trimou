@@ -286,6 +286,23 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * Each helper must be registered with a unique name. If there are more
+     * helpers registered with the same name an {@link IllegalArgumentException}
+     * is thrown during {@link #build()}.
+     *
+     * @param helpers
+     * @return self
+     */
+    public MustacheEngineBuilder registerHelpers(Map<String, Helper> helpers) {
+        if (Checker.isNullOrEmpty(helpers)) {
+            return this;
+        }
+        checkIsMutable("registerHelpers()");
+        this.helpers.putAll(helpers);
+        return this;
+    }
+
+    /**
      * Don't use the ServiceLoader mechanism to load configuration extensions.
      *
      * @see ConfigurationExtension

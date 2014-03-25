@@ -2,18 +2,18 @@ package org.trimou.handlebars;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
+import org.trimou.ExceptionAssert;
 import org.trimou.Hammer;
+import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locator.MapTemplateLocator;
-import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.collect.ImmutableMap;
@@ -47,15 +47,23 @@ public class OptionsTest extends AbstractTest {
                 .registerHelper("test", new AbstractHelper() {
                     @Override
                     public void execute(Options options) {
-                        Map<String, Object> hash = options.getHash();
+                        final Map<String, Object> hash = options.getHash();
                         assertEquals(3, hash.size());
                         assertEquals("1", hash.get("first"));
                         assertEquals(10, hash.get("second"));
                         assertNull(hash.get("third"));
+                        ExceptionAssert.expect(
+                                UnsupportedOperationException.class).check(
+                                new Runnable() {
+                                    public void run() {
+                                        hash.remove("first");
+                                    }
+                                });
                     }
                 }).build();
         engine.compileMustache("helper_params",
-                "{{test first=\"1\" second=this.age third=nonexisting}}").render(new Hammer());
+                "{{test first=\"1\" second=this.age third=nonexisting}}")
+                .render(new Hammer());
     }
 
     @Test
@@ -71,42 +79,48 @@ public class OptionsTest extends AbstractTest {
         assertEquals(
                 "OK|HAMMER",
                 engine.compileMustache("helper_params",
-                        "{{#test}}{{this}}{{/test}}|{{this}}").render(new Hammer()));
+                        "{{#test}}{{this}}{{/test}}|{{this}}").render(
+                        new Hammer()));
     }
 
     @Test
     public void testPop() {
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override
                     public void execute(Options options) {
                         options.pop();
                     }
                 }).build();
-        try {
-            engine.compileMustache("helper_params", "{{test}}").render(
-                    new Hammer());
-            fail();
-        } catch (MustacheException e) {
-            if (!e.getCode().equals(
-                    MustacheProblem.RENDER_HELPER_INVALID_POP_OPERATION)) {
-                fail();
-            }
-        }
+
+        MustacheExceptionAssert.expect(
+                MustacheProblem.RENDER_HELPER_INVALID_POP_OPERATION).check(
+                new Runnable() {
+                    public void run() {
+                        engine.compileMustache("helper_params", "{{test}}")
+                                .render(new Hammer());
+                    }
+                });
     }
 
     @Test
     public void testPartial() {
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addTemplateLocator(new MapTemplateLocator(ImmutableMap.of("foo", "{{this}}")))
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addTemplateLocator(
+                        new MapTemplateLocator(ImmutableMap.of("foo",
+                                "{{this}}")))
                 .registerHelper("test", new AbstractHelper() {
                     @Override
                     public void execute(Options options) {
-                        options.partial("foo");;
+                        options.partial("foo");
+                        ;
                     }
                 }).build();
-        assertEquals("HELLO", engine.compileMustache("helper_partial", "{{test}}").render(
-                "HELLO"));
+        assertEquals(
+                "HELLO",
+                engine.compileMustache("helper_partial", "{{test}}").render(
+                        "HELLO"));
     }
 
 }

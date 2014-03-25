@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.config;
 
+import java.util.Map;
+
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.listener.MustacheListener;
@@ -82,6 +84,14 @@ public interface ConfigurationExtension {
          * @return self
          */
         ConfigurationExtensionBuilder registerHelper(String name, Helper helper);
+
+        /**
+         * Register all the helper instances.
+         *
+         * @param helpers
+         * @return self
+         */
+        ConfigurationExtensionBuilder registerHelpers(Map<String, Helper> helpers);
 
     }
 }

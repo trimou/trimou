@@ -30,10 +30,12 @@ public abstract class BasicHelper extends AbstractHelper {
 
     @Override
     public void validate(HelperDefinition definition) {
-        HelperValidator.checkType(this.getClass(), definition,
-                allowedTagTypes());
-        HelperValidator.checkParams(this.getClass(), definition,
+        Class<?> helperClazz = this.getClass();
+        HelperValidator.checkType(helperClazz, definition, allowedTagTypes());
+        HelperValidator.checkParams(helperClazz, definition,
                 numberOfRequiredParameters());
+        HelperValidator.checkHash(helperClazz, definition,
+                numberOfRequiredHashEntries());
     }
 
     protected MustacheTagType[] allowedTagTypes() {
@@ -42,6 +44,10 @@ public abstract class BasicHelper extends AbstractHelper {
 
     protected int numberOfRequiredParameters() {
         return 1;
+    }
+
+    protected int numberOfRequiredHashEntries() {
+        return 0;
     }
 
 }
