@@ -69,7 +69,7 @@ class DefaultParsingHandler implements ParsingHandler {
     private static Pattern handlebarsNameValidationPattern = Patterns
             .newHelperNameValidationPattern();
 
-    private Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
+    private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
 
     private MustacheEngine engine;
 

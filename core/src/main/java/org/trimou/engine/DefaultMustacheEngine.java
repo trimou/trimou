@@ -48,7 +48,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 /**
- * Default Mustache engine.
+ * The default Mustache engine.
  *
  * @author Martin Kouba
  */
@@ -58,19 +58,23 @@ class DefaultMustacheEngine implements MustacheEngine,
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultMustacheEngine.class);
 
-    private LoadingCache<String, Optional<Mustache>> templateCache;
+    private final LoadingCache<String, Optional<Mustache>> templateCache;
 
-    private Configuration configuration;
+    private final Configuration configuration;
 
-    private ParserFactory parserFactory;
+    private final ParserFactory parserFactory;
 
-    private ParsingHandlerFactory parsingHandlerFactory;
+    private final ParsingHandlerFactory parsingHandlerFactory;
 
     /**
-     * Make this type proxyable (CDI) so that it's possible to produce
-     * application scoped CDI bean
+     * Workaround for CDI (JSR 299, JSR 346) - make this type proxyable so that
+     * it's possible to produce application scoped CDI bean.
      */
     DefaultMustacheEngine() {
+        configuration = null;
+        parserFactory = null;
+        parsingHandlerFactory = null;
+        templateCache = null;
     }
 
     /**
@@ -86,17 +90,19 @@ class DefaultMustacheEngine implements MustacheEngine,
 
         if (configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
+            templateCache = null;
             logger.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
         } else {
 
             if (configuration
                     .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
-                buildTemplateCache();
+                templateCache = buildTemplateCache();
                 if (configuration
                         .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
                     precompileTemplates();
                 }
             } else {
+                templateCache = null;
                 logger.info("Template cache explicitly disabled!");
             }
         }
@@ -125,15 +131,11 @@ class DefaultMustacheEngine implements MustacheEngine,
      * Invalidates the template cache.
      */
     public void invalidateTemplateCache() {
-        this.templateCache.invalidateAll();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public LoadingCache<String, Optional<Mustache>> getTemplateCache() {
-        return templateCache;
+        if (templateCache == null) {
+            logger.warn("Unable to invalidate the template cache - it's disabled!");
+            return;
+        }
+        templateCache.invalidateAll();
     }
 
     @Override
@@ -142,7 +144,7 @@ class DefaultMustacheEngine implements MustacheEngine,
                 notification.getKey(), notification.getCause());
     }
 
-    private void buildTemplateCache() {
+    private LoadingCache<String, Optional<Mustache>> buildTemplateCache() {
 
         CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
         long expirationTimeout = configuration
@@ -155,7 +157,7 @@ class DefaultMustacheEngine implements MustacheEngine,
             cacheBuilder.removalListener(this);
         }
 
-        templateCache = cacheBuilder
+        return cacheBuilder
                 .build(new CacheLoader<String, Optional<Mustache>>() {
 
                     @Override

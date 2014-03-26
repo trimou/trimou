@@ -33,7 +33,8 @@ import org.trimou.exception.MustacheProblem;
 import com.google.common.collect.Lists;
 
 /**
- * Mustache template.
+ * Mustache template. It's effectively immutable once the
+ * {@link #setRootSegment(RootSegment)} method is called.
  *
  * @author Martin Kouba
  */
@@ -46,7 +47,7 @@ public class Template implements Mustache {
 
     private final boolean debugMode;
 
-    private RootSegment rootSegment;
+    private volatile RootSegment rootSegment;
 
     /**
      *

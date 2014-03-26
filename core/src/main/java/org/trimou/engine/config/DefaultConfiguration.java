@@ -51,6 +51,7 @@ import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  *
@@ -63,30 +64,31 @@ class DefaultConfiguration implements Configuration {
 
     private static final String RESOURCE_FILE = "/trimou.properties";
 
-    private List<TemplateLocator> templateLocators = null;
+    private final List<TemplateLocator> templateLocators;
 
-    private List<Resolver> resolvers = null;
+    private final List<Resolver> resolvers;
 
-    private Map<String, Object> globalData = null;
+    private final Map<String, Object> globalData;
 
-    private TextSupport textSupport;
+    private final TextSupport textSupport;
 
-    private LocaleSupport localeSupport;
+    private final LocaleSupport localeSupport;
 
-    private Map<String, Object> properties;
+    private final Map<String, Object> properties;
 
-    private List<MustacheListener> mustacheListeners;
+    private final List<MustacheListener> mustacheListeners;
 
-    private KeySplitter keySplitter;
+    private final KeySplitter keySplitter;
 
-    private MissingValueHandler missingValueHandler;
+    private final MissingValueHandler missingValueHandler;
 
-    private Map<String, Helper> helpers;
+    private final Map<String, Helper> helpers;
 
     /**
      *
      * @param builder
      */
+    @SuppressWarnings("deprecation")
     DefaultConfiguration(MustacheEngineBuilder builder) {
 
         if (!builder.isOmitServiceLoaderConfigurationExtensions()) {
@@ -97,31 +99,39 @@ class DefaultConfiguration implements Configuration {
                 iterator.next().register(builder);
             }
         }
-        identifyResolvers(builder);
-        identifyTextSupport(builder);
-        identifyLocaleSupport(builder);
-        identifyKeySplitter(builder);
-        identifyMissingValueHandler(builder);
-        identifyTemplateLocators(builder);
-        List<MustacheListener> listeners = builder.buildMustacheListeners();
-        if (!listeners.isEmpty()) {
-            this.mustacheListeners = listeners;
-        }
-        Map<String, Object> globalData = builder.buildGlobalData();
-        if (!globalData.isEmpty()) {
-            this.globalData = globalData;
-        }
-        ImmutableMap.Builder<String, Helper> helpersBuilder = ImmutableMap.builder();
-        helpersBuilder.putAll(builder.buildHelpers());
-        this.helpers = helpersBuilder.build();
+        this.resolvers = identifyResolvers(builder);
+        this.textSupport = identifyTextSupport(builder);
+        this.localeSupport = identifyLocaleSupport(builder);
+        this.keySplitter = identifyKeySplitter(builder);
+        this.templateLocators = identifyTemplateLocators(builder);
+        this.mustacheListeners = builder.buildMustacheListeners();
+        this.globalData = builder.buildGlobalData();
+        MissingValueHandler missingValueHandler = identifyMissingValueHandler(builder);
+        Map<String, Helper> helpers = builder.buildHelpers();
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys
-        initializeProperties(builder);
+        this.properties = initializeProperties(builder, ImmutableSet
+                .<ConfigurationAware> builder().add(missingValueHandler)
+                .addAll(helpers.values()).build());
 
-        if(!getBooleanPropertyValue(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED)) {
-            this.helpers = Collections.emptyMap();
+        if (getBooleanPropertyValue(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
+            logger.warn(
+                    "{}.{} is deprecated, use appropriate MissingValueHandler instance instead",
+                    EngineConfigurationKey.class.getSimpleName(),
+                    EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM);
+            // Simulate deprecated settings
+            this.missingValueHandler = new ThrowingExceptionMissingValueHandler();
+        } else {
+            this.missingValueHandler = missingValueHandler;
         }
+
+        if (!getBooleanPropertyValue(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED)) {
+            this.helpers = Collections.emptyMap();
+        } else {
+            this.helpers = helpers;
+        }
+
         initializeConfigurationAwareComponents();
     }
 
@@ -254,24 +264,26 @@ class DefaultConfiguration implements Configuration {
     }
 
     private void initializeConfigurationAwareComponents() {
-        for (ConfigurationAware component : getConfigurationAwareComponents()) {
+        for (ConfigurationAware component : getConfigurationAwareComponents(null)) {
             component.init(this);
         }
     }
 
-    private void identifyResolvers(MustacheEngineBuilder builder) {
+    private List<Resolver> identifyResolvers(MustacheEngineBuilder builder) {
         Set<Resolver> builderResolvers = builder.buildResolvers();
+        List<Resolver> resolvers = new ArrayList<Resolver>();
         if (!builderResolvers.isEmpty()) {
-            resolvers = new ArrayList<Resolver>();
             resolvers.addAll(builderResolvers);
             Collections.sort(resolvers, new HighPriorityComparator());
-            resolvers = ImmutableList.copyOf(resolvers);
         }
+        return ImmutableList.copyOf(resolvers);
     }
 
-    private void initializeProperties(MustacheEngineBuilder engineBuilder) {
+    private Map<String, Object> initializeProperties(
+            MustacheEngineBuilder engineBuilder,
+            Set<ConfigurationAware> initialSet) {
 
-        Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess();
+        Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess(initialSet);
 
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
         Map<String, Object> builderProperties = engineBuilder.buildProperties();
@@ -317,73 +329,72 @@ class DefaultConfiguration implements Configuration {
             } else {
                 value = configKey.getDefaultValue();
             }
-            if (checkDeprecation(configKey, value, engineBuilder)) {
-                continue;
-            }
             builder.put(key, value);
         }
-        this.properties = builder.build();
+        return builder.build();
     }
 
-    private Set<ConfigurationKey> getConfigurationKeysToProcess() {
+    private Set<ConfigurationKey> getConfigurationKeysToProcess(
+            Set<ConfigurationAware> initialSet) {
         Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
         // Global keys
         for (ConfigurationKey key : EngineConfigurationKey.values()) {
             keys.add(key);
         }
-        for (ConfigurationAware component : getConfigurationAwareComponents()) {
+        for (ConfigurationAware component : getConfigurationAwareComponents(initialSet)) {
             keys.addAll(component.getConfigurationKeys());
         }
         return keys;
     }
 
-    private void identifyTextSupport(MustacheEngineBuilder builder) {
-        if (builder.getTextSupport() != null) {
-            textSupport = builder.getTextSupport();
-        } else {
-            textSupport = new TextSupportFactory().createTextSupport();
-        }
+    private TextSupport identifyTextSupport(MustacheEngineBuilder builder) {
+        return builder.getTextSupport() != null ? builder.getTextSupport()
+                : new TextSupportFactory().createTextSupport();
     }
 
-    private void identifyLocaleSupport(MustacheEngineBuilder builder) {
-        if (builder.getLocaleSupport() != null) {
-            localeSupport = builder.getLocaleSupport();
-        } else {
-            localeSupport = new LocaleSupportFactory().createLocateSupport();
-        }
+    private LocaleSupport identifyLocaleSupport(MustacheEngineBuilder builder) {
+        return builder.getLocaleSupport() != null ? builder.getLocaleSupport()
+                : new LocaleSupportFactory().createLocateSupport();
     }
 
-    private void identifyKeySplitter(MustacheEngineBuilder builder) {
-        if (builder.getKeySplitter() != null) {
-            keySplitter = builder.getKeySplitter();
-        } else {
-            // Factory does not make sense here
-            keySplitter = new DotKeySplitter();
-        }
+    private KeySplitter identifyKeySplitter(MustacheEngineBuilder builder) {
+        // Factory does not make sense here
+        return builder.getKeySplitter() != null ? builder.getKeySplitter()
+                : new DotKeySplitter();
     }
 
-    private void identifyMissingValueHandler(MustacheEngineBuilder builder) {
-        if (builder.getMissingValueHandler() != null) {
-            missingValueHandler = builder.getMissingValueHandler();
-        } else {
-            // Factory does not make sense here
-            missingValueHandler = new NoOpMissingValueHandler();
-        }
+    private MissingValueHandler identifyMissingValueHandler(
+            MustacheEngineBuilder builder) {
+        return builder.getMissingValueHandler() != null ? builder
+                .getMissingValueHandler() : new NoOpMissingValueHandler();
     }
 
-    private void identifyTemplateLocators(MustacheEngineBuilder builder) {
+    private List<TemplateLocator> identifyTemplateLocators(
+            MustacheEngineBuilder builder) {
         Set<TemplateLocator> builderTemplateLocators = builder
                 .buildTemplateLocators();
         if (!builderTemplateLocators.isEmpty()) {
             List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
                     builder.buildTemplateLocators());
             Collections.sort(locators, new HighPriorityComparator());
-            this.templateLocators = ImmutableList.copyOf(locators);
+            return ImmutableList.copyOf(locators);
+        } else {
+            return null;
         }
     }
 
-    private Set<ConfigurationAware> getConfigurationAwareComponents() {
+    private Set<ConfigurationAware> getConfigurationAwareComponents(
+            Set<ConfigurationAware> initialSet) {
+
         Set<ConfigurationAware> components = new HashSet<ConfigurationAware>();
+
+        if (initialSet != null) {
+            components.addAll(initialSet);
+        } else {
+            components.add(missingValueHandler);
+            components.addAll(helpers.values());
+        }
+
         components.addAll(resolvers);
         if (templateLocators != null) {
             components.addAll(templateLocators);
@@ -394,28 +405,7 @@ class DefaultConfiguration implements Configuration {
         components.add(localeSupport);
         components.add(textSupport);
         components.add(keySplitter);
-        components.add(missingValueHandler);
-        components.addAll(helpers.values());
         return components;
-    }
-
-    @SuppressWarnings("deprecation")
-    private boolean checkDeprecation(ConfigurationKey configKey, Object value,
-            MustacheEngineBuilder engineBuilder) {
-
-        if (EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM.equals(configKey)) {
-            if (engineBuilder.getMissingValueHandler() == null
-                    && Boolean.valueOf(value.toString())) {
-                logger.warn(
-                        "{}.{} is deprecated, use appropriate MissingValueHandler instance instead",
-                        EngineConfigurationKey.class.getSimpleName(),
-                        EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM);
-                // Simulate deprecated settings
-                missingValueHandler = new ThrowingExceptionMissingValueHandler();
-            }
-            return true;
-        }
-        return false;
     }
 
 }
