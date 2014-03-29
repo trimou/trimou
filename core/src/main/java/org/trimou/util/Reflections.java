@@ -70,7 +70,7 @@ public final class Reflections {
             }
 
             if (method.isBridge()) {
-                logger.warn("Skipping bridge method {}", method);
+                logger.debug("Skipping bridge method {}", method);
                 continue;
             }
 
