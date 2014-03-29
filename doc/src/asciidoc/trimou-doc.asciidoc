@@ -292,7 +292,7 @@ Lalala...
 [[helpers]]
 === Built-in helpers
 
-Since version 1.5.0 handlebars-like helpers are supported. There are five helpers registered automatically: +if+, +unless+, +each+, +with+ (see http://handlebarsjs.com for examples :-) and +is+ (an inline version of if). Other helpers may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. See also <<custom_helpers,Helper>> section.
+Since version 1.5.0 handlebars-like helpers are supported. There are five helpers registered automatically: +if+, +unless+, +each+, +with+ (see http://handlebarsjs.com for examples :-) and +is+ (an inline version of if). Other helpers may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. See also <<custom_helpers,Helper>> section.
 
 NOTE: Handlebars support is enabled by default. See +HANDLEBARS_SUPPORT_ENABLED+ in <<configuration,Configuration properties>>.
 
@@ -603,9 +603,9 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 [[custom_helpers]]
 === Helper
 
-+org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate(HelperDefinition)+) and fail fast if there's invalid number of arguments etc.
++org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate()+) and fail fast if there's invalid number of arguments etc.
 
-A helper may be registered via +MustacheEngineBuilder.registerHelper(String, Helper)+. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
+A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
 
 The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Suppose we have a resource bundle +messages.properties+ with the following key/value pair: +my.message.key=My name is %s!+ We can use a +org.trimou.handlebars.i18n.ResourceBundleHelper+ to render the message:
 
@@ -619,7 +619,7 @@ The main advantage of helpers is the ability to consume multiple parameters and 
 My name is Martin!
 ----
 
-Trimou provides other useful helpers which are not automatically registered: +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+. See also javadoc for more info.
+Trimou provides other useful helpers which are not automatically registered: +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+, +org.trimou.handlebars.SetHelper+, +org.trimou.handlebars.IncludeHelper+. See javadoc for more info.
 
 NOTE: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
 
