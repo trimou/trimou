@@ -96,7 +96,7 @@ public class Template implements Mustache {
         return rootSegment;
     }
 
-    public void setRootSegment(RootSegment rootSegment) {
+    void setRootSegment(RootSegment rootSegment) {
         if (this.rootSegment != null) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);

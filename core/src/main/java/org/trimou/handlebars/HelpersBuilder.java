@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableMap;
  * @author Martin Kouba
  * @see MustacheEngineBuilder#registerHelpers(Map)
  */
-public class HelpersBuilder {
+public final class HelpersBuilder {
 
     public static final String EACH = "each";
 
