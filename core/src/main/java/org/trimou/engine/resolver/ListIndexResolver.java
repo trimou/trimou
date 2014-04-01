@@ -27,6 +27,11 @@ import java.util.List;
  * <pre>
  * {{myList.0}}
  * </pre>
+ *
+ * This resolver is not registered by default anymore.
+ *
+ * @author Martin Kouba
+ * @see CombinedIndexResolver
  */
 public class ListIndexResolver extends IndexResolver {
 

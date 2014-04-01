@@ -28,7 +28,10 @@ import java.lang.reflect.Array;
  * {{myArray.0}}
  * </pre>
  *
+ * This resolver is not registered by default anymore.
+ *
  * @author Martin Kouba
+ * @see CombinedIndexResolver
  */
 public class ArrayIndexResolver extends IndexResolver {
 

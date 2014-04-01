@@ -15,8 +15,7 @@
  */
 package org.trimou.engine.config;
 
-import org.trimou.engine.resolver.ArrayIndexResolver;
-import org.trimou.engine.resolver.ListIndexResolver;
+import org.trimou.engine.resolver.CombinedIndexResolver;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ThisResolver;
@@ -34,8 +33,7 @@ public class DefaultConfigurationExtension implements ConfigurationExtension {
         // Add built-in resolvers
         builder.addResolver(new ReflectionResolver())
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
-                .addResolver(new ListIndexResolver())
-                .addResolver(new ArrayIndexResolver());
+                .addResolver(new CombinedIndexResolver());
         // Register built-in helpers
         builder.registerHelpers(HelpersBuilder.builtin().build());
     }
