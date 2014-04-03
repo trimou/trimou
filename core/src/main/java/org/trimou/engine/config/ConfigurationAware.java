@@ -19,18 +19,19 @@ import java.util.Set;
 
 /**
  * Configuration-aware components can define additional configuration keys to be
- * processed (i.e. system properties) and also initialize self with partially
- * initialized engine configuration (it's only safe to inspect properties and
- * global data).
+ * processed and also initialize themselves with partially initialized engine
+ * configuration.
  *
  * @author Martin Kouba
  */
 public interface ConfigurationAware {
 
     /**
-     * Initialize the component. Keep in mind that the configuration itself is
-     * likely not fully initialized yet. It's only safe to inspect properties
-     * and global data.
+     * Initialize the component. Keep in mind that the configuration itself
+     * might not be fully initialized yet. However it should be safe to inspect
+     * non-configurable components (e.g. properties and global data) and obtain
+     * references to other {@link ConfigurationAware} components e.g. (
+     * {@link org.trimou.engine.locale.LocaleSupport}).
      *
      * This method must not be called directly by the application.
      *
