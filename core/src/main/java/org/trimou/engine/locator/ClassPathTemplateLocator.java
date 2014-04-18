@@ -70,7 +70,7 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
      * @param rootPathname
      * @param classLoader
      */
-    private ClassPathTemplateLocator(int priority, String rootPath,
+    public ClassPathTemplateLocator(int priority, String rootPath,
             String suffix, ClassLoader classLoader) {
         super(priority, rootPath, suffix);
         this.classLoader = classLoader;
@@ -83,7 +83,7 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
      * @param rootPathname
      * @param classLoader
      */
-    private ClassPathTemplateLocator(int priority, String rootPath,
+    public ClassPathTemplateLocator(int priority, String rootPath,
             ClassLoader classLoader) {
         super(priority, rootPath);
         this.classLoader = classLoader;
