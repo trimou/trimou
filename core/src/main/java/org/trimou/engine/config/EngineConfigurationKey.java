@@ -16,6 +16,7 @@
 package org.trimou.engine.config;
 
 import org.trimou.engine.interpolation.MissingValueHandler;
+import org.trimou.engine.segment.LineSeparatorSegment;
 import org.trimou.handlebars.Helper;
 
 /**
@@ -51,6 +52,7 @@ public enum EngineConfigurationKey implements ConfigurationKey {
     /**
      * <code>true</code> if lookup miss should result in exception,
      * <code>false</code> otherwise.
+     *
      * @deprecated see also {@link MissingValueHandler}
      */
     @Deprecated
@@ -100,7 +102,13 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * @see Helper
      */
     HANDLEBARS_SUPPORT_ENABLED(true),
-    ;
+    /**
+     * If set to <code>true</code> line separators will be reused within
+     * template to conserve memory. Note that
+     * {@link LineSeparatorSegment#getOrigin()} will not display the correct
+     * info.
+     */
+    REUSE_LINE_SEPARATOR_SEGMENTS(true), ;
 
     private Object defaultValue;
 

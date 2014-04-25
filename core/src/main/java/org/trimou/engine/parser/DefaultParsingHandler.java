@@ -17,6 +17,7 @@ package org.trimou.engine.parser;
 
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_STANDALONE_LINES;
 import static org.trimou.engine.config.EngineConfigurationKey.REMOVE_UNNECESSARY_SEGMENTS;
+import static org.trimou.engine.config.EngineConfigurationKey.REUSE_LINE_SEPARATOR_SEGMENTS;
 import static org.trimou.exception.MustacheProblem.COMPILE_INVALID_TAG;
 
 import java.util.ArrayDeque;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,6 +85,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private int line = 1;
 
+    private int index = 1;
+
     private boolean skipValueEscaping;
 
     private boolean handlebarsSupportEnabled;
@@ -121,6 +125,10 @@ class DefaultParsingHandler implements ParsingHandler {
                 REMOVE_UNNECESSARY_SEGMENTS)) {
             SegmentBases.removeUnnecessarySegments(rootSegmentBase);
         }
+        if (engine.getConfiguration().getBooleanPropertyValue(
+                REUSE_LINE_SEPARATOR_SEGMENTS)) {
+            SegmentBases.reuseLineSeparatorSegments(rootSegmentBase);
+        }
 
         template = new Template(templateName, engine);
         template.setRootSegment(rootSegmentBase.asSegment(template));
@@ -135,7 +143,7 @@ class DefaultParsingHandler implements ParsingHandler {
 
     @Override
     public void text(String text) {
-        addSegment(new SegmentBase(SegmentType.TEXT, text, line));
+        addSegment(new SegmentBase(SegmentType.TEXT, text, line, getIndex()));
     }
 
     @Override
@@ -145,24 +153,25 @@ class DefaultParsingHandler implements ParsingHandler {
 
         switch (tag.getType()) {
         case COMMENT:
-            addSegment(new SegmentBase(tag, line));
+            addSegment(new SegmentBase(tag, line, getIndex()));
             break;
         case UNESCAPE_VARIABLE:
         case VARIABLE:
-            addSegment(new ValueSegmentBase(tag, line, skipValueEscaping));
+            addSegment(new ValueSegmentBase(tag, line, getIndex(),
+                    skipValueEscaping));
             break;
         case PARTIAL:
-            addSegment(new PartialSegmentBase(tag, line));
+            addSegment(new PartialSegmentBase(tag, line, getIndex()));
             break;
         case DELIMITER:
             changeDelimiters(tag.getContent());
-            addSegment(new SegmentBase(tag, line));
+            addSegment(new SegmentBase(tag, line, getIndex()));
             break;
         case SECTION:
         case INVERTED_SECTION:
         case EXTEND:
         case EXTEND_SECTION:
-            push(new ContainerSegmentBase(tag, line));
+            push(new ContainerSegmentBase(tag, line, getIndex()));
             break;
         case SECTION_END:
             endSection(tag.getContent());
@@ -174,7 +183,7 @@ class DefaultParsingHandler implements ParsingHandler {
 
     @Override
     public void lineSeparator(String separator) {
-        addSegment(new SegmentBase(SegmentType.LINE_SEPARATOR, separator, line));
+        addSegment(new LineSeparatorBase(separator, line, getIndex()));
         line++;
     }
 
@@ -333,15 +342,20 @@ class DefaultParsingHandler implements ParsingHandler {
         return (RootSegmentBase) root;
     }
 
+    private int getIndex() {
+        return index++;
+    }
+
     /**
      * Root segment
      */
     static class RootSegmentBase extends ContainerSegmentBase {
 
         RootSegmentBase() {
-            super(SegmentType.ROOT, null, 0);
+            super(SegmentType.ROOT, null, 0, 0);
         }
 
+        @Override
         public RootSegment asSegment(Template template) {
             return new RootSegment(new Origin(template), getSegments(template));
         }
@@ -353,13 +367,14 @@ class DefaultParsingHandler implements ParsingHandler {
 
         private final List<SegmentBase> segments;
 
-        ContainerSegmentBase(SegmentType type, String content, int line) {
-            super(type, content, line);
+        ContainerSegmentBase(SegmentType type, String content, int line,
+                int index) {
+            super(type, content, line, index);
             this.segments = new ArrayList<SegmentBase>();
         }
 
-        ContainerSegmentBase(ParsedTag tag, int line) {
-            super(tag, line);
+        ContainerSegmentBase(ParsedTag tag, int line, int index) {
+            super(tag, line, index);
             this.segments = new ArrayList<SegmentBase>();
         }
 
@@ -372,6 +387,7 @@ class DefaultParsingHandler implements ParsingHandler {
             return segments.add(segment);
         }
 
+        @Override
         ContainerSegment asSegment(Template template) {
             switch (getType()) {
             case SECTION:
@@ -405,18 +421,44 @@ class DefaultParsingHandler implements ParsingHandler {
             return segments.iterator();
         }
 
+        ListIterator<SegmentBase> listIterator() {
+            return segments.listIterator();
+        }
+
+    }
+
+    static class LineSeparatorBase extends SegmentBase {
+
+        // Cache the segment so that reuse is possible
+        private LineSeparatorSegment segment;
+
+        public LineSeparatorBase(String content, int line, int index) {
+            super(SegmentType.LINE_SEPARATOR, content, line, index);
+        }
+
+        @Override
+        Segment asSegment(Template template) {
+            if (segment == null) {
+                segment = new LineSeparatorSegment(getContent(),
+                        getOrigin(template));
+            }
+            return segment;
+        }
+
     }
 
     static class ValueSegmentBase extends SegmentBase {
 
         private boolean unescape;
 
-        ValueSegmentBase(ParsedTag tag, int line, boolean skipValueEscaping) {
-            super(SegmentType.VALUE, tag.getContent(), line);
+        ValueSegmentBase(ParsedTag tag, int line, int index,
+                boolean skipValueEscaping) {
+            super(SegmentType.VALUE, tag.getContent(), line, index);
             unescape = skipValueEscaping ? true : tag.getType().equals(
                     MustacheTagType.UNESCAPE_VARIABLE);
         }
 
+        @Override
         ValueSegment asSegment(Template template) {
             return new ValueSegment(getContent(), getOrigin(template), unescape);
         }
@@ -427,14 +469,15 @@ class DefaultParsingHandler implements ParsingHandler {
 
         private String indentation;
 
-        PartialSegmentBase(ParsedTag tag, int line) {
-            super(tag, line);
+        PartialSegmentBase(ParsedTag tag, int line, int index) {
+            super(tag, line, index);
         }
 
         public void setIndentation(String indentation) {
             this.indentation = indentation;
         }
 
+        @Override
         public PartialSegment asSegment(Template template) {
             return new PartialSegment(getContent(), getOrigin(template),
                     indentation);
@@ -450,16 +493,20 @@ class DefaultParsingHandler implements ParsingHandler {
 
         private final int line;
 
-        SegmentBase(ParsedTag tag, int line) {
+        private final int index;
+
+        SegmentBase(ParsedTag tag, int line, int index) {
             this.content = tag.getContent();
             this.type = SegmentType.fromTag(tag.getType());
             this.line = line;
+            this.index = index;
         }
 
-        SegmentBase(SegmentType type, String content, int line) {
+        SegmentBase(SegmentType type, String content, int line, int index) {
             this.type = type;
             this.content = content;
             this.line = line;
+            this.index = index;
         }
 
         SegmentType getType() {
@@ -476,8 +523,6 @@ class DefaultParsingHandler implements ParsingHandler {
                 return new TextSegment(content, getOrigin(template));
             case COMMENT:
                 return new CommentSegment(content, getOrigin(template));
-            case LINE_SEPARATOR:
-                return new LineSeparatorSegment(content, getOrigin(template));
             case DELIMITERS:
                 return new SetDelimitersSegment(content, getOrigin(template));
             default:
@@ -487,7 +532,7 @@ class DefaultParsingHandler implements ParsingHandler {
         }
 
         protected Origin getOrigin(Template template) {
-            return new Origin(template, line);
+            return new Origin(template, line, index);
         }
 
     }

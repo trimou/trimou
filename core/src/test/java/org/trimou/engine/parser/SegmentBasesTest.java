@@ -21,18 +21,16 @@ public class SegmentBasesTest {
     public void testIsStandaloneLine() {
 
         assertTrue(SegmentBases.isStandaloneLine(ImmutableList
-                .<SegmentBase> of(new SegmentBase(
-                        SegmentType.LINE_SEPARATOR, Strings.LINE_SEPARATOR_LF,
-                        0), new SegmentBase(SegmentType.TEXT, " ", 0),
-                        new ContainerSegmentBase(SegmentType.SECTION,
-                                "test", 0))));
+                .<SegmentBase> of(new SegmentBase(SegmentType.LINE_SEPARATOR,
+                        Strings.LINE_SEPARATOR_LF, 0, 0), new SegmentBase(
+                        SegmentType.TEXT, " ", 0, 0), new ContainerSegmentBase(
+                        SegmentType.SECTION, "test", 0, 0))));
         assertFalse(SegmentBases.isStandaloneLine(ImmutableList
-                .<SegmentBase> of(new SegmentBase(
-                        SegmentType.LINE_SEPARATOR, Strings.LINE_SEPARATOR_LF,
-                        0),
-                        new SegmentBase(SegmentType.TEXT, "Not empty", 0),
-                        new ContainerSegmentBase(SegmentType.SECTION,
-                                "test", 0))));
+                .<SegmentBase> of(new SegmentBase(SegmentType.LINE_SEPARATOR,
+                        Strings.LINE_SEPARATOR_LF, 0, 0), new SegmentBase(
+                        SegmentType.TEXT, "Not empty", 0, 0),
+                        new ContainerSegmentBase(SegmentType.SECTION, "test",
+                                0, 0))));
     }
 
 }

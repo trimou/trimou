@@ -16,9 +16,12 @@
 package org.trimou.engine.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,10 +86,31 @@ final class SegmentBases {
             SegmentBase segment = iterator.next();
             if (segment instanceof ContainerSegmentBase) {
                 removeUnnecessarySegments((ContainerSegmentBase) segment);
-            } else {
-                if (SegmentType.COMMENT.equals(segment.getType())
-                        || SegmentType.DELIMITERS.equals(segment.getType())) {
-                    iterator.remove();
+            } else if (SegmentType.COMMENT.equals(segment.getType())
+                    || SegmentType.DELIMITERS.equals(segment.getType())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    static void reuseLineSeparatorSegments(ContainerSegmentBase container) {
+
+        Map<String, SegmentBase> lineSeparators = new HashMap<String, SegmentBase>();
+
+        for (ListIterator<SegmentBase> iterator = container.listIterator(); iterator
+                .hasNext();) {
+
+            SegmentBase segment = iterator.next();
+
+            if (segment instanceof ContainerSegmentBase) {
+                reuseLineSeparatorSegments((ContainerSegmentBase) segment);
+            } else if (SegmentType.LINE_SEPARATOR.equals(segment.getType())) {
+                SegmentBase lineSeparator = lineSeparators.get(segment
+                        .getContent());
+                if (lineSeparator == null) {
+                    lineSeparators.put(segment.getContent(), segment);
+                } else {
+                    iterator.set(lineSeparator);
                 }
             }
         }

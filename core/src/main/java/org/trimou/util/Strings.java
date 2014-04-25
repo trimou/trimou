@@ -57,4 +57,6 @@ public final class Strings {
 
     public static final String EQUALS = "=";
 
+    public static final String NOT_AVAILABLE = "N/A";
+
 }

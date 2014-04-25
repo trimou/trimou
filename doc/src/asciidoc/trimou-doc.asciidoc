@@ -481,13 +481,11 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 |10
 |The limit of recursive template invocation (partials, template inheritance); 0 - recursive invocation is forbidden.
 
-
 |SKIP_VALUE_ESCAPING
 
 *org.trimou.engine.config.skipValueEscaping*
 |false
 |If +true+ interpolated values are never escaped, i.e. +org.trimou.engine.text.TextSupport.escapeHtml()+ is never called.
-
 
 |DEFAULT_FILE_ENCODING
 
@@ -511,6 +509,12 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 *org.trimou.engine.config.handlebarsSupportEnabled*
 |true
 |Handlebars support is enabled by default. Right now only handlebars-like helpers are supported.
+
+
+|REUSE_LINE_SEPARATOR_SEGMENTS
+*org.trimou.engine.config.reuseLineSeparatorSegments*
+|true
+|If set to +true+ the line separators will be reused within template to conserve memory.
 
 |===
 

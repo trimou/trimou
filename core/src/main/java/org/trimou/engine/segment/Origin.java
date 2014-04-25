@@ -2,6 +2,7 @@ package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.parser.Template;
+import org.trimou.util.Strings;
 
 /**
  * A segment origin.
@@ -20,7 +21,12 @@ public class Origin {
     private final Integer line;
 
     /**
-     * Artificial segment.
+     * An index within the template (segments are parsed sequentially)
+     */
+    private final Integer index;
+
+    /**
+     * An artificial segment.
      *
      * @param template
      */
@@ -28,6 +34,7 @@ public class Origin {
         super();
         this.template = template;
         this.line = null;
+        this.index = null;
     }
 
     /**
@@ -35,18 +42,23 @@ public class Origin {
      * @param template
      * @param line
      */
-    public Origin(Template template, int line) {
+    public Origin(Template template, int line, int index) {
         super();
         this.template = template;
         this.line = line;
+        this.index = index;
     }
 
     public Template getTemplate() {
         return template;
     }
 
-    public int getLine() {
+    public Integer getLine() {
         return line;
+    }
+
+    public Integer getIndex() {
+        return index;
     }
 
     public String getTemplateName() {
@@ -55,8 +67,9 @@ public class Origin {
 
     @Override
     public String toString() {
-        return String.format("[template: %s, line: %s]", template.getName(),
-                line != null ? line : "N/A");
+        return String.format("[template: %s, line: %s, idx: %s]", template
+                .getName(), line != null ? line : Strings.NOT_AVAILABLE,
+                index != null ? index : Strings.NOT_AVAILABLE);
     }
 
 }
