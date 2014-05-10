@@ -43,19 +43,19 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
      *
      * @param priority
      * @param rootPath
-     * @param suffix
      */
-    public FilePathTemplateLocator(int priority, String rootPath, String suffix) {
-        super(priority, rootPath, suffix);
+    public FilePathTemplateLocator(int priority, String rootPath) {
+        this(priority, rootPath, null);
     }
 
     /**
      *
      * @param priority
      * @param rootPath
+     * @param suffix
      */
-    public FilePathTemplateLocator(int priority, String rootPath) {
-        super(priority, rootPath);
+    public FilePathTemplateLocator(int priority, String rootPath, String suffix) {
+        super(priority, rootPath, suffix);
     }
 
     @Override
@@ -186,6 +186,9 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
 
     protected void checkRootDir() {
         File rootDir = getRootDir();
+        if(rootDir == null) {
+            return;
+        }
         if (!isDirectoryUsable(rootDir)) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,

@@ -79,5 +79,25 @@ public class ClassPathTemplateLocatorTest extends PathTemplateLocatorTest {
         assertEquals("Hurá ěščřřžžýá!", read(locator.locate("encoding")));
     }
 
+    @Test
+    public void testLocatorClasspathNoRootPath() throws IOException {
+
+        TemplateLocator locator = ClassPathTemplateLocator.builder(1)
+                .setSuffix("foo").build();
+
+        // Just to init the locator
+        MustacheEngineBuilder.newBuilder().addTemplateLocator(locator).build();
+
+        Set<String> ids = locator.getAllIdentifiers();
+        // No templates available
+        assertEquals(0, ids.size());
+
+        assertEquals("{{foo}}", read(locator.locate("locator/file/index")));
+        assertEquals("bar", read(locator.locate("locator/file/home")));
+        assertEquals("foo", read(locator.locate("locator/file/foo")));
+        assertEquals("{{foo}}", read(locator.locate("locator/file/sub/bar")));
+        assertEquals("{{bar}}", read(locator.locate("locator/file/sub/subsub/qux")));
+        assertEquals("root", read(locator.locate("/oof")));
+    }
 
 }

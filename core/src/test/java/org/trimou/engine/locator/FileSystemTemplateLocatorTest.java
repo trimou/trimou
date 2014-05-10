@@ -2,15 +2,15 @@ package org.trimou.engine.locator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Set;
 
 import org.junit.Test;
+import org.trimou.ExceptionAssert;
+import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
-import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 /**
@@ -72,15 +72,20 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
 
     @Test
     public void testInvalidRootDir() {
-        try {
-            new FileSystemTemplateLocator(1, "_?dsss");
-            fail();
-        } catch (MustacheException e) {
-            if (!e.getCode().equals(
-                    MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION)) {
-                fail("Invalid problem code: " + e);
-            }
-        }
+        MustacheExceptionAssert.expect(
+                MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION).check(
+                new Runnable() {
+                    public void run() {
+                        new FileSystemTemplateLocator(1, "_?dsss");
+                    }
+                });
+        ExceptionAssert.expect(
+                IllegalArgumentException.class).check(
+                new Runnable() {
+                    public void run() {
+                        new FileSystemTemplateLocator(1, null);
+                    }
+                });
     }
 
     @Test

@@ -50,8 +50,6 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
     private final String rootPath;
 
-    private final String realPathSeparator;
-
     private String virtualPathSeparator;
 
     private String defaultFileEncoding;
@@ -62,10 +60,7 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
      * @param rootPath
      */
     public PathTemplateLocator(int priority, String rootPath) {
-        super(priority);
-        this.realPathSeparator = getRealPathSeparator();
-        this.suffix = null;
-        this.rootPath = initRootPath(rootPath);
+        this(priority, rootPath, null);
     }
 
     /**
@@ -76,7 +71,6 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
      */
     public PathTemplateLocator(int priority, String rootPath, String suffix) {
         super(priority);
-        this.realPathSeparator = getRealPathSeparator();
         this.suffix = suffix;
         this.rootPath = initRootPath(rootPath);
     }
@@ -154,8 +148,11 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     }
 
     private String initRootPath(String rootPath) {
-        return rootPath.endsWith(realPathSeparator) ? rootPath
-                : (rootPath + realPathSeparator);
+        if(StringUtils.isEmpty(rootPath)) {
+            return null;
+        }
+        return rootPath.endsWith(getRealPathSeparator()) ? rootPath
+                : (rootPath + getRealPathSeparator());
     }
 
     @Override

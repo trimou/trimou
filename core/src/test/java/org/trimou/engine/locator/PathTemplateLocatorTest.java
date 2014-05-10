@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.trimou.AbstractTest;
+import org.trimou.util.Checker;
 
 /**
  *
@@ -13,6 +14,7 @@ import org.trimou.AbstractTest;
 public abstract class PathTemplateLocatorTest extends AbstractTest {
 
     protected String read(Reader reader) throws IOException {
+        Checker.checkArgumentNotNull(reader);
         BufferedReader bufferedReader = new BufferedReader(reader);
         StringBuilder text = new StringBuilder();
         int character = bufferedReader.read();

@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Checker;
 import org.trimou.util.Strings;
 
 /**
@@ -44,19 +45,19 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
      * @param rootPath
      */
     public FileSystemTemplateLocator(int priority, String rootPath) {
-        super(priority, rootPath);
-        checkRootDir();
+        this(priority, rootPath, null);
     }
 
     /**
      *
      * @param priority
-     * @param suffix
      * @param rootPath
+     * @param suffix
      */
     public FileSystemTemplateLocator(int priority, String rootPath,
             String suffix) {
         super(priority, rootPath, suffix);
+        Checker.checkArgumentNotEmpty(rootPath);
         checkRootDir();
     }
 
@@ -64,14 +65,14 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
     public Reader locateRealPath(String realPath) {
         try {
 
-            File templateFile = new File(new File(getRootPath()),
+            File template = new File(new File(getRootPath()),
                     addSuffix(realPath));
 
-            if (!isFileUsable(templateFile)) {
+            if (!isFileUsable(template)) {
                 return null;
             }
-            logger.debug("Template located: {}", templateFile.getAbsolutePath());
-            return new InputStreamReader(new FileInputStream(templateFile), getDefaultFileEncoding());
+            logger.debug("Template located: {}", template.getAbsolutePath());
+            return new InputStreamReader(new FileInputStream(template), getDefaultFileEncoding());
 
         } catch (FileNotFoundException e) {
             return null;

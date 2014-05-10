@@ -22,14 +22,18 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Collections;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Checker;
 
 /**
- * Classpath template locator.
+ * Classpath template locator. There is a special {@link Builder} for
+ * convenience.
  *
  * Note that for WAR archive, the classpath root is WEB-INF/classes (other parts
  * of the archive are not available).
@@ -41,12 +45,13 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
     private static final Logger logger = LoggerFactory
             .getLogger(ClassPathTemplateLocator.class);
 
-    private ClassLoader classLoader;
+    private final ClassLoader classLoader;
 
     /**
      *
      * @param priority
      * @param rootPath
+     *            If null, no templates will be available for precompilation
      */
     public ClassPathTemplateLocator(int priority, String rootPath) {
         this(priority, rootPath, Thread.currentThread().getContextClassLoader());
@@ -56,7 +61,9 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
      *
      * @param priority
      * @param suffix
+     *            If null, a full template name must be used
      * @param rootPath
+     *            If null, no templates will be available for precompilation
      */
     public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
         this(priority, rootPath, suffix, Thread.currentThread()
@@ -66,34 +73,47 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
     /**
      *
      * @param priority
-     * @param suffix
-     * @param rootPathname
+     * @param rootPath
+     *            If null, no templates will be available for precompilation
      * @param classLoader
+     *            Must not be null
      */
     public ClassPathTemplateLocator(int priority, String rootPath,
-            String suffix, ClassLoader classLoader) {
-        super(priority, rootPath, suffix);
-        this.classLoader = classLoader;
-        checkRootDir();
+            ClassLoader classLoader) {
+        this(priority, rootPath, null, classLoader);
     }
 
     /**
      *
      * @param priority
-     * @param rootPathname
+     * @param suffix
+     *            If null, a full template name must be used
+     * @param rootPath
+     *            If null, no templates will be available for precompilation
      * @param classLoader
+     *            Must not be null
      */
     public ClassPathTemplateLocator(int priority, String rootPath,
-            ClassLoader classLoader) {
-        super(priority, rootPath);
+            String suffix, ClassLoader classLoader) {
+        super(priority, rootPath, suffix);
+        Checker.checkArgumentNotNull(classLoader);
         this.classLoader = classLoader;
         checkRootDir();
     }
 
     @Override
+    public Set<String> getAllIdentifiers() {
+        if (getRootPath() == null) {
+            return Collections.emptySet();
+        }
+        return super.getAllIdentifiers();
+    }
+
+    @Override
     public Reader locateRealPath(String realPath) {
-        InputStream in = classLoader.getResourceAsStream(getRootPath()
-                + addSuffix(realPath));
+        String name = getRootPath() != null ? getRootPath()
+                + addSuffix(realPath) : addSuffix(realPath);
+        InputStream in = classLoader.getResourceAsStream(name);
         if (in == null) {
             return null;
         }
@@ -108,6 +128,10 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
 
     @Override
     protected File getRootDir() {
+
+        if (getRootPath() == null) {
+            return null;
+        }
 
         try {
 
@@ -124,6 +148,74 @@ public class ClassPathTemplateLocator extends FilePathTemplateLocator {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION, e);
         }
+    }
+
+    /**
+     *
+     * @param priority
+     * @return a new instance of builder
+     */
+    public static Builder builder(int priority) {
+        return new Builder(priority);
+    }
+
+    /**
+     *
+     * @author Martin Kouba
+     */
+    public static class Builder {
+
+        private ClassLoader classLoader;
+
+        private int priority;
+
+        private String rootPath;
+
+        private String suffix;
+
+        private Builder(int priority) {
+            this.priority = priority;
+        }
+
+        /**
+         * If not set, TCCL is used.
+         *
+         * @param classLoader
+         * @return builder
+         */
+        public Builder setClassLoader(ClassLoader classLoader) {
+            this.classLoader = classLoader;
+            return this;
+        }
+
+        /**
+         * If not set, no templates will be available for precompilation.
+         *
+         * @param rootPath
+         * @return builder
+         */
+        public Builder setRootPath(String rootPath) {
+            this.rootPath = rootPath;
+            return this;
+        }
+
+        /**
+         * If not set, a full template name must be used.
+         *
+         * @param suffix
+         * @return builder
+         */
+        public Builder setSuffix(String suffix) {
+            this.suffix = suffix;
+            return this;
+        }
+
+        public ClassPathTemplateLocator build() {
+            return classLoader != null ? new ClassPathTemplateLocator(priority,
+                    rootPath, suffix, classLoader)
+                    : new ClassPathTemplateLocator(priority, rootPath, suffix);
+        }
+
     }
 
 }
