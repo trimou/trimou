@@ -74,7 +74,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
 
     private final String defaultBaseName;
 
-    private Format defaultFormat;
+    private final Format defaultFormat;
 
     /**
      *
