@@ -59,15 +59,25 @@ import com.google.common.collect.ImmutableMap;
  */
 class HelperExecutionHandler {
 
-    private static Splitter hashEntrySplitter = Splitter.on(Strings.EQUALS)
-            .omitEmptyStrings();
+    private static final Splitter hashEntrySplitter = Splitter.on(
+            Strings.EQUALS).omitEmptyStrings();
 
-    private static Pattern literalPattern = Patterns
+    private static final Pattern literalPattern = Patterns
             .newHelperStringLiteralPattern();
 
     private final Helper helper;
 
     private final OptionsBuilder optionsBuilder;
+
+    /**
+     *
+     * @param helper
+     * @param optionsBuilder
+     */
+    private HelperExecutionHandler(Helper helper, OptionsBuilder optionsBuilder) {
+        this.helper = helper;
+        this.optionsBuilder = optionsBuilder;
+    }
 
     /**
      *
@@ -80,10 +90,9 @@ class HelperExecutionHandler {
     static HelperExecutionHandler from(String name, MustacheEngine engine,
             HelperAwareSegment segment) {
 
-        Iterator<String> result = splitHelperName(name);
-        String firstToken = result.next();
-
-        Helper helper = engine.getConfiguration().getHelpers().get(firstToken);
+        Iterator<String> parts = splitHelperName(name);
+        Helper helper = engine.getConfiguration().getHelpers()
+                .get(parts.next());
 
         if (helper == null) {
             return null;
@@ -92,8 +101,8 @@ class HelperExecutionHandler {
         ImmutableList.Builder<Object> params = ImmutableList.builder();
         ImmutableMap.Builder<String, Object> hash = ImmutableMap.builder();
 
-        while (result.hasNext()) {
-            String paramOrHash = result.next();
+        while (parts.hasNext()) {
+            String paramOrHash = parts.next();
             if (paramOrHash.contains(Strings.EQUALS)) {
                 Iterator<String> hashResult = hashEntrySplitter.split(
                         paramOrHash).iterator();
@@ -113,20 +122,6 @@ class HelperExecutionHandler {
         return new HelperExecutionHandler(helper, optionsBuilder);
     }
 
-    private static Object getLiteralOrPlaceholder(String value) {
-        Matcher matcher = literalPattern.matcher(value);
-        if (matcher.matches()) {
-            return matcher.group(2);
-        } else {
-            return new DefaultValuePlaceholder(value);
-        }
-    }
-
-    private HelperExecutionHandler(Helper helper, OptionsBuilder optionsBuilder) {
-        this.helper = helper;
-        this.optionsBuilder = optionsBuilder;
-    }
-
     /**
      *
      * @param appendable
@@ -143,6 +138,15 @@ class HelperExecutionHandler {
         }
     }
 
+    private static Object getLiteralOrPlaceholder(String value) {
+        Matcher matcher = literalPattern.matcher(value);
+        if (matcher.matches()) {
+            return matcher.group(2);
+        } else {
+            return new DefaultValuePlaceholder(value);
+        }
+    }
+
     private static class OptionsBuilder implements HelperDefinition {
 
         private final List<Object> parameters;
@@ -153,6 +157,10 @@ class HelperExecutionHandler {
 
         private final MustacheEngine engine;
 
+        private final boolean isParamValuePlaceholderFound;
+
+        private final boolean isHashValuePlaceholderFound;
+
         private OptionsBuilder(List<Object> parameters,
                 Map<String, Object> hash, HelperAwareSegment segment,
                 MustacheEngine engine) {
@@ -160,6 +168,8 @@ class HelperExecutionHandler {
             this.hash = hash;
             this.segment = segment;
             this.engine = engine;
+            this.isParamValuePlaceholderFound = initParamValuePlaceholderFound(parameters);
+            this.isHashValuePlaceholderFound = initHashValuePlaceholderFound(hash);
         }
 
         @Override
@@ -182,47 +192,71 @@ class HelperExecutionHandler {
 
             ImmutableList.Builder<ValueWrapper> valueWrappers = ImmutableList
                     .builder();
-            List<Object> params = null;
-            Map<String, Object> optionalHash = null;
+            List<Object> finalParams;
+            Map<String, Object> finalHash;
 
-            if (Checker.isNullOrEmpty(parameters)) {
-                params = Collections.emptyList();
-            } else {
-                params = new ArrayList<Object>();
+            if (isParamValuePlaceholderFound) {
+                finalParams = new ArrayList<Object>();
                 for (Object param : parameters) {
                     if (param instanceof ValuePlaceholder) {
                         ValueWrapper wrapper = executionContext
                                 .getValue(((ValuePlaceholder) param).getName());
                         valueWrappers.add(wrapper);
-                        params.add(wrapper.get());
+                        finalParams.add(wrapper.get());
                     } else {
-                        params.add(param);
+                        finalParams.add(param);
                     }
                 }
-                params = Collections.unmodifiableList(params);
+                finalParams = Collections.unmodifiableList(finalParams);
+            } else {
+                finalParams = parameters;
             }
 
-            if (Checker.isNullOrEmpty(hash)) {
-                optionalHash = Collections.emptyMap();
-            } else {
-                optionalHash = new HashMap<String, Object>();
+            if(isHashValuePlaceholderFound) {
+                finalHash = new HashMap<String, Object>();
                 for (Entry<String, Object> hashEntry : hash.entrySet()) {
                     if (hashEntry.getValue() instanceof ValuePlaceholder) {
                         ValueWrapper wrapper = executionContext
                                 .getValue(((ValuePlaceholder) hashEntry
                                         .getValue()).getName());
                         valueWrappers.add(wrapper);
-                        optionalHash.put(hashEntry.getKey(), wrapper.get());
+                        finalHash.put(hashEntry.getKey(), wrapper.get());
                     } else {
-                        optionalHash.put(hashEntry.getKey(),
+                        finalHash.put(hashEntry.getKey(),
                                 hashEntry.getValue());
                     }
                 }
-                optionalHash = Collections.unmodifiableMap(optionalHash);
+                finalHash = Collections.unmodifiableMap(finalHash);
+            } else {
+                finalHash = hash;
             }
 
             return new DefaultOptions(appendable, executionContext, segment,
-                    params, optionalHash, valueWrappers.build(), engine);
+                    finalParams, finalHash, valueWrappers.build(), engine);
+        }
+
+        private boolean initParamValuePlaceholderFound(List<Object> parameters) {
+            if (parameters.isEmpty()) {
+                return false;
+            }
+            for (Object param : parameters) {
+                if (param instanceof ValuePlaceholder) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean initHashValuePlaceholderFound(Map<String, Object> hash) {
+            if (hash.isEmpty()) {
+                return false;
+            }
+            for (Entry<String, Object> entry : hash.entrySet()) {
+                if (entry.getValue() instanceof ValuePlaceholder) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }
@@ -291,7 +325,8 @@ class HelperExecutionHandler {
 
             executionContext.push(TEMPLATE_INVOCATION, partialTemplate);
             // Indentation is not supported
-            partialTemplate.getRootSegment().execute(appendable, executionContext);
+            partialTemplate.getRootSegment().execute(appendable,
+                    executionContext);
             executionContext.pop(TEMPLATE_INVOCATION);
         }
 
@@ -331,7 +366,8 @@ class HelperExecutionHandler {
                 wrapper.release();
             }
             if (pushed > 0) {
-                // Remove all remaining pushed objects at the end of helper execution
+                // Remove all remaining pushed objects at the end of helper
+                // execution
                 for (int i = 0; i < pushed; i++) {
                     executionContext.pop(TargetStack.CONTEXT);
 
