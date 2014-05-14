@@ -611,21 +611,42 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 
 A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
 
-The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Suppose we have a resource bundle +messages.properties+ with the following key/value pair: +my.message.key=My name is %s!+ We can use a +org.trimou.handlebars.i18n.ResourceBundleHelper+ to render the message:
+WARNING: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers). However, intensive use of helpers may result in significant performance decrease.
+
+The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Suppose we have the following resource bundle file:
+
+.messages.properties
+----
+my.message.key=My name is %s!
+hello.key.messageformat=Hello {0}!
+----
+
+We can use a +org.trimou.handlebars.i18n.ResourceBundleHelper+ to render messages:
+
+[source,java]
+.Register the helper
+----
+MustacheEngine engine = MustacheEngineBuilder
+                           .newBuilder()
+                           .registerHelper("msg", new ResourceBundleHelper("messages")) <1>
+                           .build();
+...
+----
 
 .Template
 ----
-{{msg "my.message.key" "Martin" baseName="messages" format="printf"}}
+{{msg "my.message.key" "Martin"}}
+{{msg "hello.key.messageformat" "world" format="message"}}
 ----
 
 .Expected output
 ----
 My name is Martin!
+Hello world!
 ----
 
 Trimou provides other useful helpers which are not automatically registered: +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+, +org.trimou.handlebars.SetHelper+, +org.trimou.handlebars.IncludeHelper+. See javadoc for more info.
 
-NOTE: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
 
 [[missingvaluehandler]]
 === MissingValueHandler

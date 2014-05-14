@@ -72,6 +72,14 @@ div.admonitionblock .icon .title {
     padding: 10px;
 }
 
+div.warning {
+    border: 1px solid #F9A996;
+}
+
+div.note {
+    border: 1px solid #7dcf7d;
+}
+
 div.admonitionblock .content {
     padding: 15px;
 }
