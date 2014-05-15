@@ -53,8 +53,22 @@ public class ExecutionContextBuilder {
      *
      * @param debugMode
      * @return the built execution context
+     * @deprecated The builder pattern does not make much sense here. Use {@link #build(MustacheEngine, Object, boolean)} instead.
      */
+    @Deprecated
     public ExecutionContext build(boolean debugMode) {
+        return build(engine, data, debugMode);
+    }
+
+    /**
+     *
+     * @param engine
+     * @param data
+     * @param debugMode
+     * @return the execution context
+     */
+    public static ExecutionContext build(MustacheEngine engine, Object data,
+            boolean debugMode) {
 
         ExecutionContext context = null;
 

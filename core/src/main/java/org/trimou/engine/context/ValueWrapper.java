@@ -20,7 +20,7 @@ import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 
 /**
- * Wrapper for the resolved value object and release callbacks.
+ * Wrapper for the resolved value object and release callbacks. It is not thread-safe.
  *
  * The {@link #release()} method must be always called after the wrapper is
  * used, even if the resolved object is <code>null</code> (there might be still
@@ -33,10 +33,6 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
         implements ResolutionContext {
 
     private Object value = null;
-
-    ValueWrapper() {
-        super();
-    }
 
     /**
      * @return the resolved object or <code>null</code> if no such object exists

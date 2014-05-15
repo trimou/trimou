@@ -83,8 +83,8 @@ public class Template implements Mustache {
             renderingStarted(event);
 
             // Build the execution context and execute the root segment
-            rootSegment.execute(appendable, new ExecutionContextBuilder(engine)
-                    .withData(data).build(debugMode));
+            rootSegment.execute(appendable,
+                    ExecutionContextBuilder.build(engine, data, debugMode));
 
             renderingFinished(event);
         } finally {

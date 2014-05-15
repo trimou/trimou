@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.trimou.annotations.Internal;
 
 /**
+ * Abstract {@link ReleaseCallbackContainer}. It's not thread-safe.
  *
  * @author Martin Kouba
  */
