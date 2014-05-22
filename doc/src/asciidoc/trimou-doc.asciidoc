@@ -144,7 +144,7 @@ The content is rendered if there is no object found in the context, or is a +Boo
 .Examples:
 
 ----
-{{#iterable}}
+{{^iterable}}
   This line will be rendered if the resolved iterable has no elements
 {{/iterable}}
 ----
