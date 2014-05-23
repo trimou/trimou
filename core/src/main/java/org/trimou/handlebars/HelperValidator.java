@@ -64,7 +64,7 @@ public final class HelperValidator {
         }
 
         if (size > paramSize) {
-            logger.debug(
+            logger.trace(
                     "{} superfluous parameters detected [helper: {}, template: {}, line: {}]",
                     size - paramSize, helperClazz.getName(), definition
                             .getTagInfo().getTemplateName(), definition
@@ -121,7 +121,7 @@ public final class HelperValidator {
        }
 
        if (size > hashSize) {
-           logger.debug(
+           logger.trace(
                    "{} superfluous hash entries detected [helper: {}, template: {}, line: {}]",
                    size - hashSize, helperClazz.getName(), definition
                            .getTagInfo().getTemplateName(), definition
