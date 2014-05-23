@@ -27,38 +27,52 @@ import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
+import org.trimou.util.Arrays;
 
 /**
  * <p>
  * First register the helper instance:
  * </p>
  * <code>
- * MustacheEngineBuilder.newBuilder().registerHelper("msg", new ResourceBundleHelper("msg")).build();
+ * MustacheEngineBuilder.newBuilder().registerHelper("msg", new ResourceBundleHelper("messages")).build();
  * </code>
+ *
  * <p>
  * Than use the helper in the template:
  * </p>
  * <code>
  * {{msg "my.key"}}
  * </code>
+ *
  * <p>
  * The key need not be a string literal:
  * </p>
  * <code>
  * {{msg foo.key}}
  * </code>
+ *
  * <p>
  * You may also override the default baseName:
  * </p>
  * <code>
  * {{msg "my.key" baseName="messages"}}
  * </code>
+ *
  * <p>
- * And also use {@link Formatter} or {@link MessageFormat}:
+ * And also use message parameters and {@link Formatter} or
+ * {@link MessageFormat}:
  * </p>
- * </p> <code>
- * {{msg "my.key" format="printf"}}
- * </code> See also {@link Format} for more info about formats.
+ * <code>
+ * hello.key=Hello %s!
+ * </code>
+ * <p/>
+ * <code>
+ * {{msg "hello.key" "world" format="printf"}}
+ * </code>
+ *
+ * <p>
+ * See also {@link Format} for more info about formats.
+ * </p>
  *
  * @author Martin Kouba
  * @see LocaleSupport
@@ -85,14 +99,14 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     }
 
     /**
-    *
-    * @param defaultBaseName
-    * @param defaultFormat
-    */
-   public ResourceBundleHelper(String defaultBaseName, Format defaultFormat) {
-       this.defaultBaseName = defaultBaseName;
-       this.defaultFormat = defaultFormat;
-   }
+     *
+     * @param defaultBaseName
+     * @param defaultFormat
+     */
+    public ResourceBundleHelper(String defaultBaseName, Format defaultFormat) {
+        this.defaultBaseName = defaultBaseName;
+        this.defaultFormat = defaultFormat;
+    }
 
     @Override
     public void execute(Options options) {
@@ -145,7 +159,10 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     }
 
     private Object[] getFormatParams(List<Object> params) {
-        return params.subList(1, params.size()).toArray();
+        if (params.size() > 1) {
+            return params.subList(1, params.size()).toArray();
+        }
+        return Arrays.EMPTY_OBJECT_ARRAY;
     }
 
     /**
