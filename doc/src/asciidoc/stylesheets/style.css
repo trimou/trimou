@@ -80,6 +80,10 @@ div.note {
     border: 1px solid #7dcf7d;
 }
 
+div.tip {
+    border: 1px solid yellow;
+}
+
 div.admonitionblock .content {
     padding: 15px;
 }
