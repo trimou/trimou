@@ -23,7 +23,7 @@ The most notable enhancements are:
 * Template caching
 * Extended processing of lambdas
 * Template inheritance
-* Very basic i18n support
+* Basic i18n support
 * Extension points (template locators, resolvers, text support, ...)
 
 [[variables]]
@@ -521,7 +521,40 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 [[i18n]]
 === Basic i18n support
 
-Trimou has a very basic i18n support. Basically it provides three optional resolvers: +org.trimou.engine.resolver.i18n.NumberFormatResolver+, +org.trimou.engine.resolver.i18n.DateTimeFormatResolver+, +org.trimou.engine.resolver.i18n.ResourceBundleResolver+ and one optional lambda: +org.trimou.lambda.i18n.ResourceBundleLambda+. All these components rely  on +org.trimou.engine.locale.LocaleSupport+ implementation to get the current +Locale+. See javadoc for more info.
+Trimou has a basic i18n support. There are some optional components provided to handle i18n requirements. All these components rely  on +org.trimou.engine.locale.LocaleSupport+ implementation to get the current +Locale+, see also <<locale_support>>.
+
+[cols="2,1,2" options="header"]
+.i18n components
+|===
+|Type
+|Class
+|Description
+
+|*Resolver*
+|+org.trimou.engine.resolver.i18n.NumberFormatResolver+
+|Basic number formatting.
+
+|*Resolver*
+|+org.trimou.engine.resolver.i18n.DateTimeFormatResolver+
+|Basic date and time formatting.
+
+|*Resolver*
+|+org.trimou.engine.resolver.i18n.ResourceBundleResolver+
+|Resolves localized messages. Unlike +ResourceBundleLambda+ this resolver is not limited to String-based values. However keep in mind that resource bundle keys may not contain dots.
+
+|*Helper*
+|+org.trimou.handlebars.i18n.DateTimeFormatHelper+
+|This is an alternative to +DateTimeFormatResolver+. The main advantage lies in the ability to specify custom pattern per tag: +{{formatTime now pattern="DD-MM-yyyy HH:mm"}}+.
+
+|*Helper*
+|+org.trimou.handlebars.i18n.ResourceBundleHelper+
+|The most flexible way of rendering localized messages. Supports message parameters and multiple resource bundles.
+
+|*Lambda*
+|+org.trimou.lambda.i18n.ResourceBundleLambda+
+|Renders localized messages. Unlike +ResourceBundleResolver+ this lambda supports resource bundle keys that contain dots.
+
+|===
 
 ==== DateTimeFormatResolver example
 
@@ -546,6 +579,16 @@ results in something similar:
 ----
 Now: 03-05-2013 22:05
 ----
+
+[[debug]]
+=== Debugging
+
+If you encounter a problem during template processing/rendering, try to:
+
+* configure http://www.slf4j.org/[Simple Logging Facade for Java (SLF4J)] - increase the log level for +org.trimou+ loggers
+* enable <<configuration,debug mode>> - this disables the template cache and provides some more logging during template rendering (otherwise disabled due to performance)
+* implement your own <<missingvaluehandler,MissingValueHandler>> - to handle variable miss during interpolation of a variable tag
+* use <<custom_helpers,LogHelper>> - this might useful for production environments
 
 [[how_to_extend]]
 == How to extend
@@ -645,7 +688,16 @@ My name is Martin!
 Hello world!
 ----
 
-Trimou provides other useful helpers which are not automatically registered: +org.trimou.handlebars.NumberIsEvenHelper+, +org.trimou.handlebars.NumberIsOddHelper+ and +org.trimou.handlebars.i18n.DateTimeFormatHelper+, +org.trimou.handlebars.SetHelper+, +org.trimou.handlebars.IncludeHelper+. See javadoc for more info.
+Trimou provides other useful helpers which are not automatically registered:
+
+* +org.trimou.handlebars.NumberIsEvenHelper+
+* +org.trimou.handlebars.NumberIsOddHelper+
+* +org.trimou.handlebars.i18n.DateTimeFormatHelper+
+* +org.trimou.handlebars.SetHelper+
+* +org.trimou.handlebars.IncludeHelper+
+* +org.trimou.handlebars.LogHelper+
+
+See the javadoc for more info.
 
 
 [[missingvaluehandler]]
