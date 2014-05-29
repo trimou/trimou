@@ -3,6 +3,7 @@ package org.trimou.prettytime.resolver;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -144,7 +145,8 @@ public class PrettyTimeResolverTest {
                     @Override
                     public PrettyTime createPrettyTime(Locale locale) {
                         PrettyTime prettyTime = new PrettyTime(locale);
-                        prettyTime.getUnit(JustNow.class).setMaxQuantity(1000L * 2L);
+                        prettyTime.getUnit(JustNow.class).setMaxQuantity(
+                                1000L * 2L);
                         return prettyTime;
                     }
                 });
@@ -177,6 +179,36 @@ public class PrettyTimeResolverTest {
                         + bundle.getString("SecondPastSuffix"),
                 resolver.resolve(new Date().getTime() - 4000l, "prettyTime",
                         null));
+    }
+
+    @Test
+    public void testDisabledResolver() {
+
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(new LocaleSupport() {
+
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return Locale.ENGLISH;
+                    }
+
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
+
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(new PrettyTimeResolver())
+                .setProperty(PrettyTimeResolver.ENABLED_KEY, false).build();
+
+        assertTrue(engine.getConfiguration().getResolvers().isEmpty());
+        assertEquals(
+                "",
+                engine.compileMustache("disabled_prettytime_resolver",
+                        "{{this.prettyTime}}").render(new Date()));
     }
 
 }

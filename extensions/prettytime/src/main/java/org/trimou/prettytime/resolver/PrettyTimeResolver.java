@@ -18,7 +18,6 @@ package org.trimou.prettytime.resolver;
 import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
@@ -31,28 +30,46 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.resolver.TransformResolver;
+import org.trimou.engine.validation.Validateable;
 import org.trimou.prettytime.DefaultPrettyTimeFactory;
 import org.trimou.prettytime.PrettyTimeFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * PrettyTime resolver.
  *
+ * <p>
+ * Use {@link #MATCH_NAME_KEY} configuration property to customize the name to
+ * match.
+ * </p>
+ *
+ * <p>
+ * If the configuration property with key {@link #ENABLED_KEY} resolves to
+ * false, the resolver is marked as invalid.
+ * </p>
+ *
  * @author Martin Kouba
+ * @see Resolver
  */
-public class PrettyTimeResolver extends TransformResolver {
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(PrettyTimeResolver.class);
+public class PrettyTimeResolver extends TransformResolver implements
+        Validateable {
 
     public static final int PRETTY_TIME_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
             PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
+
+    public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
+            PrettyTimeResolver.class.getName() + ".enabled", true);
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(PrettyTimeResolver.class);
 
     private final PrettyTimeFactory prettyTimeFactory;
 
@@ -92,13 +109,15 @@ public class PrettyTimeResolver extends TransformResolver {
 
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
-        return Collections.singleton(MATCH_NAME_KEY);
+        return ImmutableSet.of(MATCH_NAME_KEY, ENABLED_KEY);
     }
 
     @Override
     public void init(Configuration configuration) {
+        if (!configuration.getBooleanPropertyValue(ENABLED_KEY)) {
+            return;
+        }
         super.init(configuration);
-
         setMatchingNames(configuration.getStringPropertyValue(MATCH_NAME_KEY));
         prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
                 .build(new CacheLoader<Locale, PrettyTime>() {
@@ -120,6 +139,11 @@ public class PrettyTimeResolver extends TransformResolver {
             return new Date((Long) contextObject);
         }
         return null;
+    }
+
+    @Override
+    public boolean isValid() {
+        return prettyTimeCache != null;
     }
 
 }
