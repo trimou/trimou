@@ -17,10 +17,16 @@ package org.trimou.servlet.resolver;
 
 import static org.trimou.engine.priority.Priorities.rightAfter;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.listener.MustacheCompilationEvent;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.listener.MustacheParsingEvent;
@@ -28,19 +34,30 @@ import org.trimou.engine.listener.MustacheRenderingEvent;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.resource.ReleaseCallback;
+import org.trimou.engine.validation.Validateable;
 import org.trimou.servlet.RequestHolder;
 
 /**
  * This resolver must be also registered as a {@link MustacheListener} in order
  * to work correctly.
  *
+ * <p>
+ * If the configuration property with key {@link #ENABLED_KEY} resolves to
+ * false, the resolver is marked as invalid.
+ * </p>
+ *
  * @author Martin Kouba
+ * @see Resolver
  */
 public class HttpServletRequestResolver extends AbstractResolver implements
-        MustacheListener {
+        MustacheListener, Validateable {
 
     public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+
+    public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
+            HttpServletRequestResolver.class.getName() + ".enabled", true);
 
     private static final String NAME_REQUEST = "request";
 
@@ -48,6 +65,8 @@ public class HttpServletRequestResolver extends AbstractResolver implements
             .getLogger(HttpServletRequestResolver.class);
 
     private static final ThreadLocal<HttpServletRequestWrapper> REQUEST_WRAPPER = new ThreadLocal<HttpServletRequestWrapper>();
+
+    private boolean isEnabled;
 
     public HttpServletRequestResolver() {
         this(SERVLET_REQUEST_RESOLVER_PRIORITY);
@@ -85,6 +104,16 @@ public class HttpServletRequestResolver extends AbstractResolver implements
     }
 
     @Override
+    public void init(Configuration configuration) {
+        this.isEnabled = configuration.getBooleanPropertyValue(ENABLED_KEY);
+    }
+
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(ENABLED_KEY);
+    }
+
+    @Override
     public void renderingStarted(MustacheRenderingEvent event) {
         event.registerReleaseCallback(new ReleaseCallback() {
             @Override
@@ -108,6 +137,11 @@ public class HttpServletRequestResolver extends AbstractResolver implements
     @Override
     public void parsingStarted(MustacheParsingEvent event) {
         // No-op
+    }
+
+    @Override
+    public boolean isValid() {
+        return isEnabled;
     }
 
 }
