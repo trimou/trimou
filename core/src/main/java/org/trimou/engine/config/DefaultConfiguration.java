@@ -44,6 +44,7 @@ import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.engine.text.TextSupportFactory;
+import org.trimou.engine.validation.Validateable;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
@@ -99,21 +100,33 @@ class DefaultConfiguration implements Configuration {
                 iterator.next().register(builder);
             }
         }
-        this.resolvers = identifyResolvers(builder);
+
+        // Non-final components
+        List<Resolver> resolvers = identifyResolvers(builder);
+        List<MustacheListener> mustacheListeners = new ArrayList<MustacheListener>(
+                builder.buildMustacheListeners());
+        MissingValueHandler missingValueHandler = identifyMissingValueHandler(builder);
+        Map<String, Helper> helpers = builder.buildHelpers();
+
         this.textSupport = identifyTextSupport(builder);
         this.localeSupport = identifyLocaleSupport(builder);
         this.keySplitter = identifyKeySplitter(builder);
         this.templateLocators = identifyTemplateLocators(builder);
-        this.mustacheListeners = builder.buildMustacheListeners();
         this.globalData = builder.buildGlobalData();
-        MissingValueHandler missingValueHandler = identifyMissingValueHandler(builder);
-        Map<String, Helper> helpers = builder.buildHelpers();
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys
-        this.properties = initializeProperties(builder, ImmutableSet
-                .<ConfigurationAware> builder().add(missingValueHandler)
-                .addAll(helpers.values()).build());
+        Set<ConfigurationAware> components = ImmutableSet
+                .<ConfigurationAware> builder()
+                .addAll(resolvers)
+                .add(textSupport)
+                .add(localeSupport)
+                .add(keySplitter)
+                .addAll(templateLocators != null ? templateLocators
+                        : Collections.<ConfigurationAware> emptySet())
+                .addAll(mustacheListeners).addAll(helpers.values()).build();
+
+        this.properties = initializeProperties(builder, components);
 
         if (getBooleanPropertyValue(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
             logger.warn(
@@ -132,7 +145,15 @@ class DefaultConfiguration implements Configuration {
             this.helpers = helpers;
         }
 
-        initializeConfigurationAwareComponents();
+        initializeConfigurationAwareComponents(components);
+
+        // Filter out invalid components
+        removeInvalidComponents(resolvers);
+        removeInvalidComponents(mustacheListeners);
+
+        this.resolvers = ImmutableList.copyOf(resolvers);
+        this.mustacheListeners = mustacheListeners.isEmpty() ? null
+                : mustacheListeners;
     }
 
     @Override
@@ -263,8 +284,9 @@ class DefaultConfiguration implements Configuration {
         return builder.toString();
     }
 
-    private void initializeConfigurationAwareComponents() {
-        for (ConfigurationAware component : getConfigurationAwareComponents(null)) {
+    private void initializeConfigurationAwareComponents(
+            Set<ConfigurationAware> components) {
+        for (ConfigurationAware component : components) {
             component.init(this);
         }
     }
@@ -276,7 +298,7 @@ class DefaultConfiguration implements Configuration {
             resolvers.addAll(builderResolvers);
             Collections.sort(resolvers, new HighPriorityComparator());
         }
-        return ImmutableList.copyOf(resolvers);
+        return resolvers;
     }
 
     private Map<String, Object> initializeProperties(
@@ -335,13 +357,13 @@ class DefaultConfiguration implements Configuration {
     }
 
     private Set<ConfigurationKey> getConfigurationKeysToProcess(
-            Set<ConfigurationAware> initialSet) {
+            Set<ConfigurationAware> components) {
         Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
         // Global keys
         for (ConfigurationKey key : EngineConfigurationKey.values()) {
             keys.add(key);
         }
-        for (ConfigurationAware component : getConfigurationAwareComponents(initialSet)) {
+        for (ConfigurationAware component : components) {
             keys.addAll(component.getConfigurationKeys());
         }
         return keys;
@@ -383,19 +405,16 @@ class DefaultConfiguration implements Configuration {
         }
     }
 
+    @SuppressWarnings("unused")
     private Set<ConfigurationAware> getConfigurationAwareComponents(
             Set<ConfigurationAware> initialSet) {
 
         Set<ConfigurationAware> components = new HashSet<ConfigurationAware>();
 
-        if (initialSet != null) {
-            components.addAll(initialSet);
-        } else {
-            components.add(missingValueHandler);
-            components.addAll(helpers.values());
-        }
-
+        components.add(missingValueHandler);
+        components.addAll(helpers.values());
         components.addAll(resolvers);
+
         if (templateLocators != null) {
             components.addAll(templateLocators);
         }
@@ -406,6 +425,16 @@ class DefaultConfiguration implements Configuration {
         components.add(textSupport);
         components.add(keySplitter);
         return components;
+    }
+
+    private <T> void removeInvalidComponents(Iterable<T> iterable) {
+        for (Iterator<T> iterator = iterable.iterator(); iterator.hasNext();) {
+            T component = iterator.next();
+            if (component instanceof Validateable
+                    && !((Validateable) component).isValid()) {
+                iterator.remove();
+            }
+        }
     }
 
 }

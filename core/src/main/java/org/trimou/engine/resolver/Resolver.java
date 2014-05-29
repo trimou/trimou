@@ -21,6 +21,15 @@ import org.trimou.engine.priority.WithPriority;
 /**
  * Value resolver. Implementation must be thread-safe.
  *
+ * <p>
+ * Any resolver may implement optional interface
+ * {@link org.trimou.engine.validation.Validateable}. The validation is
+ * performed before a {@link org.trimou.engine.MustacheEngine} is built. An
+ * invalid resolver is not put into service, i.e. it's not included in the final
+ * list of resolvers returned by
+ * {@link org.trimou.engine.config.Configuration#getResolvers()}.
+ * </p>
+ *
  * @author Martin Kouba
  */
 public interface Resolver extends WithPriority, ConfigurationAware {

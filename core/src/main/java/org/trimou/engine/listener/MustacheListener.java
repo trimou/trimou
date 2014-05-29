@@ -26,12 +26,25 @@ import org.trimou.lambda.Lambda;
 /**
  * Receives notifications about {@link Mustache} processing.
  *
+ * <p>
  * Listeners are invoked in the order of their registration, except for
  * {@link #renderingFinished(MustacheRenderingEvent)} method which is invoked in
  * reverse order.
+ * </p>
  *
+ * <p>
  * Code inside a listener may throw an unchecked exception - this aborts further
  * processing of the template and no more listeners are invoked afterwards.
+ * </p>
+ *
+ * <p>
+ * Any listener may implement optional interface
+ * {@link org.trimou.engine.validation.Validateable}. The validation is
+ * performed before a {@link org.trimou.engine.MustacheEngine} is built. An
+ * invalid listener is not put into service, i.e. it's not included in the final
+ * list of listeners returned by
+ * {@link org.trimou.engine.config.Configuration#getMustacheListeners()}.
+ * </p>
  *
  * @author Martin Kouba
  * @see MustacheEngineBuilder#addMustacheListener(MustacheListener)
