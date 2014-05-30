@@ -45,6 +45,22 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 "",
                 engine.compileMustache("if_helper2", "{{#if this}}hello{{/if}}")
                         .render(false));
+        assertEquals(
+                "hello",
+                engine.compileMustache("if_helper3", "{{#if this this}}hello{{/if}}")
+                        .render(Boolean.TRUE));
+        assertEquals(
+                "",
+                engine.compileMustache("if_helper4", "{{#if this \"\"}}hello{{/if}}")
+                        .render(Boolean.TRUE));
+        assertEquals(
+                "hello",
+                engine.compileMustache("if_helper5", "{{#if this \"true\" this}}hello{{/if}}")
+                        .render(Boolean.TRUE));
+        assertEquals(
+                "hello",
+                engine.compileMustache("if_helper6", "{{#if this \"\" logic=\"or\"}}hello{{/if}}")
+                        .render(Boolean.TRUE));
         assertCompilationFails(engine, "if_helper_fail1",
                 "{{#if}}{{this}}{{/if}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
@@ -63,6 +79,18 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 "",
                 engine.compileMustache("unless_helper2",
                         "{{#unless this}}hello{{/unless}}").render(true));
+        assertEquals(
+                "",
+                engine.compileMustache("unless_helper3",
+                        "{{#unless this this}}hello{{/unless}}").render(true));
+        assertEquals(
+                "hello",
+                engine.compileMustache("unless_helper4",
+                        "{{#unless this \"\"}}hello{{/unless}}").render(true));
+        assertEquals(
+                "",
+                engine.compileMustache("unless_helper5",
+                        "{{#unless this \"\" logic=\"and\"}}hello{{/unless}}").render(true));
         assertCompilationFails(engine, "unless_helper_fail1",
                 "{{#unless}}{{this}}{{/unless}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);

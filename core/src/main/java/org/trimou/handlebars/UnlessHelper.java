@@ -18,17 +18,47 @@ package org.trimou.handlebars;
 import org.trimou.util.Checker;
 
 /**
- * Conditionally renders a block if the first parameter is "falsy".
+ * Conditionally renders a block if the param is "falsy".
+ *
+ * <pre>
+ * {{#unless item.active}}
+ *   Not active.
+ * {{/unless}}
+ * </pre>
+ *
+ * <p>
+ * Multiple params may be evaluated. The default evaluation logic is
+ * disjunction:
+ * </p>
+ *
+ * <pre>
+ * {{#unless item.active item.valid}}
+ *   Not active or not valid.
+ * {{/unless}}
+ * </pre>
+ *
+ * <p>
+ * The evaluation logic may be specified:
+ * </p>
+ *
+ * <pre>
+ * {{#unless item.active item.valid logic="and"}}
+ *   Nor active nor valid.
+ * {{/unless}}
+ * </pre>
  *
  * @author Martin Kouba
  */
-public class UnlessHelper extends BasicSectionHelper {
+public class UnlessHelper extends ParamMatchingSectionHelper {
 
     @Override
-    public void execute(Options options) {
-        if (Checker.isFalsy(options.getParameters().get(0))) {
-            options.fn();
-        }
+    protected boolean isMatching(Object value) {
+        return Checker.isFalsy(value);
+    }
+
+    @Override
+    protected EvaluationLogic getDefaultLogic() {
+        return EvaluationLogic.OR;
     }
 
 }
