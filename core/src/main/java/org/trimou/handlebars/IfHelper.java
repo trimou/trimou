@@ -18,21 +18,42 @@ package org.trimou.handlebars;
 import org.trimou.util.Checker;
 
 /**
- * <code>
+ * Conditionally renders a block if the param is not "falsy".
+ *
+ * <pre>
  * {{#if item.active}}
- * {{item.name}}
+ *   {{item.name}}
  * {{/if}}
- * </code>
+ * </pre>
+ *
+ * <p>
+ * Multiple params may be evaluated. The default evaluation logic is
+ * conjunction:
+ * </p>
+ *
+ * <pre>
+ * {{#if item.active item.valid}}
+ *   Active and valid.
+ * {{/if}}
+ * </pre>
+ *
+ * <p>
+ * The evaluation logic may be specified:
+ * </p>
+ *
+ * <pre>
+ * {{#if item.active item.valid logic="or"}}
+ *   Active or valid.
+ * {{/if}}
+ * </pre>
  *
  * @author Martin Kouba
  */
-public class IfHelper extends BasicSectionHelper {
+public class IfHelper extends ParamMatchingSectionHelper {
 
     @Override
-    public void execute(Options options) {
-        if (!Checker.isFalsy(options.getParameters().get(0))) {
-            options.fn();
-        }
+    protected boolean isMatching(Object value) {
+        return !Checker.isFalsy(value);
     }
 
 }
