@@ -123,4 +123,17 @@ public class OptionsTest extends AbstractTest {
                         "HELLO"));
     }
 
+    @Test
+    public void testPeek() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelper("test", new AbstractHelper() {
+                    @Override
+                    public void execute(Options options) {
+                        options.append(options.peek().toString());
+                    }
+                }).build();
+        assertEquals("HELLO", engine.compileMustache("helper_peek", "{{test}}")
+                .render("HELLO"));
+    }
+
 }

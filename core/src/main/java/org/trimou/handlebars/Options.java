@@ -58,11 +58,22 @@ public interface Options extends HelperDefinition {
     void push(Object contextObject);
 
     /**
+     * Removes the object at the top of the context stack and returns that
+     * object.
+     *
      * @return the object at the top of the context stack
      * @throws MustacheException
      *             In case of a helper tries to pop a context object it did not
      *             push previously
      */
     Object pop();
+
+    /**
+     * Returns the object at the top of the context stack without removing it.
+     *
+     * @return the object at the top of the context stack
+     * @since 1.6
+     */
+    Object peek();
 
 }

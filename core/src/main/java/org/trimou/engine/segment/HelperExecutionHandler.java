@@ -357,6 +357,11 @@ class HelperExecutionHandler {
         }
 
         @Override
+        public Object peek() {
+            return executionContext.peek(TargetStack.CONTEXT);
+        }
+
+        @Override
         public MustacheTagInfo getTagInfo() {
             return segment.getTagInfo();
         }

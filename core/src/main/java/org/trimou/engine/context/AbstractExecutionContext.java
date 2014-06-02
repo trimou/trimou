@@ -37,6 +37,8 @@ import org.trimou.util.Checker;
  */
 abstract class AbstractExecutionContext implements ExecutionContext {
 
+    private static final String INVALID_STACK_TYPE = "Invalid stack type";
+
     /**
      * Immutable engine configuration
      */
@@ -92,7 +94,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             pushTemplateInvocation((Template) object);
             break;
         default:
-            throw new IllegalStateException("Invalid stack type");
+            throw new IllegalStateException(INVALID_STACK_TYPE);
         }
     }
 
@@ -105,7 +107,20 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         case TEMPLATE_INVOCATION:
             return templateInvocationStack.removeFirst();
         default:
-            throw new IllegalStateException("Invalid stack type");
+            throw new IllegalStateException(INVALID_STACK_TYPE);
+        }
+    }
+
+    @Override
+    public Object peek(TargetStack stack) {
+        Checker.checkArgumentNotNull(stack);
+        switch (stack) {
+        case CONTEXT:
+            return contextObjectStack.peekFirst();
+        case TEMPLATE_INVOCATION:
+            return templateInvocationStack.peekFirst();
+        default:
+            throw new IllegalStateException(INVALID_STACK_TYPE);
         }
     }
 

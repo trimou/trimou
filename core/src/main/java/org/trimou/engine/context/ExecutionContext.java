@@ -49,6 +49,14 @@ public interface ExecutionContext {
     public Object pop(TargetStack stack);
 
     /**
+     * Returns the object at the top of the context stack.
+     *
+     * @param stack
+     * @return the object at the top of the context stack
+     */
+    Object peek(TargetStack stack);
+
+    /**
      * Associate the specified defining section with the context, but only if no
      * defining section with the same name is associated.
      *
