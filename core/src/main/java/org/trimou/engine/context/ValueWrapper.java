@@ -32,7 +32,17 @@ import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 public final class ValueWrapper extends AbstractReleaseCallbackContainer
         implements ResolutionContext {
 
+    private final String key;
+
     private Object value = null;
+
+    /**
+     *
+     * @param key
+     */
+    public ValueWrapper(String key) {
+        this.key = key;
+    }
 
     /**
      * @return the resolved object or <code>null</code> if no such object exists
@@ -55,6 +65,11 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
      */
     public boolean isNull() {
         return value == null;
+    }
+
+    @Override
+    public String getKey() {
+        return key;
     }
 
 }

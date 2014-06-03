@@ -32,7 +32,7 @@ class DefaultExecutionContext extends AbstractExecutionContext {
     @Override
     public ValueWrapper getValue(String key) {
 
-        ValueWrapper value = new ValueWrapper();
+        ValueWrapper value = new ValueWrapper(key);
         Object lastValue = null;
         Iterator<String> parts = configuration.getKeySplitter().split(key);
 

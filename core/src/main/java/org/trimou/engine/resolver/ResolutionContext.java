@@ -30,4 +30,10 @@ import org.trimou.engine.segment.Segment;
  */
 public interface ResolutionContext extends ReleaseCallbackContainer {
 
+    /**
+     *
+     * @return the variable tag key
+     */
+    String getKey();
+
 }
