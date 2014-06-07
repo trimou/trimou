@@ -46,6 +46,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import org.trimou.util.IOUtils;
 
 /**
  * The default Mustache engine.
@@ -59,6 +60,8 @@ class DefaultMustacheEngine implements MustacheEngine,
             .getLogger(DefaultMustacheEngine.class);
 
     private final LoadingCache<String, Optional<Mustache>> templateCache;
+
+    private final LoadingCache<String, Optional<String>> sourceCache;
 
     private final Configuration configuration;
 
@@ -75,6 +78,7 @@ class DefaultMustacheEngine implements MustacheEngine,
         parserFactory = null;
         parsingHandlerFactory = null;
         templateCache = null;
+        sourceCache = null;
     }
 
     /**
@@ -91,18 +95,21 @@ class DefaultMustacheEngine implements MustacheEngine,
         if (configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
             templateCache = null;
+            sourceCache = null;
             logger.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
         } else {
 
             if (configuration
                     .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
                 templateCache = buildTemplateCache();
+                sourceCache = buildSourceCache();
                 if (configuration
                         .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
                     precompileTemplates();
                 }
             } else {
                 templateCache = null;
+                sourceCache = null;
                 logger.info("Template cache explicitly disabled!");
             }
         }
@@ -112,6 +119,12 @@ class DefaultMustacheEngine implements MustacheEngine,
         checkArgumentNotEmpty(templateId);
         return templateCache != null ? getTemplateFromCache(templateId)
                 : locateAndParse(templateId);
+    }
+
+    public String getMustacheSource(String templateId) {
+        checkArgumentNotEmpty(templateId);
+        return sourceCache != null ? getSourceFromCache(templateId)
+                : locateAndRead(templateId);
     }
 
     public Mustache compileMustache(String templateId, String templateContent) {
@@ -163,6 +176,32 @@ class DefaultMustacheEngine implements MustacheEngine,
                     @Override
                     public Optional<Mustache> load(String key) throws Exception {
                         return Optional.fromNullable(locateAndParse(key));
+                    }
+                });
+    }
+
+    /**
+     * Properties of the source cache are dependent on that of the template cache.
+     */
+    private LoadingCache<String, Optional<String>> buildSourceCache() {
+
+        CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
+        long expirationTimeout = configuration
+                .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
+
+        if (expirationTimeout > 0) {
+            logger.info("Source cache expiration timeout set: {} seconds",
+                    expirationTimeout);
+            cacheBuilder.expireAfterWrite(expirationTimeout, TimeUnit.SECONDS);
+            cacheBuilder.removalListener(this);
+        }
+
+        return cacheBuilder
+                .build(new CacheLoader<String, Optional<String>>() {
+
+                    @Override
+                    public Optional<String> load(String key) throws Exception {
+                        return Optional.fromNullable(locateAndRead(key));
                     }
                 });
     }
@@ -231,6 +270,16 @@ class DefaultMustacheEngine implements MustacheEngine,
         return reader != null ? parse(templateId, reader) : null;
     }
 
+    private String locateAndRead(String templateId) {
+        try {
+            Reader reader = locate(templateId);
+            return reader != null ? IOUtils.toString(locate(templateId)) : null;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
     private Reader notifyListenersBeforeParsing(String templateName,
             Reader reader) {
         if (configuration.getMustacheListeners() != null) {
@@ -259,6 +308,15 @@ class DefaultMustacheEngine implements MustacheEngine,
     private Mustache getTemplateFromCache(String templateName) {
         try {
             return templateCache.get(templateName).orNull();
+        } catch (ExecutionException e) {
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                    e);
+        }
+    }
+
+    private String getSourceFromCache(String templateName) {
+        try {
+            return sourceCache.get(templateName).orNull();
         } catch (ExecutionException e) {
             throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
                     e);

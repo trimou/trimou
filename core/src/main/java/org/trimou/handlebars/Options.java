@@ -49,6 +49,13 @@ public interface Options extends HelperDefinition {
     void partial(String templateId);
 
     /**
+     * return the source of mustache template.
+     *
+     * @param templateId
+     */
+    String source(String templateId);
+
+    /**
      * Push the specified object on the context stack. Helper should pop all
      * pushed objects at the end of its execution. Otherwise all remaining
      * objects will be removed automatically.

@@ -48,6 +48,11 @@ public interface MustacheEngine {
     public Mustache getMustache(String templateId);
 
     /**
+     *  @return uncompiled mustache template source.
+     */
+    public String getMustacheSource(String templateId);
+
+    /**
      * Compile the given template. The compiled template is not cached and so
      * it's not available for partials and template inheritance.
      *
