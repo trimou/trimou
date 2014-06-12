@@ -69,7 +69,7 @@ public interface MustacheEngine {
     public Configuration getConfiguration();
 
     /**
-     * Invalidate the template cache.
+     * Invalidate the cache for both compiled and uncompiled templates.
      */
     public void invalidateTemplateCache();
 

@@ -39,6 +39,7 @@ import org.trimou.engine.parser.ParsingHandler;
 import org.trimou.engine.parser.ParsingHandlerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.IOUtils;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -46,15 +47,13 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
-import org.trimou.util.IOUtils;
 
 /**
- * The default Mustache engine.
+ * The default Mustache engine implementation.
  *
  * @author Martin Kouba
  */
-class DefaultMustacheEngine implements MustacheEngine,
-        RemovalListener<String, Mustache> {
+class DefaultMustacheEngine implements MustacheEngine {
 
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultMustacheEngine.class);
@@ -71,7 +70,7 @@ class DefaultMustacheEngine implements MustacheEngine,
 
     /**
      * Workaround for CDI (JSR 299, JSR 346) - make this type proxyable so that
-     * it's possible to produce application scoped CDI bean.
+     * it's possible to produce application-scoped CDI bean.
      */
     DefaultMustacheEngine() {
         configuration = null;
@@ -86,7 +85,6 @@ class DefaultMustacheEngine implements MustacheEngine,
      * @param builder
      */
     DefaultMustacheEngine(MustacheEngineBuilder builder) {
-
         // First create the engine configuration
         configuration = new ConfigurationFactory().createConfiguration(builder);
         parserFactory = new ParserFactory();
@@ -133,77 +131,70 @@ class DefaultMustacheEngine implements MustacheEngine,
         return parse(templateId, new StringReader(templateContent));
     }
 
-    /**
-     * @return
-     */
     public Configuration getConfiguration() {
         return configuration;
     }
 
-    /**
-     * Invalidates the template cache.
-     */
     public void invalidateTemplateCache() {
         if (templateCache == null) {
             logger.warn("Unable to invalidate the template cache - it's disabled!");
             return;
         }
         templateCache.invalidateAll();
-    }
-
-    @Override
-    public void onRemoval(RemovalNotification<String, Mustache> notification) {
-        logger.debug("Removed template [templateId: {}, cause: {}]",
-                notification.getKey(), notification.getCause());
+        sourceCache.invalidateAll();
     }
 
     private LoadingCache<String, Optional<Mustache>> buildTemplateCache() {
-
-        CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
-        long expirationTimeout = configuration
-                .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
-
-        if (expirationTimeout > 0) {
-            logger.info("Template cache expiration timeout set: {} seconds",
-                    expirationTimeout);
-            cacheBuilder.expireAfterWrite(expirationTimeout, TimeUnit.SECONDS);
-            cacheBuilder.removalListener(this);
-        }
-
-        return cacheBuilder
-                .build(new CacheLoader<String, Optional<Mustache>>() {
-
-                    @Override
-                    public Optional<Mustache> load(String key) throws Exception {
-                        return Optional.fromNullable(locateAndParse(key));
-                    }
-                });
+        return buildCache("Template", new CacheLoader<String, Optional<Mustache>>() {
+            @Override
+            public Optional<Mustache> load(String key) throws Exception {
+                return Optional.fromNullable(locateAndParse(key));
+            }
+        }, new RemovalListener<String, Optional<Mustache>>() {
+            @Override
+            public void onRemoval(
+                    RemovalNotification<String, Optional<Mustache>> notification) {
+                logger.debug(
+                        "Removed template from cache [templateId: {}, cause: {}]",
+                        notification.getKey(), notification.getCause());
+            }
+        });
     }
 
     /**
-     * Properties of the source cache are dependent on that of the template cache.
+     * Properties of the source cache are dependent on that of the template
+     * cache.
      */
     private LoadingCache<String, Optional<String>> buildSourceCache() {
+        return buildCache("Source", new CacheLoader<String, Optional<String>>() {
+            @Override
+            public Optional<String> load(String key) throws Exception {
+                return Optional.fromNullable(locateAndRead(key));
+            }
+        }, new RemovalListener<String, Optional<String>>() {
+            @Override
+            public void onRemoval(
+                    RemovalNotification<String, Optional<String>> notification) {
+                logger.debug(
+                        "Removed template source from cache [templateId: {}, cause: {}]",
+                        notification.getKey(), notification.getCause());
+            }
+        });
+    }
 
+    private <K, V> LoadingCache<K, V> buildCache(String name, CacheLoader<K, V> cacheLoader,
+            RemovalListener<K, V> removalListener) {
         CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
         long expirationTimeout = configuration
                 .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
 
         if (expirationTimeout > 0) {
-            logger.info("Source cache expiration timeout set: {} seconds",
-                    expirationTimeout);
+            logger.info("{} cache expiration timeout set: {} seconds",
+                    name, expirationTimeout);
             cacheBuilder.expireAfterWrite(expirationTimeout, TimeUnit.SECONDS);
-            cacheBuilder.removalListener(this);
+            cacheBuilder.removalListener(removalListener);
         }
-
-        return cacheBuilder
-                .build(new CacheLoader<String, Optional<String>>() {
-
-                    @Override
-                    public Optional<String> load(String key) throws Exception {
-                        return Optional.fromNullable(locateAndRead(key));
-                    }
-                });
+        return cacheBuilder.build(cacheLoader);
     }
 
     private void precompileTemplates() {
