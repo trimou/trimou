@@ -55,6 +55,8 @@ public final class HelpersBuilder {
 
     public static final String INCLUDE = "include";
 
+    public static final String EMBED = "embed";
+
     private final ImmutableMap.Builder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -163,6 +165,16 @@ public final class HelpersBuilder {
     }
 
     /**
+     * Add a {@link EmbedHelper} instance with the {@value #EMBED} name.
+     *
+     * @return self
+     */
+    public HelpersBuilder addEmbed() {
+        builder.put(EMBED, new EmbedHelper());
+        return this;
+    }
+
+    /**
      *
      * @return self
      */
@@ -184,6 +196,7 @@ public final class HelpersBuilder {
         addIsOdd();
         addSet();
         addInclude();
+        addEmbed();
         return this;
     }
 
