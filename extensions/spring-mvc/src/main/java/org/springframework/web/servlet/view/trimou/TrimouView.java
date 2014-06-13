@@ -15,11 +15,8 @@
  */
 package org.springframework.web.servlet.view.trimou;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.trimou.Mustache;
-import org.trimou.exception.MustacheException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

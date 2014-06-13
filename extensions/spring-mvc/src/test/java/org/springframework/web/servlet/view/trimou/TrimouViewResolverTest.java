@@ -49,8 +49,9 @@ public class TrimouViewResolverTest {
 
 		TrimouViewResolver sut = new TrimouViewResolver();
 		sut.setServletContext(servletContext);
-		sut.afterPropertiesSet();
-		sut.setEngine(engine);
+        sut.setPrefix("/");
+        sut.afterPropertiesSet();
+        sut.setEngine(engine);
 
 		AbstractUrlBasedView view = sut.buildView(viewPath);
 		assertThat(view, is(notNullValue()));

@@ -16,23 +16,18 @@
 package org.springframework.web.servlet.view.trimou;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
-import org.springframework.web.servlet.view.trimou.TrimouView;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.handlebars.Helper;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
-import javax.servlet.ServletContext;
 import java.util.Map;
 
 /**
