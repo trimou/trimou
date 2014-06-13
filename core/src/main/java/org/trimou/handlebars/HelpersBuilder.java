@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableMap;
  * a helper name.
  *
  * <pre>
- * HelpersBuilder.empty().addSet().addNumberIsEven()
+ * HelpersBuilder.empty().addSet().addIsEven()
  *         .add(&quot;myHelperName&quot;, new MyHelper()).build();
  * </pre>
  *
