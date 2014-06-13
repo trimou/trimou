@@ -1,4 +1,4 @@
-package org.springframework.web.servlet.view.trimou;
+package org.trimou.spring.web.view;
 
 import com.google.common.collect.Maps;
 import org.junit.Test;
@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.trimou.Mustache;
+import org.trimou.spring.web.view.TrimouView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
