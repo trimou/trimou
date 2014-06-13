@@ -7,6 +7,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
+import org.trimou.exception.MustacheException;
 import org.trimou.spring.web.view.TrimouViewResolver;
 
 import javax.servlet.ServletContext;
@@ -17,56 +18,84 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
- *
  * @author Minkyu Cho
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TrimouViewResolverTest {
 
-	@Mock
-	private Mustache mustache;
-	@Mock
-	private MustacheEngine engine;
-	@Mock
-	private ServletContext servletContext;
+    @Mock
+    private Mustache mustache;
+    @Mock
+    private MustacheEngine engine;
+    @Mock
+    private ServletContext servletContext;
 
-	/**
-	 * A basic test where no prefix is used.
-	 */
-	@Test
-	public void resolvesViewWithoutPrefix() throws Exception {
-		final String viewPath = "top-level.mustache";
-		when(engine.getMustache(viewPath)).thenReturn(mustache);
+    /**
+     * When the prefix did not set, then viewResolver throws the NullPointerException.
+     */
+    @Test(expected = NullPointerException.class)
+    public void resolvesViewWithoutPrefix() throws Exception {
+        //given
+        final String viewName = "top-level.mustache";
 
-		TrimouViewResolver sut = new TrimouViewResolver();
-		sut.setServletContext(servletContext);
-        sut.setPrefix("/");
+        //when
+        when(engine.getMustache(viewName)).thenReturn(mustache);
+
+        TrimouViewResolver sut = new TrimouViewResolver();
+        sut.setServletContext(servletContext);
         sut.afterPropertiesSet();
         sut.setEngine(engine);
 
-		AbstractUrlBasedView view = sut.buildView(viewPath);
-		assertThat(view, is(notNullValue()));
-	}
+        //then
+        AbstractUrlBasedView view = sut.buildView(viewName);
+        assertThat(view, is(notNullValue()));
+    }
 
-	/**
-	 * Ensure the prefix is passed on to the template loader
-	 * and that the template loader is called with a fully 
-	 * resolved view path.
-	 */
-	@Test
-	public void resolvesViewWithPrefix() throws Exception {
-		final String viewPath = "/WEB-INF/views/";
-		final String viewName = "hello.mustache";
+    /**
+     * When not valid prefix did set, then viewResolver throws the MustacheException.
+     */
+    @Test(expected = MustacheException.class)
+    public void resolvesViewWithNotValidPrefix() throws Exception {
+        //given
+        final String viewPath = "WEB-INF/views/";
+        final String viewName = "top-level.mustache";
 
-		when(engine.getMustache(viewPath + viewName)).thenReturn(mustache);
+        //when
+        when(engine.getMustache(viewName)).thenReturn(mustache);
 
-		TrimouViewResolver sut = new TrimouViewResolver();
-		sut.setServletContext(servletContext);
-		sut.setPrefix(viewPath);
-		sut.afterPropertiesSet();
-		sut.setEngine(engine);
+        TrimouViewResolver sut = new TrimouViewResolver();
+        sut.setServletContext(servletContext);
+        sut.setPrefix(viewPath);
+        sut.afterPropertiesSet();
+        sut.setEngine(engine);
 
-		AbstractUrlBasedView view = sut.buildView(viewName);
-		assertThat(view, is(notNullValue()));
-	}
+        //then
+        AbstractUrlBasedView view = sut.buildView(viewName);
+        assertThat(view, is(notNullValue()));
+    }
+
+    /**
+     * Ensure the prefix is passed on to the template loader
+     * and that the template loader is called with a fully
+     * resolved view path.
+     */
+    @Test
+    public void resolvesViewWithPrefix() throws Exception {
+        //given
+        final String viewPath = "/WEB-INF/views/";
+        final String viewName = "hello.mustache";
+
+        //when
+        when(engine.getMustache(viewPath + viewName)).thenReturn(mustache);
+
+        TrimouViewResolver sut = new TrimouViewResolver();
+        sut.setServletContext(servletContext);
+        sut.setPrefix(viewPath);
+        sut.afterPropertiesSet();
+        sut.setEngine(engine);
+
+        //then
+        AbstractUrlBasedView view = sut.buildView(viewName);
+        assertThat(view, is(notNullValue()));
+    }
 }

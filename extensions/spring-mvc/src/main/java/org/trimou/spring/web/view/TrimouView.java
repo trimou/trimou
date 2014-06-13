@@ -30,20 +30,20 @@ import java.util.Map;
  * @author Minkyu Cho
  */
 public class TrimouView extends AbstractTemplateView {
-	private Mustache template;
+    private Mustache template;
 
-	@Override
-	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		response.setContentType(getContentType());
-		final Writer writer = response.getWriter();
-		try {
-			template.render(writer, model);
-		} finally {
-			writer.flush();
-		}
-	}
+    @Override
+    protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType(getContentType());
+        final Writer writer = response.getWriter();
+        try {
+            template.render(writer, model);
+        } finally {
+            writer.flush();
+        }
+    }
 
-	public void setTemplate(Mustache template) {
-		this.template = template;
-	}
+    public void setTemplate(Mustache template) {
+        this.template = template;
+    }
 }

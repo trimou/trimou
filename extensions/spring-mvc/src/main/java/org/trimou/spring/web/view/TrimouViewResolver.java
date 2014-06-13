@@ -34,94 +34,94 @@ import java.util.Map;
  * @author Minkyu Cho
  */
 public class TrimouViewResolver extends AbstractTemplateViewResolver implements ViewResolver, InitializingBean {
-	private String fileEncoding = System.getProperty("file.encoding");
-	private boolean handlebarsSupport = true;
-	private boolean debug = false;
-	private boolean preCompile = false;
-	private Map<String, Helper> helpers = Maps.newHashMap();
-	private MustacheEngine engine;
+    private String fileEncoding = System.getProperty("file.encoding");
+    private boolean handlebarsSupport = true;
+    private boolean debug = false;
+    private boolean preCompile = false;
+    private Map<String, Helper> helpers = Maps.newHashMap();
+    private MustacheEngine engine;
 
-	public TrimouViewResolver() {
-		setViewClass(TrimouView.class);
-	}
+    public TrimouViewResolver() {
+        setViewClass(TrimouView.class);
+    }
 
-	@Override
-	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
-		TrimouView view = (TrimouView) super.buildView(viewName);
-		try {
-			Mustache template = engine.getMustache(viewName);
-			view.setTemplate(template);
-			return view;
-		} catch (Exception e) {
-			throw new MustacheException(view.getUrl() + " : "  + e.getMessage());
-		}
-	}
+    @Override
+    protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+        TrimouView view = (TrimouView) super.buildView(viewName);
+        try {
+            Mustache template = engine.getMustache(viewName);
+            view.setTemplate(template);
+            return view;
+        } catch (Exception e) {
+            throw new MustacheException(view.getUrl() + " : " + e.getMessage());
+        }
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		final int PRIORITY = 1;
-		engine = MustacheEngineBuilder
-				.newBuilder()
-				.setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED, isCache())
-				.setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING, getFileEncoding())
-				.setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED, isHandlebarsSupport())
-				.setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
-				.setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES, isPreCompile())
-				.registerHelpers(helpers)
-				.addTemplateLocator(new ServletContextTemplateLocator(PRIORITY, getPrefix(), getSuffix(), getServletContext()))
-				.build();
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        final int PRIORITY = 1;
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED, isCache())
+                .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING, getFileEncoding())
+                .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED, isHandlebarsSupport())
+                .setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
+                .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES, isPreCompile())
+                .registerHelpers(helpers)
+                .addTemplateLocator(new ServletContextTemplateLocator(PRIORITY, getPrefix(), getSuffix(), getServletContext()))
+                .build();
+    }
 
-	@Override
-	protected Class<?> requiredViewClass() {
-		return TrimouView.class;
-	}
+    @Override
+    protected Class<?> requiredViewClass() {
+        return TrimouView.class;
+    }
 
-	public String getFileEncoding() {
-		return fileEncoding;
-	}
+    public String getFileEncoding() {
+        return fileEncoding;
+    }
 
-	public void setFileEncoding(String fileEncoding) {
-		this.fileEncoding = fileEncoding;
-	}
+    public void setFileEncoding(String fileEncoding) {
+        this.fileEncoding = fileEncoding;
+    }
 
-	public boolean isHandlebarsSupport() {
-		return handlebarsSupport;
-	}
+    public boolean isHandlebarsSupport() {
+        return handlebarsSupport;
+    }
 
-	public void setHandlebarsSupport(boolean handlebarsSupport) {
-		this.handlebarsSupport = handlebarsSupport;
-	}
+    public void setHandlebarsSupport(boolean handlebarsSupport) {
+        this.handlebarsSupport = handlebarsSupport;
+    }
 
-	public boolean isDebug() {
-		return debug;
-	}
+    public boolean isDebug() {
+        return debug;
+    }
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
-	public boolean isPreCompile() {
-		return preCompile;
-	}
+    public boolean isPreCompile() {
+        return preCompile;
+    }
 
-	public void setPreCompile(boolean preCompile) {
-		this.preCompile = preCompile;
-	}
+    public void setPreCompile(boolean preCompile) {
+        this.preCompile = preCompile;
+    }
 
-	public Map<String, Helper> getHelpers() {
-		return helpers;
-	}
+    public Map<String, Helper> getHelpers() {
+        return helpers;
+    }
 
-	public void setHelpers(Map<String, Helper> helpers) {
-		this.helpers = helpers;
-	}
+    public void setHelpers(Map<String, Helper> helpers) {
+        this.helpers = helpers;
+    }
 
-	public MustacheEngine getEngine() {
-		return engine;
-	}
+    public MustacheEngine getEngine() {
+        return engine;
+    }
 
-	public void setEngine(MustacheEngine engine) {
-		this.engine = engine;
-	}
+    public void setEngine(MustacheEngine engine) {
+        this.engine = engine;
+    }
 }

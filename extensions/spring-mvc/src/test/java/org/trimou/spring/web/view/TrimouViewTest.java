@@ -18,32 +18,34 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- *
  * @author Minkyu Cho
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TrimouViewTest {
-	@Mock
-	private HttpServletResponse response;
-	@Mock
-	private PrintWriter writer;
-	@Mock
-	private Mustache template;
+    @Mock
+    private HttpServletResponse response;
+    @Mock
+    private PrintWriter writer;
+    @Mock
+    private Mustache template;
 
-	@Test
-	public void rendersAModelUsingItsTemplate() throws Exception {
-		final Map<String, Object> model = Maps.newHashMap();
+    @Test
+    public void rendersAModelUsingItsTemplate() throws Exception {
+        //given
+        final Map<String, Object> model = Maps.newHashMap();
 
-		HttpServletRequest UNUSED_REQUEST = null;
+        HttpServletRequest UNUSED_REQUEST = null;
 
-		when(response.getWriter()).thenReturn(writer);
+        //when
+        when(response.getWriter()).thenReturn(writer);
 
-		TrimouView view = new TrimouView();
-		view.setTemplate(template);
-		view.renderMergedTemplateModel(model, UNUSED_REQUEST, response);
+        TrimouView view = new TrimouView();
+        view.setTemplate(template);
+        view.renderMergedTemplateModel(model, UNUSED_REQUEST, response);
 
-		verify(response).setContentType(anyString());
-		verify(template).render(writer, model);
-		verify(writer).flush();
-	}
+        //then
+        verify(response).setContentType(anyString());
+        verify(template).render(writer, model);
+        verify(writer).flush();
+    }
 }
