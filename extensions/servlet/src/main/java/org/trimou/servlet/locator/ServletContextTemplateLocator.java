@@ -53,8 +53,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
      * @param rootPath
      */
     public ServletContextTemplateLocator(int priority, String rootPath) {
-        super(priority, rootPath);
-        checkRootPath();
+        this(priority, rootPath, null, null);
     }
 
     /**
@@ -65,9 +64,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
      */
     public ServletContextTemplateLocator(int priority, String rootPath,
             ServletContext servletContext) {
-        super(priority, rootPath);
-        this.servletContext = servletContext;
-        checkRootPath();
+        this(priority, rootPath, null, servletContext);
     }
 
     /**
@@ -78,8 +75,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
      */
     public ServletContextTemplateLocator(int priority, String rootPath,
             String suffix) {
-        super(priority, rootPath, suffix);
-        checkRootPath();
+        this(priority, rootPath, suffix, null);
     }
 
     /**
@@ -117,7 +113,8 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         try {
             return new InputStreamReader(in, getDefaultFileEncoding());
         } catch (UnsupportedEncodingException e) {
-            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR, e);
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                    e);
         }
     }
 
@@ -172,10 +169,11 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
     }
 
     private void checkRootPath() {
-        if (!getRootPath().startsWith(Strings.SLASH)) {
+        if (getRootPath() == null || !getRootPath().startsWith(Strings.SLASH)) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
-                    "Root path does not begin with slash: " + getRootPath());
+                    "A valid root path which begins with a slash must be set: "
+                            + getRootPath());
         }
     }
 
