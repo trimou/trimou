@@ -48,6 +48,7 @@
         <module>extensions/prettytime</module>
         <module>extensions/minify</module>
         <module>extensions/gson</module>
+        <module>extensions/spring-mvc</module>
     </modules>
 
     <properties>
@@ -56,6 +57,8 @@
         <version.slf4j>1.7.4</version.slf4j>
         <version.commons-lang3>3.1</version.commons-lang3>
         <version.junit>4.11</version.junit>
+        <version.mockito>1.9.5</version.mockito>
+        <version.hamcrest>1.3.RC2</version.hamcrest>
         <version.gson>2.2.2</version.gson>
         <version.arquillian>1.0.3.Final</version.arquillian>
         <version.wildfly>8.0.0.Final</version.wildfly>
@@ -68,6 +71,8 @@
         <version.jboss-servlet-api>1.0.2.Final</version.jboss-servlet-api>
         <version.htmlcompressor>1.5.2</version.htmlcompressor>
         <version.htmlunit>2.12</version.htmlunit>
+        <version.servlet-api>2.4</version.servlet-api>
+        <version.springframework>3.1.0.RELEASE</version.springframework>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     </properties>
 
