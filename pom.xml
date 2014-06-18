@@ -49,6 +49,7 @@
         <module>extensions/minify</module>
         <module>extensions/gson</module>
         <module>extensions/spring-mvc</module>
+        <module>extensions/dropwizard</module>
     </modules>
 
     <properties>
@@ -73,6 +74,8 @@
         <version.htmlunit>2.12</version.htmlunit>
         <version.servlet-api>2.4</version.servlet-api>
         <version.springframework>3.1.0.RELEASE</version.springframework>
+        <version.dropwizard>0.7.0</version.dropwizard>
+        <version.jersey.test.framework>1.18.1</version.jersey.test.framework>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
     </properties>
 
