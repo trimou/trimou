@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2014 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,13 @@
  */
 package org.trimou.handlebars;
 
-import org.trimou.util.Checker;
-
 /**
- * Conditionally renders a block if the param is not "falsy".
+ * Conditionally renders a block if the param is/isn't null.
  *
  * <pre>
- * {{#if item.active}}
- *   {{item.name}}
- * {{/if}}
+ * {{#isNull item.price}}
+ *   It's null!
+ * {{/isNull}}
  * </pre>
  *
  * <p>
@@ -32,9 +30,9 @@ import org.trimou.util.Checker;
  * </p>
  *
  * <pre>
- * {{#if item.active item.valid}}
- *   Active and valid.
- * {{/if}}
+ * {{#isNull item.active item.valid}}
+ *   All are null.
+ * {{/isNull}}
  * </pre>
  *
  * <p>
@@ -42,18 +40,35 @@ import org.trimou.util.Checker;
  * </p>
  *
  * <pre>
- * {{#if item.active item.valid logic="or"}}
- *   Active or valid.
- * {{/if}}
+ * {{#isNull item.active item.valid logic="or"}}
+ *   At least one is null.
+ * {{/isNull}}
  * </pre>
  *
  * @author Martin Kouba
  */
-public class IfHelper extends MatchingSectionHelper {
+public class NullCheckHelper extends MatchingSectionHelper {
+
+    private boolean testNotNull;
+
+    /**
+     * Test null.
+     */
+    public NullCheckHelper() {
+        this(false);
+    }
+
+    /**
+     *
+     * @param testNotNull
+     */
+    public NullCheckHelper(boolean testNotNull) {
+        this.testNotNull = testNotNull;
+    }
 
     @Override
     protected boolean isMatching(Object value) {
-        return !Checker.isFalsy(value);
+        return testNotNull ? value != null : value == null;
     }
 
 }

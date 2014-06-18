@@ -49,7 +49,7 @@ import org.trimou.util.Checker;
  *
  * @author Martin Kouba
  */
-public class UnlessHelper extends ParamMatchingSectionHelper {
+public class UnlessHelper extends MatchingSectionHelper {
 
     @Override
     protected boolean isMatching(Object value) {

@@ -23,13 +23,13 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * A simple builder for helpers map. It's useful when registering basic helpers
+ * A simple builder for helpers map. It's useful when registering built-in/basic helpers
  * with sensible default names (each, if, etc.) - no need to explicitly declare
  * a helper name.
  *
  * <pre>
- * HelpersBuilder.empty().addSet().addIsEven()
- *         .add(&quot;myHelperName&quot;, new MyHelper()).build();
+ * HelpersBuilder.empty().addSet().addIsEven().add(&quot;myHelperName&quot;, new MyHelper())
+ *         .build();
  * </pre>
  *
  * @author Martin Kouba
@@ -57,6 +57,14 @@ public final class HelpersBuilder {
 
     public static final String EMBED = "embed";
 
+    public static final String IS_EQUAL = "isEq";
+
+    public static final String IS_NOT_EQUAL = "isNotEq";
+
+    public static final String IS_NULL = "isNull";
+
+    public static final String IS_NOT_NULL = "isNotNull";
+
     private final ImmutableMap.Builder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -74,7 +82,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an {@link EachHelper} instance with the {@value #EACH} name.
+     * Add an instance of {@link EachHelper} with the {@value #EACH} name.
      *
      * @return self
      */
@@ -84,7 +92,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an {@link IfHelper} instance with the {@value #IF} name.
+     * Add an instance of {@link IfHelper} with the {@value #IF} name.
      *
      * @return self
      */
@@ -94,7 +102,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an {@link UnlessHelper} instance with the {@value #UNLESS} name.
+     * Add an instance of {@link UnlessHelper} with the {@value #UNLESS} name.
      *
      * @return self
      */
@@ -104,7 +112,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add a {@link WithHelper} instance with the {@value #WITH} name.
+     * Add an instance of {@link WithHelper} with the {@value #WITH} name.
      *
      * @return self
      */
@@ -114,7 +122,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an {@link IsHelper} instance with the {@value #IS} name.
+     * Add an instance of {@link IsHelper} with the {@value #IS} name.
      *
      * @return self
      */
@@ -124,7 +132,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add a {@link NumberIsEvenHelper} instance with the {@value #IS_EVEN}
+     * Add an instance of {@link NumberIsEvenHelper} with the {@value #IS_EVEN}
      * name.
      *
      * @return self
@@ -135,7 +143,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add a {@link NumberIsOddHelper} instance with the {@value #IS_ODD} name.
+     * Add an instance of {@link NumberIsOddHelper} with the {@value #IS_ODD} name.
      *
      * @return self
      */
@@ -145,7 +153,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add a {@link SetHelper} instance with the {@value #SET} name.
+     * Add an instance of {@link SetHelper} with the {@value #SET} name.
      *
      * @return self
      */
@@ -155,7 +163,7 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add a {@link IncludeHelper} instance with the {@value #INCLUDE} name.
+     * Add an instance of {@link IncludeHelper} with the {@value #INCLUDE} name.
      *
      * @return self
      */
@@ -165,12 +173,55 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add a {@link EmbedHelper} instance with the {@value #EMBED} name.
+     * Add an instance of {@link EmbedHelper} with the {@value #EMBED} name.
      *
      * @return self
      */
     public HelpersBuilder addEmbed() {
         builder.put(EMBED, new EmbedHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link EqualsHelper} with the {@value #IS_EQUAL} name.
+     *
+     * @return self
+     */
+    public HelpersBuilder addIsEqual() {
+        builder.put(IS_EQUAL, new EqualsHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link EqualsHelper} which tests inequality with the
+     * {@value #IS_NOT_EQUAL} name.
+     *
+     * @return self
+     */
+    public HelpersBuilder addIsNotEqual() {
+        builder.put(IS_NOT_EQUAL, new EqualsHelper(true));
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link NullCheckHelper} with the
+     * {@value #IS_NULL} name.
+     *
+     * @return self
+     */
+    public HelpersBuilder addIsNull() {
+        builder.put(IS_NULL, new NullCheckHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link NullCheckHelper} which tests "not null" with the
+     * {@value #IS_NOT_NULL} name.
+     *
+     * @return self
+     */
+    public HelpersBuilder addIsNotNull() {
+        builder.put(IS_NOT_NULL, new NullCheckHelper(true));
         return this;
     }
 
