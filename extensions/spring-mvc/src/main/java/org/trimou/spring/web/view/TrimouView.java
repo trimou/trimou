@@ -15,13 +15,14 @@
  */
 package org.trimou.spring.web.view;
 
-import org.springframework.web.servlet.view.AbstractTemplateView;
-import org.trimou.Mustache;
+import java.io.Writer;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Writer;
-import java.util.Map;
+
+import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.trimou.engine.MustacheEngine;
 
 /**
  * This is the spring view use to generate the content based on
@@ -30,20 +31,28 @@ import java.util.Map;
  * @author Minkyu Cho
  */
 public class TrimouView extends AbstractTemplateView {
-    private Mustache template;
+
+    private String viewName;
+
+    private MustacheEngine engine;
 
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType(getContentType());
         final Writer writer = response.getWriter();
         try {
-            template.render(writer, model);
+            engine.getMustache(viewName).render(writer, model);
         } finally {
             writer.flush();
         }
     }
 
-    public void setTemplate(Mustache template) {
-        this.template = template;
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
+
+    public void setEngine(MustacheEngine engine) {
+        this.engine = engine;
+    }
+
 }
