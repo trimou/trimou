@@ -18,7 +18,7 @@ package org.trimou.handlebars;
 import org.trimou.util.Checker;
 
 /**
- * Conditionally renders a block if the param is not "falsy".
+ * Renders a block if the param is not "falsy".
  *
  * <pre>
  * {{#if item.active}}

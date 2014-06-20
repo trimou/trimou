@@ -16,7 +16,7 @@
 package org.trimou.handlebars;
 
 /**
- * Conditionally renders a block if the param is/isn't null.
+ * Renders a block if the param is/isn't null.
  *
  * <pre>
  * {{#isNull item.price}}

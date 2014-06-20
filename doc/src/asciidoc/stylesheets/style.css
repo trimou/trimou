@@ -106,7 +106,7 @@ p code, p tt, p tt, td.content tt {
     background-color: #EFEFEF;
     border: 1px solid #E2E2E2;
     border-radius: 3px 3px 3px 3px;
-    color: #507e2a;
+    /*color: #507e2a;*/
     padding: 2px 3px 0;
     white-space: nowrap;
     font-size: 1.2em;
@@ -128,7 +128,7 @@ pre {
 
 table.tableblock {
     border-bottom: 3px solid #6CAE37;
-    border-collapse: separate;
+    border-collapse: collapse;
     /*border-radius: 4px 4px 4px 4px;*/
     border-spacing: 1px;
     border-top: 3px solid #6CAE37;
@@ -147,10 +147,23 @@ table.tableblock caption {
 
 table.tableblock tr {
     background: none repeat scroll 0 0 #F9F9F9;
+    border-top: 1px solid #ececec;
 }
 
 table.tableblock td {
-    border-top: 1px solid silver;
+    /*border-top: 1px solid silver;*/
     /*border-left: 1px solid #6CAE37;*/
     padding-left: 4px;
+    border: 1px solid silver;
+}
+
+table.tableblock td p {
+    margin: 8px;
+}
+
+table.tableblock thead tr th {
+    background-color: #6cae37;
+    color: white;
+    padding: 0px;
+    text-transform: uppercase;
 }

@@ -16,7 +16,7 @@
 package org.trimou.handlebars;
 
 /**
- * Conditionally renders a block if the first param does/doesn't equal to the
+ * Renders a block if the first param does/doesn't equal to the
  * second param (by means of {@link Object#equals(Object)}).
  *
  * <pre>
