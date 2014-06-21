@@ -27,4 +27,12 @@ public class Hammer {
         return "HAMMER";
     }
 
+    public Object getNull() {
+        return null;
+    }
+
+    public ArchiveType getArchiveType() {
+        return ArchiveType.WAR;
+    }
+
 }

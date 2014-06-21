@@ -1,5 +1,12 @@
 package org.trimou.spring.web.view;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+
+import javax.servlet.ServletContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -8,14 +15,6 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.exception.MustacheException;
-import org.trimou.spring.web.view.TrimouViewResolver;
-
-import javax.servlet.ServletContext;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Minkyu Cho
@@ -33,7 +32,7 @@ public class TrimouViewResolverTest {
     /**
      * When the prefix did not set, then viewResolver throws the NullPointerException.
      */
-    @Test(expected = NullPointerException.class)
+    @Test(expected = MustacheException.class)
     public void resolvesViewWithoutPrefix() throws Exception {
         //given
         final String viewName = "top-level.mustache";

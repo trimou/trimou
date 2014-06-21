@@ -9,7 +9,7 @@
 [[intro]]
 == What is Trimou?
 
-Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. It's goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. So far there are four ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime],  http://code.google.com/p/htmlcompressor/[HtmlCompressor] and http://code.google.com/p/google-gson/[google-gson] (see <<extensions,Extensions>> section for more info).
+Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. Since 1.5 a *helpers API* inspired by http://handlebarsjs.com/[Handlebars.js] is also supported. The goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. There are some ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime],  http://code.google.com/p/htmlcompressor/[HtmlCompressor], http://code.google.com/p/google-gson/[google-gson], http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC] and https://dropwizard.github.io/dropwizard/[Dropwizard] (see <<extensions,Extensions>> section for more info).
 
 NOTE: Trimou is available under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache License 2.0].
 
@@ -21,9 +21,10 @@ The basic features of every Mustache implementation are defined in https://githu
 The most notable enhancements are:
 
 * Template caching
-* Extended processing of lambdas
 * Template inheritance
 * Basic i18n support
+* Extended processing of lambdas
+* Helpers API (inspired by Handlebars.js)
 * Extension points (template locators, resolvers, text support, ...)
 
 [[variables]]
@@ -296,6 +297,81 @@ Since version 1.5.0 handlebars-like helpers are supported. There are five helper
 
 NOTE: Handlebars support is enabled by default. See +HANDLEBARS_SUPPORT_ENABLED+ in <<configuration,Configuration properties>>.
 
+Note that Trimou provides some useful helpers which are not registered automatically (See the javadoc for examples):
+
+[cols="1,2" options="header"]
+|===
+|Class
+|Description
+
+|+org.trimou.handlebars.i18n.ResourceBundleHelper+
+|Displays localized messages.
+
+|+org.trimou.handlebars.i18n.DateTimeFormatHelper+
+|Displays localized times.
+
+|+org.trimou.handlebars.NumberIsEvenHelper+
+|Renders a block/text if the param is an even number.
+
+|+org.trimou.handlebars.NumberIsOddHelper+
+|Renders a block/text if the param is an odd number.
+
+|+org.trimou.handlebars.SetHelper+
+|Works similarly as WithHelper except the current hash is pushed on the context stack.
+
+|+org.trimou.handlebars.IncludeHelper+
+| Works similarly as partial tag except the name of the template to include may be obtained dynamically.
+
+|+org.trimou.handlebars.LogHelper+
+|Log debug messages.
+
+|+org.trimou.handlebars.EmbedHelper+
+|Embeds template source as a JavaScript snippet.
+
+|+org.trimou.handlebars.NullCheckHelper+
+|Renders a block if the param is/isn't null.
+
+|+org.trimou.handlebars.EqualsHelper+
+|Renders a block if the first param does/doesn't equal to the second param.
+
+|===
+
+TIP: There is a simple builder which is useful when registering built-in/basic helpers with sensible default names: +org.trimou.handlebars.HelpersBuilder+
+
+==== Example of ResourceBundleHelper use
+
+Suppose we have the following resource bundle file:
+
+.messages.properties
+----
+my.message.key=My name is %s!
+hello.key.messageformat=Hello {0}!
+----
+
+We can use a +ResourceBundleHelper+ to render messages:
+
+[source,java]
+.Register the helper
+----
+MustacheEngine engine = MustacheEngineBuilder
+                           .newBuilder()
+                           .registerHelper("msg", new ResourceBundleHelper("messages")) <1>
+                           .build();
+...
+----
+
+.Template
+----
+{{msg "my.message.key" "Martin"}}
+{{msg "hello.key.messageformat" "world" format="message"}}
+----
+
+.Expected output
+----
+My name is Martin!
+Hello world!
+----
+
 [[how_to_use]]
 == How to use
 
@@ -461,7 +537,9 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 
 *org.trimou.engine.config.noValueIndicatesProblem*
 |false
-|By default a variable miss returns an empty string. If set to +true+ a +org.trimou.exception.MustacheException+ with code +org.trimou.exception.MustacheProblem.RENDER_NO_VALUE+ is thrown.
+|*DEPRECATED* - see <<missingvaluehandler, MissingValueHandler SPI>>.
+
+By default a variable miss returns an empty string. If set to +true+ a +org.trimou.exception.MustacheException+ with code +org.trimou.exception.MustacheProblem.RENDER_NO_VALUE+ is thrown.
 
 |DEBUG_MODE
 
@@ -588,7 +666,7 @@ If you encounter a problem during template processing/rendering, try to:
 * configure http://www.slf4j.org/[Simple Logging Facade for Java (SLF4J)] - increase the log level for +org.trimou+ loggers
 * enable <<configuration,debug mode>> - this disables the template cache and provides some more logging during template rendering (otherwise disabled due to performance)
 * implement your own <<missingvaluehandler,MissingValueHandler>> - to handle variable miss during interpolation of a variable tag
-* use <<custom_helpers,LogHelper>> - this might useful for production environments
+* use <<helpers,LogHelper>> - this might useful for production environments
 
 [[how_to_extend]]
 == How to extend
@@ -656,49 +734,7 @@ A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +Must
 
 WARNING: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers). However, intensive use of helpers may result in significant performance decrease.
 
-The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Suppose we have the following resource bundle file:
-
-.messages.properties
-----
-my.message.key=My name is %s!
-hello.key.messageformat=Hello {0}!
-----
-
-We can use a +org.trimou.handlebars.i18n.ResourceBundleHelper+ to render messages:
-
-[source,java]
-.Register the helper
-----
-MustacheEngine engine = MustacheEngineBuilder
-                           .newBuilder()
-                           .registerHelper("msg", new ResourceBundleHelper("messages")) <1>
-                           .build();
-...
-----
-
-.Template
-----
-{{msg "my.message.key" "Martin"}}
-{{msg "hello.key.messageformat" "world" format="message"}}
-----
-
-.Expected output
-----
-My name is Martin!
-Hello world!
-----
-
-Trimou provides other useful helpers which are not automatically registered:
-
-* +org.trimou.handlebars.NumberIsEvenHelper+
-* +org.trimou.handlebars.NumberIsOddHelper+
-* +org.trimou.handlebars.i18n.DateTimeFormatHelper+
-* +org.trimou.handlebars.SetHelper+
-* +org.trimou.handlebars.IncludeHelper+
-* +org.trimou.handlebars.LogHelper+
-
-See the javadoc for more info.
-
+The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Check out +org.trimou.handlebars.Options+ and the source of built-in helpers to see what helpers can do.
 
 [[missingvaluehandler]]
 === MissingValueHandler
@@ -955,5 +991,39 @@ Phone numbers: +42002012345, +420728000111
 Type of the first phone number: home
 Type of the second phone number: mobile
 ----
+
+[[spring_mvc]]
+=== Spring MVC integration
+
+This extension provides a basic http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC] integration.
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-spring-mvc</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+[[dropwizard]]
+=== Dropwizard
+
+This extension provides a basic https://dropwizard.github.io/dropwizard/[Dropwizard] integration.
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-dropwizard</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+==== TrimouViewRenderer
+
++org.trimou.dropwizard.views.TrimouViewRenderer+ is a +io.dropwizard.views.ViewRenderer+ implementation backed by Trimou. There's a simple builder for convenience: +org.trimou.dropwizard.views.TrimouViewRenderer.Builder+.
 
 '''

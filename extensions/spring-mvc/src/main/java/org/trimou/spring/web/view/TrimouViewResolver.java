@@ -15,12 +15,12 @@
  */
 package org.trimou.spring.web.view;
 
-import com.google.common.collect.Maps;
+import java.util.Map;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
-import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -28,7 +28,7 @@ import org.trimou.exception.MustacheException;
 import org.trimou.handlebars.Helper;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 /**
  * @author Minkyu Cho
@@ -50,8 +50,10 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
     protected AbstractUrlBasedView buildView(String viewName) throws Exception {
         TrimouView view = (TrimouView) super.buildView(viewName);
         try {
-            Mustache template = engine.getMustache(viewName);
-            view.setTemplate(template);
+            view.setViewName(viewName);
+            view.setEngine(engine);
+            // Validate the template exists
+            engine.getMustache(viewName);
             return view;
         } catch (Exception e) {
             throw new MustacheException(view.getUrl() + " : " + e.getMessage());

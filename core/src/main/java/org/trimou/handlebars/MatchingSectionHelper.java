@@ -22,23 +22,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An abstract helper which renders a block if the parameters match. Don't make
- * this class public until we have a proper name.
+ * An abstract helper which renders a block if:
+ * <ul>
+ * <li>there are no params and the object at the top of the context stack
+ * matches, or</li>
+ * <li>the parameters match according to the current evaluation logic</li>
+ * </ul>
+ *
+ * Don't make this class public until we have a proper name.
  *
  * @author Martin Kouba
  * @see IfHelper
  * @see UnlessHelper
  */
-abstract class ParamMatchingSectionHelper extends BasicSectionHelper {
+abstract class MatchingSectionHelper extends BasicSectionHelper {
 
     private static final Logger logger = LoggerFactory
-            .getLogger(ParamMatchingSectionHelper.class);
+            .getLogger(MatchingSectionHelper.class);
 
     private static final String OPTION_KEY_LOGIC = "logic";
 
     @Override
     public void execute(Options options) {
-        if (matches(getLogic(options.getHash()), options.getParameters())) {
+        if ((options.getParameters().isEmpty() && isMatching(options.peek()))
+                || matches(getLogic(options.getHash()), options.getParameters())) {
             options.fn();
         }
     }
@@ -48,6 +55,30 @@ abstract class ParamMatchingSectionHelper extends BasicSectionHelper {
     }
 
     protected abstract boolean isMatching(Object value);
+
+    protected boolean hasEmptyParamsSupport() {
+        return false;
+    }
+
+    @Override
+    protected int numberOfRequiredParameters() {
+        return hasEmptyParamsSupport() ? 0 : super.numberOfRequiredParameters();
+    }
+
+    protected enum EvaluationLogic {
+
+        OR,
+        AND, ;
+
+        public static EvaluationLogic parse(String value) {
+            for (EvaluationLogic logic : values()) {
+                if (value.equalsIgnoreCase(logic.toString())) {
+                    return logic;
+                }
+            }
+            return null;
+        }
+    }
 
     private boolean matches(EvaluationLogic logic, List<Object> params) {
         switch (logic) {
@@ -69,21 +100,6 @@ abstract class ParamMatchingSectionHelper extends BasicSectionHelper {
             return false;
         default:
             throw new IllegalStateException();
-        }
-    }
-
-    protected enum EvaluationLogic {
-
-        OR,
-        AND, ;
-
-        public static EvaluationLogic parse(String value) {
-            for (EvaluationLogic logic : values()) {
-                if (value.equalsIgnoreCase(logic.toString())) {
-                    return logic;
-                }
-            }
-            return null;
         }
     }
 

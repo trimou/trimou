@@ -31,7 +31,6 @@ public abstract class AbstractTemplateLocator extends
      * @param priority
      */
     protected AbstractTemplateLocator(int priority) {
-        super();
         this.priority = priority;
     }
 

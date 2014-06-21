@@ -41,12 +41,24 @@ public interface Options extends HelperDefinition {
     void fn();
 
     /**
-     * Render the given template with the current context and append the result
+     * Render the template with the current context and append the result
      * to the rendered template.
      *
      * @param templateId
+     * @throws MustacheException
+     *             If there's no such template
      */
     void partial(String templateId);
+
+    /**
+     *
+     * @param templateId
+     * @return the source of the mustache template
+     * @throws MustacheException
+     *             If there's no such template
+     * @since 1.6
+     */
+    String source(String templateId);
 
     /**
      * Push the specified object on the context stack. Helper should pop all

@@ -331,6 +331,22 @@ class HelperExecutionHandler {
         }
 
         @Override
+        public String source(String templateId) {
+            Checker.checkArgumentNotEmpty(templateId);
+
+            String mustacheSource = engine
+                    .getMustacheSource(templateId);
+
+            if (mustacheSource == null) {
+                throw new MustacheException(
+                        MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
+                        "No mustache template found for the given key: %s %s",
+                        templateId, segment.getOrigin());
+            }
+            return mustacheSource;
+        }
+
+        @Override
         public List<Object> getParameters() {
             return parameters;
         }

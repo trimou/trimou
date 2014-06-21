@@ -18,7 +18,7 @@ package org.trimou.handlebars;
 import org.trimou.util.Checker;
 
 /**
- * Conditionally renders a block if the param is "falsy".
+ * Renders a block if the param is "falsy".
  *
  * <pre>
  * {{#unless item.active}}
@@ -49,7 +49,7 @@ import org.trimou.util.Checker;
  *
  * @author Martin Kouba
  */
-public class UnlessHelper extends ParamMatchingSectionHelper {
+public class UnlessHelper extends MatchingSectionHelper {
 
     @Override
     protected boolean isMatching(Object value) {
