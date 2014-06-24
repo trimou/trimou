@@ -38,7 +38,7 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
     private boolean handlebarsSupport = true;
     private boolean debug = false;
     private boolean preCompile = false;
-	private long cacheExpiration = 60l;
+	private long cacheExpiration = 0l;
     private Map<String, Helper> helpers = Maps.newHashMap();
     private MustacheEngine engine;
 
