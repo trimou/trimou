@@ -38,6 +38,7 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
     private boolean handlebarsSupport = true;
     private boolean debug = false;
     private boolean preCompile = false;
+	private long cacheExpiration = 60l;
     private Map<String, Helper> helpers = Maps.newHashMap();
     private MustacheEngine engine;
 
@@ -65,6 +66,7 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
         engine = MustacheEngineBuilder
                 .newBuilder()
                 .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED, isCache())
+                .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT, getCacheExpiration())
                 .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING, getFileEncoding())
                 .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED, isHandlebarsSupport())
                 .setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
@@ -109,6 +111,14 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
 
     public void setPreCompile(boolean preCompile) {
         this.preCompile = preCompile;
+    }
+
+    public long getCacheExpiration() {
+        return cacheExpiration;
+    }
+
+    public void setCacheExpiration(long cacheExpiration) {
+        this.cacheExpiration = cacheExpiration;
     }
 
     public Map<String, Helper> getHelpers() {
