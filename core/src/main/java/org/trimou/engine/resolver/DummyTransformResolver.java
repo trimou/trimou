@@ -39,9 +39,9 @@ public class DummyTransformResolver extends TransformResolver {
 
     /**
      *
-     * @param matchName
      * @param priority
      * @param transformer
+     * @param matchNames
      */
     public DummyTransformResolver(int priority,
             Transformer transformer, String... matchNames) {

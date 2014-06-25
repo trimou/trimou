@@ -18,6 +18,7 @@ package org.trimou.engine.resolver;
 /**
  *
  * @author Martin Kouba
+ * @see TransformResolver
  */
 public interface Transformer {
 
@@ -26,7 +27,7 @@ public interface Transformer {
      * @param contextObject
      * @param name
      * @param context
-     * @return
+     * @return the transformed object
      */
     Object transform(Object contextObject, String name,
             ResolutionContext context);
