@@ -1,7 +1,9 @@
 Trimou - Trim Your Mustache Templates!
 ======
 
-Trimou is a Mustache implementation written in Java. Since 1.5.0 Trimou has a helper API inspired by Handlebars. The goal is to provide a simple to use and easy to extend templating engine for any Java SE or Java EE application. So far there are five ready-to-use extensions which provide integration with CDI, Servlets, PrettyTime, HtmlCompressor and google-gson.
+Trimou is a Mustache implementation written in Java. Since 1.5.0 a **helpers API** inspired by [Handlebars.js](http://handlebarsjs.com/) is also supported. The goal is to provide a simple to use and easy to extend templating engine for any Java SE or Java EE application. 
+
+There are some ready-to-use extensions which provide integration with [CDI](http://www.cdi-spec.org/), Servlets, [PrettyTime](http://ocpsoft.org/prettytime/),  [HtmlCompressor](http://code.google.com/p/htmlcompressor/), [google-gson](http://code.google.com/p/google-gson/), [Spring MVC](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) and [Dropwizard](https://dropwizard.github.io/dropwizard/).
 
 See also the project site: [http://trimou.org](http://trimou.org "Trimou Site")
 
