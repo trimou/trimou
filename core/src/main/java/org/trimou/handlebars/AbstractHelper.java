@@ -37,7 +37,6 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
 
     @Override
     public void init(Configuration configuration) {
-        super.init(configuration);
         if (!configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.SKIP_VALUE_ESCAPING)) {
             textSupport = configuration.getTextSupport();

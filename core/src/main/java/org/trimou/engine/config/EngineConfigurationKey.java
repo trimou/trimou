@@ -108,7 +108,18 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * {@link LineSeparatorSegment#getOrigin()} will not display the correct
      * info.
      */
-    REUSE_LINE_SEPARATOR_SEGMENTS(true), ;
+    REUSE_LINE_SEPARATOR_SEGMENTS(true),
+    /**
+     * The alias for iteration metadata object available inside an iteration block.
+     *
+     * <code>
+     * {{#each items}}
+     *  {{iter.index}}
+     * {{/each}}
+     * </code>
+     */
+    ITERATION_METADATA_ALIAS("iter"),
+    ;
 
     private Object defaultValue;
 

@@ -17,12 +17,24 @@ package org.trimou.engine.segment;
 
 import java.util.Iterator;
 
+import org.trimou.engine.resolver.Mapper;
+
 /**
  * Iteration metadata.
  *
  * @author Martin Kouba
  */
-public final class IterationMeta {
+public final class IterationMeta implements Mapper {
+
+    private static final String KEY_INDEX = "iterIndex";
+
+    private static final String KEY_HAS_NEXT = "iterHasNext";
+
+    private static final String KEY_FIRST = "iterIsFirst";
+
+    private static final String KEY_LAST = "iterIsLast";
+
+    private final String alias;
 
     private final Iterator<?> iterator;
 
@@ -30,16 +42,27 @@ public final class IterationMeta {
 
     private int index;
 
-    public IterationMeta(Iterator<?> iterator) {
-        super();
-        this.iterator = iterator;
-        this.index = 1;
-        this.length = 0;
+    /**
+     *
+     * @param alias
+     * @param iterator
+     */
+    public IterationMeta(String alias, Iterator<?> iterator) {
+        this(alias, iterator, 0);
     }
 
-    public IterationMeta(int length) {
-        super();
-        this.iterator = null;
+    /**
+     *
+     * @param alias
+     * @param length
+     */
+    public IterationMeta(String alias, int length) {
+        this(alias, null, length);
+    }
+
+    private IterationMeta(String alias, Iterator<?> iterator, int length) {
+        this.alias = alias;
+        this.iterator = iterator;
         this.index = 1;
         this.length = length;
     }
@@ -49,7 +72,7 @@ public final class IterationMeta {
      *
      * @return the current iteration index
      */
-    public int getIterIndex() {
+    public int getIndex() {
         return index;
     }
 
@@ -58,7 +81,7 @@ public final class IterationMeta {
      * @return <code>true</code> if the iteration has more elements,
      *         <code>false</code> otherwise
      */
-    public boolean getIterHasNext() {
+    public boolean hasNext() {
         return iterator != null ? iterator.hasNext() : (index < length);
     }
 
@@ -66,7 +89,7 @@ public final class IterationMeta {
      *
      * @return <code>true</code> for the first iteration, <code>false</code> otherwise
      */
-    public boolean getIterIsFirst() {
+    public boolean isFirst() {
         return index == 1;
     }
 
@@ -74,12 +97,30 @@ public final class IterationMeta {
      *
      * @return <code>true</code> for the last iteration, <code>false</code> otherwise
      */
-    public boolean getIterIsLast() {
+    public boolean isLast() {
         return iterator != null ? !iterator.hasNext() : (index == length);
     }
 
     public void nextIteration() {
         index++;
+    }
+
+    @Override
+    public Object get(String key) {
+        if(alias.equals(key)) {
+            return this;
+        }
+        // Preserved for backwards compatibility
+        if(KEY_INDEX.equals(key)) {
+           return getIndex();
+        } else if(KEY_HAS_NEXT.equals(key)) {
+            return hasNext();
+        } else if(KEY_FIRST.equals(key)) {
+            return isFirst();
+        } else if(KEY_LAST.equals(key)) {
+            return isLast();
+        }
+        return null;
     }
 
 }

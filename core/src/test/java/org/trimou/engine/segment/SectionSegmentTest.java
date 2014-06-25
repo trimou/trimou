@@ -37,26 +37,41 @@ public class SectionSegmentTest extends AbstractEngineTest {
     @Test
     public void testIterable() {
 
-        String templateContents = "{{#numbers}}la{{iterIndex}}{{iterHasNext}}|{{/numbers}}";
         Mustache mustache = engine
-                .compileMustache("iterable", templateContents);
+                .compileMustache("iterable", "{{#numbers}}la{{iterIndex}}{{iterHasNext}}|{{/numbers}}");
 
         assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
                 "numbers", Collections.emptyList())));
         assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
                 .<String, Object> of("numbers", ImmutableList.of(1, 2, 3))));
+
+        mustache = engine
+                .compileMustache("iterable2", "{{#numbers}}la{{iter.index}}{{iter.hasNext}}|{{/numbers}}");
+
+        assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
+                "numbers", Collections.emptyList())));
+        assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
+                .<String, Object> of("numbers", ImmutableList.of(1, 2, 3))));
+
     }
 
     @Test
     public void testArray() {
 
-        String templateContents = "{{#numbers}}la{{iterIndex}}{{iterHasNext}}|{{/numbers}}";
-        Mustache mustache = engine.compileMustache("array", templateContents);
+        Mustache mustache = engine.compileMustache("array", "{{#numbers}}la{{iterIndex}}{{iterHasNext}}|{{/numbers}}");
 
         assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
                 "numbers", new Integer[] {})));
         assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
                 .<String, Object> of("numbers", new Integer[] { 1, 2, 3 })));
+
+        mustache = engine.compileMustache("array2", "{{#numbers}}la{{iter.index}}{{iter.hasNext}}|{{/numbers}}");
+
+        assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
+                "numbers", new Integer[] {})));
+        assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
+                .<String, Object> of("numbers", new Integer[] { 1, 2, 3 })));
+
     }
 
     @Test
