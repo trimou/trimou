@@ -17,6 +17,7 @@ package org.trimou.engine;
 
 import static org.trimou.util.Checker.checkArgumentNotEmpty;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
@@ -39,7 +40,6 @@ import org.trimou.engine.parser.ParsingHandler;
 import org.trimou.engine.parser.ParsingHandlerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.util.IOUtils;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -47,6 +47,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.io.CharStreams;
 
 /**
  * The default Mustache engine implementation.
@@ -145,20 +146,21 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private LoadingCache<String, Optional<Mustache>> buildTemplateCache() {
-        return buildCache("Template", new CacheLoader<String, Optional<Mustache>>() {
-            @Override
-            public Optional<Mustache> load(String key) throws Exception {
-                return Optional.fromNullable(locateAndParse(key));
-            }
-        }, new RemovalListener<String, Optional<Mustache>>() {
-            @Override
-            public void onRemoval(
-                    RemovalNotification<String, Optional<Mustache>> notification) {
-                logger.debug(
-                        "Removed template from cache [templateId: {}, cause: {}]",
-                        notification.getKey(), notification.getCause());
-            }
-        });
+        return buildCache("Template",
+                new CacheLoader<String, Optional<Mustache>>() {
+                    @Override
+                    public Optional<Mustache> load(String key) throws Exception {
+                        return Optional.fromNullable(locateAndParse(key));
+                    }
+                }, new RemovalListener<String, Optional<Mustache>>() {
+                    @Override
+                    public void onRemoval(
+                            RemovalNotification<String, Optional<Mustache>> notification) {
+                        logger.debug(
+                                "Removed template from cache [templateId: {}, cause: {}]",
+                                notification.getKey(), notification.getCause());
+                    }
+                });
     }
 
     /**
@@ -166,31 +168,32 @@ class DefaultMustacheEngine implements MustacheEngine {
      * cache.
      */
     private LoadingCache<String, Optional<String>> buildSourceCache() {
-        return buildCache("Source", new CacheLoader<String, Optional<String>>() {
-            @Override
-            public Optional<String> load(String key) throws Exception {
-                return Optional.fromNullable(locateAndRead(key));
-            }
-        }, new RemovalListener<String, Optional<String>>() {
-            @Override
-            public void onRemoval(
-                    RemovalNotification<String, Optional<String>> notification) {
-                logger.debug(
-                        "Removed template source from cache [templateId: {}, cause: {}]",
-                        notification.getKey(), notification.getCause());
-            }
-        });
+        return buildCache("Source",
+                new CacheLoader<String, Optional<String>>() {
+                    @Override
+                    public Optional<String> load(String key) throws Exception {
+                        return Optional.fromNullable(locateAndRead(key));
+                    }
+                }, new RemovalListener<String, Optional<String>>() {
+                    @Override
+                    public void onRemoval(
+                            RemovalNotification<String, Optional<String>> notification) {
+                        logger.debug(
+                                "Removed template source from cache [templateId: {}, cause: {}]",
+                                notification.getKey(), notification.getCause());
+                    }
+                });
     }
 
-    private <K, V> LoadingCache<K, V> buildCache(String name, CacheLoader<K, V> cacheLoader,
-            RemovalListener<K, V> removalListener) {
+    private <K, V> LoadingCache<K, V> buildCache(String name,
+            CacheLoader<K, V> cacheLoader, RemovalListener<K, V> removalListener) {
         CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
         long expirationTimeout = configuration
                 .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
 
         if (expirationTimeout > 0) {
-            logger.info("{} cache expiration timeout set: {} seconds",
-                    name, expirationTimeout);
+            logger.info("{} cache expiration timeout set: {} seconds", name,
+                    expirationTimeout);
             cacheBuilder.expireAfterWrite(expirationTimeout, TimeUnit.SECONDS);
             cacheBuilder.removalListener(removalListener);
         }
@@ -228,11 +231,6 @@ class DefaultMustacheEngine implements MustacheEngine {
         return mustache;
     }
 
-    /**
-     *
-     * @param templateId
-     * @return
-     */
     private Reader locate(String templateId) {
 
         if (configuration.getTemplateLocators() == null
@@ -251,23 +249,42 @@ class DefaultMustacheEngine implements MustacheEngine {
         return reader;
     }
 
-    /**
-     *
-     * @param templateId
-     * @return
-     */
     private Mustache locateAndParse(String templateId) {
-        Reader reader = locate(templateId);
-        return reader != null ? parse(templateId, reader) : null;
+        Reader reader = null;
+        try {
+            reader = locate(templateId);
+            if (reader == null) {
+                return null;
+            }
+            return parse(templateId, reader);
+        } finally {
+            closeReader(reader, templateId);
+        }
     }
 
     private String locateAndRead(String templateId) {
+        Reader reader = null;
         try {
-            Reader reader = locate(templateId);
-            return reader != null ? IOUtils.toString(locate(templateId)) : null;
+            reader = locate(templateId);
+            if (reader == null) {
+                return null;
+            }
+            return CharStreams.toString(reader);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
+        } finally {
+            closeReader(reader, templateId);
+        }
+    }
+
+    private void closeReader(Reader reader, String templateId) {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                logger.warn("Unable to close the reader for " + templateId, e);
+            }
         }
     }
 
