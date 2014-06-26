@@ -15,7 +15,7 @@
 
   <properties>
     <version.trimou>1.6.0.Final</version.trimou>
-    <version.rewrite>2.0.8.Final</version.rewrite>
+    <version.rewrite>2.0.11.Final</version.rewrite>
   </properties>
 
   <dependencies>
