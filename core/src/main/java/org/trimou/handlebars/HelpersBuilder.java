@@ -248,6 +248,10 @@ public final class HelpersBuilder {
         addSet();
         addInclude();
         addEmbed();
+        addIsEqual();
+        addIsNotEqual();
+        addIsNull();
+        addIsNotNull();
         return this;
     }
 
