@@ -157,4 +157,18 @@ public class ExtendSegmentTest extends AbstractEngineTest {
         }
     }
 
+    @Test
+    public void testMultipleExtendSegments() {
+        MapTemplateLocator locator = new MapTemplateLocator(
+                ImmutableMap
+                        .of("super",
+                                "{{$insert}}baz{{/insert}}",
+                                "sub",
+                                "{{<super}}{{$insert}}foo{{/insert}}{{/super}}{{<super}}{{$insert}}bar{{/insert}}{{/super}}"));
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(locator).build();
+        Mustache sub = engine.getMustache("sub");
+        assertEquals("foobar", sub.render(null));
+    }
+
 }

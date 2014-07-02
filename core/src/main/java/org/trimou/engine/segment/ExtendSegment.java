@@ -64,6 +64,7 @@ public class ExtendSegment extends AbstractSectionSegment {
                     (ExtendSectionSegment) extendSection);
         }
         extended.getRootSegment().execute(appendable, context);
+        context.clearDefiningSections();
         context.pop(TEMPLATE_INVOCATION);
     }
 
