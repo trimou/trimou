@@ -30,6 +30,9 @@ import com.google.common.io.CharStreams;
 @Internal
 public final class IOUtils {
 
+    private IOUtils() {
+    }
+
     /**
      * The reader is closed right after the input is read.
      *
@@ -48,6 +51,7 @@ public final class IOUtils {
     }
 
     /**
+     * Does not close the {@code Reader}.
      *
      * @param input
      * @param bufferSize
@@ -62,6 +66,7 @@ public final class IOUtils {
     }
 
     /**
+     * Does not close the {@code Reader}.
      *
      * @param input
      * @param output
