@@ -125,11 +125,15 @@ public class SectionSegmentTest extends AbstractEngineTest {
     }
 
     @Test
-    public void testFirstAndLast() {
+    public void testIterFirstAndLast() {
 
-        String templateContents = "{{#this}}{{#iterIsFirst}}{{this}}|{{/iterIsFirst}}{{#iterIsLast}}{{this}}|{{/iterIsLast}}{{/this}}";
         Mustache mustache = engine.compileMustache("iter_first_last",
-                templateContents);
+                "{{#this}}{{#iterIsFirst}}{{this}}|{{/iterIsFirst}}{{#iterIsLast}}{{this}}|{{/iterIsLast}}{{/this}}");
+
+        assertEquals("1|3|", mustache.render(new String[] { "1", "2", "3" }));
+
+        mustache = engine.compileMustache("iter_first_last",
+                "{{#this}}{{#iter.isFirst}}{{this}}|{{/iter.isFirst}}{{#iter.isLast}}{{this}}|{{/iter.isLast}}{{/this}}");
 
         assertEquals("1|3|", mustache.render(new String[] { "1", "2", "3" }));
     }
@@ -139,6 +143,18 @@ public class SectionSegmentTest extends AbstractEngineTest {
         Template template = (Template) engine.compileMustache("foo",
                 "{{foo}}bar\nbaz{{#qux}}lala{{/qux}}");
         assertEquals(6, template.getRootSegment().getSegmentsSize(true));
+    }
+
+    @Test
+    public void testIterOddAndEven() {
+
+        Mustache mustache = engine
+                .compileMustache(
+                        "iter_odd_even",
+                        "{{#this}}{{#iter.isOdd}}ODD{{/iter.isOdd}}{{#iter.isEven}}EVEN{{/iter.isEven}}{{/this}}");
+
+        assertEquals("ODDEVENODD",
+                mustache.render(new String[] { "1", "2", "3" }));
     }
 
 }
