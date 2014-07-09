@@ -17,6 +17,7 @@ package org.trimou.engine;
 
 import static org.trimou.util.Checker.checkArgumentNotEmpty;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * The default Mustache engine.
@@ -198,11 +200,6 @@ class DefaultMustacheEngine implements MustacheEngine,
         return mustache;
     }
 
-    /**
-     *
-     * @param templateId
-     * @return
-     */
     private Reader locate(String templateId) {
 
         if (configuration.getTemplateLocators() == null
@@ -221,14 +218,27 @@ class DefaultMustacheEngine implements MustacheEngine,
         return reader;
     }
 
-    /**
-     *
-     * @param templateId
-     * @return
-     */
     private Mustache locateAndParse(String templateId) {
-        Reader reader = locate(templateId);
-        return reader != null ? parse(templateId, reader) : null;
+        Reader reader = null;
+        try {
+            reader = locate(templateId);
+            if (reader == null) {
+                return null;
+            }
+            return parse(templateId, reader);
+        } finally {
+            closeReader(reader, templateId);
+        }
+    }
+
+    private void closeReader(Reader reader, String templateId) {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                logger.warn("Unable to close the reader for " + templateId, e);
+            }
+        }
     }
 
     private Reader notifyListenersBeforeParsing(String templateName,
@@ -261,8 +271,18 @@ class DefaultMustacheEngine implements MustacheEngine,
             return templateCache.get(templateName).orNull();
         } catch (ExecutionException e) {
             throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                    e);
+                    e.getCause());
+        } catch (UncheckedExecutionException e) {
+            throw unwrapUncheckedExecutionException(e);
         }
+    }
+
+    private RuntimeException unwrapUncheckedExecutionException(Exception e) {
+        if (e.getCause() instanceof RuntimeException) {
+            return (RuntimeException) e.getCause();
+        }
+        return new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                e.getCause());
     }
 
     /**

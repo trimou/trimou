@@ -1,7 +1,9 @@
 package org.trimou.engine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -12,16 +14,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
+import org.trimou.ExceptionAssert;
 import org.trimou.Mustache;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.AbstractTemplateLocator;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.locator.TemplateLocator;
+import org.trimou.exception.MustacheException;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
@@ -186,9 +191,65 @@ public class MustacheEngineTest extends AbstractEngineTest {
     }
 
     @Test
+    public void testTemplateLocatorReaderIsAlwaysClosed() {
+
+        final String template = "FOO";
+        final String illegalTemplate = "{{foo";
+        final AtomicBoolean isCloseInvoked = new AtomicBoolean(false);
+
+        TemplateLocator locator = new AbstractTemplateLocator(1) {
+            @SuppressWarnings("resource")
+            @Override
+            public Reader locate(String templateId) {
+                return "foo".equals(templateId) ? new MyStringReader(template,
+                        isCloseInvoked) : new MyStringReader(illegalTemplate,
+                        isCloseInvoked);
+            }
+
+            @Override
+            public Set<String> getAllIdentifiers() {
+                return null;
+            }
+        };
+
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(locator).build();
+
+        assertFalse(isCloseInvoked.get());
+        assertEquals(template, engine.getMustache("foo").render(null));
+        assertTrue(isCloseInvoked.get());
+
+        isCloseInvoked.set(false);
+        assertFalse(isCloseInvoked.get());
+
+        ExceptionAssert.expect(MustacheException.class).check(new Runnable() {
+            public void run() {
+                engine.getMustache("whatever").render(null);
+            }
+        });
+        assertTrue(isCloseInvoked.get());
+    }
+
+    @Test
     public void testHelloWorld() {
         String data = "Hello world!";
         assertEquals(data, MustacheEngineBuilder.newBuilder().build()
                 .compileMustache("myTemplateName", "{{this}}").render(data));
+    }
+
+    private static class MyStringReader extends StringReader {
+
+        final AtomicBoolean isCloseInvoked;
+
+        public MyStringReader(String s, AtomicBoolean isClosed) {
+            super(s);
+            this.isCloseInvoked = isClosed;
+        }
+
+        @Override
+        public void close() {
+            isCloseInvoked.set(true);
+            super.close();
+        }
     }
 }

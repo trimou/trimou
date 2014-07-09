@@ -21,6 +21,8 @@ import java.io.Writer;
 
 import org.trimou.annotations.Internal;
 
+import com.google.common.io.CharStreams;
+
 /**
  *
  * @author Martin Kouba
@@ -28,19 +30,28 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class IOUtils {
 
-    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+    private IOUtils() {
+    }
 
     /**
+     * The reader is closed right after the input is read.
      *
      * @param input
      * @return the contents of a reader as a string
      * @throws IOException
      */
     public static String toString(final Reader input) throws IOException {
-        return toString(input, DEFAULT_BUFFER_SIZE);
+        Checker.checkArgumentNotNull(input);
+        try {
+            return CharStreams.toString(input);
+        } finally {
+            // Input cannot be null
+            input.close();
+        }
     }
 
     /**
+     * Does not close the input reader.
      *
      * @param input
      * @param bufferSize
@@ -55,6 +66,7 @@ public final class IOUtils {
     }
 
     /**
+     * Does not close the input reader.
      *
      * @param input
      * @param output

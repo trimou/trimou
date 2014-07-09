@@ -34,6 +34,8 @@ import org.trimou.engine.priority.WithPriority;
 public interface TemplateLocator extends WithPriority, ConfigurationAware {
 
     /**
+     * The reader is always closed right after the template source is read.
+     *
      * @param templateId
      *            The template identifier
      * @return the reader object for a template with the given name or
