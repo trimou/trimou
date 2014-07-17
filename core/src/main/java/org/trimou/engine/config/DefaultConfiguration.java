@@ -112,7 +112,12 @@ class DefaultConfiguration implements Configuration {
         this.localeSupport = identifyLocaleSupport(builder);
         this.keySplitter = identifyKeySplitter(builder);
         this.templateLocators = identifyTemplateLocators(builder);
-        this.globalData = builder.buildGlobalData();
+        Map<String, Object> globalData = builder.buildGlobalData();
+        if(globalData.isEmpty()) {
+            this.globalData = null;
+        } else {
+            this.globalData = globalData;
+        }
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys

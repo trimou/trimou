@@ -156,7 +156,7 @@ public class LogHelper extends BasicValueHelper {
         /**
          * If not set, {@link Level#INFO} is used.
          *
-         * @param name
+         * @param level
          * @return builder
          */
         public Builder setDefaultLevel(Level level) {
@@ -167,7 +167,7 @@ public class LogHelper extends BasicValueHelper {
         /**
          * If not set, a default adapter is used.
          *
-         * @param name
+         * @param adapter
          * @return builder
          */
         public Builder setLoggerAdapter(LoggerAdapter adapter) {

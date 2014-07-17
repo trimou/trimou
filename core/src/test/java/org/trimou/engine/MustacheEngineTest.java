@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -183,6 +185,21 @@ public class MustacheEngineTest extends AbstractEngineTest {
         assertEquals(2, sequence.size());
         assertEquals("fooGetAllIdentifiers", sequence.get(0));
         assertEquals("fooLocate", sequence.get(1));
+    }
+
+    @Test
+    public void testIterationMetadataAlias() {
+        assertEquals(
+                "1",
+                MustacheEngineBuilder
+                        .newBuilder()
+                        .setProperty(
+                                EngineConfigurationKey.ITERATION_METADATA_ALIAS,
+                                "foo")
+                        .build()
+                        .compileMustache("iter_meta_alias",
+                                "{{#this}}{{foo.index}}{{/this}}")
+                        .render(ImmutableList.of(BigDecimal.ZERO)));
     }
 
     @Test

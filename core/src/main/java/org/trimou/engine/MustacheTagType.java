@@ -53,7 +53,7 @@ public enum MustacheTagType {
     /**
      *
      * @param type
-     * @return
+     * @return <code>true</code> if the tag content must be validated, <code>false</code> otherwise
      * @since 1.5
      */
     public static boolean contentMustBeValidated(

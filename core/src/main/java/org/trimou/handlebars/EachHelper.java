@@ -18,6 +18,8 @@ package org.trimou.handlebars;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.IterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -25,13 +27,22 @@ import org.trimou.exception.MustacheProblem;
 /**
  * <code>
  * {{#each items}}
- * {{name}}
+ *  {{name}}
  * {{/each}}
  * </code>
  *
  * @author Martin Kouba
  */
 public class EachHelper extends BasicSectionHelper {
+
+    private String iterationMetadataAlias;
+
+    @Override
+    public void init(Configuration configuration) {
+        super.init(configuration);
+        this.iterationMetadataAlias = configuration
+                .getStringPropertyValue(EngineConfigurationKey.ITERATION_METADATA_ALIAS);
+    }
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -60,7 +71,7 @@ public class EachHelper extends BasicSectionHelper {
         if (!iterator.hasNext()) {
             return;
         }
-        IterationMeta meta = new IterationMeta(iterator);
+        IterationMeta meta = new IterationMeta(iterationMetadataAlias, iterator);
         options.push(meta);
         while (iterator.hasNext()) {
             processIteration(options, iterator.next(), meta);
@@ -75,7 +86,7 @@ public class EachHelper extends BasicSectionHelper {
         if (length < 1) {
             return;
         }
-        IterationMeta meta = new IterationMeta(length);
+        IterationMeta meta = new IterationMeta(iterationMetadataAlias, length);
         options.push(meta);
         for (int i = 0; i < length; i++) {
             processIteration(options, Array.get(array, i), meta);

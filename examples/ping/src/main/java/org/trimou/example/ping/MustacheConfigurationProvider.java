@@ -34,13 +34,10 @@ import org.trimou.engine.MustacheEngine;
 public class MustacheConfigurationProvider extends HttpConfigurationProvider {
 
     @Inject
-    MustacheEngineProducer engineProducer;
+    MustacheEngine engine;
 
     @Override
     public Configuration getConfiguration(ServletContext servletContext) {
-
-        // Init MustacheEngineProducer during startup
-        final MustacheEngine engine = engineProducer.initialize(servletContext);
 
         return ConfigurationBuilder.begin()
 

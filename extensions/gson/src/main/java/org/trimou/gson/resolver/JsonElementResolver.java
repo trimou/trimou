@@ -36,7 +36,7 @@ import com.google.gson.JsonPrimitive;
  * Gson's parser API resolver.
  *
  * @author Martin Kouba
- * @see http://code.google.com/p/google-gson/
+ * @see <a href="http://code.google.com/p/google-gson/">http://code.google.com/p/google-gson/</a>
  */
 public class JsonElementResolver extends IndexResolver {
 

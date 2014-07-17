@@ -36,4 +36,10 @@ public interface ResolutionContext extends ReleaseCallbackContainer {
      */
     String getKey();
 
+    /**
+     *
+     * @return the index of the part of the key which is currently processed
+     */
+    int getKeyPartIndex();
+
 }

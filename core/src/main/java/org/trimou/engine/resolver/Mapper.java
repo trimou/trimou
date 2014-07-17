@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2014 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,23 @@
 package org.trimou.engine.resolver;
 
 /**
+ * {@link MapResolver} handles a mapper in a similar way to
+ * {@link java.util.Map}. The difference is that a mapper is not a member of
+ * Java Collections Framework and does not have to contain anything. In other
+ * words, the lookup may be performed dynamically.
  *
  * @author Martin Kouba
- * @see TransformResolver
+ * @see MapResolver
+ * @since 1.6
  */
-public interface Transformer {
+public interface Mapper {
 
-    /***
+    /**
      *
-     * @param contextObject
-     * @param name
-     * @param context
-     * @return the transformed object
+     * @param key
+     * @return the value to which the specified key is mapped, or
+     *         <code>null</code>
      */
-    Object transform(Object contextObject, String name,
-            ResolutionContext context);
+    Object get(String key);
 
 }

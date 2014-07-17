@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
@@ -67,8 +68,8 @@ public class SectionSegment extends AbstractSectionSegment implements
 
     public SectionSegment(String text, Origin origin, List<Segment> segments) {
         super(text, origin, segments);
-        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler.from(
-                text, getEngine(), this) : null;
+        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
+                .from(text, getEngine(), this) : null;
     }
 
     public SegmentType getType() {
@@ -138,7 +139,9 @@ public class SectionSegment extends AbstractSectionSegment implements
             return;
         }
 
-        IterationMeta meta = new IterationMeta(iterator);
+        IterationMeta meta = new IterationMeta(getEngineConfiguration()
+                .getStringPropertyValue(
+                        EngineConfigurationKey.ITERATION_METADATA_ALIAS), iterator);
         context.push(CONTEXT, meta);
         while (iterator.hasNext()) {
             processIteration(appendable, context, iterator.next(), meta);
@@ -155,7 +158,9 @@ public class SectionSegment extends AbstractSectionSegment implements
             return;
         }
 
-        IterationMeta meta = new IterationMeta(length);
+        IterationMeta meta = new IterationMeta(getEngineConfiguration()
+                .getStringPropertyValue(
+                        EngineConfigurationKey.ITERATION_METADATA_ALIAS), length);
         context.push(CONTEXT, meta);
         for (int i = 0; i < length; i++) {
             processIteration(appendable, context, Array.get(array, i), meta);
@@ -195,10 +200,9 @@ public class SectionSegment extends AbstractSectionSegment implements
 
         if (lambda.isReturnValueInterpolated()) {
             // Parse and interpolate the return value
-            Template temp = (Template) getEngine()
-                    .compileMustache(
-                            Lambdas.constructLambdaOneoffTemplateName(this),
-                            returnValue);
+            Template temp = (Template) getEngine().compileMustache(
+                    Lambdas.constructLambdaOneoffTemplateName(this),
+                    returnValue);
             temp.getRootSegment().execute(appendable, context);
         } else {
             append(appendable, returnValue);

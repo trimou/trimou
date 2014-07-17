@@ -36,6 +36,8 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
 
     private Object value = null;
 
+    private int keyPartIndex = 0;
+
     /**
      *
      * @param key
@@ -70,6 +72,15 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
     @Override
     public String getKey() {
         return key;
+    }
+
+    @Override
+    public int getKeyPartIndex() {
+        return keyPartIndex;
+    }
+
+    void processNextPart() {
+        keyPartIndex++;
     }
 
 }

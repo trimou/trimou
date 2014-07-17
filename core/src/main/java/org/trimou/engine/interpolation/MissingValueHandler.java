@@ -24,7 +24,7 @@ import org.trimou.engine.segment.ValueSegment;
  * {@link ValueSegment}, aka variable tag.
  *
  * @author Martin Kouba
- * @see 1.5
+ * @since 1.5
  */
 public interface MissingValueHandler extends ConfigurationAware {
 

@@ -32,9 +32,15 @@ public class MapResolverTest extends AbstractEngineTest {
         Map<String, Integer> map = new HashMap<String, Integer>(2);
         map.put("foo", 1);
         map.put("bar", 2);
-        Map<String, Object> data = ImmutableMap.<String, Object> of("map", map);
-        String templateContents = "Hello {{map.foo}} or {{map.bar}}!|{{map.nonExisting}}";
-        assertEquals("Hello 1 or 2!|",
+        Mapper mapper = new Mapper() {
+            @Override
+            public Object get(String key) {
+                return "foo".equals(key) ? Integer.valueOf(10) : null;
+            }
+        };
+        Map<String, Object> data = ImmutableMap.<String, Object> of("map", map, "mapper", mapper);
+        String templateContents = "Hello {{map.foo}} or {{map.bar}}!|{{map.nonExisting}} {{mapper.foo}}";
+        assertEquals("Hello 1 or 2!| 10",
                 engine.compileMustache("map", templateContents).render(data));
     }
 

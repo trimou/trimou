@@ -39,11 +39,12 @@ class DefaultExecutionContext extends AbstractExecutionContext {
         lastValue = resolveLeadingContextObject(parts.next(), value);
 
         if (lastValue == null) {
-            // Not found - miss
+            // Leading context object not found - miss
             return value;
         }
 
         while (parts.hasNext()) {
+            value.processNextPart();
             lastValue = resolve(lastValue, parts.next(), value);
             if (lastValue == null) {
                 // Not found - miss

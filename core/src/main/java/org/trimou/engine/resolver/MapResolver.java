@@ -20,8 +20,8 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 import java.util.Map;
 
 /**
- * Resolves {@link Map} values. The key is expected to be an instance of a
- * {@link String}.
+ * Deals with {@link Map} (the key is expected to be an instance of a
+ * {@link String}) and {@link Mapper} instances.
  *
  * @author Martin Kouba
  */
@@ -41,13 +41,18 @@ public class MapResolver extends AbstractResolver {
     @Override
     public Object resolve(Object contextObject, String name,
             ResolutionContext context) {
-
-        if (contextObject == null || !(contextObject instanceof Map)) {
+        if (contextObject == null) {
             return null;
         }
-
-        Map map = (Map) contextObject;
-        return map.get(name);
+        if (contextObject instanceof Map) {
+            Map map = (Map) contextObject;
+            return map.get(name);
+        }
+        if (contextObject instanceof Mapper) {
+            Mapper mapper = (Mapper) contextObject;
+            return mapper.get(name);
+        }
+        return null;
     }
 
 }

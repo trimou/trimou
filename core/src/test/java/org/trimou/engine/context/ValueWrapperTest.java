@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
@@ -22,7 +25,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class ValueReleaseCallbackTest extends AbstractTest {
+public class ValueWrapperTest extends AbstractTest {
 
     @Test
     public void testReleaseCallbackInvoked() {
@@ -146,6 +149,53 @@ public class ValueReleaseCallbackTest extends AbstractTest {
                         "{{cannotmatch}}").render(null));
 
         assertTrue(callbackInvoked.get());
+    }
+
+    @Test
+    public void testGetKey() {
+
+        final AtomicReference<String> key = new AtomicReference<String>();
+
+        MustacheEngineBuilder
+                .newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(
+                        new AbstractResolver(
+                                1) {
+                            @Override
+                            public Object resolve(Object contextObject,
+                                    String name, ResolutionContext context) {
+                                key.set(context.getKey());
+                                return null;
+                            }
+                        }).build().compileMustache("getkey", "{{my.key.foo}}")
+                .render(null);
+
+        assertEquals("my.key.foo", key.get());
+    }
+
+    @Test
+    public void testGetKeyPartIndex() {
+
+        final List<Integer> indexes = new ArrayList<Integer>();
+
+        MustacheEngineBuilder
+                .newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(new AbstractResolver(1) {
+                    @Override
+                    public Object resolve(Object contextObject, String name,
+                            ResolutionContext context) {
+                        indexes.add(context.getKeyPartIndex());
+                        return "OK";
+                    }
+                }).build().compileMustache("getkeypartindex", "{{my.key.foo}}")
+                .render(null);
+
+        assertEquals(3l, indexes.size());
+        assertEquals(Integer.valueOf(0), indexes.get(0));
+        assertEquals(Integer.valueOf(1), indexes.get(1));
+        assertEquals(Integer.valueOf(2), indexes.get(2));
     }
 
 }
