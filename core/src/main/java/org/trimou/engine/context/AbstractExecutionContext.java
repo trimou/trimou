@@ -127,7 +127,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     @Override
     public void addDefiningSection(String name, ExtendSectionSegment segment) {
         if (definingSections == null) {
-            // Lazy init - ok, context is not thread-safe
+            // Lazy init - ok, context is used in a single thread
             definingSections = new HashMap<String, ExtendSectionSegment>();
         }
         if (!definingSections.containsKey(name)) {
@@ -141,6 +141,13 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             return null;
         }
         return definingSections.get(name);
+    }
+
+    @Override
+    public void clearDefiningSections() {
+        if(definingSections != null) {
+            definingSections.clear();
+        }
     }
 
     /**

@@ -87,7 +87,8 @@ public final class IterationMeta implements Mapper {
 
     /**
      *
-     * @return <code>true</code> for the first iteration, <code>false</code> otherwise
+     * @return <code>true</code> for the first iteration, <code>false</code>
+     *         otherwise
      */
     public boolean isFirst() {
         return index == 1;
@@ -95,10 +96,29 @@ public final class IterationMeta implements Mapper {
 
     /**
      *
-     * @return <code>true</code> for the last iteration, <code>false</code> otherwise
+     * @return <code>true</code> for the last iteration, <code>false</code>
+     *         otherwise
      */
     public boolean isLast() {
         return iterator != null ? !iterator.hasNext() : (index == length);
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the current index is odd, <code>false</code>
+     *         otherwise
+     */
+    public boolean isOdd() {
+        return !isEven();
+    }
+
+    /**
+     *
+     * @return <code>true</code> if the current index is even,
+     *         <code>false</code> otherwise
+     */
+    public boolean isEven() {
+        return index % 2 == 0;
     }
 
     public void nextIteration() {
@@ -107,17 +127,17 @@ public final class IterationMeta implements Mapper {
 
     @Override
     public Object get(String key) {
-        if(alias.equals(key)) {
+        if (alias.equals(key)) {
             return this;
         }
         // Preserved for backwards compatibility
-        if(KEY_INDEX.equals(key)) {
-           return getIndex();
-        } else if(KEY_HAS_NEXT.equals(key)) {
+        if (KEY_INDEX.equals(key)) {
+            return getIndex();
+        } else if (KEY_HAS_NEXT.equals(key)) {
             return hasNext();
-        } else if(KEY_FIRST.equals(key)) {
+        } else if (KEY_FIRST.equals(key)) {
             return isFirst();
-        } else if(KEY_LAST.equals(key)) {
+        } else if (KEY_LAST.equals(key)) {
             return isLast();
         }
         return null;

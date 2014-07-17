@@ -75,6 +75,12 @@ public interface ExecutionContext {
     public ExtendSectionSegment getDefiningSection(String name);
 
     /**
+     * Remove all defining sections. This method should be always called after
+     * an extend segment is executed.
+     */
+    public void clearDefiningSections();
+
+    /**
      *
      * @author Martin Kouba
      *

@@ -48,6 +48,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.io.CharStreams;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * The default Mustache engine implementation.
@@ -97,7 +98,6 @@ class DefaultMustacheEngine implements MustacheEngine {
             sourceCache = null;
             logger.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
         } else {
-
             if (configuration
                     .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
                 templateCache = buildTemplateCache();
@@ -213,12 +213,6 @@ class DefaultMustacheEngine implements MustacheEngine {
         }
     }
 
-    /**
-     *
-     * @param templateId
-     * @param reader
-     * @return
-     */
     private Mustache parse(String templateId, Reader reader) {
 
         ParsingHandler handler = parsingHandlerFactory.createParsingHandler();
@@ -318,7 +312,9 @@ class DefaultMustacheEngine implements MustacheEngine {
             return templateCache.get(templateName).orNull();
         } catch (ExecutionException e) {
             throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                    e);
+                    e.getCause());
+        } catch (UncheckedExecutionException e) {
+            throw unwrapUncheckedExecutionException(e);
         }
     }
 
@@ -327,8 +323,18 @@ class DefaultMustacheEngine implements MustacheEngine {
             return sourceCache.get(templateName).orNull();
         } catch (ExecutionException e) {
             throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                    e);
+                    e.getCause());
+        } catch (UncheckedExecutionException e) {
+            throw unwrapUncheckedExecutionException(e);
         }
+    }
+
+    private RuntimeException unwrapUncheckedExecutionException(Exception e) {
+        if (e.getCause() instanceof RuntimeException) {
+            return (RuntimeException) e.getCause();
+        }
+        return new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                e.getCause());
     }
 
     /**
@@ -340,10 +346,6 @@ class DefaultMustacheEngine implements MustacheEngine {
 
         private final Mustache mustache;
 
-        /**
-         *
-         * @param mustache
-         */
         public DefaultMustacheCompilationEvent(Mustache mustache) {
             super();
             this.mustache = mustache;
@@ -367,10 +369,6 @@ class DefaultMustacheEngine implements MustacheEngine {
 
         private Reader reader;
 
-        /**
-         *
-         * @param mustacheName
-         */
         public DefaultMustacheParsingEvent(String mustacheName, Reader reader) {
             super();
             this.mustacheName = mustacheName;
