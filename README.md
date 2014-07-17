@@ -14,6 +14,6 @@ Travis CI job build status: [![Build Status](https://travis-ci.org/trimou/trimou
 Building Trimou
 -------------
 
-To build simply run:
+Simply run:
 
 > $ mvn clean install
