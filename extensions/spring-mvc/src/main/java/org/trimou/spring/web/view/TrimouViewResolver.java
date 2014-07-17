@@ -15,8 +15,7 @@
  */
 package org.trimou.spring.web.view;
 
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
@@ -28,7 +27,7 @@ import org.trimou.exception.MustacheException;
 import org.trimou.handlebars.Helper;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
-import com.google.common.collect.Maps;
+import java.util.Map;
 
 /**
  * @author Minkyu Cho
@@ -38,7 +37,7 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
     private boolean handlebarsSupport = true;
     private boolean debug = false;
     private boolean preCompile = false;
-	private long cacheExpiration = 60l;
+    private long cacheExpiration = 0l;
     private Map<String, Helper> helpers = Maps.newHashMap();
     private MustacheEngine engine;
 
@@ -63,22 +62,31 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver implements 
     @Override
     public void afterPropertiesSet() throws Exception {
         final int PRIORITY = 1;
-        engine = MustacheEngineBuilder
-                .newBuilder()
-                .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED, isCache())
-                .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT, getCacheExpiration())
-                .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING, getFileEncoding())
-                .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED, isHandlebarsSupport())
-                .setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
-                .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES, isPreCompile())
-                .registerHelpers(helpers)
-                .addTemplateLocator(new ServletContextTemplateLocator(PRIORITY, getPrefix(), getSuffix(), getServletContext()))
-                .build();
+        engine =
+                MustacheEngineBuilder
+                        .newBuilder()
+                        .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED, isCache())
+                        .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT, getCacheExpiration())
+                        .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING, getFileEncoding())
+                        .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED, isHandlebarsSupport())
+                        .setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
+                        .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES, isPreCompile())
+                        .registerHelpers(helpers)
+                        .addTemplateLocator(
+                                new ServletContextTemplateLocator(PRIORITY, getPrefix(),
+                                        getSuffixWithoutSeparator(), getServletContext())).build();
     }
 
     @Override
     protected Class<?> requiredViewClass() {
         return TrimouView.class;
+    }
+
+    public String getSuffixWithoutSeparator() {
+        if (getSuffix().startsWith(".")) {
+            return getSuffix().replace(".", "");
+        }
+        return getSuffix();
     }
 
     public String getFileEncoding() {
