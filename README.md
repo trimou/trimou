@@ -7,6 +7,13 @@ There are some ready-to-use extensions which provide integration with [CDI](http
 
 See also the project site: [http://trimou.org](http://trimou.org "Trimou Site")
 
-And don't forget to check the example web application: https://github.com/trimou/trimou/tree/master/examples/ping
+Don't forget to check the example web application: https://github.com/trimou/trimou/tree/master/examples/ping
 
 Travis CI job build status: [![Build Status](https://travis-ci.org/trimou/trimou.png)](https://travis-ci.org/trimou/trimou)
+
+Building Trimou
+-------------
+
+Simply run:
+
+> $ mvn clean install
