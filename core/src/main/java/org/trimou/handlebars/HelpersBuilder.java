@@ -23,9 +23,9 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * A simple builder for helpers map. It's useful when registering built-in/basic helpers
- * with sensible default names (each, if, etc.) - no need to explicitly declare
- * a helper name.
+ * A simple builder for helpers map. It's useful when registering built-in/basic
+ * helpers with sensible default names (each, if, etc.) - no need to explicitly
+ * declare a helper name.
  *
  * <pre>
  * HelpersBuilder.empty().addSet().addIsEven().add(&quot;myHelperName&quot;, new MyHelper())
@@ -64,6 +64,18 @@ public final class HelpersBuilder {
     public static final String IS_NULL = "isNull";
 
     public static final String IS_NOT_NULL = "isNotNull";
+
+    public static final String CHOOSE = "choose";
+
+    public static final String WHEN = "when";
+
+    public static final String OTHERWISE = "otherwise";
+
+    public static final String SWITCH = "switch";
+
+    public static final String CASE = "case";
+
+    public static final String DEFAULT = "default";
 
     private final ImmutableMap.Builder<String, Helper> builder;
 
@@ -143,7 +155,8 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an instance of {@link NumberIsOddHelper} with the {@value #IS_ODD} name.
+     * Add an instance of {@link NumberIsOddHelper} with the {@value #IS_ODD}
+     * name.
      *
      * @return self
      */
@@ -204,8 +217,8 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an instance of {@link NullCheckHelper} with the
-     * {@value #IS_NULL} name.
+     * Add an instance of {@link NullCheckHelper} with the {@value #IS_NULL}
+     * name.
      *
      * @return self
      */
@@ -215,13 +228,52 @@ public final class HelpersBuilder {
     }
 
     /**
-     * Add an instance of {@link NullCheckHelper} which tests "not null" with the
-     * {@value #IS_NOT_NULL} name.
+     * Add an instance of {@link NullCheckHelper} which tests "not null" with
+     * the {@value #IS_NOT_NULL} name.
      *
      * @return self
      */
     public HelpersBuilder addIsNotNull() {
         builder.put(IS_NOT_NULL, new NullCheckHelper(true));
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link ChooseHelper} with the {@value #CHOOSE} name.
+     * Also adds the dependent helpers.
+     *
+     * @return self
+     */
+    public HelpersBuilder addChoose() {
+        builder.put(CHOOSE, new ChooseHelper());
+        builder.put(WHEN, new ChooseHelper.WhenHelper());
+        builder.put(OTHERWISE, new ChooseHelper.OtherwiseHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link SwitchHelper} with the {@value #SWITCH} name.
+     * Also adds the dependent helpers.
+     *
+     * @return self
+     */
+    public HelpersBuilder addSwitch() {
+        return addSwitch(false);
+    }
+
+    /**
+     * Add an instance of {@link SwitchHelper} with the {@value #SWITCH} name.
+     * Also adds the dependent helpers.
+     *
+     * @param caseDefaultIsBreak
+     *            If <code>true</code> the matching case helper terminates the flow by
+     *            default.
+     * @return self
+     */
+    public HelpersBuilder addSwitch(boolean caseDefaultIsBreak) {
+        builder.put(SWITCH, new SwitchHelper());
+        builder.put(CASE, new SwitchHelper.CaseHelper(caseDefaultIsBreak));
+        builder.put(DEFAULT, new SwitchHelper.DefaultHelper());
         return this;
     }
 
@@ -252,6 +304,8 @@ public final class HelpersBuilder {
         addIsNotEqual();
         addIsNull();
         addIsNotNull();
+        addChoose();
+        addSwitch();
         return this;
     }
 
