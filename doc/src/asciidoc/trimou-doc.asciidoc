@@ -288,7 +288,7 @@ In between...
 &copy; 2013 <4>
 Lalala...
 ----
-<1> "super start
+<1> "super" start
 <2> section "header" is extended
 <3> section "content" has the default content
 <4> "super" end
@@ -296,50 +296,73 @@ Lalala...
 [[helpers]]
 === Built-in helpers
 
-Since version 1.5.0 handlebars-like helpers are supported. There are five helpers registered automatically: +if+, +unless+, +each+, +with+ (see http://handlebarsjs.com for examples :-) and +is+ (an inline version of if). Other helpers may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. See also <<custom_helpers,Helper>> section.
+Since version 1.5.0  helpers API inspired by http://handlebarsjs.com/[Handlebars.js] is supported. There are five helpers registered automatically: +if+, +unless+, +each+, +with+ (see http://handlebarsjs.com for examples :-) and +is+ (an inline version of if).
+
+TIP: +if+ and +unless+ helpers also support multiple params evaluation. See the javadoc for more info.
+
+Other helpers may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. +org.trimou.handlebars.HelpersBuilder+ is useful when registering most built-in helpers with sensible default names.
+
+See also <<custom_helpers,Helper>> section to know how to create your own custom helpers.
 
 NOTE: Handlebars support is enabled by default. See +HANDLEBARS_SUPPORT_ENABLED+ in <<configuration,Configuration properties>>.
 
-Note that Trimou provides some useful helpers which are not registered automatically (See the javadoc for examples):
+Trimou provides some useful helpers which are not registered automatically:
 
-[cols="1,2" options="header"]
+[cols="1,2,1" options="header"]
 |===
 |Class
 |Description
+|Default name
 
-|+org.trimou.handlebars.i18n.ResourceBundleHelper+
-|Displays localized messages.
+|+org.trimou.handlebars.ChooseHelper+
+|Works similarly as the JSP c:choose tag - it renders the content of the first +when+ section whose first parameter is not falsy. If no +when+ section is rendered, +otherwise+ section is rendered, if present.
+|choose
 
-|+org.trimou.handlebars.i18n.DateTimeFormatHelper+
-|Displays localized times.
-
-|+org.trimou.handlebars.NumberIsEvenHelper+
-|Renders a block/text if the param is an even number.
-
-|+org.trimou.handlebars.NumberIsOddHelper+
-|Renders a block/text if the param is an odd number.
+|+org.trimou.handlebars.SwitchHelper+
+|Works similarly as the Java switch statement.
+|switch
 
 |+org.trimou.handlebars.SetHelper+
 |Works similarly as WithHelper except the current hash is pushed on the context stack.
+|set
 
 |+org.trimou.handlebars.IncludeHelper+
-| Works similarly as partial tag except the name of the template to include may be obtained dynamically.
+| Works similarly as the partial tag except the name of the template to include may be obtained dynamically.
+|include
 
 |+org.trimou.handlebars.LogHelper+
-|Log debug messages.
+|Logs debug messages.
+|log
 
 |+org.trimou.handlebars.EmbedHelper+
 |Embeds template source as a JavaScript snippet.
+|embed
 
 |+org.trimou.handlebars.NullCheckHelper+
 |Renders a block if the param is/isn't null.
+|isNull/isNotNull
 
 |+org.trimou.handlebars.EqualsHelper+
 |Renders a block if the first param does/doesn't equal to the second param.
+|isEq/isNotEq
+
+|+org.trimou.handlebars.NumberIsEvenHelper+
+|Renders a block/text if the param is an even number.
+|isEven
+
+|+org.trimou.handlebars.NumberIsOddHelper+
+|Renders a block/text if the param is an odd number.
+|isOdd
+
+|+org.trimou.handlebars.i18n.ResourceBundleHelper+
+|Displays localized messages.
+|N/A
+
+|+org.trimou.handlebars.i18n.DateTimeFormatHelper+
+|Displays localized times.
+|N/A
 
 |===
-
-TIP: There is a simple builder which is useful when registering built-in/basic helpers with sensible default names: +org.trimou.handlebars.HelpersBuilder+
 
 ==== Example of ResourceBundleHelper use
 
@@ -843,6 +866,10 @@ String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date
 // Renders something similar:
 // moments from now
 ----
+
+==== PrettyTimeHelper
+
+Developers are encouraged to use this helper instead of +PrettyTimeResolver+ to avoid the negative performance impact during interpolation. However, +PrettyTimeResolver+ is registered automatically through +PrettyTimeConfigurationExtension+. So don't forget to disable the resolver by means of +org.trimou.prettytime.resolver.PrettyTimeResolver.ENABLED_KEY+, e.g. use +org.trimou.prettytime.resolver.PrettyTimeResolver.enabled=false+ in your properties file.
 
 [[minify]]
 === Minify
