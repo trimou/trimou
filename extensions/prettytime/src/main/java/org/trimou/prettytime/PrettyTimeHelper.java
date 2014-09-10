@@ -32,14 +32,14 @@ import com.google.common.cache.LoadingCache;
 
 /**
  * Developers are encouraged to use this helper instead of
- * {@link PrettyTimeResolver} to avoid negative performance impact during
+ * {@link PrettyTimeResolver} to avoid the negative performance impact during
  * interpolation.
  *
  * A {@link MustacheException} is thrown in case of the passed parameter is not
  * a formattable object (i.e. Date, Calendar or Long).
  *
  * <code>
- * {{prettyTime now}}
+ * {{pretty now}}
  * </code>
  *
  * @author Martin Kouba
