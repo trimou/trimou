@@ -10,6 +10,8 @@ import org.trimou.engine.listener.SimpleStatsCollector;
 import org.trimou.handlebars.HelpersBuilder;
 import org.trimou.handlebars.i18n.DateTimeFormatHelper;
 import org.trimou.minify.Minify;
+import org.trimou.prettytime.PrettyTimeHelper;
+import org.trimou.prettytime.resolver.PrettyTimeResolver;
 import org.trimou.servlet.i18n.RequestLocaleSupport;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
@@ -24,11 +26,11 @@ public class MustacheEngineProducer {
     @Produces
     public MustacheEngine produceMustacheEngine(
             SimpleStatsCollector simpleStatsCollector) {
-        // 1. CDI, servlet and PrettyTime resolvers are registered automatically
+        // 1. CDI and servlet resolvers are registered automatically
         // 2. Precompile all available templates
         // 3. Do not escape values
-        // 4. Register extra helpers (set, isOdd, ...)
-        // 5. Register basic date and time formatting helper
+        // 4. PrettyTimeResolver is disabled - we use helper instead
+        // 5. Register helpers (set, isOdd, ...)
         // 6. ServletContextTemplateLocator is most suitable for webapps
         // 7. The current locale will be based on the Accept-Language header
         // 8. Minify all the templates
@@ -38,8 +40,11 @@ public class MustacheEngineProducer {
                 .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES,
                         true)
                 .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
-                .registerHelpers(HelpersBuilder.extra().build())
-                .registerHelper("format", new DateTimeFormatHelper())
+                .setProperty(PrettyTimeResolver.ENABLED_KEY, false)
+                .registerHelpers(
+                        HelpersBuilder.extra()
+                                .add("format", new DateTimeFormatHelper())
+                                .add("pretty", new PrettyTimeHelper()).build())
                 .addTemplateLocator(
                         new ServletContextTemplateLocator(1, "/templates",
                                 "html"))

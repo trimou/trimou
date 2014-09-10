@@ -12,7 +12,7 @@ This example web application aims to show the basic usage of Trimou, built-in ex
     * [MustacheEngine producer](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheEngineProducer.java)
     * [CDI bean resolver in action](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/templates/pingLogCdi.html#L8)
 * PrettyTime built-in extension
-    * [PrettyTime resolver in action](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/templates/pingRow.html#L5)
+    * [PrettyTime helper in action](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/webapp/templates/pingRow.html#L5)
 * Minify built-in extension
     * [Minify html listener configuration](https://github.com/trimou/trimou/blob/master/examples/ping/src/main/java/org/trimou/example/ping/MustacheEngineProducer.java)
 * Rewrite integration
