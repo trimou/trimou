@@ -34,11 +34,12 @@ import org.trimou.exception.MustacheProblem;
 @Internal
 public class PartialSegment extends AbstractSegment {
 
-    private final String indentation;
+    private final TextSegment indentation;
 
     public PartialSegment(String text, Origin origin, String indentation) {
         super(text, origin);
-        this.indentation = indentation;
+        this.indentation = indentation != null ? new TextSegment(indentation,
+                new Origin(origin.getTemplate())) : null;
     }
 
     @Override
@@ -59,13 +60,13 @@ public class PartialSegment extends AbstractSegment {
                     getOrigin());
         }
 
-        context.push(TEMPLATE_INVOCATION, partialTemplate);
         if (indentation == null) {
             partialTemplate.getRootSegment().execute(appendable, context);
         } else {
+            context.push(TEMPLATE_INVOCATION, partialTemplate);
             prependIndentation(appendable, context, partialTemplate);
+            context.pop(TEMPLATE_INVOCATION);
         }
-        context.pop(TEMPLATE_INVOCATION);
     }
 
     @Override
@@ -81,13 +82,14 @@ public class PartialSegment extends AbstractSegment {
     private void prependIndentation(Appendable appendable,
             ExecutionContext context, Template partialTemplate) {
 
+        // Note that we can't cache this because the partial template contents
+        // can change at any time
         List<List<Segment>> partialLines = Segments
-                .readSegmentLinesBeforeRendering(partialTemplate.getRootSegment());
-        TextSegment indent = new TextSegment(indentation, new Origin(
-                getTemplate()));
+                .readSegmentLinesBeforeRendering(partialTemplate
+                        .getRootSegment());
 
         for (List<Segment> line : partialLines) {
-            line.add(0, indent);
+            line.add(0, indentation);
         }
 
         for (List<Segment> line : partialLines) {

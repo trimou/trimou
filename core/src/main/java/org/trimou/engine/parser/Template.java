@@ -152,4 +152,9 @@ public class Template implements Mustache {
 
     }
 
+    @Override
+    public String toString() {
+        return String.format("Template %s", name);
+    }
+
 }

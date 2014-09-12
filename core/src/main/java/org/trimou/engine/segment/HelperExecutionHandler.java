@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -323,11 +321,9 @@ class HelperExecutionHandler {
                         templateId, segment.getOrigin());
             }
 
-            executionContext.push(TEMPLATE_INVOCATION, partialTemplate);
-            // Indentation is not supported
+            // Note that indentation is not supported
             partialTemplate.getRootSegment().execute(appendable,
                     executionContext);
-            executionContext.pop(TEMPLATE_INVOCATION);
         }
 
         @Override

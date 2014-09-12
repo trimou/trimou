@@ -136,4 +136,19 @@ public class PartialSegmentTest extends AbstractEngineTest {
         }
     }
 
+    @Test
+    public void testTemplateInvocationsStack() {
+        // See also bug #42
+        String partial = "!";
+        StringBuilder template = new StringBuilder();
+        StringBuilder result = new StringBuilder();
+        int loop = 2 * Integer.valueOf(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT.getDefaultValue().toString());
+        for (int i = 0; i < loop ; i++) {
+            template.append("{{> partial}}");
+            result.append(partial);
+        }
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().addTemplateLocator(new MapTemplateLocator(ImmutableMap.of("template", template.toString(), "partial", partial.toString()))).build();
+        assertEquals(result.toString(), engine.getMustache("template").render(null));
+    }
+
 }

@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
-
 import java.util.List;
 
 import org.trimou.annotations.Internal;
@@ -58,14 +56,12 @@ public class ExtendSegment extends AbstractSectionSegment {
                     getText(), getOrigin());
         }
 
-        context.push(TEMPLATE_INVOCATION, extended);
         for (Segment extendSection : this) {
             context.addDefiningSection(extendSection.getText(),
                     (ExtendSectionSegment) extendSection);
         }
         extended.getRootSegment().execute(appendable, context);
         context.clearDefiningSections();
-        context.pop(TEMPLATE_INVOCATION);
     }
 
 }
