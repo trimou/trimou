@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
+import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
@@ -117,5 +118,11 @@ public interface Configuration {
      * @return the description info
      */
     public String getInfo();
+
+    /**
+     *
+     * @return the computing cache factory
+     */
+    public ComputingCacheFactory getComputingCacheFactory();
 
 }

@@ -22,14 +22,14 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.trimou.engine.cache.ComputingCache;
+import org.trimou.engine.cache.ComputingCache.Function;
+import org.trimou.engine.config.Configuration;
 import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Checker;
 
 import com.google.common.base.Predicate;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -47,6 +47,9 @@ import com.google.common.collect.ImmutableSet;
  * @author Martin Kouba
  */
 public class SimpleStatsCollector extends AbstractMustacheListener {
+
+    public static final String COMPUTING_CACHE_CONSUMER_ID = SimpleStatsCollector.class
+            .getName();
 
     /**
      * Skip templates used for Lambda return value interpolation.
@@ -67,7 +70,7 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
     /**
      * Data: name -> (time -> amount)
      */
-    protected final LoadingCache<String, LoadingCache<Long, AtomicLong>> data;
+    protected ComputingCache<String, ComputingCache<Long, AtomicLong>> data;
 
     /**
      *
@@ -86,23 +89,27 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
         Checker.checkArgumentsNotNull(templatePredicate, timeUnit);
         this.timeUnit = timeUnit;
         this.templatePredicate = templatePredicate;
-        // Use LoadingCache because of concurrent access is required and the
+    }
+
+    @Override
+    public void init(final Configuration configuration) {
+        // Use computing cache because of concurrent access is required and the
         // data set is not known beforehand
-        this.data = CacheBuilder.newBuilder().build(
-                new CacheLoader<String, LoadingCache<Long, AtomicLong>>() {
+        this.data = configuration.getComputingCacheFactory().create(
+                COMPUTING_CACHE_CONSUMER_ID,
+                new Function<String, ComputingCache<Long, AtomicLong>>() {
                     @Override
-                    public LoadingCache<Long, AtomicLong> load(String key)
-                            throws Exception {
-                        return CacheBuilder.newBuilder().build(
-                                new CacheLoader<Long, AtomicLong>() {
+                    public ComputingCache<Long, AtomicLong> compute(String key) {
+                        return configuration.getComputingCacheFactory().create(
+                                COMPUTING_CACHE_CONSUMER_ID,
+                                new Function<Long, AtomicLong>() {
                                     @Override
-                                    public AtomicLong load(Long key)
-                                            throws Exception {
+                                    public AtomicLong compute(Long key) {
                                         return new AtomicLong(0);
                                     }
-                                });
+                                }, null, null, null);
                     }
-                });
+                }, null, null, null);
     }
 
     @Override
@@ -112,11 +119,9 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
             event.registerReleaseCallback(new ReleaseCallback() {
                 @Override
                 public void release() {
-                    data.getUnchecked(event.getMustacheName())
-                            .getUnchecked(
-                                    timeUnit.convert(System.nanoTime() - start,
-                                            TimeUnit.NANOSECONDS))
-                            .incrementAndGet();
+                    data.get(event.getMustacheName())
+                            .get(timeUnit.convert(System.nanoTime() - start,
+                                    TimeUnit.NANOSECONDS)).incrementAndGet();
                 }
             });
         }
@@ -126,8 +131,7 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
      * Drop all the collected data.
      */
     public void clearData() {
-        data.invalidateAll();
-        data.cleanUp();
+        data.clear();
     }
 
     /**
@@ -136,7 +140,7 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
      * @return data for the given template
      */
     public Map<Long, Long> getData(String templateId) {
-        LoadingCache<Long, AtomicLong> templateData = data
+        ComputingCache<Long, AtomicLong> templateData = data
                 .getIfPresent(templateId);
         if (templateData != null) {
             return getImmutableTemplateData(templateData);
@@ -154,8 +158,8 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
         }
         ImmutableMap.Builder<String, Map<Long, Long>> builder = ImmutableMap
                 .builder();
-        for (Entry<String, LoadingCache<Long, AtomicLong>> entry : data.asMap()
-                .entrySet()) {
+        for (Entry<String, ComputingCache<Long, AtomicLong>> entry : data
+                .getAllPresent().entrySet()) {
             builder.put(entry.getKey(),
                     getImmutableTemplateData(entry.getValue()));
         }
@@ -168,9 +172,9 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
      * @return a simple statistics for the given template
      */
     public SimpleStats getSimpleStats(String templateId) {
-        LoadingCache<Long, AtomicLong> entry = data.getIfPresent(templateId);
+        ComputingCache<Long, AtomicLong> entry = data.getIfPresent(templateId);
         if (entry != null) {
-            return new SimpleStats(templateId, entry.asMap());
+            return new SimpleStats(templateId, entry.getAllPresent());
         }
         return null;
     }
@@ -184,10 +188,10 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
             return Collections.emptySet();
         }
         ImmutableSet.Builder<SimpleStats> buidler = ImmutableSet.builder();
-        for (Entry<String, LoadingCache<Long, AtomicLong>> entry : data.asMap()
-                .entrySet()) {
+        for (Entry<String, ComputingCache<Long, AtomicLong>> entry : data
+                .getAllPresent().entrySet()) {
             buidler.add(new SimpleStats(entry.getKey(), entry.getValue()
-                    .asMap()));
+                    .getAllPresent()));
         }
         return buidler.build();
     }
@@ -201,9 +205,10 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
     }
 
     private Map<Long, Long> getImmutableTemplateData(
-            LoadingCache<Long, AtomicLong> templateData) {
+            ComputingCache<Long, AtomicLong> templateData) {
         ImmutableMap.Builder<Long, Long> builder = ImmutableMap.builder();
-        for (Entry<Long, AtomicLong> entry : templateData.asMap().entrySet()) {
+        for (Entry<Long, AtomicLong> entry : templateData.getAllPresent()
+                .entrySet()) {
             builder.put(entry.getKey(), entry.getValue().get());
         }
         return builder.build();

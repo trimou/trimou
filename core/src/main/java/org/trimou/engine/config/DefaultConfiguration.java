@@ -31,6 +31,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.cache.ComputingCacheFactory;
+import org.trimou.engine.cache.DefaultComputingCacheFactory;
 import org.trimou.engine.interpolation.DotKeySplitter;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.engine.interpolation.MissingValueHandler;
@@ -52,7 +54,6 @@ import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 /**
  *
@@ -84,6 +85,8 @@ class DefaultConfiguration implements Configuration {
     private final MissingValueHandler missingValueHandler;
 
     private final Map<String, Helper> helpers;
+
+    private final ComputingCacheFactory computingCacheFactory;
 
     /**
      *
@@ -118,11 +121,17 @@ class DefaultConfiguration implements Configuration {
         } else {
             this.globalData = globalData;
         }
+        if(builder.getComputingCacheFactory() != null) {
+            this.computingCacheFactory = builder.getComputingCacheFactory();
+        } else {
+            this.computingCacheFactory = new DefaultComputingCacheFactory();
+        }
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys
-        Set<ConfigurationAware> components = ImmutableSet
+        List<ConfigurationAware> components = ImmutableList
                 .<ConfigurationAware> builder()
+                .add(computingCacheFactory)
                 .addAll(resolvers)
                 .add(textSupport)
                 .add(localeSupport)
@@ -289,8 +298,13 @@ class DefaultConfiguration implements Configuration {
         return builder.toString();
     }
 
+    @Override
+    public ComputingCacheFactory getComputingCacheFactory() {
+        return computingCacheFactory;
+    }
+
     private void initializeConfigurationAwareComponents(
-            Set<ConfigurationAware> components) {
+            List<ConfigurationAware> components) {
         for (ConfigurationAware component : components) {
             component.init(this);
         }
@@ -308,9 +322,9 @@ class DefaultConfiguration implements Configuration {
 
     private Map<String, Object> initializeProperties(
             MustacheEngineBuilder engineBuilder,
-            Set<ConfigurationAware> initialSet) {
+            List<ConfigurationAware> components) {
 
-        Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess(initialSet);
+        Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess(components);
 
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
         Map<String, Object> builderProperties = engineBuilder.buildProperties();
@@ -362,7 +376,7 @@ class DefaultConfiguration implements Configuration {
     }
 
     private Set<ConfigurationKey> getConfigurationKeysToProcess(
-            Set<ConfigurationAware> components) {
+            List<ConfigurationAware> components) {
         Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
         // Global keys
         for (ConfigurationKey key : EngineConfigurationKey.values()) {

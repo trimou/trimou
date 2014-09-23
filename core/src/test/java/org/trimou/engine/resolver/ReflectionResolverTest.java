@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
@@ -13,9 +12,7 @@ import org.trimou.ArchiveType;
 import org.trimou.Hammer;
 import org.trimou.engine.MustacheEngineBuilder;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -66,15 +63,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
     @Test
     public void testMemberCacheInvalidation() {
 
-        final AtomicInteger invalidatedEntries = new AtomicInteger(0);
-        final ReflectionResolver resolver = new ReflectionResolver() {
-            @Override
-            public void onRemoval(
-                    RemovalNotification<MemberKey, Optional<MemberWrapper>> notification) {
-                super.onRemoval(notification);
-                invalidatedEntries.incrementAndGet();
-            }
-        };
+        final ReflectionResolver resolver = new ReflectionResolver();
 
         // Just to init the resolver
         MustacheEngineBuilder.newBuilder()
@@ -84,8 +73,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         Hammer hammer = new Hammer();
         assertNotNull(resolver.resolve(hammer, "age", null));
         resolver.invalidateMemberCache(null);
-        assertEquals(1, invalidatedEntries.get());
-        invalidatedEntries.set(0);
+        assertEquals(0, resolver.getMemberCacheSize());
 
         assertNotNull(resolver.resolve(hammer, "age", null));
         assertNotNull(resolver.resolve(ArchiveType.class, "JAR", null));
@@ -95,7 +83,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
                 return input.getName().equals(ArchiveType.class.getName());
             }
         });
-        assertEquals(1, invalidatedEntries.get());
+        assertEquals(1, resolver.getMemberCacheSize());
     }
 
     @Test(expected=IllegalStateException.class)

@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
+import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.config.ConfigurationExtension;
 import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBuilder;
 import org.trimou.engine.config.ConfigurationKey;
@@ -81,6 +82,8 @@ public final class MustacheEngineBuilder implements
     private MissingValueHandler missingValueHandler;
 
     private final ImmutableMap.Builder<String, Helper> helpers;
+
+    private ComputingCacheFactory computingCacheFactory;
 
     /**
      * Don't create a new instance.
@@ -314,6 +317,17 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * @param cacheFactory
+     * @return self
+     */
+    public MustacheEngineBuilder setComputingCacheFactory(ComputingCacheFactory cacheFactory) {
+        Checker.checkArgumentNotNull(cacheFactory);
+        checkIsMutable("setCacheFactory()");
+        this.computingCacheFactory = cacheFactory;
+        return this;
+    }
+
+    /**
      *
      * @return new instance of builder
      */
@@ -374,6 +388,10 @@ public final class MustacheEngineBuilder implements
 
     public Map<String, Helper> buildHelpers() {
         return helpers.build();
+    }
+
+    public ComputingCacheFactory getComputingCacheFactory() {
+        return computingCacheFactory;
     }
 
     private void checkIsMutable(String methodName) {

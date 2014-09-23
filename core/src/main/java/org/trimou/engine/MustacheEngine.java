@@ -16,6 +16,7 @@
 package org.trimou.engine;
 
 import org.trimou.Mustache;
+import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.TemplateLocator;
@@ -26,6 +27,11 @@ import org.trimou.engine.locator.TemplateLocator;
  * @author Martin Kouba
  */
 public interface MustacheEngine {
+
+    /**
+     * @see ComputingCache
+     */
+    public static final String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class.getName();
 
     /**
      * Get the compiled template with the given id.

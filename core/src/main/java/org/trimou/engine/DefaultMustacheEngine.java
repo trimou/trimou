@@ -22,12 +22,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
+import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -42,13 +41,7 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.io.CharStreams;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * The default Mustache engine implementation.
@@ -60,9 +53,9 @@ class DefaultMustacheEngine implements MustacheEngine {
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultMustacheEngine.class);
 
-    private final LoadingCache<String, Optional<Mustache>> templateCache;
+    private final ComputingCache<String, Optional<Mustache>> templateCache;
 
-    private final LoadingCache<String, Optional<String>> sourceCache;
+    private final ComputingCache<String, Optional<String>> sourceCache;
 
     private final Configuration configuration;
 
@@ -141,24 +134,23 @@ class DefaultMustacheEngine implements MustacheEngine {
             logger.warn("Unable to invalidate the template cache - it's disabled!");
             return;
         }
-        templateCache.invalidateAll();
-        sourceCache.invalidateAll();
+        templateCache.clear();
+        sourceCache.clear();
     }
 
-    private LoadingCache<String, Optional<Mustache>> buildTemplateCache() {
+    private ComputingCache<String, Optional<Mustache>> buildTemplateCache() {
         return buildCache("Template",
-                new CacheLoader<String, Optional<Mustache>>() {
+                new ComputingCache.Function<String, Optional<Mustache>>() {
                     @Override
-                    public Optional<Mustache> load(String key) throws Exception {
+                    public Optional<Mustache> compute(String key) {
                         return Optional.fromNullable(locateAndParse(key));
                     }
-                }, new RemovalListener<String, Optional<Mustache>>() {
+                }, new ComputingCache.Listener<String>() {
                     @Override
-                    public void onRemoval(
-                            RemovalNotification<String, Optional<Mustache>> notification) {
+                    public void entryInvalidated(String key, String cause) {
                         logger.debug(
                                 "Removed template from cache [templateId: {}, cause: {}]",
-                                notification.getKey(), notification.getCause());
+                                key, cause);
                     }
                 });
     }
@@ -167,37 +159,38 @@ class DefaultMustacheEngine implements MustacheEngine {
      * Properties of the source cache are dependent on that of the template
      * cache.
      */
-    private LoadingCache<String, Optional<String>> buildSourceCache() {
+    private ComputingCache<String, Optional<String>> buildSourceCache() {
         return buildCache("Source",
-                new CacheLoader<String, Optional<String>>() {
+                new ComputingCache.Function<String, Optional<String>>() {
                     @Override
-                    public Optional<String> load(String key) throws Exception {
+                    public Optional<String> compute(String key) {
                         return Optional.fromNullable(locateAndRead(key));
                     }
-                }, new RemovalListener<String, Optional<String>>() {
+                }, new ComputingCache.Listener<String>() {
                     @Override
-                    public void onRemoval(
-                            RemovalNotification<String, Optional<String>> notification) {
+                    public void entryInvalidated(String key, String cause) {
                         logger.debug(
                                 "Removed template source from cache [templateId: {}, cause: {}]",
-                                notification.getKey(), notification.getCause());
+                                key, cause);
                     }
                 });
     }
 
-    private <K, V> LoadingCache<K, V> buildCache(String name,
-            CacheLoader<K, V> cacheLoader, RemovalListener<K, V> removalListener) {
-        CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder();
-        long expirationTimeout = configuration
+    private <K, V> ComputingCache<K, V> buildCache(String name,
+            ComputingCache.Function<K, V> loader, ComputingCache.Listener<K> listener) {
+
+        Long expirationTimeout = configuration
                 .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
 
         if (expirationTimeout > 0) {
             logger.info("{} cache expiration timeout set: {} seconds", name,
                     expirationTimeout);
-            cacheBuilder.expireAfterWrite(expirationTimeout, TimeUnit.SECONDS);
-            cacheBuilder.removalListener(removalListener);
+            expirationTimeout = expirationTimeout * 1000l;
+        } else {
+            expirationTimeout = null;
         }
-        return cacheBuilder.build(cacheLoader);
+        return configuration.getComputingCacheFactory().create(MustacheEngine.COMPUTING_CACHE_CONSUMER_ID, loader,
+                expirationTimeout, null, listener);
     }
 
     private void precompileTemplates() {
@@ -310,10 +303,7 @@ class DefaultMustacheEngine implements MustacheEngine {
     private Mustache getTemplateFromCache(String templateName) {
         try {
             return templateCache.get(templateName).orNull();
-        } catch (ExecutionException e) {
-            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                    e.getCause());
-        } catch (UncheckedExecutionException e) {
+        } catch (Exception e) {
             throw unwrapUncheckedExecutionException(e);
         }
     }
@@ -321,10 +311,7 @@ class DefaultMustacheEngine implements MustacheEngine {
     private String getSourceFromCache(String templateName) {
         try {
             return sourceCache.get(templateName).orNull();
-        } catch (ExecutionException e) {
-            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                    e.getCause());
-        } catch (UncheckedExecutionException e) {
+        } catch (Exception e) {
             throw unwrapUncheckedExecutionException(e);
         }
     }
