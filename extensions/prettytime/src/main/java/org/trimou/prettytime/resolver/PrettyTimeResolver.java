@@ -25,6 +25,7 @@ import java.util.Set;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
@@ -36,9 +37,6 @@ import org.trimou.engine.validation.Validateable;
 import org.trimou.prettytime.DefaultPrettyTimeFactory;
 import org.trimou.prettytime.PrettyTimeFactory;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -62,6 +60,9 @@ public class PrettyTimeResolver extends TransformResolver implements
 
     public static final int PRETTY_TIME_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
 
+    public static final String COMPUTING_CACHE_CONSUMER_ID = PrettyTimeResolver.class
+            .getName();
+
     public static final ConfigurationKey MATCH_NAME_KEY = new SimpleConfigurationKey(
             PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
 
@@ -76,7 +77,7 @@ public class PrettyTimeResolver extends TransformResolver implements
     /**
      * Lazy loading cache of PrettyTime instances
      */
-    private LoadingCache<Locale, PrettyTime> prettyTimeCache;
+    private ComputingCache<Locale, PrettyTime> prettyTimeCache;
 
     /**
      *
@@ -103,8 +104,8 @@ public class PrettyTimeResolver extends TransformResolver implements
         if (formattableObject == null) {
             return null;
         }
-        return prettyTimeCache.getUnchecked(getCurrentLocale()).format(
-                formattableObject);
+        return prettyTimeCache.get(getCurrentLocale())
+                .format(formattableObject);
     }
 
     @Override
@@ -119,14 +120,14 @@ public class PrettyTimeResolver extends TransformResolver implements
         }
         super.init(configuration);
         setMatchingNames(configuration.getStringPropertyValue(MATCH_NAME_KEY));
-        prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
-                .build(new CacheLoader<Locale, PrettyTime>() {
-
+        prettyTimeCache = configuration.getComputingCacheFactory().create(
+                COMPUTING_CACHE_CONSUMER_ID,
+                new ComputingCache.Function<Locale, PrettyTime>() {
                     @Override
-                    public PrettyTime load(Locale locale) throws Exception {
-                        return prettyTimeFactory.createPrettyTime(locale);
+                    public PrettyTime compute(Locale key) {
+                        return prettyTimeFactory.createPrettyTime(key);
                     }
-                });
+                }, null, 10l, null);
         logger.info("Initialized [matchingName: {}]", matchingName(0));
     }
 

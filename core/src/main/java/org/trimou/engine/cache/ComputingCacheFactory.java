@@ -26,6 +26,7 @@ import org.trimou.engine.config.ConfigurationAware;
  * that other components can make use of computing cache API.
  *
  * @author Martin Kouba
+ * @since 1.7
  */
 public interface ComputingCacheFactory extends ConfigurationAware {
 

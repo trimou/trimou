@@ -30,6 +30,7 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.cdi.BeanManagerLocator;
+import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
@@ -39,9 +40,6 @@ import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.ReleaseCallback;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * CDI beans resolver. Note that only beans with a name (i.e. annotated with
@@ -58,6 +56,9 @@ public class CDIBeanResolver extends AbstractResolver {
     private static final Logger logger = LoggerFactory
             .getLogger(CDIBeanResolver.class);
 
+    public static final String COMPUTING_CACHE_CONSUMER_ID = CDIBeanResolver.class
+            .getName();
+
     public static final int CDI_BEAN_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
     public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
@@ -65,7 +66,7 @@ public class CDIBeanResolver extends AbstractResolver {
 
     private BeanManager beanManager;
 
-    private LoadingCache<String, Optional<Bean>> beanCache;
+    private ComputingCache<String, Optional<Bean>> beanCache;
 
     public CDIBeanResolver() {
         this(CDI_BEAN_RESOLVER_PRIORITY);
@@ -76,13 +77,13 @@ public class CDIBeanResolver extends AbstractResolver {
     }
 
     public CDIBeanResolver(BeanManager beanManager, int priority) {
-    	this(priority);
+        this(priority);
         this.beanManager = beanManager;
     }
 
     public CDIBeanResolver(BeanManager beanManager) {
-    	this(CDI_BEAN_RESOLVER_PRIORITY);
-    	this.beanManager = beanManager;
+        this(CDI_BEAN_RESOLVER_PRIORITY);
+        this.beanManager = beanManager;
     }
 
     @Override
@@ -93,7 +94,7 @@ public class CDIBeanResolver extends AbstractResolver {
             return null;
         }
 
-        Optional<Bean> bean = beanCache.getUnchecked(name);
+        Optional<Bean> bean = beanCache.get(name);
 
         if (!bean.isPresent()) {
             // Unsuccessful lookup already performed
@@ -116,13 +117,14 @@ public class CDIBeanResolver extends AbstractResolver {
         // Init cache max size
         long beanCacheMaxSize = configuration
                 .getLongPropertyValue(BEAN_CACHE_MAX_SIZE_KEY);
-        beanCache = CacheBuilder.newBuilder().maximumSize(beanCacheMaxSize)
-                .build(new CacheLoader<String, Optional<Bean>>() {
 
+        beanCache = configuration.getComputingCacheFactory().create(
+                COMPUTING_CACHE_CONSUMER_ID,
+                new ComputingCache.Function<String, Optional<Bean>>() {
                     @Override
-                    public Optional<Bean> load(String name) throws Exception {
+                    public Optional<Bean> compute(String key) {
 
-                        Set<Bean<?>> beans = beanManager.getBeans(name);
+                        Set<Bean<?>> beans = beanManager.getBeans(key);
 
                         // Check required for CDI 1.0
                         if (beans == null || beans.isEmpty()) {
@@ -135,11 +137,12 @@ public class CDIBeanResolver extends AbstractResolver {
                         } catch (AmbiguousResolutionException e) {
                             logger.warn(
                                     "An ambiguous EL name exists [name: {}]",
-                                    name);
+                                    key);
                             return Optional.absent();
                         }
+
                     }
-                });
+                }, null, beanCacheMaxSize, null);
         logger.info("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
     }
 

@@ -20,15 +20,13 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.ocpsoft.prettytime.PrettyTime;
+import org.trimou.engine.cache.ComputingCache;
+import org.trimou.engine.config.Configuration;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
 import org.trimou.handlebars.i18n.LocaleAwareValueHelper;
 import org.trimou.prettytime.resolver.PrettyTimeResolver;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * Developers are encouraged to use this helper instead of
@@ -46,10 +44,15 @@ import com.google.common.cache.LoadingCache;
  */
 public class PrettyTimeHelper extends LocaleAwareValueHelper {
 
+    public static final String COMPUTING_CACHE_CONSUMER_ID = PrettyTimeHelper.class
+            .getName();
+
+    private final PrettyTimeFactory prettyTimeFactory;
+
     /**
      * Lazy loading cache of PrettyTime instances
      */
-    private final LoadingCache<Locale, PrettyTime> prettyTimeCache;
+    private ComputingCache<Locale, PrettyTime> prettyTimeCache;
 
     public PrettyTimeHelper() {
         this(new DefaultPrettyTimeFactory());
@@ -60,19 +63,27 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
      * @param prettyTimeFactory
      */
     public PrettyTimeHelper(final PrettyTimeFactory prettyTimeFactory) {
-        this.prettyTimeCache = CacheBuilder.newBuilder().maximumSize(10)
-                .build(new CacheLoader<Locale, PrettyTime>() {
+        this.prettyTimeFactory = prettyTimeFactory;
+    }
+
+    @Override
+    public void init(Configuration configuration) {
+        super.init(configuration);
+        prettyTimeCache = configuration.getComputingCacheFactory().create(
+                COMPUTING_CACHE_CONSUMER_ID,
+                new ComputingCache.Function<Locale, PrettyTime>() {
                     @Override
-                    public PrettyTime load(Locale locale) throws Exception {
-                        return prettyTimeFactory.createPrettyTime(locale);
+                    public PrettyTime compute(Locale key) {
+                        return prettyTimeFactory.createPrettyTime(key);
                     }
-                });
+                }, null, 10l, null);
     }
 
     @Override
     public void execute(Options options) {
-        append(options, prettyTimeCache.getUnchecked(getCurrentLocale())
-                .format(getFormattableObject(options)));
+        append(options,
+                prettyTimeCache.get(getCurrentLocale()).format(
+                        getFormattableObject(options)));
     }
 
     private Date getFormattableObject(Options options) {

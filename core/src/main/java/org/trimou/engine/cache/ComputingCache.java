@@ -27,6 +27,7 @@ import java.util.Map;
  *            The key
  * @param <V>
  *            The value
+ * @since 1.7
  */
 public interface ComputingCache<K, V> {
 
