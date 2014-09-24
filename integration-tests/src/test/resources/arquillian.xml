@@ -6,7 +6,7 @@
     <defaultProtocol type="Servlet 3.0" />
 
     <engine>
-        <property name="deploymentExportPath">target/</property>
+        <!-- property name="deploymentExportPath">target/</property-->
     </engine>
 
     <container qualifier="WildFly" default="true">

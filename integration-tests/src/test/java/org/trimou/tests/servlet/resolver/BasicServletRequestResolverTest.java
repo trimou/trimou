@@ -2,7 +2,7 @@ package org.trimou.tests.servlet.resolver;
 
 import static org.junit.Assert.assertFalse;
 import static org.trimou.tests.IntegrationTestUtils.createTestArchiveBase;
-import static org.trimou.tests.IntegrationTestUtils.getResolver;
+import static org.trimou.tests.IntegrationTestUtils.resolve;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -22,8 +22,7 @@ public class BasicServletRequestResolverTest {
     @Deployment
     public static WebArchive createTestArchive() {
         return createTestArchiveBase().addAsLibraries(
-                getResolver().artifact("org.trimou:trimou-extension-servlet")
-                        .resolveAsFiles());
+                resolve("org.trimou:trimou-extension-servlet"));
     }
 
     @Test

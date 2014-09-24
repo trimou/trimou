@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.trimou.tests.IntegrationTestUtils.createCDITestArchiveBase;
-import static org.trimou.tests.IntegrationTestUtils.getResolver;
+import static org.trimou.tests.IntegrationTestUtils.resolve;
 
 import java.util.Map;
 
@@ -34,8 +34,7 @@ public class BasicCDIBeanResolverTest {
         return createCDITestArchiveBase().addClasses(Alpha.class, Bravo.class,
                 Charlie.class, Delta.class, BeanWithId.class,
                 MustacheEngineProducer.class).addAsLibraries(
-                getResolver().artifact("org.trimou:trimou-extension-cdi")
-                        .resolveAsFiles());
+                resolve("org.trimou:trimou-extension-cdi"));
     }
 
     @Inject

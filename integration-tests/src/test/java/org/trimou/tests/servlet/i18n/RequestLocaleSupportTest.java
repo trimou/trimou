@@ -2,7 +2,7 @@ package org.trimou.tests.servlet.i18n;
 
 import static org.junit.Assert.assertEquals;
 import static org.trimou.tests.IntegrationTestUtils.createTestArchiveBase;
-import static org.trimou.tests.IntegrationTestUtils.getResolver;
+import static org.trimou.tests.IntegrationTestUtils.resolve;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -33,9 +33,8 @@ public class RequestLocaleSupportTest {
     public static WebArchive createTestArchive() {
         return createTestArchiveBase().addClasses(LocaleServlet.class)
                 .addAsLibraries(
-                        getResolver().artifact(
-                                "org.trimou:trimou-extension-servlet")
-                                .resolveAsFiles());
+                        resolve(
+                                "org.trimou:trimou-extension-servlet"));
     }
 
     @ArquillianResource
