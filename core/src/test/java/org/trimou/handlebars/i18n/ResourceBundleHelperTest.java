@@ -56,6 +56,11 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
                 templateContents);
         assertEquals("Hello,Hey,echo",
                 mustache.render(ImmutableMap.of("key", "echo")));
+
+        // Single quote literals
+        assertEquals("Hello",
+                engine.compileMustache("bundle_helper2", "{{msg 'echo_one'}}")
+                        .render(null));
     }
 
     @Test

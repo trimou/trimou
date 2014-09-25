@@ -31,7 +31,6 @@ public class Origin {
      * @param template
      */
     public Origin(Template template) {
-        super();
         this.template = template;
         this.line = null;
         this.index = null;
@@ -41,9 +40,9 @@ public class Origin {
      *
      * @param template
      * @param line
+     * @param index
      */
     public Origin(Template template, int line, int index) {
-        super();
         this.template = template;
         this.line = line;
         this.index = index;

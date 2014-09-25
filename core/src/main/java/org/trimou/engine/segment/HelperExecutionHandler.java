@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +39,8 @@ import org.trimou.handlebars.HelperDefinition;
 import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 import org.trimou.handlebars.Options;
 import org.trimou.util.Checker;
-import org.trimou.util.Patterns;
 import org.trimou.util.Strings;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -56,12 +52,6 @@ import com.google.common.collect.ImmutableMap;
  * @see HelperAwareSegment
  */
 class HelperExecutionHandler {
-
-    private static final Splitter hashEntrySplitter = Splitter.on(
-            Strings.EQUALS).omitEmptyStrings();
-
-    private static final Pattern literalPattern = Patterns
-            .newHelperStringLiteralPattern();
 
     private final Helper helper;
 
@@ -88,7 +78,7 @@ class HelperExecutionHandler {
     static HelperExecutionHandler from(String name, MustacheEngine engine,
             HelperAwareSegment segment) {
 
-        Iterator<String> parts = splitHelperName(name);
+        Iterator<String> parts = splitHelperName(name, segment);
         Helper helper = engine.getConfiguration().getHelpers()
                 .get(parts.next());
 
@@ -102,12 +92,10 @@ class HelperExecutionHandler {
         while (parts.hasNext()) {
             String paramOrHash = parts.next();
             if (paramOrHash.contains(Strings.EQUALS)) {
-                Iterator<String> hashResult = hashEntrySplitter.split(
-                        paramOrHash).iterator();
-                hash.put(hashResult.next(),
-                        getLiteralOrPlaceholder(hashResult.next()));
+                hash.put(getKey(paramOrHash),
+                        getLiteralOrPlaceholder(getValue(paramOrHash), segment));
             } else {
-                params.add(getLiteralOrPlaceholder(paramOrHash));
+                params.add(getLiteralOrPlaceholder(paramOrHash, segment));
             }
         }
 
@@ -136,10 +124,10 @@ class HelperExecutionHandler {
         }
     }
 
-    private static Object getLiteralOrPlaceholder(String value) {
-        Matcher matcher = literalPattern.matcher(value);
-        if (matcher.matches()) {
-            return matcher.group(2);
+    private static Object getLiteralOrPlaceholder(String value,
+            HelperAwareSegment segment) {
+        if (isStringLiteralSeparator(value.charAt(0))) {
+            return value.substring(1, value.length() - 1);
         } else {
             return new DefaultValuePlaceholder(value);
         }
@@ -210,7 +198,7 @@ class HelperExecutionHandler {
                 finalParams = parameters;
             }
 
-            if(isHashValuePlaceholderFound) {
+            if (isHashValuePlaceholderFound) {
                 finalHash = new HashMap<String, Object>();
                 for (Entry<String, Object> hashEntry : hash.entrySet()) {
                     if (hashEntry.getValue() instanceof ValuePlaceholder) {
@@ -220,8 +208,7 @@ class HelperExecutionHandler {
                         valueWrappers.add(wrapper);
                         finalHash.put(hashEntry.getKey(), wrapper.get());
                     } else {
-                        finalHash.put(hashEntry.getKey(),
-                                hashEntry.getValue());
+                        finalHash.put(hashEntry.getKey(), hashEntry.getValue());
                     }
                 }
                 finalHash = Collections.unmodifiableMap(finalHash);
@@ -330,8 +317,7 @@ class HelperExecutionHandler {
         public String source(String templateId) {
             Checker.checkArgumentNotEmpty(templateId);
 
-            String mustacheSource = engine
-                    .getMustacheSource(templateId);
+            String mustacheSource = engine.getMustacheSource(templateId);
 
             if (mustacheSource == null) {
                 throw new MustacheException(
@@ -391,9 +377,10 @@ class HelperExecutionHandler {
                 }
                 logger.warn(
                         "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
-                        new Object[] { pushed,
-                                splitHelperName(getTagInfo().getText()).next(),
-                                getTagInfo().getTemplateName() });
+                        new Object[] {
+                                pushed,
+                                splitHelperName(getTagInfo().getText(), segment)
+                                        .next(), getTagInfo().getTemplateName() });
             }
         }
 
@@ -414,46 +401,64 @@ class HelperExecutionHandler {
     }
 
     /**
-     * This implementation is quite naive and should be possibly rewritten.
+     * This implementation is quite naive and should be possibly rewritten. Note
+     * that we can't use a simple splitter because of string literals may
+     * contain whitespace chars.
+     *
+     * TODO invalid literals? key="value"", key="value, key", etc.
      *
      * @param name
      * @return
      */
-    static Iterator<String> splitHelperName(String name) {
+    static Iterator<String> splitHelperName(String name,
+            HelperAwareSegment segment) {
 
-        boolean literal = false;
-        boolean whitespace = false;
+        boolean stringLiteral = false;
+        boolean space = false;
         List<String> parts = new ArrayList<String>();
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < name.length(); i++) {
             if (name.charAt(i) == ' ') {
-                if (!whitespace) {
-                    if (!literal) {
+                if (!space) {
+                    if (!stringLiteral) {
                         parts.add(buffer.toString());
                         buffer = new StringBuilder();
-                        whitespace = true;
+                        space = true;
                     } else {
                         buffer.append(name.charAt(i));
                     }
                 }
             } else {
-                if (name.charAt(i) == '"') {
-                    if (literal) {
-                        literal = false;
-                    } else {
-                        literal = true;
-                    }
+                if (isStringLiteralSeparator(name.charAt(i))) {
+                    stringLiteral = stringLiteral ? false : true;
                 }
-                whitespace = false;
+                space = false;
                 buffer.append(name.charAt(i));
             }
         }
 
         if (buffer.length() > 0) {
+            if (stringLiteral) {
+                throw new MustacheException(
+                        MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                        "Unterminated string literal: %s", segment.toString());
+            }
             parts.add(buffer.toString());
         }
         return parts.iterator();
+    }
+
+    private static boolean isStringLiteralSeparator(char character) {
+        return character == '"' || character == '\'';
+    }
+
+    private static String getKey(String part) {
+        return part.substring(0, part.indexOf(Strings.EQUALS));
+    }
+
+    private static String getValue(String part) {
+        return part.substring(part.indexOf(Strings.EQUALS) + 1, part.length());
     }
 
 }

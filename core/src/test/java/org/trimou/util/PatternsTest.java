@@ -91,6 +91,9 @@ public class PatternsTest {
         assertTrue(Patterns.newHelperNameValidationPattern()
                 .matcher("name  hash1=\"<html>\"")
                 .matches());
+        assertTrue(Patterns.newHelperNameValidationPattern()
+                .matcher("name key='value'")
+                .matches());
     }
 
     @Test
