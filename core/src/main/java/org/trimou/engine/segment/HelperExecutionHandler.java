@@ -405,10 +405,8 @@ class HelperExecutionHandler {
      * that we can't use a simple splitter because of string literals may
      * contain whitespace chars.
      *
-     * TODO invalid literals? key="value"", key="value, key", etc.
-     *
      * @param name
-     * @return
+     * @return the parts of the helper name
      */
     static Iterator<String> splitHelperName(String name,
             HelperAwareSegment segment) {
