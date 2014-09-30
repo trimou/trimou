@@ -16,13 +16,20 @@ public interface ContainerSegment extends Segment, Iterable<Segment> {
      *
      * @return the immutable list of segments
      */
-    public List<Segment> getSegments();
+    List<Segment> getSegments();
 
     /**
      *
      * @param recursive
      * @return the number of segments
      */
-    public int getSegmentsSize(boolean recursive);
+    int getSegmentsSize(boolean recursive);
+
+    /**
+     *
+     * @return the reconstructed literal block this segment contains (original
+     *         text before compilation)
+     */
+    String getContentLiteralBlock();
 
 }

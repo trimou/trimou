@@ -42,7 +42,7 @@ public class RootSegment extends AbstractContainerSegment {
 
     @Override
     public String getLiteralBlock() {
-        return getContainingLiteralBlock();
+        return getContentLiteralBlock();
     }
 
     @Override

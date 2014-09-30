@@ -173,6 +173,15 @@ class HelperExecutionHandler {
             return hash;
         }
 
+        @Override
+        public String getContentLiteralBlock() {
+            if (segment instanceof ContainerSegment) {
+                return ((ContainerSegment) segment).getContentLiteralBlock();
+            } else {
+                return Strings.EMPTY;
+            }
+        }
+
         public DefaultOptions build(Appendable appendable,
                 ExecutionContext executionContext) {
 
@@ -387,6 +396,15 @@ class HelperExecutionHandler {
         @Override
         public Appendable getAppendable() {
             return appendable;
+        }
+
+        @Override
+        public String getContentLiteralBlock() {
+            if (segment instanceof ContainerSegment) {
+                return ((ContainerSegment) segment).getContentLiteralBlock();
+            } else {
+                return Strings.EMPTY;
+            }
         }
 
     }

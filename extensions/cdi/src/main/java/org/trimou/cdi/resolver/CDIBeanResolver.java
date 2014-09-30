@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.cdi.BeanManagerLocator;
 import org.trimou.engine.cache.ComputingCache;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
@@ -104,7 +103,7 @@ public class CDIBeanResolver extends AbstractResolver {
     }
 
     @Override
-    public void init(Configuration configuration) {
+    public void init() {
 
         if (beanManager == null) {
             beanManager = BeanManagerLocator.locate();

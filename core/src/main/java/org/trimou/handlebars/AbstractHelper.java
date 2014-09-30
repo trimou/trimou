@@ -17,7 +17,6 @@ package org.trimou.handlebars;
 
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.AbstractConfigurationAware;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.text.TextSupport;
 
@@ -36,7 +35,7 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
     }
 
     @Override
-    public void init(Configuration configuration) {
+    protected void init() {
         if (!configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.SKIP_VALUE_ESCAPING)) {
             textSupport = configuration.getTextSupport();

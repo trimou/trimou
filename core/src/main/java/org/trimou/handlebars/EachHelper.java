@@ -18,7 +18,6 @@ package org.trimou.handlebars;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.IterationMeta;
 import org.trimou.exception.MustacheException;
@@ -38,8 +37,8 @@ public class EachHelper extends BasicSectionHelper {
     private String iterationMetadataAlias;
 
     @Override
-    public void init(Configuration configuration) {
-        super.init(configuration);
+    public void init() {
+        super.init();
         this.iterationMetadataAlias = configuration
                 .getStringPropertyValue(EngineConfigurationKey.ITERATION_METADATA_ALIAS);
     }

@@ -17,7 +17,6 @@ package org.trimou.handlebars.i18n;
 
 import java.util.Locale;
 
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.handlebars.BasicValueHelper;
 
@@ -30,8 +29,8 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
     private LocaleSupport localeSupport;
 
     @Override
-    public void init(Configuration configuration) {
-        super.init(configuration);
+    public void init() {
+        super.init();
         localeSupport = configuration.getLocaleSupport();
     }
 

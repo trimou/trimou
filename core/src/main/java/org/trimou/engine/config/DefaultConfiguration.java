@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -116,12 +117,12 @@ class DefaultConfiguration implements Configuration {
         this.keySplitter = identifyKeySplitter(builder);
         this.templateLocators = identifyTemplateLocators(builder);
         Map<String, Object> globalData = builder.buildGlobalData();
-        if(globalData.isEmpty()) {
+        if (globalData.isEmpty()) {
             this.globalData = null;
         } else {
             this.globalData = globalData;
         }
-        if(builder.getComputingCacheFactory() != null) {
+        if (builder.getComputingCacheFactory() != null) {
             this.computingCacheFactory = builder.getComputingCacheFactory();
         } else {
             this.computingCacheFactory = new DefaultComputingCacheFactory();
@@ -129,18 +130,19 @@ class DefaultConfiguration implements Configuration {
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys
-        List<ConfigurationAware> components = ImmutableList
-                .<ConfigurationAware> builder()
-                .add(computingCacheFactory)
-                .addAll(resolvers)
-                .add(textSupport)
-                .add(localeSupport)
-                .add(keySplitter)
-                .addAll(templateLocators != null ? templateLocators
-                        : Collections.<ConfigurationAware> emptySet())
-                .addAll(mustacheListeners).addAll(helpers.values()).build();
+        // Preserve the order - some components must be initialized before others
+        Set<ConfigurationAware> components = new LinkedHashSet<ConfigurationAware>();
+        components.add(computingCacheFactory);
+        components.addAll(resolvers);
+        components.add(textSupport);
+        components.add(localeSupport);
+        components.add(keySplitter);
+        components.addAll(templateLocators != null ? templateLocators
+                : Collections.<ConfigurationAware> emptySet());
+        components.addAll(mustacheListeners);
+        components.addAll(helpers.values());
 
-        this.properties = initializeProperties(builder, components);
+        this.properties = initializeProperties(builder, getConfigurationKeysToProcess(components));
 
         if (getBooleanPropertyValue(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
             logger.warn(
@@ -304,7 +306,7 @@ class DefaultConfiguration implements Configuration {
     }
 
     private void initializeConfigurationAwareComponents(
-            List<ConfigurationAware> components) {
+            Set<ConfigurationAware> components) {
         for (ConfigurationAware component : components) {
             component.init(this);
         }
@@ -322,9 +324,7 @@ class DefaultConfiguration implements Configuration {
 
     private Map<String, Object> initializeProperties(
             MustacheEngineBuilder engineBuilder,
-            List<ConfigurationAware> components) {
-
-        Set<ConfigurationKey> keysToProcess = getConfigurationKeysToProcess(components);
+            Set<ConfigurationKey> keysToProcess) {
 
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
         Map<String, Object> builderProperties = engineBuilder.buildProperties();
@@ -376,7 +376,7 @@ class DefaultConfiguration implements Configuration {
     }
 
     private Set<ConfigurationKey> getConfigurationKeysToProcess(
-            List<ConfigurationAware> components) {
+            Set<ConfigurationAware> components) {
         Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
         // Global keys
         for (ConfigurationKey key : EngineConfigurationKey.values()) {

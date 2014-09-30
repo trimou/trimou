@@ -15,23 +15,30 @@
  */
 package org.trimou.handlebars;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.util.Nested;
 
 /**
  * This helper works similarly as the Java switch statement.
  *
  * <p>
- * At the moment it's not possible to validate the helper content properly. It
- * should only contain <b>case</b> and <b>default</b> sections. Other types of
+ * This helper should only contain <b>case</b> and <b>default</b> sections. Other types of
  * segments are always rendered. Note that the <b>default</b> section always
  * terminates the flow!
  * </p>
  *
  * <p>
  * Since we push the flow object on the context stack, it's possible to refer
- * the value in the switch expression with {@link Nested#up()} method. See also examples.
+ * the value in the switch expression with {@link Nested#up()} method. See also
+ * examples.
  * </p>
  *
  * By default, the following template will render "Hello world!":
@@ -50,7 +57,8 @@ import org.trimou.util.Nested;
  * {{/switch}}
  * </pre>
  *
- * By default, the following template will render "Hello world! No case for hello.":
+ * By default, the following template will render
+ * "Hello world! No case for hello.":
  *
  * <pre>
  * {{#switch "hello"}}
@@ -72,6 +80,9 @@ import org.trimou.util.Nested;
  */
 public class SwitchHelper extends BasicSectionHelper {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(SwitchHelper.class);
+
     @Override
     protected int numberOfRequiredParameters() {
         return 0;
@@ -91,8 +102,41 @@ public class SwitchHelper extends BasicSectionHelper {
         options.pop();
     }
 
+    @Override
+    public void validate(HelperDefinition definition) {
+        super.validate(definition);
+        Set<String> validNames = new HashSet<String>(4);
+        for (Entry<String, Helper> entry : configuration.getHelpers()
+                .entrySet()) {
+            if (entry.getValue() instanceof CaseHelper
+                    || entry.getValue() instanceof DefaultHelper) {
+                validNames.add(entry.getKey());
+            }
+        }
+        for (MustacheTagInfo info : definition.getTagInfo().getChildTags()) {
+            if (!isValid(info, validNames)) {
+                logger.warn(
+                        "Invalid content detected {}. This helper should only contain case and default sections. Other types of segments are always rendered!",
+                        info);
+            }
+        }
+    }
+
+    private boolean isValid(MustacheTagInfo info, Set<String> validNames) {
+        if (!info.getType().equals(MustacheTagType.SECTION)) {
+            return false;
+        }
+        for (String name : validNames) {
+            if (info.getText().startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     * The first param is the matching value. By default, the flow is only terminated if a key <code>break</code> has the value of true.
+     * The first param is the matching value. By default, the flow is only
+     * terminated if a key <code>break</code> has the value of true.
      *
      * @author Martin Kouba
      */
@@ -112,8 +156,8 @@ public class SwitchHelper extends BasicSectionHelper {
         /**
          *
          * @param defaultIsBreak
-         *            If <code>true</code> the matching case helper terminates the flow
-         *            by default.
+         *            If <code>true</code> the matching case helper terminates
+         *            the flow by default.
          */
         public CaseHelper(boolean defaultIsBreak) {
             this.defaultIsBreak = defaultIsBreak;

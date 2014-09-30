@@ -15,6 +15,8 @@
  */
 package org.trimou.engine;
 
+import java.util.List;
+
 
 /**
  * Info about a tag.
@@ -28,21 +30,28 @@ public interface MustacheTagInfo {
      *
      * @return the type
      */
-    public MustacheTagType getType();
+    MustacheTagType getType();
 
     /**
      * @return the text (e.g. variable key)
      */
-    public String getText();
+    String getText();
 
     /**
      * @return the original line where the segment comes from
      */
-    public int getLine();
+    int getLine();
 
     /**
      * @return the template name
      */
-    public String getTemplateName();
+    String getTemplateName();
+
+    /**
+    *
+    * @return an immutable list of direct child tags, or an empty list for non-block tags
+    * @since 1.7
+    */
+   List<MustacheTagInfo> getChildTags();
 
 }

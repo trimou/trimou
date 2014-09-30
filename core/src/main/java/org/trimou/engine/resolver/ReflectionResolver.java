@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.cache.ComputingCacheFactory;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
@@ -104,8 +103,7 @@ public class ReflectionResolver extends AbstractResolver implements
     }
 
     @Override
-    public void init(Configuration configuration) {
-        checkNotInitialized(memberCache != null);
+    public void init() {
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
         logger.info("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);

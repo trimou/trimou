@@ -21,6 +21,7 @@ import java.util.Map;
 import org.trimou.engine.MustacheTagInfo;
 
 /**
+ * A helper definition metadata.
  *
  * @author Martin Kouba
  * @since 1.5
@@ -47,6 +48,14 @@ public interface HelperDefinition {
      * @return an immutable "hash" map
      */
     Map<String, Object> getHash();
+
+    /**
+     *
+     * @return the reconstructed literal block (original
+     *         text before compilation) the helper contains, or an empty string for variable tag helpers
+     * @since 1.7
+     */
+    String getContentLiteralBlock();
 
     /**
      * A value placeholder represents an expression which will be evaluated

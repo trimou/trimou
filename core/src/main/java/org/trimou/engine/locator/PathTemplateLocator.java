@@ -21,7 +21,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
@@ -76,7 +75,7 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     }
 
     @Override
-    public void init(Configuration configuration) {
+    public void init() {
         this.virtualPathSeparator = configuration
                 .getStringPropertyValue(VIRTUAL_PATH_SEPARATOR_KEY);
         this.defaultFileEncoding = configuration

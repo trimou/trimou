@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
@@ -107,8 +106,8 @@ public class DateTimeFormatResolver extends TransformResolver {
     }
 
     @Override
-    public void init(Configuration configuration) {
-        super.init(configuration);
+    public void init() {
+        super.init();
         customPattern = configuration
                 .getStringPropertyValue(CUSTOM_PATTERN_KEY);
         logger.info("Initialized [customPattern: {}]", customPattern);

@@ -14,16 +14,16 @@ import org.trimou.engine.config.EngineConfigurationKey;
  */
 abstract class AbstractSectionSegment extends AbstractContainerSegment {
 
-    private final String cachedContainingLiteralBlock;
+    private final String cachedContentLiteralBlock;
 
     public AbstractSectionSegment(String name, Origin origin,
             List<Segment> segments) {
         super(name, origin, segments);
         if (getEngineConfiguration().getBooleanPropertyValue(
                 EngineConfigurationKey.CACHE_SECTION_LITERAL_BLOCK)) {
-            this.cachedContainingLiteralBlock = getContainingLiteralBlock();
+            this.cachedContentLiteralBlock = getContentLiteralBlock();
         } else {
-            this.cachedContainingLiteralBlock = null;
+            this.cachedContentLiteralBlock = null;
         }
     }
 
@@ -32,18 +32,18 @@ abstract class AbstractSectionSegment extends AbstractContainerSegment {
         StringBuilder literal = new StringBuilder();
         literal.append(getTagLiteral(getType().getTagType().getCommand()
                 + getText()));
-        literal.append(getContainingLiteralBlock());
+        literal.append(getContentLiteralBlock());
         literal.append(getTagLiteral(MustacheTagType.SECTION_END.getCommand()
                 + getText()));
         return literal.toString();
     }
 
     @Override
-    protected String getContainingLiteralBlock() {
-        if (cachedContainingLiteralBlock != null) {
-            return cachedContainingLiteralBlock;
+    public String getContentLiteralBlock() {
+        if (cachedContentLiteralBlock != null) {
+            return cachedContentLiteralBlock;
         }
-        return super.getContainingLiteralBlock();
+        return super.getContentLiteralBlock();
     }
 
 }

@@ -18,7 +18,10 @@ package org.trimou.engine.segment;
 import java.util.Iterator;
 import java.util.List;
 
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Abstract container segment.
@@ -70,7 +73,7 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
         return segments.size();
     }
 
-    protected String getContainingLiteralBlock() {
+    public String getContentLiteralBlock() {
         StringBuilder literal = new StringBuilder();
         for (Segment segment : segments) {
             literal.append(segment.getLiteralBlock());
@@ -81,6 +84,18 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
     @Override
     protected String getSegmentName() {
         return getText();
+    }
+
+    @Override
+    protected List<MustacheTagInfo> getDirectChildTags() {
+        ImmutableList.Builder<MustacheTagInfo> builder = ImmutableList
+                .builder();
+        for (Segment segment : segments) {
+            if (segment.getType().getTagType() != null) {
+                builder.add(segment.getTagInfo());
+            }
+        }
+        return builder.build();
     }
 
 }

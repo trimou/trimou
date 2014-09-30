@@ -19,6 +19,8 @@ import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
 import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
@@ -130,6 +132,10 @@ abstract class AbstractSegment implements Segment {
         return getType().getTagType();
     }
 
+    protected List<MustacheTagInfo> getDirectChildTags() {
+        return Collections.emptyList();
+    }
+
     class DefaultSegmentInfo implements MustacheTagInfo {
 
         @Override
@@ -150,6 +156,17 @@ abstract class AbstractSegment implements Segment {
         @Override
         public String getTemplateName() {
             return origin.getTemplateName();
+        }
+
+        @Override
+        public List<MustacheTagInfo> getChildTags() {
+            return getDirectChildTags();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s:%s %s", getType(), getText(),
+                    getOrigin());
         }
 
     }

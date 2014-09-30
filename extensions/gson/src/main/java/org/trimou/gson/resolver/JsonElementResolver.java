@@ -20,7 +20,6 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 import java.util.Collections;
 import java.util.Set;
 
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
@@ -97,7 +96,7 @@ public class JsonElementResolver extends IndexResolver {
     }
 
     @Override
-    public void init(Configuration configuration) {
+    public void init() {
         unwrapJsonPrimitive = configuration
                 .getBooleanPropertyValue(UNWRAP_JSON_PRIMITIVE_KEY);
     }

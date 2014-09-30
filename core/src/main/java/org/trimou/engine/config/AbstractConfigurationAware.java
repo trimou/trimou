@@ -19,15 +19,26 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Abstract no-op configuration aware component.
+ * Abstract configuration aware component.
  *
  * @author Martin Kouba
  */
 public abstract class AbstractConfigurationAware implements ConfigurationAware {
 
+    protected Configuration configuration;
+
     @Override
     public void init(Configuration configuration) {
-        // No-op
+        checkNotInitialized(this.configuration != null);
+        this.configuration = configuration;
+        this.init();
+    }
+
+    /**
+     * Can be overridden so that there's no need to call
+     * <code>super.init(Configuration)</code>.
+     */
+    protected void init() {
     }
 
     @Override

@@ -185,7 +185,7 @@ public class SectionSegment extends AbstractSectionSegment implements
         switch (lambda.getInputType()) {
         case LITERAL:
             // Try to reconstruct the original text
-            input = getContainingLiteralBlock();
+            input = getContentLiteralBlock();
             break;
         case PROCESSED:
             StringBuilder processed = new StringBuilder();

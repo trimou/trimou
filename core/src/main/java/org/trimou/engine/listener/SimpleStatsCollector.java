@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.cache.ComputingCache.Function;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Checker;
@@ -92,7 +91,7 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
     }
 
     @Override
-    public void init(final Configuration configuration) {
+    public void init() {
         // Use computing cache because of concurrent access is required and the
         // data set is not known beforehand
         this.data = configuration.getComputingCacheFactory().create(

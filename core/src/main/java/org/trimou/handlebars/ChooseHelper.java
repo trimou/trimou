@@ -15,6 +15,14 @@
  */
 package org.trimou.handlebars;
 
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.util.Checker;
 import org.trimou.util.Nested;
 
@@ -25,8 +33,7 @@ import org.trimou.util.Nested;
  * present.
  *
  * <p>
- * At the moment it's not possible to validate the helper content properly.
- * However, it should only contain <b>when</b> and <b>otherwise</b> sections.
+ * This helper should only contain <b>when</b> and <b>otherwise</b> sections.
  * Other types of segments are always rendered.
  * </p>
  *
@@ -51,13 +58,16 @@ import org.trimou.util.Nested;
  * {{/switch}}
  * </pre>
  *
- * will render "Hello active!" if last context object (i.e. "this" before we enter
- * the choose helper) is not falsy. "Hello foo" if "this.up" is falsy and "foo"
- * is not falsy. And "No match." if both "this.up" and "foo" are falsy.
+ * will render "Hello active!" if last context object (i.e. "this" before we
+ * enter the choose helper) is not falsy. "Hello foo" if "this.up" is falsy and
+ * "foo" is not falsy. And "No match." if both "this.up" and "foo" are falsy.
  *
  * @author Martin Kouba
  */
 public class ChooseHelper extends BasicSectionHelper {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(ChooseHelper.class);
 
     @Override
     protected int numberOfRequiredParameters() {
@@ -69,6 +79,38 @@ public class ChooseHelper extends BasicSectionHelper {
         options.push(new Flow(options.peek()));
         options.fn();
         options.pop();
+    }
+
+    @Override
+    public void validate(HelperDefinition definition) {
+        super.validate(definition);
+        Set<String> validNames = new HashSet<String>(4);
+        for (Entry<String, Helper> entry : configuration.getHelpers()
+                .entrySet()) {
+            if (entry.getValue() instanceof WhenHelper
+                    || entry.getValue() instanceof OtherwiseHelper) {
+                validNames.add(entry.getKey());
+            }
+        }
+        for (MustacheTagInfo info : definition.getTagInfo().getChildTags()) {
+            if (!isValid(info, validNames)) {
+                logger.warn(
+                        "Invalid content detected {}. This helper should only contain when and otherwise sections. Other types of segments are always rendered!",
+                        info);
+            }
+        }
+    }
+
+    private boolean isValid(MustacheTagInfo info, Set<String> validNames) {
+        if (!info.getType().equals(MustacheTagType.SECTION)) {
+            return false;
+        }
+        for (String name : validNames) {
+            if (info.getText().startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
