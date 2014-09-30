@@ -3,6 +3,7 @@ package org.trimou.handlebars;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -134,6 +135,25 @@ public class OptionsTest extends AbstractTest {
                 }).build();
         assertEquals("HELLO", engine.compileMustache("helper_peek", "{{test}}")
                 .render("HELLO"));
+    }
+
+    @Test
+    public void testGetAppendable() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelper("test", new AbstractHelper() {
+                    @Override
+                    public void execute(Options options) {
+                        try {
+                            options.getAppendable().append(
+                                    options.peek().toString());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }).build();
+        assertEquals("HELLO",
+                engine.compileMustache("helper_getAppendable", "{{test}}")
+                        .render("HELLO"));
     }
 
 }

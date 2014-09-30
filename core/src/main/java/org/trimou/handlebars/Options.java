@@ -88,4 +88,13 @@ public interface Options extends HelperDefinition {
      */
     Object peek();
 
+    /**
+     * In most cases it's better to use the convenient method {@link #append(CharSequence)} instead.
+     *
+     * @return The appendable to append the rendered template to
+     * @see org.trimou.Mustache#render(Appendable, Object)
+     * @since 1.7
+     */
+    Appendable getAppendable();
+
 }

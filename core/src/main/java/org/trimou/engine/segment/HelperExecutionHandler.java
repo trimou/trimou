@@ -384,6 +384,11 @@ class HelperExecutionHandler {
             }
         }
 
+        @Override
+        public Appendable getAppendable() {
+            return appendable;
+        }
+
     }
 
     private static class DefaultValuePlaceholder implements ValuePlaceholder {
