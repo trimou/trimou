@@ -33,7 +33,7 @@ public interface ComputingCacheFactory extends ConfigurationAware {
     /**
      * The {@link ComputingCache} implementations are not required to implement
      * eviction operations (expiration timeout, maximum size, listener). However, a
-     * {@link ComputingCacheFactory} must either log a warning message or throw
+     * {@link ComputingCacheFactory} must either log a warning message or throw a
      * runtime exception in such cases.
      *
      * @param consumerId

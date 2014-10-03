@@ -26,7 +26,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.cache.ComputingCache;
-import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
@@ -55,7 +54,8 @@ public class ReflectionResolver extends AbstractResolver implements
 
     public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
-    public static final String COMPUTING_CACHE_CONSUMER_ID = ReflectionResolver.class.getName();
+    public static final String COMPUTING_CACHE_CONSUMER_ID = ReflectionResolver.class
+            .getName();
 
     public ReflectionResolver() {
         this(REFLECTION_RESOLVER_PRIORITY);
@@ -68,11 +68,9 @@ public class ReflectionResolver extends AbstractResolver implements
     /**
      * Limit the size of the cache (e.g. to avoid problems when dynamic class
      * compilation is involved). Use zero value to disable the cache.
-     *
-     * @see ComputingCacheFactory#create(org.trimou.engine.cache.ComputingCache.Function, Long, Long)
      */
     public static final ConfigurationKey MEMBER_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-            ReflectionResolver.class.getName() + ".memberCacheMaxSize", 5000l);
+            ReflectionResolver.class.getName() + ".memberCacheMaxSize", 10000l);
 
     /**
      * Lazy loading cache of lookup attempts (contains both hits and misses)
@@ -87,8 +85,13 @@ public class ReflectionResolver extends AbstractResolver implements
             return null;
         }
 
-        MemberWrapper wrapper = memberCache.get(
-                MemberKey.newInstance(contextObject, name)).orNull();
+        MemberWrapper wrapper;
+        MemberKey key = MemberKey.newInstance(contextObject, name);
+        if (memberCache != null) {
+            wrapper = memberCache.get(key).orNull();
+        } else {
+            wrapper = findWrapper(key).orNull();
+        }
 
         if (wrapper == null) {
             return null;
@@ -107,8 +110,11 @@ public class ReflectionResolver extends AbstractResolver implements
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
         logger.info("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);
-        memberCache = configuration.getComputingCacheFactory().create(COMPUTING_CACHE_CONSUMER_ID,
-                new MemberComputingFunction(), null, memberCacheMaxSize, null);
+        if (memberCacheMaxSize > 0) {
+            memberCache = configuration.getComputingCacheFactory().create(
+                    COMPUTING_CACHE_CONSUMER_ID, new MemberComputingFunction(),
+                    null, memberCacheMaxSize, null);
+        }
     }
 
     @Override
@@ -136,20 +142,44 @@ public class ReflectionResolver extends AbstractResolver implements
      *            <code>true</code> for the {@link MemberKey#getClass()}
      */
     public void invalidateMemberCache(final Predicate<Class<?>> predicate) {
+        if (memberCache == null) {
+            return;
+        }
         if (predicate == null) {
             memberCache.clear();
         } else {
-            memberCache.invalidate(new ComputingCache.KeyPredicate<MemberKey>() {
-                @Override
-                public boolean apply(MemberKey key) {
-                    return predicate.apply(key.getClazz());
-                }
-            });
+            memberCache
+                    .invalidate(new ComputingCache.KeyPredicate<MemberKey>() {
+                        @Override
+                        public boolean apply(MemberKey key) {
+                            return predicate.apply(key.getClazz());
+                        }
+                    });
         }
     }
 
     long getMemberCacheSize() {
-        return memberCache.size();
+        return memberCache != null ? memberCache.size() : 0l;
+    }
+
+    private static Optional<MemberWrapper> findWrapper(MemberKey key) {
+        // Find accesible method with the given name, no
+        // parameters and non-void return type
+        Method foundMethod = Reflections.findMethod(key.getClazz(),
+                key.getName());
+
+        if (foundMethod != null) {
+            return Optional.<MemberWrapper> of(new MethodWrapper(foundMethod));
+        }
+
+        // Find public field
+        Field foundField = Reflections.findField(key.getClazz(), key.getName());
+
+        if (foundField != null) {
+            return Optional.<MemberWrapper> of(new FieldWrapper(foundField));
+        }
+        // Member not found
+        return Optional.absent();
     }
 
     private static class MemberComputingFunction implements
@@ -157,27 +187,7 @@ public class ReflectionResolver extends AbstractResolver implements
 
         @Override
         public Optional<MemberWrapper> compute(MemberKey key) {
-            // Find accesible method with the given name, no
-            // parameters and non-void return type
-            Method foundMethod = Reflections.findMethod(key.getClazz(),
-                    key.getName());
-
-            if (foundMethod != null) {
-                return Optional.<MemberWrapper> of(new MethodWrapper(
-                        foundMethod));
-            }
-
-            // Find public field
-            Field foundField = Reflections.findField(key.getClazz(),
-                    key.getName());
-
-            if (foundField != null) {
-                return Optional
-                        .<MemberWrapper> of(new FieldWrapper(foundField));
-            }
-
-            // Member not found
-            return Optional.absent();
+            return findWrapper(key);
         }
 
     }

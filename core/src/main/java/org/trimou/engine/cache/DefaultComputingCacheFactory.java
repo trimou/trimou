@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.cache;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -97,9 +98,10 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
 
         @Override
         public void invalidate(KeyPredicate<K> keyPredicate) {
-            for (K key : cache.asMap().keySet()) {
-                if (keyPredicate.apply(key)) {
-                    cache.invalidate(key);
+            for (Iterator<K> iterator = cache.asMap().keySet().iterator(); iterator
+                    .hasNext();) {
+                if (keyPredicate.apply(iterator.next())) {
+                    iterator.remove();
                 }
             }
         }

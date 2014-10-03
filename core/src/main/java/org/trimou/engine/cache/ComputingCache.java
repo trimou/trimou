@@ -18,8 +18,8 @@ package org.trimou.engine.cache;
 import java.util.Map;
 
 /**
- * A simple abstraction for computing (lazy loading) cache. May not contain null
- * values. An implementation must be thread-safe.
+ * A simple abstraction for computing (lazy loading) cache. It may not contain
+ * null values. An implementation must be thread-safe.
  *
  * @author Martin Kouba
  *
@@ -63,9 +63,9 @@ public interface ComputingCache<K, V> {
      */
     void invalidate(KeyPredicate<K> keyPredicate);
 
-
     /**
-     * @return an immutable map of the values which are present in the cache at the time this method is called
+     * @return an immutable map of the values which are present in the cache at
+     *         the time this method is called
      */
     Map<K, V> getAllPresent();
 
