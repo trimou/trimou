@@ -89,7 +89,7 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
      * @param <K>
      * @param <V>
      */
-    public static class ConcurrentHashMapAdapter<K, V> implements
+    private static class ConcurrentHashMapAdapter<K, V> implements
             ComputingCache<K, V> {
 
         private static final Logger logger = LoggerFactory
@@ -110,7 +110,7 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
          * @param maxSize
          * @param maxSizeStrategy
          */
-        public ConcurrentHashMapAdapter(ConcurrentHashMap<K, V> map,
+        ConcurrentHashMapAdapter(ConcurrentHashMap<K, V> map,
                 ComputingCache.Function<K, V> computingFunction, Long maxSize,
                 MaxSizeStrategy maxSizeStrategy) {
             this.map = map;
@@ -168,7 +168,7 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
         }
 
         private void handleMaxSizeExceeding() {
-            synchronized (map) {
+            synchronized (this) {
                 if (map.size() > maxSize) {
                     applyMaxSizeStrategy();
                 }
@@ -202,12 +202,12 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
      * @param <K>
      * @param <V>
      */
-    public static class FunctionAdapter<K, V> implements
+    private static class FunctionAdapter<K, V> implements
             java.util.function.Function<K, V> {
 
         private final Function<K, V> computingFunction;
 
-        private final ConcurrentHashMapAdapter<K, V> adapter;
+        private final ConcurrentHashMapAdapter<K, V> mapAdapter;
 
         /**
          *
@@ -217,14 +217,14 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
         public FunctionAdapter(Function<K, V> computingFunction,
                 ConcurrentHashMapAdapter<K, V> adapter) {
             this.computingFunction = computingFunction;
-            this.adapter = adapter;
+            this.mapAdapter = adapter;
         }
 
         @Override
         public V apply(K key) {
             // Note that computation must not attempt to update any other
             // mappings of the map - therefore we cannot perform eviction here
-            if (adapter.maxSize != null && adapter.map.size() > adapter.maxSize) {
+            if (mapAdapter.maxSize != null && mapAdapter.map.size() > mapAdapter.maxSize) {
                 throw new MaxSizeExceededException();
             }
             return computingFunction.compute(key);
@@ -233,7 +233,7 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
     }
 
     /**
-     * Defines the strategy when the max size limit is set and exceeded.
+     * Defines the strategy applied when the max size limit is set and exceeded.
      *
      * @author Martin Kouba
      */
