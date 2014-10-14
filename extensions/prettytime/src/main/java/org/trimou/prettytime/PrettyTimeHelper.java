@@ -25,6 +25,7 @@ import org.trimou.engine.config.Configuration;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
+import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.handlebars.i18n.LocaleAwareValueHelper;
 import org.trimou.prettytime.resolver.PrettyTimeResolver;
 
@@ -33,11 +34,23 @@ import org.trimou.prettytime.resolver.PrettyTimeResolver;
  * {@link PrettyTimeResolver} to avoid the negative performance impact during
  * interpolation.
  *
+ * <p>
  * A {@link MustacheException} is thrown in case of the passed parameter is not
  * a formattable object (i.e. Date, Calendar or Long).
+ * </p>
  *
  * <code>
  * {{pretty now}}
+ * </code>
+ *
+ * <p>
+ * Since 1.7 a custom {@link Locale} can be set via options hash with
+ * {@link OptionsHashKeys#LOCALE} key. See also
+ * {@link LocaleAwareValueHelper#getLocale(Options)}.
+ * </p>
+ *
+ * <code>
+ * {{pretty now locale='fr'}}
  * </code>
  *
  * @author Martin Kouba
@@ -82,7 +95,7 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
     @Override
     public void execute(Options options) {
         append(options,
-                prettyTimeCache.get(getCurrentLocale()).format(
+                prettyTimeCache.get(getLocale(options)).format(
                         getFormattableObject(options)));
     }
 

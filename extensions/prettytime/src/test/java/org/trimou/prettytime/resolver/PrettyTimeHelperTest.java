@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.i18n.Resources_cs;
 import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.trimou.engine.MustacheEngine;
@@ -108,5 +109,30 @@ public class PrettyTimeHelperTest {
                         + bundle.getString("SecondPastSuffix"),
                 engine.compileMustache("pretty_helper_custom_factory_02",
                         "{{pretty this}}").render(new Date().getTime() - 4000l));
+    }
+
+    @Test
+    public void testLocale() {
+
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(new LocaleSupport() {
+                    @Override
+                    public Locale getCurrentLocale() {
+                        return Locale.ENGLISH;
+                    }
+
+                    @Override
+                    public void init(Configuration configuration) {
+                    }
+
+                    @Override
+                    public Set<ConfigurationKey> getConfigurationKeys() {
+                        return Collections.emptySet();
+                    }
+                }).addResolver(new ThisResolver())
+                .registerHelper("pretty", new PrettyTimeHelper()).build();
+
+        assertEquals( new Resources_cs().getString("JustNowPastPrefix"), engine.compileMustache("pretty_helper_locale", "{{{pretty this locale='cs'}}}").render(new Date()));
     }
 }
