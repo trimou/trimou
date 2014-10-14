@@ -19,16 +19,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
-import org.trimou.handlebars.Options;
 
 /**
  * This is an alternative to {@link DateTimeFormatResolver}. The main advantage
- * lies in the ability to specify custom pattern per tag: <code>
+ * lies in the ability to specify custom pattern per tag:
+ *
+ * <code>
  * {{formatTime now pattern="DD-MM-yyyy HH:mm"}}
  * {{formatTime now pattern="HH:mm"}}
  * ...
@@ -36,70 +37,45 @@ import org.trimou.handlebars.Options;
  *
  * @author Martin Kouba
  */
-public class DateTimeFormatHelper extends LocaleAwareValueHelper {
-
-    private static final String OPTION_KEY_PATTERN = "pattern";
-
-    private static final String OPTION_KEY_STYLE = "style";
+public class DateTimeFormatHelper extends
+        AbstractTimeFormatHelper<Object, Integer> {
 
     @Override
-    public void execute(Options options) {
-
-        Object formattableObject = getFormattableObject(options);
-
-        if (options.getHash().isEmpty()) {
-            appendStyle(options, formattableObject, DateFormat.MEDIUM);
-        } else {
-            if (options.getHash().containsKey(OPTION_KEY_PATTERN)) {
-                appendCustom(options, formattableObject);
-            } else if (options.getHash().containsKey(OPTION_KEY_STYLE)) {
-                appendStyle(options, formattableObject);
-            }
-        }
+    protected String defaultFormat(Object value, Locale locale,
+            TimeZone timeZone) {
+        return format(value, DateFormat.MEDIUM, locale, timeZone);
     }
 
-    private void appendStyle(Options options, Object formattableObject) {
-        appendStyle(
-                options,
-                formattableObject,
-                parseDateFormatStyle(getHashValue(options, OPTION_KEY_STYLE)
-                        .toString(), options.getTagInfo()));
+    @Override
+    protected String format(Object value, Integer style, Locale locale,
+            TimeZone timeZone) {
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(style, style,
+                locale);
+        dateFormat.setTimeZone(timeZone);
+        return dateFormat.format(value);
     }
 
-    private void appendStyle(Options options, Object formattableObject,
-            int style) {
-        append(options, format(style, formattableObject));
+    @Override
+    protected String format(Object value, String pattern, Locale locale,
+            TimeZone timeZone) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern,
+                locale);
+        simpleDateFormat.setTimeZone(timeZone);
+        return simpleDateFormat.format(value);
     }
 
-    private void appendCustom(Options options, Object object) {
-        append(options,
-                new SimpleDateFormat(options.getHash().get(OPTION_KEY_PATTERN)
-                        .toString(), getCurrentLocale()).format(object));
-    }
-
-    private Object getFormattableObject(Options options) {
-
-        Object value = options.getParameters().get(0);
-
+    protected Object getFormattableObject(Object value, Locale locale,
+            TimeZone timeZone, MustacheTagInfo tagInfo) {
         if (value instanceof Date || value instanceof Number) {
             return value;
         } else if (value instanceof Calendar) {
             return ((Calendar) value).getTime();
         } else {
-            throw new MustacheException(
-                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "Formattable date time object not found [template: %s, line: %s]",
-                    options.getTagInfo().getTemplateName(), options
-                            .getTagInfo().getLine());
+            throw valueNotAFormattableObject(value, tagInfo);
         }
     }
 
-    private String format(int style, Object object) {
-        return DateFormat.getDateTimeInstance(style, style, getCurrentLocale())
-                .format(object);
-    }
-
-    private int parseDateFormatStyle(String style, MustacheTagInfo tagInfo) {
+    protected Integer parseStyle(String style, MustacheTagInfo tagInfo) {
         if ("full".equals(style)) {
             return DateFormat.FULL;
         } else if ("long".equals(style)) {
@@ -109,10 +85,7 @@ public class DateTimeFormatHelper extends LocaleAwareValueHelper {
         } else if ("medium".equals(style)) {
             return DateFormat.MEDIUM;
         } else {
-            throw new MustacheException(
-                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "Unknown style defined %s [template: %s, line: %s]", style,
-                    tagInfo.getTemplateName(), tagInfo.getLine());
+            throw unknownStyle(style, tagInfo);
         }
     }
 

@@ -75,4 +75,5 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
             options.append(textSupport.escapeHtml(sequence.toString()));
         }
     }
+
 }
