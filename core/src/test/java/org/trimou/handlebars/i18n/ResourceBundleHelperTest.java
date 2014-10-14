@@ -109,4 +109,13 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
         }
     }
 
+    @Test
+    public void testLocale() {
+        String templateContents = "{{msg \"echo_one\" locale='de'}},{{msg \"echo.two\" locale=myLocale}},{{msg key locale='de'}}";
+        Mustache mustache = engine.compileMustache("bundle_helper",
+                templateContents);
+        assertEquals("Hallo,He,oche",
+                mustache.render(ImmutableMap.<String, Object>of("key", "echo", "myLocale", Locale.GERMAN)));
+    }
+
 }

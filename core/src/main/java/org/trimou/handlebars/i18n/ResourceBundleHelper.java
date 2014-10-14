@@ -18,6 +18,7 @@ package org.trimou.handlebars.i18n;
 import java.text.MessageFormat;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -27,6 +28,7 @@ import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
+import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.util.Arrays;
 
 /**
@@ -74,6 +76,16 @@ import org.trimou.util.Arrays;
  * See also {@link Format} for more info about formats.
  * </p>
  *
+ * <p>
+ * Since 1.7 a custom {@link Locale} can be set via options hash with
+ * {@link OptionsHashKeys#LOCALE} key. See also
+ * {@link LocaleAwareValueHelper#getLocale(Options)}.
+ * </p>
+ *
+ * <code>
+ * {{msg "key" locale="fr"}}
+ * </code>
+ *
  * @author Martin Kouba
  * @see LocaleSupport
  */
@@ -116,7 +128,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
                 || !options.getHash().containsKey(OPTION_KEY_BASE_NAME) ? defaultBaseName
                 : getHashValue(options, OPTION_KEY_BASE_NAME).toString();
         ResourceBundle bundle = ResourceBundle.getBundle(baseName,
-                getCurrentLocale());
+                getLocale(options));
 
         if (bundle.containsKey(key)) {
 

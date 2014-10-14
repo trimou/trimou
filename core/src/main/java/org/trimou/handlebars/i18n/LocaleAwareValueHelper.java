@@ -15,12 +15,17 @@
  */
 package org.trimou.handlebars.i18n;
 
+import static org.trimou.handlebars.OptionsHashKeys.LOCALE;
+
 import java.util.Locale;
 
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.handlebars.BasicValueHelper;
+import org.trimou.handlebars.Options;
+import org.trimou.handlebars.OptionsHashKeys;
 
 /**
+ * An abstract {@link Locale}-aware helper.
  *
  * @author Martin Kouba
  */
@@ -29,13 +34,42 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
     private LocaleSupport localeSupport;
 
     @Override
-    public void init() {
+    protected void init() {
         super.init();
         localeSupport = configuration.getLocaleSupport();
     }
 
+    /**
+     *
+     * @return the current locale by means of {@link LocaleSupport}
+     */
     protected Locale getCurrentLocale() {
         return localeSupport.getCurrentLocale();
+    }
+
+    /**
+     *
+     * @param options
+     * @return the locale set via options hash with
+     *         {@link OptionsHashKeys#LOCALE} key, or the current locale by
+     *         means of {@link LocaleSupport}
+     * @see Locale#forLanguageTag(String)
+     */
+    protected Locale getLocale(Options options) {
+
+        Locale locale;
+        Object localeObject = getHashValue(options, LOCALE);
+
+        if (localeObject != null) {
+            if (localeObject instanceof Locale) {
+                locale = (Locale) localeObject;
+            } else {
+                locale = Locale.forLanguageTag(localeObject.toString());
+            }
+        } else {
+            locale = getCurrentLocale();
+        }
+        return locale;
     }
 
 }
