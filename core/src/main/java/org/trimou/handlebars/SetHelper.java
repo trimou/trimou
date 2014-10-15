@@ -15,8 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
 
 /**
  * Works similarly as {@link WithHelper} except the current
@@ -46,20 +44,13 @@ public class SetHelper extends BasicSectionHelper {
     }
 
     @Override
-    public void validate(HelperDefinition definition) {
-        super.validate(definition);
-        if (definition.getHash().isEmpty()) {
-            throw new MustacheException(
-                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                    "No hash entry specified for %s [template: %s, line: %s]",
-                    SetHelper.class, definition.getTagInfo().getTemplateName(),
-                    definition.getTagInfo().getLine());
-        }
+    protected int numberOfRequiredParameters() {
+        return 0;
     }
 
     @Override
-    protected int numberOfRequiredParameters() {
-        return 0;
+    protected int numberOfRequiredHashEntries() {
+        return 1;
     }
 
 }

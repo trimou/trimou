@@ -3,11 +3,8 @@ package org.trimou.jdk8.handlebars.i18n;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -16,14 +13,11 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
 import org.trimou.AbstractEngineTest;
-import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
-import org.trimou.handlebars.i18n.DateTimeFormatHelper;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -36,8 +30,7 @@ public class TimeFormatHelperTest extends AbstractEngineTest {
     @Before
     public void buildEngine() {
         engine = MustacheEngineBuilder.newBuilder()
-//                .registerHelper("formatTime", new TimeFormatHelper())
-                .registerHelper("formatTime", new DateTimeFormatHelper())
+                .registerHelper("formatTime", new TimeFormatHelper())
                 .setLocaleSupport(new LocaleSupport() {
 
                     @Override
@@ -138,25 +131,6 @@ public class TimeFormatHelperTest extends AbstractEngineTest {
         day.set(Calendar.SECOND, 0);
         day.set(Calendar.MILLISECOND, 0);
         return day;
-    }
-
-    @Test
-    public void testPerf() {
-
-        // TODO
-        int loop = 1000;
-        List<Date> days = new ArrayList<Date>();
-        for (int i = 0; i < loop; i++) {
-            days.add(day().getTime());
-        }
-
-        Mustache mustache = engine.compileMustache("time_helper_perf",
-                "{{#this}}{{formatTime this pattern=\"DD-MM-yyyy\"}}{{/this}}");
-
-        long start = System.currentTimeMillis();
-        mustache.render(days);
-        LoggerFactory.getLogger(TimeFormatHelperTest.class).info("TIME: " + (System.currentTimeMillis() - start));
-
     }
 
 }
