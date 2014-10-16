@@ -335,7 +335,7 @@ Trimou provides some useful helpers which are not registered automatically:
 |log
 
 |+org.trimou.handlebars.EmbedHelper+
-|Embeds template source as a JavaScript snippet.
+|Embeds the template source (by default as a JavaScript snippet).
 |embed
 
 |+org.trimou.handlebars.NullCheckHelper+

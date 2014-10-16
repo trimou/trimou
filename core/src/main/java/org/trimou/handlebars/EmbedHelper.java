@@ -15,28 +15,47 @@
  */
 package org.trimou.handlebars;
 
-import com.google.common.collect.Iterables;
-
 /**
+ * Embed the template source.
+ *
  * <code>
  * {{embed data.template}}
  * </code>
+ *
+ * <p>By default, the template source is embedded as a JavaScript snippet.</p>
  *
  * @author Minkyu Cho
  */
 public class EmbedHelper extends BasicValueHelper {
 
+    private final SourceProcessor processor;
+
+    public EmbedHelper() {
+        this(new SourceProcessor() {
+            @Override
+            public String process(String mustacheName, String mustacheSource) {
+                return new StringBuilder().append("<script id=\"")
+                        .append(mustacheName.replace("/", "_"))
+                        .append("\" type=\"text/template\">\n")
+                        .append(mustacheSource).append("\n")
+                        .append("</script>").toString();
+            }
+        });
+    }
+
+    public EmbedHelper(SourceProcessor sourceProcessor) {
+        this.processor = sourceProcessor;
+    }
+
     @Override
     public void execute(Options options) {
-        String sourceName = Iterables.getFirst(options.getParameters(), "").toString();
-        String mustacheSource = options.source(sourceName);
-        StringBuilder script = new StringBuilder();
-        script.append("<script id=\"")
-                .append(sourceName.replace("/", "_"))
-                .append("\" type=\"text/template\">\n")
-                .append(mustacheSource)
-                .append("\n")
-                .append("</script>");
-        options.append(script.toString());
+        String sourceName = options.getParameters().get(0).toString();
+        options.append(processor.process(sourceName, options.source(sourceName)));
     }
+
+    public interface SourceProcessor {
+
+        String process(String mustacheName, String mustacheSource);
+    }
+
 }

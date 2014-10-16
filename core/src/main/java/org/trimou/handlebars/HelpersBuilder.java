@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.handlebars.EmbedHelper.SourceProcessor;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -192,6 +193,17 @@ public final class HelpersBuilder {
      */
     public HelpersBuilder addEmbed() {
         builder.put(EMBED, new EmbedHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link EmbedHelper} with the {@value #EMBED} name and the source processor.
+     *
+     * @param processor
+     * @return self
+     */
+    public HelpersBuilder addEmbed(SourceProcessor processor) {
+        builder.put(EMBED, new EmbedHelper(processor));
         return this;
     }
 
