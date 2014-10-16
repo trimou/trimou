@@ -18,6 +18,7 @@ package org.trimou.engine.parser;
 import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
@@ -33,13 +34,14 @@ import org.trimou.exception.MustacheProblem;
 import com.google.common.collect.Lists;
 
 /**
- * Mustache template. It's effectively immutable once the
- * {@link #setRootSegment(RootSegment)} method is called.
+ * A Mustache template.
  *
  * @author Martin Kouba
  */
 @Internal
 public class Template implements Mustache {
+
+    private final long id;
 
     private final String name;
 
@@ -49,16 +51,26 @@ public class Template implements Mustache {
 
     private volatile RootSegment rootSegment;
 
+    private final AtomicLong sequence;
+
     /**
      *
+     * @param id
      * @param name
      * @param engine
      */
-    public Template(String name, MustacheEngine engine) {
+    public Template(Long id, String name, MustacheEngine engine) {
+        this.id = id;
         this.name = name;
         this.engine = engine;
         this.debugMode = engine.getConfiguration().getBooleanPropertyValue(
                 DEBUG_MODE);
+        this.sequence = new AtomicLong();
+    }
+
+    @Override
+    public long getGeneratedId() {
+        return id;
     }
 
     @Override
@@ -75,17 +87,13 @@ public class Template implements Mustache {
 
     @Override
     public void render(Appendable appendable, Object data) {
-
-        DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
-                name);
-
+        final DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
+                name, id, sequence.incrementAndGet());
         try {
             renderingStarted(event);
-
             // Build the execution context and execute the root segment
             rootSegment.execute(appendable,
                     ExecutionContextBuilder.build(engine, data, debugMode));
-
             renderingFinished(event);
         } finally {
             event.release();
@@ -137,17 +145,35 @@ public class Template implements Mustache {
 
         private final String mustacheName;
 
+        private final long mustacheId;
+
+        private final long sequenceValue;
+
         /**
          *
          * @param mustacheName
+         * @param sequenceValue
          */
-        public DefaultMustacheRenderingEvent(String mustacheName) {
-            super();
+        public DefaultMustacheRenderingEvent(String mustacheName,
+                long mustacheId, long sequenceValue) {
             this.mustacheName = mustacheName;
+            this.mustacheId = mustacheId;
+            this.sequenceValue = sequenceValue;
         }
 
+        @Override
         public String getMustacheName() {
             return mustacheName;
+        }
+
+        @Override
+        public long getMustacheGeneratedId() {
+            return mustacheId;
+        }
+
+        @Override
+        public long getSequenceValue() {
+            return sequenceValue;
         }
 
     }

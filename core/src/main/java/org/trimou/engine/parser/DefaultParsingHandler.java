@@ -59,7 +59,7 @@ import com.google.common.collect.ImmutableList;
 
 /**
  * The default handler implementation that compiles the template. It's not
- * thread-safe and should not be reused.
+ * thread-safe and must not be reused.
  *
  * @author Martin Kouba
  */
@@ -74,6 +74,8 @@ class DefaultParsingHandler implements ParsingHandler {
     private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
 
     private MustacheEngine engine;
+
+    private long templateId;
 
     private String templateName;
 
@@ -90,6 +92,11 @@ class DefaultParsingHandler implements ParsingHandler {
     private boolean skipValueEscaping;
 
     private boolean handlebarsSupportEnabled;
+
+    @Override
+    public void init(long templateId) {
+        this.templateId = templateId;
+    }
 
     @Override
     public void startTemplate(String name, Delimiters delimiters,
@@ -130,7 +137,7 @@ class DefaultParsingHandler implements ParsingHandler {
             SegmentBases.reuseLineSeparatorSegments(rootSegmentBase);
         }
 
-        template = new Template(templateName, engine);
+        template = new Template(templateId, templateName, engine);
         template.setRootSegment(rootSegmentBase.asSegment(template));
 
         logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",

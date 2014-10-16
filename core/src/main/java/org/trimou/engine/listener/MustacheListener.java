@@ -18,13 +18,14 @@ package org.trimou.engine.listener;
 import java.io.Reader;
 
 import org.trimou.Mustache;
-import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.lambda.Lambda;
 
 /**
- * Receives notifications about {@link Mustache} processing.
+ * Receives notifications about {@link Mustache} processing. A listener
+ * instance should only be registered for one
+ * {@link org.trimou.engine.MustacheEngine}.
  *
  * <p>
  * Listeners are invoked in the order of their registration, except for
@@ -47,7 +48,7 @@ import org.trimou.lambda.Lambda;
  * </p>
  *
  * @author Martin Kouba
- * @see MustacheEngineBuilder#addMustacheListener(MustacheListener)
+ * @see org.trimou.engine.MustacheEngineBuilder#addMustacheListener(MustacheListener)
  */
 public interface MustacheListener extends ConfigurationAware {
 

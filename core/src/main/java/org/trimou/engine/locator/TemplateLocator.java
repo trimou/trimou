@@ -41,6 +41,7 @@ public interface TemplateLocator extends WithPriority, ConfigurationAware {
      * @return the reader object for a template with the given name or
      *         <code>null</code> if no available template with the given name
      *         exists
+     * @see org.trimou.Mustache#getName()
      */
     public Reader locate(String templateId);
 

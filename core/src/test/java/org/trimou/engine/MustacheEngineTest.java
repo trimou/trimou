@@ -260,6 +260,12 @@ public class MustacheEngineTest extends AbstractEngineTest {
                 .compileMustache("myTemplateName", "{{this}}").render(data));
     }
 
+    @Test
+    public void testGeneratedIdsAreUnique() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        assertNotEquals(engine.compileMustache("foo", "{{foo}}").getGeneratedId(), engine.compileMustache("foo", "{{foo}}").getGeneratedId());
+    }
+
     private static class MyStringReader extends StringReader {
 
         final AtomicBoolean isCloseInvoked;

@@ -27,6 +27,13 @@ import org.trimou.exception.MustacheException;
 public interface ParsingHandler {
 
     /**
+     * Initialize the handler.
+     *
+     * @param mustacheId
+     */
+    public void init(long templateId);
+
+    /**
      * Parsing started.
      *
      * @param name

@@ -22,6 +22,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     private final ParsingHandlerFactory parsingHandlerFactory;
 
+    private final AtomicLong templateIdSequence;
+
     /**
      * Workaround for CDI (JSR 299, JSR 346) - make this type proxyable so that
      * it's possible to produce application-scoped CDI bean.
@@ -73,6 +76,7 @@ class DefaultMustacheEngine implements MustacheEngine {
         parsingHandlerFactory = null;
         templateCache = null;
         sourceCache = null;
+        templateIdSequence = null;
     }
 
     /**
@@ -84,6 +88,7 @@ class DefaultMustacheEngine implements MustacheEngine {
         configuration = new ConfigurationFactory().createConfiguration(builder);
         parserFactory = new ParserFactory();
         parsingHandlerFactory = new ParsingHandlerFactory();
+        templateIdSequence = new AtomicLong();
 
         if (configuration
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
@@ -207,14 +212,12 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private Mustache parse(String templateId, Reader reader) {
-
         ParsingHandler handler = parsingHandlerFactory.createParsingHandler();
-
+        handler.init(templateIdSequence.incrementAndGet());
         reader = notifyListenersBeforeParsing(templateId, reader);
         parserFactory.createParser(this).parse(templateId, reader, handler);
         Mustache mustache = handler.getCompiledTemplate();
         notifyListenersAfterCompilation(mustache);
-
         return mustache;
     }
 

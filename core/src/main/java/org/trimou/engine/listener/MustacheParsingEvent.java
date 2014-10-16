@@ -20,12 +20,14 @@ import java.io.Reader;
 /**
  *
  * @author Martin Kouba
+ * @see MustacheListener#parsingStarted(MustacheParsingEvent)
  */
 public interface MustacheParsingEvent {
 
     /**
      *
      * @return the template name
+     * @see org.trimou.Mustache#getName()
      */
     public String getMustacheName();
 

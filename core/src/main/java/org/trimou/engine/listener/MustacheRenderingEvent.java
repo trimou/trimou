@@ -20,13 +20,31 @@ import org.trimou.engine.resource.ReleaseCallbackContainer;
 /**
  *
  * @author Martin Kouba
+ * @see MustacheListener#renderingStarted(MustacheRenderingEvent)
+ * @see MustacheListener#renderingFinished(MustacheRenderingEvent)
  */
 public interface MustacheRenderingEvent extends ReleaseCallbackContainer {
 
     /**
      *
      * @return the template name
+     * @see org.trimou.Mustache#getName()
      */
     public String getMustacheName();
+
+    /**
+     *
+     * @return the generated id
+     * @see org.trimou.Mustache#getGeneratedId()
+     */
+    public long getMustacheGeneratedId();
+
+    /**
+     *
+     *
+     * @return the value of the sequence (i.e. the number of executions of the
+     *         template with the given name and generated id)
+     */
+    public long getSequenceValue();
 
 }

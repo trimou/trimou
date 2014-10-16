@@ -22,7 +22,9 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.TemplateLocator;
 
 /**
- * Mustache engine.
+ * A Mustache engine is the central point for template management. It has its
+ * own {@link Configuration} and template cache. Implementation must be
+ * thread-safe.
  *
  * @author Martin Kouba
  */
@@ -31,7 +33,8 @@ public interface MustacheEngine {
     /**
      * @see ComputingCache
      */
-    public static final String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class.getName();
+    public static final String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class
+            .getName();
 
     /**
      * Get the compiled template with the given id.
@@ -54,7 +57,7 @@ public interface MustacheEngine {
     public Mustache getMustache(String templateId);
 
     /**
-     *  @return uncompiled mustache template source.
+     * @return uncompiled mustache template source.
      */
     public String getMustacheSource(String templateId);
 
