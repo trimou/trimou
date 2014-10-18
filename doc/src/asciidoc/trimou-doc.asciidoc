@@ -702,7 +702,7 @@ If you encounter a problem during template processing/rendering, try to:
 [[how_to_extend]]
 == How to extend
 
-Basically all the extension points are focused on +MustacheEngine+ configuration. Some components may be automatically added using the +org.trimou.engine.config.ConfigurationExtension+ and JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Others may be added manually via +MustacheEngineBuilder+ methods. See existing extensions to get acquainted with the basic principles.
+Basically, all the extension points are focused on +MustacheEngine+ configuration. Some components may be automatically added using the +org.trimou.engine.config.ConfigurationExtension+ and JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Others may be added manually via +MustacheEngineBuilder+ methods. See existing extensions to get acquainted with the basic principles.
 
 NOTE: Automatic +org.trimou.engine.config.ConfigurationExtension+ processing may be disabled per engine - see also +MustacheEngineBuilder#omitServiceLoaderConfigurationExtensions()+.
 
@@ -776,6 +776,12 @@ The main advantage of helpers is the ability to consume multiple parameters and 
 === KeySplitter
 
 +org.trimou.engine.interpolation.KeySplitter+ is responsible for splitting a variable key. +org.trimou.engine.interpolation.DotKeySplitter+ which follows the dot notation is used by default. +org.trimou.engine.interpolation.BracketDotKeySplitter+ enables to use bracket notation and literals in variable keys. E.g. +{{messages["my.message.key"]}}+. You can set your own splitter through the +MustacheEngineBuilder.setKeySplitter()+ method.
+
+[[computingcache]]
+=== ComputingCacheFactory
+
++org.trimou.engine.cache.ComputingCache+ is a simple abstraction for thread-safe computing (lazy loading) cache. It's used in some internal components (e.g. +ReflectionResolver+) and may also be used in custom components too.
++org.trimou.engine.cache.ComputingCacheFactory+ component is responsible for creating new instances of +ComputingCache+. The default computing cache implementation is backed by +com.google.common.cache.LoadingCache+.
 
 [[extensions]]
 == Extensions
@@ -1060,5 +1066,19 @@ This extension provides a basic https://dropwizard.github.io/dropwizard/[Dropwiz
 ==== TrimouViewRenderer
 
 +org.trimou.dropwizard.views.TrimouViewRenderer+ is a +io.dropwizard.views.ViewRenderer+ implementation backed by Trimou. There's a simple builder for convenience: +org.trimou.dropwizard.views.TrimouViewRenderer.Builder+.
+
+
+[[jdk8]]
+=== JDK 8
+
+Trimou requires Java 7. However, there are some interesting parts in JDK8. Therefore we have a special extension for JDK8 users.
+
+==== MapBackedComputingCacheFactory
+
+A computing cache factory producing computing cache implementations backed by +java.util.concurrent.ConcurrentHashMap+. This implementation is a bit faster than the default one using +com.google.common.cache.LoadingCache+. On the other hand it does not support automatic timeout eviction and listeners. Moreover its size-based eviction is not so effective.
+
+==== TimeFormatHelper
+
+An alternative to +DateTimeFormatHelper+  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
 
 '''
