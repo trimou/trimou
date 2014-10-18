@@ -22,11 +22,10 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.cache.ComputingCache.Function;
 import org.trimou.engine.resource.ReleaseCallback;
-import org.trimou.lambda.Lambda;
-import org.trimou.util.Checker;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
@@ -34,37 +33,19 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * A simple {@link MustacheListener} collecting template rendering statistics.
+ *
  * Note that the template is identified with the name/id - so data will not be
- * correct if there's more than one templates with the same name.
+ * correct if there's more than one templates with the same name (which is
+ * possible if using {@link MustacheEngine#compileMustache(String, String)}).
  *
- * It's possible to specify the time unit for measurements. By default
- * {@link TimeUnit#MILLISECONDS} is used.
- *
- * It's also possible to specify a {@link Predicate} to filter out some
- * templates. By default templates used for Lambda interpolation are skipped.
+ * This listener is not able to detect rendering errors.
  *
  * @author Martin Kouba
  */
-public class SimpleStatsCollector extends AbstractMustacheListener {
+public class SimpleStatsCollector extends AbstractStatsCollector {
 
     public static final String COMPUTING_CACHE_CONSUMER_ID = SimpleStatsCollector.class
             .getName();
-
-    /**
-     * Skip templates used for Lambda return value interpolation.
-     *
-     * @see Lambda#ONEOFF_LAMBDA_TEMPLATE_PREFIX
-     */
-    public static final Predicate<String> IS_NOT_ONEOFF_LAMBA_TEMPLATE = new Predicate<String>() {
-        @Override
-        public boolean apply(String input) {
-            return !input.startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
-        }
-    };
-
-    protected final TimeUnit timeUnit;
-
-    protected final Predicate<String> templatePredicate;
 
     /**
      * Data: name -> (time -> amount)
@@ -75,7 +56,7 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
      *
      */
     public SimpleStatsCollector() {
-        this(IS_NOT_ONEOFF_LAMBA_TEMPLATE, TimeUnit.MILLISECONDS);
+        this(null, null);
     }
 
     /**
@@ -85,9 +66,7 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
      */
     public SimpleStatsCollector(Predicate<String> templatePredicate,
             TimeUnit timeUnit) {
-        Checker.checkArgumentsNotNull(templatePredicate, timeUnit);
-        this.timeUnit = timeUnit;
-        this.templatePredicate = templatePredicate;
+        super(templatePredicate, timeUnit);
     }
 
     @Override
@@ -113,14 +92,14 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
 
     @Override
     public void renderingStarted(final MustacheRenderingEvent event) {
-        if (templatePredicate.apply(event.getMustacheName())) {
+        if (isApplied(event.getMustacheName())) {
             final long start = System.nanoTime();
             event.registerReleaseCallback(new ReleaseCallback() {
                 @Override
                 public void release() {
                     data.get(event.getMustacheName())
-                            .get(timeUnit.convert(System.nanoTime() - start,
-                                    TimeUnit.NANOSECONDS)).incrementAndGet();
+                            .get(convert(System.nanoTime() - start))
+                            .incrementAndGet();
                 }
             });
         }
@@ -193,14 +172,6 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
                     .getAllPresent()));
         }
         return buidler.build();
-    }
-
-    /**
-     *
-     * @return the time unit used for measurements
-     */
-    public TimeUnit getTimeUnit() {
-        return timeUnit;
     }
 
     private Map<Long, Long> getImmutableTemplateData(
@@ -299,9 +270,9 @@ public class SimpleStatsCollector extends AbstractMustacheListener {
         @Override
         public String toString() {
             return String
-                    .format("SimpleStats [name: %s, executions: %s, totalTime: %s, meanTime: %s, minTime: %s, maxTime: %s, timeUnit: %s]",
+                    .format("SimpleStats [name: %s, executions: %s, totalTime: %s, meanTime: %s, minTime: %s, maxTime: %s]",
                             name, executions, totalTime, meanTime, minTime,
-                            maxTime, timeUnit);
+                            maxTime);
         }
 
     }
