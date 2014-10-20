@@ -40,10 +40,10 @@ public interface MustacheRenderingEvent extends ReleaseCallbackContainer {
     public long getMustacheGeneratedId();
 
     /**
+     * The value must be unique for every execution of a template within a
+     * {@link org.trimou.engine.MustacheEngine} instance.
      *
-     *
-     * @return the value of the sequence (i.e. the number of executions of the
-     *         template with the given name and generated id)
+     * @return the value of the rendering sequence
      */
     public long getSequenceValue();
 
