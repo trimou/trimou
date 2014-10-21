@@ -44,8 +44,6 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
                 .setComputingCacheFactory(factory).build();
 
         assertEquals("10",engine.getMustache("foo").render(new Hammer()));
-        // One for templates, one for sources, one for ReflectionResolver
-        assertEquals(3, factory.caches.size());
 
         List<CustomComputingCache> reflectionCaches = factory.caches.get(ReflectionResolver.COMPUTING_CACHE_CONSUMER_ID);
         assertEquals(1, reflectionCaches.size());

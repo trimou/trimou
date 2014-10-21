@@ -21,7 +21,7 @@ import org.trimou.engine.segment.ValueSegment;
 
 /**
  * This component handles variable miss during interpolation of a
- * {@link ValueSegment}, aka variable tag.
+ * {@link ValueSegment}, aka variable tag. Implementations must be thread-safe.
  *
  * @author Martin Kouba
  * @since 1.5

@@ -39,6 +39,9 @@ import com.google.common.collect.ImmutableSet;
  */
 public class EnhancedStatsCollector extends AbstractStatsCollector {
 
+    public static final String COMPUTING_CACHE_CONSUMER_ID = EnhancedStatsCollector.class
+            .getName();
+
     private final ConcurrentMap<Long, String> idsToNames;
 
     /**
@@ -62,7 +65,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
             idsToNames.putIfAbsent(event.getMustacheGeneratedId(),
                     event.getMustacheName());
             data.get(event.getMustacheGeneratedId()).put(
-                    event.getSequenceValue(), new ExecutionData(System.nanoTime()));
+                    event.getRenderingId(), new ExecutionData(System.nanoTime()));
         }
     }
 
@@ -70,13 +73,13 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
     public void renderingFinished(MustacheRenderingEvent event) {
         if (isApplied(event.getMustacheName())) {
             data.get(event.getMustacheGeneratedId())
-                    .get(event.getSequenceValue()).setEnd(System.nanoTime());
+                    .get(event.getRenderingId()).setEnd(System.nanoTime());
         }
     }
 
     @Override
     protected void init() {
-        data = configuration.getComputingCacheFactory().create("foo",
+        data = configuration.getComputingCacheFactory().create(COMPUTING_CACHE_CONSUMER_ID,
                 new ComputingCache.Function<Long, ConcurrentMap<Long, ExecutionData>>() {
                     @Override
                     public ConcurrentMap<Long, ExecutionData> compute(Long key) {

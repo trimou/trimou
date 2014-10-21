@@ -18,7 +18,6 @@ package org.trimou.engine.parser;
 import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
@@ -51,8 +50,6 @@ public class Template implements Mustache {
 
     private volatile RootSegment rootSegment;
 
-    private final AtomicLong sequence;
-
     /**
      *
      * @param id
@@ -65,7 +62,6 @@ public class Template implements Mustache {
         this.engine = engine;
         this.debugMode = engine.getConfiguration().getBooleanPropertyValue(
                 DEBUG_MODE);
-        this.sequence = new AtomicLong();
     }
 
     @Override
@@ -88,7 +84,7 @@ public class Template implements Mustache {
     @Override
     public void render(Appendable appendable, Object data) {
         final DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
-                name, id, sequence.incrementAndGet());
+                name, id, engine.getConfiguration().getIdentifierGenerator().generate());
         try {
             renderingStarted(event);
             // Build the execution context and execute the root segment
@@ -172,7 +168,7 @@ public class Template implements Mustache {
         }
 
         @Override
-        public long getSequenceValue() {
+        public long getRenderingId() {
             return sequenceValue;
         }
 

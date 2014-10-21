@@ -27,6 +27,7 @@ import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.sequence.IdentifierGenerator;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
 
@@ -73,11 +74,13 @@ public interface Configuration {
 
     /**
      * @return the key splitter implementation
+     * @since 1.5
      */
     public KeySplitter getKeySplitter();
 
     /**
      * @return the missing value handler implementation
+     * @since 1.5
      */
     public MissingValueHandler getMissingValueHandler();
 
@@ -122,7 +125,15 @@ public interface Configuration {
     /**
      *
      * @return the computing cache factory
+     * @since 1.7
      */
     public ComputingCacheFactory getComputingCacheFactory();
+
+    /**
+     *
+     * @return the sequence generator
+     * @since 1.7
+     */
+    public IdentifierGenerator getIdentifierGenerator();
 
 }

@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.segment;
 
+import org.trimou.engine.parser.Template;
 import org.trimou.lambda.Lambda;
 
 /**
@@ -26,9 +27,20 @@ final class Lambdas {
     private Lambdas() {
     }
 
+    /**
+     *
+     * @param segment
+     * @return the name for one-off lambda, e.g. "oneoff_lambda_10_4242"
+     * @see Lambda#isReturnValueInterpolated()
+     */
     public static String constructLambdaOneoffTemplateName(Segment segment) {
-        return new StringBuilder().append(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX)
-                .append(System.nanoTime()).append(":")
-                .append(segment.getOrigin().getTemplateName()).toString();
+        final Template template = segment.getOrigin().getTemplate();
+        return new StringBuilder()
+                .append(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX)
+                .append(template.getGeneratedId())
+                .append("_")
+                .append(template.getEngine().getConfiguration()
+                        .getIdentifierGenerator().generate())
+                .toString();
     }
 }

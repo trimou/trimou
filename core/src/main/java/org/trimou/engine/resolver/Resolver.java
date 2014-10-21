@@ -19,7 +19,7 @@ import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.priority.WithPriority;
 
 /**
- * Value resolver. Implementation must be thread-safe.
+ * A value resolver. Implementations must be thread-safe.
  *
  * <p>
  * Any resolver may implement optional interface

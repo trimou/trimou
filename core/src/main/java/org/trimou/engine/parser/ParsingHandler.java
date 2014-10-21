@@ -31,7 +31,7 @@ public interface ParsingHandler {
      *
      * @param mustacheId
      */
-    public void init(long templateId);
+    public void init(long generatedId);
 
     /**
      * Parsing started.

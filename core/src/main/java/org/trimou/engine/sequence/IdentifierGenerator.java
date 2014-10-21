@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2014 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.interpolation;
+package org.trimou.engine.sequence;
 
-import java.util.Iterator;
-
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.config.ConfigurationAware;
-import org.trimou.engine.segment.ValueSegment;
 
 /**
- * This component is responsible for splitting a variable key. Implementations
- * must be thread-safe.
+ * Generates long values unique per the {@link MustacheEngine} instance.
+ * Implementations must be thread-safe.
  *
  * @author Martin Kouba
- * @see ValueSegment
- * @since 1.5
+ * @since 1.7
  */
-public interface KeySplitter extends ConfigurationAware {
+public interface IdentifierGenerator extends ConfigurationAware {
 
     /**
-     * @param key
-     * @return an iterator over the parts of the key
+     * @return the identifier
      */
-    public Iterator<String> split(String key);
+    public long generate();
 
 }

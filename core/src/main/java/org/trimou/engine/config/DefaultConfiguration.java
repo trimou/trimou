@@ -45,6 +45,8 @@ import org.trimou.engine.locale.LocaleSupportFactory;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.sequence.IdentifierGenerator;
+import org.trimou.engine.sequence.SequenceIdentifierGenerator;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.engine.text.TextSupportFactory;
 import org.trimou.engine.validation.Validateable;
@@ -89,6 +91,8 @@ class DefaultConfiguration implements Configuration {
 
     private final ComputingCacheFactory computingCacheFactory;
 
+    private final IdentifierGenerator identifierGenerator;
+
     /**
      *
      * @param builder
@@ -127,12 +131,19 @@ class DefaultConfiguration implements Configuration {
         } else {
             this.computingCacheFactory = new DefaultComputingCacheFactory();
         }
+        if (builder.getIdentifierGenerator() != null) {
+            this.identifierGenerator = builder.getIdentifierGenerator();
+        } else {
+            this.identifierGenerator = new SequenceIdentifierGenerator();
+        }
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys
-        // Preserve the order - some components must be initialized before others
+        // Preserve the order - some components must be initialized before
+        // others
         Set<ConfigurationAware> components = new LinkedHashSet<ConfigurationAware>();
         components.add(computingCacheFactory);
+        components.add(identifierGenerator);
         components.addAll(resolvers);
         components.add(textSupport);
         components.add(localeSupport);
@@ -142,7 +153,8 @@ class DefaultConfiguration implements Configuration {
         components.addAll(mustacheListeners);
         components.addAll(helpers.values());
 
-        this.properties = initializeProperties(builder, getConfigurationKeysToProcess(components));
+        this.properties = initializeProperties(builder,
+                getConfigurationKeysToProcess(components));
 
         if (getBooleanPropertyValue(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
             logger.warn(
@@ -303,6 +315,11 @@ class DefaultConfiguration implements Configuration {
     @Override
     public ComputingCacheFactory getComputingCacheFactory() {
         return computingCacheFactory;
+    }
+
+    @Override
+    public IdentifierGenerator getIdentifierGenerator() {
+        return identifierGenerator;
     }
 
     private void initializeConfigurationAwareComponents(

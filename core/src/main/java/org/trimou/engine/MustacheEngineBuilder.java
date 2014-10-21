@@ -34,6 +34,7 @@ import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.sequence.IdentifierGenerator;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
 import org.trimou.util.Checker;
@@ -84,6 +85,8 @@ public final class MustacheEngineBuilder implements
     private final ImmutableMap.Builder<String, Helper> helpers;
 
     private ComputingCacheFactory computingCacheFactory;
+
+    private IdentifierGenerator identifierGenerator;
 
     /**
      * Don't create a new instance.
@@ -317,6 +320,8 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * Set the custom {@link ComputingCacheFactory}.
+     *
      * @param cacheFactory
      * @return self
      */
@@ -324,6 +329,19 @@ public final class MustacheEngineBuilder implements
         Checker.checkArgumentNotNull(cacheFactory);
         checkIsMutable("setCacheFactory()");
         this.computingCacheFactory = cacheFactory;
+        return this;
+    }
+
+    /**
+     * Set the custom {@link IdentifierGenerator}.
+     *
+     * @param identifierGenerator
+     * @return self
+     */
+    public MustacheEngineBuilder setIdentifierGenerator(IdentifierGenerator identifierGenerator) {
+        Checker.checkArgumentNotNull(identifierGenerator);
+        checkIsMutable("setIdentifierGenerator()");
+        this.identifierGenerator = identifierGenerator;
         return this;
     }
 
@@ -392,6 +410,10 @@ public final class MustacheEngineBuilder implements
 
     public ComputingCacheFactory getComputingCacheFactory() {
         return computingCacheFactory;
+    }
+
+    public IdentifierGenerator getIdentifierGenerator() {
+        return identifierGenerator;
     }
 
     private void checkIsMutable(String methodName) {
