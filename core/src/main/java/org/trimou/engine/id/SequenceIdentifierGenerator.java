@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.sequence;
+package org.trimou.engine.id;
 
 import java.util.concurrent.atomic.AtomicLong;
 

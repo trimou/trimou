@@ -21,13 +21,13 @@ import java.util.Map;
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
 import org.trimou.engine.cache.ComputingCacheFactory;
+import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
-import org.trimou.engine.sequence.IdentifierGenerator;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
 

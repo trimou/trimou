@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.sequence;
+package org.trimou.engine.id;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.config.ConfigurationAware;
