@@ -20,7 +20,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.trimou.engine.config.AbstractConfigurationAware;
 
 /**
- * A default {@link IdentifierGenerator} using a sequence backed by an {@link AtomicLong}.
+ * A default {@link IdentifierGenerator} using a global sequence backed by an
+ * {@link AtomicLong}.
  *
  * @author Martin Kouba
  */
@@ -30,8 +31,7 @@ public class SequenceIdentifierGenerator extends AbstractConfigurationAware
     private final AtomicLong sequence = new AtomicLong(0);
 
     @Override
-    public long generate() {
-        // Atomically increments the sequence by one and returns the updated value
+    public long generate(Class<? extends Identified> componentType) {
         return sequence.incrementAndGet();
     }
 

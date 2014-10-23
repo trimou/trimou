@@ -75,8 +75,6 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private MustacheEngine engine;
 
-    private long templateId;
-
     private String templateName;
 
     private Delimiters delimiters;
@@ -92,11 +90,6 @@ class DefaultParsingHandler implements ParsingHandler {
     private boolean skipValueEscaping;
 
     private boolean handlebarsSupportEnabled;
-
-    @Override
-    public void init(long templateId) {
-        this.templateId = templateId;
-    }
 
     @Override
     public void startTemplate(String name, Delimiters delimiters,
@@ -137,7 +130,9 @@ class DefaultParsingHandler implements ParsingHandler {
             SegmentBases.reuseLineSeparatorSegments(rootSegmentBase);
         }
 
-        template = new Template(templateId, templateName, engine);
+        template = new Template(engine.getConfiguration()
+                .getIdentifierGenerator().generate(Mustache.class),
+                templateName, engine);
         template.setRootSegment(rootSegmentBase.asSegment(template));
 
         logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",

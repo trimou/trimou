@@ -40,7 +40,7 @@ final class Lambdas {
                 .append(template.getGeneratedId())
                 .append("_")
                 .append(template.getEngine().getConfiguration()
-                        .getIdentifierGenerator().generate())
+                        .getIdentifierGenerator().generate(null))
                 .toString();
     }
 }

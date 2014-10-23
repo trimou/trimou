@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2014 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.listener;
-
-import org.trimou.engine.id.Identified;
-import org.trimou.engine.resource.ReleaseCallbackContainer;
+package org.trimou.engine.id;
 
 /**
+ * Any component that needs to be identified by a generated {@link Long} id.
  *
  * @author Martin Kouba
- * @see MustacheListener#renderingStarted(MustacheRenderingEvent)
- * @see MustacheListener#renderingFinished(MustacheRenderingEvent)
+ * @see IdentifierGenerator
+ * @since 1.7
  */
-public interface MustacheRenderingEvent extends ReleaseCallbackContainer, Identified {
+public interface Identified {
 
     /**
-     *
-     * @return the template name
-     * @see org.trimou.Mustache#getName()
-     */
-    public String getMustacheName();
-
-    /**
+     * The id must be unique for the given component type and
+     * {@link org.trimou.engine.MustacheEngine} instance.
      *
      * @return the generated id
-     * @see org.trimou.Mustache#getGeneratedId()
      */
-    public long getMustacheGeneratedId();
+    Long getGeneratedId();
 
 }

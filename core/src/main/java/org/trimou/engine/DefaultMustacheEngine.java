@@ -208,7 +208,6 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     private Mustache parse(String templateId, Reader reader) {
         ParsingHandler handler = parsingHandlerFactory.createParsingHandler();
-        handler.init(configuration.getIdentifierGenerator().generate());
         reader = notifyListenersBeforeParsing(templateId, reader);
         parserFactory.createParser(this).parse(templateId, reader, handler);
         Mustache mustache = handler.getCompiledTemplate();

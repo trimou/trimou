@@ -15,12 +15,12 @@
  */
 package org.trimou.engine.id;
 
-import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.config.ConfigurationAware;
 
 /**
- * Generates long values unique per the {@link MustacheEngine} instance.
- * Implementations must be thread-safe.
+ * An idenfitier (long value) generator. Implementations must be thread-safe.
+ * There are some restrictions on the uniqueness of the generated id - see
+ * {@link #generate()}.
  *
  * @author Martin Kouba
  * @since 1.7
@@ -28,8 +28,18 @@ import org.trimou.engine.config.ConfigurationAware;
 public interface IdentifierGenerator extends ConfigurationAware {
 
     /**
-     * @return the identifier
+     * If the <code>identified</code> parameter is <code>null</code>, the
+     * returned value must be unique per the
+     * {@link org.trimou.engine.MustacheEngine} instance. Otherwise, the value
+     * must be unique for the given component type and
+     * {@link org.trimou.engine.MustacheEngine} instance, i.e. it may also be
+     * unique per the {@link org.trimou.engine.MustacheEngine} instance.
+     *
+     * @param identified
+     *            The component the identifier is generated for, may be
+     *            <code>null</code>
+     * @return the generated identifier
      */
-    public long generate();
+    public long generate(Class<? extends Identified> componentType);
 
 }

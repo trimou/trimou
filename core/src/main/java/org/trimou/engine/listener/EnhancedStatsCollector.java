@@ -65,7 +65,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
             idsToNames.putIfAbsent(event.getMustacheGeneratedId(),
                     event.getMustacheName());
             data.get(event.getMustacheGeneratedId()).put(
-                    event.getRenderingId(), new ExecutionData(System.nanoTime()));
+                    event.getGeneratedId(), new ExecutionData(System.nanoTime()));
         }
     }
 
@@ -73,7 +73,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
     public void renderingFinished(MustacheRenderingEvent event) {
         if (isApplied(event.getMustacheName())) {
             data.get(event.getMustacheGeneratedId())
-                    .get(event.getRenderingId()).setEnd(System.nanoTime());
+                    .get(event.getGeneratedId()).setEnd(System.nanoTime());
         }
     }
 

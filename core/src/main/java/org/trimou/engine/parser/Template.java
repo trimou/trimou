@@ -40,7 +40,7 @@ import com.google.common.collect.Lists;
 @Internal
 public class Template implements Mustache {
 
-    private final long id;
+    private final long generatedId;
 
     private final String name;
 
@@ -52,12 +52,12 @@ public class Template implements Mustache {
 
     /**
      *
-     * @param id
+     * @param generatedId
      * @param name
      * @param engine
      */
-    public Template(Long id, String name, MustacheEngine engine) {
-        this.id = id;
+    public Template(Long generatedId, String name, MustacheEngine engine) {
+        this.generatedId = generatedId;
         this.name = name;
         this.engine = engine;
         this.debugMode = engine.getConfiguration().getBooleanPropertyValue(
@@ -65,8 +65,8 @@ public class Template implements Mustache {
     }
 
     @Override
-    public long getGeneratedId() {
-        return id;
+    public Long getGeneratedId() {
+        return generatedId;
     }
 
     @Override
@@ -84,7 +84,9 @@ public class Template implements Mustache {
     @Override
     public void render(Appendable appendable, Object data) {
         final DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
-                name, id, engine.getConfiguration().getIdentifierGenerator().generate());
+                name, generatedId, engine.getConfiguration()
+                        .getIdentifierGenerator()
+                        .generate(MustacheRenderingEvent.class));
         try {
             renderingStarted(event);
             // Build the execution context and execute the root segment
@@ -143,7 +145,7 @@ public class Template implements Mustache {
 
         private final long mustacheId;
 
-        private final long sequenceValue;
+        private final long generatedId;
 
         /**
          *
@@ -154,7 +156,7 @@ public class Template implements Mustache {
                 long mustacheId, long sequenceValue) {
             this.mustacheName = mustacheName;
             this.mustacheId = mustacheId;
-            this.sequenceValue = sequenceValue;
+            this.generatedId = sequenceValue;
         }
 
         @Override
@@ -168,8 +170,8 @@ public class Template implements Mustache {
         }
 
         @Override
-        public long getRenderingId() {
-            return sequenceValue;
+        public Long getGeneratedId() {
+            return generatedId;
         }
 
     }
