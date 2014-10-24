@@ -143,8 +143,10 @@ class HelperExecutionHandler {
 
         private final MustacheEngine engine;
 
+        // true if not placeholder found, also if params list is empty
         private final boolean isParamValuePlaceholderFound;
 
+        // true if not placeholder found, also if hash map is empty
         private final boolean isHashValuePlaceholderFound;
 
         private OptionsBuilder(List<Object> parameters,
@@ -191,42 +193,71 @@ class HelperExecutionHandler {
             Map<String, Object> finalHash;
 
             if (isParamValuePlaceholderFound) {
-                finalParams = new ArrayList<Object>();
-                for (Object param : parameters) {
-                    if (param instanceof ValuePlaceholder) {
-                        ValueWrapper wrapper = executionContext
-                                .getValue(((ValuePlaceholder) param).getName());
-                        valueWrappers.add(wrapper);
-                        finalParams.add(wrapper.get());
-                    } else {
-                        finalParams.add(param);
+                // At this point parameters list is never empty
+                int size = parameters.size();
+                switch (size) {
+                case 1:
+                    // Very often there will be only single param
+                    finalParams = Collections
+                            .singletonList(resolveValue(parameters.get(0),
+                                    valueWrappers, executionContext));
+                    break;
+                default:
+                    finalParams = new ArrayList<Object>(size);
+                    for (Object param : parameters) {
+                        finalParams.add(resolveValue(param, valueWrappers,
+                                executionContext));
                     }
+                    finalParams = Collections.unmodifiableList(finalParams);
+                    break;
                 }
-                finalParams = Collections.unmodifiableList(finalParams);
             } else {
                 finalParams = parameters;
             }
 
             if (isHashValuePlaceholderFound) {
-                finalHash = new HashMap<String, Object>();
-                for (Entry<String, Object> hashEntry : hash.entrySet()) {
-                    if (hashEntry.getValue() instanceof ValuePlaceholder) {
-                        ValueWrapper wrapper = executionContext
-                                .getValue(((ValuePlaceholder) hashEntry
-                                        .getValue()).getName());
-                        valueWrappers.add(wrapper);
-                        finalHash.put(hashEntry.getKey(), wrapper.get());
-                    } else {
-                        finalHash.put(hashEntry.getKey(), hashEntry.getValue());
+                // At this point hash map is never empty
+                int size = hash.size();
+                switch (size) {
+                case 1:
+                    Entry<String, Object> singleEntry = hash.entrySet()
+                            .iterator().next();
+                    finalHash = Collections.singletonMap(
+                            singleEntry.getKey(),
+                            resolveValue(singleEntry.getValue(), valueWrappers,
+                                    executionContext));
+                    break;
+                default:
+                    finalHash = new HashMap<String, Object>();
+                    for (Entry<String, Object> entry : hash.entrySet()) {
+                        finalHash.put(
+                                entry.getKey(),
+                                resolveValue(entry.getValue(), valueWrappers,
+                                        executionContext));
                     }
+                    finalHash = Collections.unmodifiableMap(finalHash);
+                    break;
                 }
-                finalHash = Collections.unmodifiableMap(finalHash);
             } else {
                 finalHash = hash;
             }
 
             return new DefaultOptions(appendable, executionContext, segment,
                     finalParams, finalHash, valueWrappers.build(), engine);
+        }
+
+        private Object resolveValue(Object value,
+                ImmutableList.Builder<ValueWrapper> valueWrappers,
+                ExecutionContext executionContext) {
+
+            if (value instanceof ValuePlaceholder) {
+                ValueWrapper wrapper = executionContext
+                        .getValue(((ValuePlaceholder) value).getName());
+                valueWrappers.add(wrapper);
+                return wrapper.get();
+            } else {
+                return value;
+            }
         }
 
         private boolean initParamValuePlaceholderFound(List<Object> parameters) {
