@@ -780,8 +780,13 @@ The main advantage of helpers is the ability to consume multiple parameters and 
 [[computingcache]]
 === ComputingCacheFactory
 
-+org.trimou.engine.cache.ComputingCache+ is a simple abstraction for thread-safe computing (lazy loading) cache. It's used in some internal components (e.g. +ReflectionResolver+) and may also be used in custom components too.
-+org.trimou.engine.cache.ComputingCacheFactory+ component is responsible for creating new instances of +ComputingCache+. The default computing cache implementation is backed by +com.google.common.cache.LoadingCache+.
++org.trimou.engine.cache.ComputingCache+ is a simple abstraction for thread-safe computing (lazy loading) cache. It's used in some internal components (e.g. +ReflectionResolver+) and may also be used in custom components too. +org.trimou.engine.cache.ComputingCacheFactory+ component is responsible for creating new instances of +ComputingCache+. The default computing cache implementation is backed by +com.google.common.cache.LoadingCache+.
+
+[[identifiergenerator]]
+=== IdentifierGenerator
+
++org.trimou.engine.id.IdentifierGenerator+ is used to generate identifiers for various components and use-cases (e.g. +Mustache+, +MustacheRenderingEvent+ and one-off lambda names).  There are some restrictions on the uniqueness of the generated id - see also the javadoc.
+
 
 [[extensions]]
 == Extensions

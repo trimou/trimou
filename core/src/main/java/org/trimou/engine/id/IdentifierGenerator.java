@@ -35,9 +35,9 @@ public interface IdentifierGenerator extends ConfigurationAware {
      * {@link org.trimou.engine.MustacheEngine} instance, i.e. it may also be
      * unique per the {@link org.trimou.engine.MustacheEngine} instance.
      *
-     * @param identified
-     *            The component the identifier is generated for, may be
-     *            <code>null</code>
+     * @param componentType
+     *            The type of a component the identifier is generated for, may
+     *            be <code>null</code>
      * @return the generated identifier
      */
     public long generate(Class<? extends Identified> componentType);
