@@ -404,29 +404,14 @@ class HelperExecutionHandler {
             return segment.getTagInfo();
         }
 
-        void release() {
-            for (ValueWrapper wrapper : valueWrappers) {
-                wrapper.release();
-            }
-            if (pushed > 0) {
-                // Remove all remaining pushed objects at the end of helper
-                // execution
-                for (int i = 0; i < pushed; i++) {
-                    executionContext.pop(TargetStack.CONTEXT);
-
-                }
-                logger.warn(
-                        "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
-                        new Object[] {
-                                pushed,
-                                splitHelperName(getTagInfo().getText(), segment)
-                                        .next(), getTagInfo().getTemplateName() });
-            }
-        }
-
         @Override
         public Appendable getAppendable() {
             return appendable;
+        }
+
+        @Override
+        public void fn(Appendable appendable) {
+            segment.fn(appendable, executionContext);
         }
 
         @Override
@@ -435,6 +420,30 @@ class HelperExecutionHandler {
                 return ((ContainerSegment) segment).getContentLiteralBlock();
             } else {
                 return Strings.EMPTY;
+            }
+        }
+
+        void release() {
+            int wrappersSize = valueWrappers.size();
+            if (wrappersSize == 1) {
+                valueWrappers.get(0).release();
+            } else if (wrappersSize > 1) {
+                for (ValueWrapper wrapper : valueWrappers) {
+                    wrapper.release();
+                }
+            }
+            if (pushed > 0) {
+                // Remove all remaining pushed objects at the end of helper
+                // execution
+                for (int i = 0; i < pushed; i++) {
+                    executionContext.pop(TargetStack.CONTEXT);
+                }
+                logger.warn(
+                        "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
+                        new Object[] {
+                                pushed,
+                                splitHelperName(getTagInfo().getText(), segment)
+                                        .next(), getTagInfo().getTemplateName() });
             }
         }
 

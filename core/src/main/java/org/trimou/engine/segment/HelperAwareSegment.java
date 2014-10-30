@@ -31,6 +31,7 @@ interface HelperAwareSegment extends Segment {
      * @param appendable
      * @param context
      * @see Options#fn()
+     * @see Options#fn(Appendable)
      */
     void fn(Appendable appendable, ExecutionContext context);
 

@@ -68,7 +68,7 @@ public class NullCheckHelper extends MatchingSectionHelper {
 
     @Override
     protected boolean isMatching(Object value) {
-        return testNotNull ? value != null : value == null;
+        return testNotNull ? (value != null) : (value == null);
     }
 
 }

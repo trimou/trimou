@@ -198,4 +198,20 @@ public class OptionsTest extends AbstractTest {
                 .getChildTags().get(1).getType());
     }
 
+    @Test
+    public void testFnAppendable() {
+        final StringBuilder builder = new StringBuilder();
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelper("test", new AbstractHelper() {
+                    @Override
+                    public void execute(Options options) {
+                        options.fn(builder);
+                    }
+                }).build();
+        String literal = "This is /n a foo";
+        assertEquals("", engine.compileMustache("helper_fnappendable",
+                "{{#test}}" + literal + "{{/test}}").render(null));
+        assertEquals(literal, builder.toString());
+    }
+
 }

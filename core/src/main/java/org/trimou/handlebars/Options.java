@@ -97,4 +97,14 @@ public interface Options extends HelperDefinition {
      */
     Appendable getAppendable();
 
+    /**
+     * Proceed with execution, i.e. execute the block. This is no-op
+     * for variable tag helpers.
+     *
+     * @param appendable
+     *            The appendable to append the rendered block to
+     * @since 1.7
+     */
+    void fn(Appendable appendable);
+
 }

@@ -45,7 +45,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     @Override
     public void execute(Options options) {
         if ((options.getParameters().isEmpty() && isMatching(options.peek()))
-                || matches(getLogic(options.getHash()), options.getParameters())) {
+                || matches(options.getHash(), options.getParameters())) {
             options.fn();
         }
     }
@@ -67,8 +67,36 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
 
     protected enum EvaluationLogic {
 
-        OR,
-        AND, ;
+        // At least one of the params must match
+        OR {
+            Boolean test(boolean isMatching) {
+                return isMatching ? true : null;
+            }
+
+            boolean defaultResult() {
+                return false;
+            }
+        },
+        // All the params must match
+        AND {
+            Boolean test(boolean isMatching) {
+                return !isMatching ? false : null;
+            }
+
+            boolean defaultResult() {
+                return true;
+            }
+        },
+        ;
+
+        /**
+         * @param isParamMatching
+         * @return a non-null value if other params do not need to be evaluated,
+         *         the return value is the result of the evaluation
+         */
+        abstract Boolean test(boolean isParamMatching);
+
+        abstract boolean defaultResult();
 
         public static EvaluationLogic parse(String value) {
             for (EvaluationLogic logic : values()) {
@@ -78,29 +106,22 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
             }
             return null;
         }
+
     }
 
-    private boolean matches(EvaluationLogic logic, List<Object> params) {
-        switch (logic) {
-        case AND:
-            // All the params must match
-            for (Object param : params) {
-                if (!isMatching(param)) {
-                    return false;
-                }
-            }
-            return true;
-        case OR:
-            // At least one of the params must match
-            for (Object param : params) {
-                if (isMatching(param)) {
-                    return true;
-                }
-            }
-            return false;
-        default:
-            throw new IllegalStateException();
+    private boolean matches(Map<String, Object> hash, List<Object> params) {
+        // Very often there is only one param
+        if (params.size() == 1) {
+            return isMatching(params.get(0));
         }
+        EvaluationLogic logic = getLogic(hash);
+        for (Object param : params) {
+            Boolean value = logic.test(isMatching(param));
+            if (value != null) {
+                return value;
+            }
+        }
+        return logic.defaultResult();
     }
 
     private EvaluationLogic getLogic(Map<String, Object> hash) {
