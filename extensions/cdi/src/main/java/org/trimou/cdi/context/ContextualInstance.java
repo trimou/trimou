@@ -19,7 +19,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 
 /**
- * Contextual instance holder.
+ * An immutable contextual instance holder.
  *
  * @author Martin Kouba
  */
@@ -39,7 +39,6 @@ final class ContextualInstance<T> {
      */
     ContextualInstance(T instance, CreationalContext<T> creationalContext,
             Contextual<T> contextual) {
-        super();
         this.instance = instance;
         this.creationalContext = creationalContext;
         this.contextual = contextual;
@@ -49,30 +48,22 @@ final class ContextualInstance<T> {
      *
      * @return the instance
      */
-    public T getInstance() {
+    T getInstance() {
         return instance;
-    }
-
-    /**
-     *
-     * @return the creational context
-     */
-    public CreationalContext<T> getCreationalContext() {
-        return creationalContext;
     }
 
     /**
      *
      * @return the contextual (aka bean)
      */
-    public Contextual<T> getContextual() {
+    Contextual<T> getContextual() {
         return contextual;
     }
 
     /**
      * Destroy the contextual instance properly.
      */
-    public void destroy() {
+    void destroy() {
         contextual.destroy(instance, creationalContext);
     }
 

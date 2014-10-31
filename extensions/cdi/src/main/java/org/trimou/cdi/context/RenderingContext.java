@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.trimou.engine.listener.MustacheRenderingEvent;
 
 /**
- * Context for {@link RenderingScoped}.
+ * A context for {@link RenderingScoped}.
  *
  * @author Martin Kouba
  */
@@ -51,12 +51,14 @@ public final class RenderingContext implements Context {
 
         checkArgumentNotNull(contextual);
 
-        if (!isActive()) {
+        ContextualInstanceStore store = contextualInstanceStore.get();
+
+        if (store == null) {
             throw new ContextNotActiveException();
         }
 
-        ContextualInstance<T> contextualInstance = contextualInstanceStore
-                .get().get(contextual, creationalContext);
+        ContextualInstance<T> contextualInstance = store.get(contextual,
+                creationalContext);
 
         if (contextualInstance != null) {
             return contextualInstance.getInstance();
@@ -81,17 +83,13 @@ public final class RenderingContext implements Context {
     }
 
     void destroy(MustacheRenderingEvent event) {
-
         ContextualInstanceStore store = contextualInstanceStore.get();
-
         if (store == null) {
             logger.warn("Cannot destroy context - contextual instance store is null");
             return;
         }
-
         logger.debug("Rendering finished - destroy context [template: {}]",
                 event.getMustacheName());
-
         try {
             store.destroy();
         } finally {

@@ -25,15 +25,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Maps contextuals to instances for a certain thread.
  *
  * @author Martin Kouba
  */
-public class ContextualInstanceStore {
+final class ContextualInstanceStore {
 
     private static final Logger logger = LoggerFactory
             .getLogger(ContextualInstanceStore.class);
 
-    private final Map<Contextual<?>, ContextualInstance<?>> contextualInstancesMap = new HashMap<Contextual<?>, ContextualInstance<?>>();
+    private final Map<Contextual<?>, ContextualInstance<?>> contextualInstancesMap;
+
+    ContextualInstanceStore() {
+        // Synchronization is not needed
+        contextualInstancesMap = new HashMap<Contextual<?>, ContextualInstance<?>>();
+    }
 
     @SuppressWarnings("unchecked")
     <T> ContextualInstance<T> get(Contextual<T> contextual,
@@ -52,7 +58,6 @@ public class ContextualInstanceStore {
     }
 
     void destroy() {
-
         for (ContextualInstance<?> contextualInstance : contextualInstancesMap
                 .values()) {
             logger.trace("Destroying contextual instance [contextual: {}]",
