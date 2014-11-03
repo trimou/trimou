@@ -1,0 +1,20 @@
+{{! Note that all comments are removed during compilation by default}}
+{{#if this}}
+    {{! "this" is not falsy - it's not an empty collection}}
+    Total number of items: {{this.size}}
+    The first item is: {{this.0.name}}
+    {{#each this}}
+        {{#if active}}
+            {{iter.index}}. {{name}} ({{amount}})
+        {{/if}}
+        {{#unless active}}
+            {{iter.index}}. INACTIVE! {{! Log a warning if an inactive item is found}}{{log "An inactive item found: {}" name}}
+        {{/unless}}
+    {{/each}}
+{{/if}}
+{{#unless this}}
+    {{! this is falsy - it's an empty collection}}
+    No data to render.
+{{/unless}}
+
+{{footer}}

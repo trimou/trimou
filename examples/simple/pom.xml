@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.trimou</groupId>
+    <artifactId>trimou-parent</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>trimou-example-simple</artifactId>
+  <description>A really simple example showing some of the key features in action.</description>
+  <packaging>war</packaging>
+
+  <properties>
+    <version.trimou>1.6.2.Final</version.trimou>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.trimou</groupId>
+      <artifactId>trimou-core</artifactId>
+      <version>${version.trimou}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <finalName>trimou-example</finalName>
+  </build>
+
+</project>
