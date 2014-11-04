@@ -27,7 +27,7 @@ import org.trimou.exception.MustacheProblem;
  * This segment extends some template and overrides its extending sections.
  *
  * <pre>
- * {{<super}} {{$insert}}Foo{{/insert}} {{/super}}
+ * {{&lt;super}} {{$insert}}Foo{{/insert}} {{/super}}
  * </pre>
  *
  * @author Martin Kouba

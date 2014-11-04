@@ -48,7 +48,7 @@ public class SimpleStatsCollector extends AbstractStatsCollector {
             .getName();
 
     /**
-     * Data: name -> (time -> amount)
+     * Map of name to map of time to amount
      */
     protected ComputingCache<String, ComputingCache<Long, AtomicLong>> data;
 

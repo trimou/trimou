@@ -57,6 +57,7 @@ public interface MustacheEngine {
     public Mustache getMustache(String templateId);
 
     /**
+     * @param templateId
      * @return uncompiled mustache template source.
      */
     public String getMustacheSource(String templateId);

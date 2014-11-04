@@ -186,6 +186,8 @@ public final class MustacheEngineBuilder implements
      *
      * @param configurationKey
      * @param value
+     * @param <T>
+     *            The type of configuration key
      * @return self
      */
     public <T extends ConfigurationKey> MustacheEngineBuilder setProperty(
@@ -325,7 +327,8 @@ public final class MustacheEngineBuilder implements
      * @param cacheFactory
      * @return self
      */
-    public MustacheEngineBuilder setComputingCacheFactory(ComputingCacheFactory cacheFactory) {
+    public MustacheEngineBuilder setComputingCacheFactory(
+            ComputingCacheFactory cacheFactory) {
         Checker.checkArgumentNotNull(cacheFactory);
         checkIsMutable("setCacheFactory()");
         this.computingCacheFactory = cacheFactory;
@@ -338,7 +341,8 @@ public final class MustacheEngineBuilder implements
      * @param identifierGenerator
      * @return self
      */
-    public MustacheEngineBuilder setIdentifierGenerator(IdentifierGenerator identifierGenerator) {
+    public MustacheEngineBuilder setIdentifierGenerator(
+            IdentifierGenerator identifierGenerator) {
         Checker.checkArgumentNotNull(identifierGenerator);
         checkIsMutable("setIdentifierGenerator()");
         this.identifierGenerator = identifierGenerator;

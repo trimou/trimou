@@ -44,9 +44,6 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
 
     private final ConcurrentMap<Long, String> idsToNames;
 
-    /**
-     * generated id -> (sequence -> Time)
-     */
     protected ComputingCache<Long, ConcurrentMap<Long, ExecutionData>> data;
 
     public EnhancedStatsCollector() {

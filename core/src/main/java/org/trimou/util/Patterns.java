@@ -47,13 +47,13 @@ public final class Patterns {
 
     /**
      * Useful to extract start and end delimiters from "set delimiters" tag
-     * content, e.g. <code><% %></code> (without equals signs).
+     * content, e.g. <code>&lt;% %&gt;</code> (without equals signs).
      *
      * First and third groups contain one or more non-whitespace characters.
      * Second group contains one or more whitespace characters.
      *
      * Originally we used the following pattern:
-     * <code>([[^=]&&\\S]+)(\\s+)([[^=]&&\\S]+)</code>.
+     * <code>([[^=]&amp;&amp;\\S]+)(\\s+)([[^=]&amp;&amp;\\S]+)</code>.
      *
      * @return the pattern to match new delimiters in "set delimiters" tag
      */

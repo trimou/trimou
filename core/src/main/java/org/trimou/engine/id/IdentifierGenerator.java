@@ -20,7 +20,7 @@ import org.trimou.engine.config.ConfigurationAware;
 /**
  * An idenfitier (long value) generator. Implementations must be thread-safe.
  * There are some restrictions on the uniqueness of the generated id - see
- * {@link #generate()}.
+ * {@link #generate(Class)}.
  *
  * @author Martin Kouba
  * @since 1.7

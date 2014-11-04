@@ -54,7 +54,7 @@ import org.trimou.lambda.Lambda;
  * <li>an instance of {@link Lambda}, the content is processed according to the
  * lambda's specification,</li>
  * <li>any other kind of object represents a nested context.</li>
- * <ul>
+ * </ul>
  *
  * @author Martin Kouba
  * @see Lambda
