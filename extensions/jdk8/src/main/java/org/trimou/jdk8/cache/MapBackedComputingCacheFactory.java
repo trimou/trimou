@@ -167,11 +167,9 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
             return map.computeIfAbsent(key, computingFunctionAdapter);
         }
 
-        private void handleMaxSizeExceeding() {
-            synchronized (this) {
-                if (map.size() > maxSize) {
-                    applyMaxSizeStrategy();
-                }
+        private synchronized void handleMaxSizeExceeding() {
+            if (map.size() > maxSize) {
+                applyMaxSizeStrategy();
             }
         }
 
@@ -224,7 +222,8 @@ public class MapBackedComputingCacheFactory extends AbstractConfigurationAware
         public V apply(K key) {
             // Note that computation must not attempt to update any other
             // mappings of the map - therefore we cannot perform eviction here
-            if (mapAdapter.maxSize != null && mapAdapter.map.size() > mapAdapter.maxSize) {
+            if (mapAdapter.maxSize != null
+                    && mapAdapter.map.size() > mapAdapter.maxSize) {
                 throw new MaxSizeExceededException();
             }
             return computingFunction.compute(key);
