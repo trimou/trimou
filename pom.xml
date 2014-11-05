@@ -124,7 +124,7 @@
             <activation>
                 <activeByDefault>false</activeByDefault>
                 <property>
-                    <name>!disable.integration.tests</name>
+                    <name>!release</name>
                 </property>
             </activation>
             <modules>
