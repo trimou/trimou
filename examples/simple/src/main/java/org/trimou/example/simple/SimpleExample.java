@@ -63,8 +63,6 @@ public class SimpleExample {
         // cache enabled by default
         Mustache test = engine.getMustache("items");
 
-        long start = System.nanoTime();
-
         // Prepare some data
         List<Item> items = new ArrayList<>();
         items.add(new Item("Foo", 5l, true));
@@ -75,9 +73,9 @@ public class SimpleExample {
         System.out.println(String.format("Start rendering of %s...",
                 test.getName()));
 
+        long start = System.nanoTime();
         // And now render the data
         String output = test.render(items);
-
         long end = System.nanoTime() - start;
 
         System.out.println(String.format("Template %s rendered in %s ms:\n",
