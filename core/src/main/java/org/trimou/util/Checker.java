@@ -18,6 +18,8 @@ package org.trimou.util;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 
@@ -29,6 +31,18 @@ import org.trimou.annotations.Internal;
  */
 @Internal
 public final class Checker {
+
+    private static final Long LONG_ZERO = Long.valueOf(0L);
+
+    private static final Integer INTEGER_ZERO = Integer.valueOf(0);
+
+    private static final Short SHORT_ZERO = Short.valueOf((short) 0);
+
+    private static final Byte BYTE_ZERO = Byte.valueOf((byte) 0);
+
+    private static final Double DOUBLE_ZERO = Double.valueOf(0.0d);
+
+    private static final Float FLOAT_ZERO = Float.valueOf(0.0f);
 
     private Checker() {
     }
@@ -51,7 +65,7 @@ public final class Checker {
         return collection == null || collection.isEmpty();
     }
 
-    public static boolean isNullOrEmpty(Map<?,?> map) {
+    public static boolean isNullOrEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
 
@@ -76,8 +90,18 @@ public final class Checker {
         } else if (value instanceof CharSequence) {
             return ((CharSequence) value).length() == 0;
         } else if (value instanceof Number) {
-            return ((Number) value).intValue() == 0;
+            return isZero((Number) value);
         }
         return false;
+    }
+
+    private static boolean isZero(Number number) {
+        if (number instanceof BigDecimal) {
+            return BigDecimal.ZERO.compareTo((BigDecimal) number) == 0;
+        }
+        return INTEGER_ZERO.equals(number) || LONG_ZERO.equals(number)
+                || SHORT_ZERO.equals(number) || BYTE_ZERO.equals(number)
+                || DOUBLE_ZERO.equals(number) || FLOAT_ZERO.equals(number)
+                || BigInteger.ZERO.equals(number);
     }
 }

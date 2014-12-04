@@ -3,6 +3,8 @@ package org.trimou.handlebars;
 import static org.junit.Assert.assertEquals;
 import static org.trimou.AssertUtil.assertCompilationFails;
 
+import java.math.BigDecimal;
+
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
@@ -91,6 +93,14 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 "",
                 engine.compileMustache("unless_helper5",
                         "{{#unless this \"\" logic=\"and\"}}hello{{/unless}}").render(true));
+        assertEquals(
+                "",
+                engine.compileMustache("unless_helper6",
+                        "{{#unless this}}hello{{/unless}}").render(new BigDecimal("0.1")));
+        assertEquals(
+                "hello",
+                engine.compileMustache("unless_helper6",
+                        "{{#unless this}}hello{{/unless}}").render(new BigDecimal("0.000")));
         assertCompilationFails(engine, "unless_helper_fail1",
                 "{{#unless}}{{this}}{{/unless}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
