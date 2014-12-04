@@ -77,13 +77,10 @@ public class SectionSegment extends AbstractSectionSegment implements
     }
 
     public void execute(Appendable appendable, ExecutionContext context) {
-
         if (helperHandler != null) {
             helperHandler.execute(appendable, context);
         } else {
-
             ValueWrapper value = context.getValue(getText());
-
             try {
                 if (value.isNull()) {
                     return;

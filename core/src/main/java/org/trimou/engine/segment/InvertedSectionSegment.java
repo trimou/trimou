@@ -15,13 +15,14 @@
  */
 package org.trimou.engine.segment;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
-import org.trimou.util.Checker;
 
 /**
  * Inverted section segment.
@@ -30,8 +31,7 @@ import org.trimou.util.Checker;
  * The content is rendered if there is no object found in the context, or is a
  * {@link Boolean} of value <code>false</code>, or is an empty
  * {@link Collections}, or is an {@link Iterable} with no elements, or is an
- * empty array, or is an empty {@link CharSequence}, or is a number of value
- * <code>0</code>.
+ * empty array.
  * </p>
  *
  * @author Martin Kouba
@@ -39,7 +39,8 @@ import org.trimou.util.Checker;
 @Internal
 public class InvertedSectionSegment extends AbstractSectionSegment {
 
-    public InvertedSectionSegment(String text, Origin origin, List<Segment> segments) {
+    public InvertedSectionSegment(String text, Origin origin,
+            List<Segment> segments) {
         super(text, origin, segments);
     }
 
@@ -48,16 +49,28 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
     }
 
     public void execute(Appendable appendable, ExecutionContext context) {
-
         ValueWrapper value = context.getValue(getText());
-
         try {
-            if (value.isNull() || Checker.isFalsy(value.get())) {
+            if (value.isNull() || process(value.get())) {
                 super.execute(appendable, context);
             }
         } finally {
             value.release();
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private boolean process(Object value) {
+        if (value instanceof Boolean) {
+            return !((Boolean) value).booleanValue();
+        } else if (value instanceof Collection) {
+            return ((Collection) value).isEmpty();
+        } else if (value instanceof Iterable) {
+            return !((Iterable) value).iterator().hasNext();
+        } else if (value.getClass().isArray()) {
+            return Array.getLength(value) == 0;
+        }
+        return false;
     }
 
 }

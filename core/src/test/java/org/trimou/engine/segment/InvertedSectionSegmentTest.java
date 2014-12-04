@@ -2,6 +2,7 @@ package org.trimou.engine.segment;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.junit.Test;
@@ -57,6 +58,15 @@ public class InvertedSectionSegmentTest extends AbstractEngineTest {
                 .<String, Object> of("test", new Hammer())));
         assertEquals("Hello ping!",
                 mustache.render(Collections.singletonMap("test", null)));
+    }
+
+    @Test
+    public void testNumber() {
+        String templateContents = "Hello {{^this}}ping{{/this}}!";
+        Mustache mustache = engine.compileMustache("number", templateContents);
+        assertEquals("Hello !", mustache.render(new BigDecimal("0.1")));
+        assertEquals("Hello !", mustache.render(BigDecimal.ZERO));
+        assertEquals("Hello !", mustache.render(Long.valueOf(0l)));
     }
 
 }
