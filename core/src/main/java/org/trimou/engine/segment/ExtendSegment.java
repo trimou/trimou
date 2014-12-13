@@ -16,6 +16,7 @@
 package org.trimou.engine.segment;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
@@ -35,8 +36,15 @@ import org.trimou.exception.MustacheProblem;
 @Internal
 public class ExtendSegment extends AbstractSectionSegment {
 
+    /**
+     * Cache the partial template if possible, i.e. if the cache is enabled, no
+     * expiration timeout is set and debug mode is not enabled
+     */
+    private final AtomicReference<Template> cachedExtendedTemplate;
+
     public ExtendSegment(String text, Origin origin, List<Segment> segments) {
         super(text, origin, segments);
+        this.cachedExtendedTemplate = Segments.isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<Template>() : null;
     }
 
     @Override
@@ -47,7 +55,8 @@ public class ExtendSegment extends AbstractSectionSegment {
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        Template extended = (Template) getEngine().getMustache(getText());
+        Template extended = Segments.getTemplate(cachedExtendedTemplate,
+                getText(), getEngine());
 
         if (extended == null) {
             throw new MustacheException(

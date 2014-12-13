@@ -3,11 +3,13 @@ package org.trimou.engine.segment;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -142,13 +144,51 @@ public class PartialSegmentTest extends AbstractEngineTest {
         String partial = "!";
         StringBuilder template = new StringBuilder();
         StringBuilder result = new StringBuilder();
-        int loop = 2 * Integer.valueOf(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT.getDefaultValue().toString());
-        for (int i = 0; i < loop ; i++) {
+        int loop = 2 * Integer
+                .valueOf(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT
+                        .getDefaultValue().toString());
+        for (int i = 0; i < loop; i++) {
             template.append("{{> partial}}");
             result.append(partial);
         }
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder().addTemplateLocator(new MapTemplateLocator(ImmutableMap.of("template", template.toString(), "partial", partial.toString()))).build();
-        assertEquals(result.toString(), engine.getMustache("template").render(null));
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addTemplateLocator(
+                        new MapTemplateLocator(ImmutableMap.of("template",
+                                template.toString(), "partial",
+                                partial.toString()))).build();
+        assertEquals(result.toString(),
+                engine.getMustache("template").render(null));
+    }
+
+    @Test
+    public void testCachedPartialSegmentUsed() {
+        Map<String, String> map = new HashMap<>();
+        map.put("alpha", "{{>bravo}}");
+        map.put("bravo", "{{this}}");
+        MapTemplateLocator locator = new MapTemplateLocator(map);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(locator).build();
+        Mustache mustache = engine.getMustache("alpha");
+        assertEquals("foo", mustache.render("foo"));
+        map.put("bravo", "NOTHING");
+        engine.invalidateTemplateCache();
+        assertEquals("foo", mustache.render("foo"));
+    }
+
+    @Test
+    public void testCachedPartialSegmentNotUsed() {
+        Map<String, String> map = new HashMap<>();
+        map.put("alpha", "{{>bravo}}");
+        map.put("bravo", "{{this}}");
+        MapTemplateLocator locator = new MapTemplateLocator(map);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(locator)
+                .setProperty(EngineConfigurationKey.DEBUG_MODE, true).build();
+        Mustache mustache = engine.getMustache("alpha");
+        assertEquals("foo", mustache.render("foo"));
+        map.put("bravo", "NOTHING");
+        assertEquals("NOTHING", mustache.render("foo"));
     }
 
 }

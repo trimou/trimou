@@ -21,8 +21,8 @@ import org.trimou.engine.context.ExecutionContext;
 import org.trimou.lambda.Lambda.InputType;
 
 /**
- * Compiled template segment. Any segment is considered immutable once the
- * compilation is finished.
+ * Compiled template segment. Any segment is considered thread-safe (most often
+ * immutable) once the compilation is finished.
  *
  * @author Martin Kouba
  */

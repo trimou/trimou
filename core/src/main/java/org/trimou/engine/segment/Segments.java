@@ -15,12 +15,19 @@
  */
 package org.trimou.engine.segment;
 
+import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
+import static org.trimou.engine.config.EngineConfigurationKey.TEMPLATE_CACHE_ENABLED;
+import static org.trimou.engine.config.EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT;
 import static org.trimou.util.Strings.LINE_SEPARATOR;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.parser.Template;
 
 /**
  * {@link Segment} utils.
@@ -30,6 +37,45 @@ import org.apache.commons.lang3.StringUtils;
 final class Segments {
 
     private Segments() {
+    }
+
+    /**
+     *
+     * @param configuration
+     * @return <code>true</code> if it's possible to cache the template in a
+     *         segment, i.e. if the cache is enabled, no expiration timeout is
+     *         set and debug mode is not enabled, <code>false</code> otherwise
+     */
+    static boolean isTemplateCachingAllowed(Configuration configuration) {
+        return !configuration.getBooleanPropertyValue(DEBUG_MODE)
+                && configuration
+                        .getBooleanPropertyValue(TEMPLATE_CACHE_ENABLED)
+                && configuration
+                        .getLongPropertyValue(TEMPLATE_CACHE_EXPIRATION_TIMEOUT) <= 0;
+    }
+
+    /**
+     *
+     * @param cachedReference
+     * @param templateId
+     * @param engine
+     * @return the template, use the cache if possible
+     */
+    static Template getTemplate(AtomicReference<Template> cachedReference,
+            String templateId, MustacheEngine engine) {
+        if (cachedReference != null) {
+            Template template = cachedReference.get();
+            if (template == null) {
+                synchronized (cachedReference) {
+                    if (template == null) {
+                        template = (Template) engine.getMustache(templateId);
+                        cachedReference.set(template);
+                    }
+                }
+            }
+            return template;
+        }
+        return (Template) engine.getMustache(templateId);
     }
 
     /**

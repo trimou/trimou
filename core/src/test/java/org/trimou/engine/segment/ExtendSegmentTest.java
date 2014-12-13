@@ -3,6 +3,9 @@ package org.trimou.engine.segment;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
@@ -169,6 +172,36 @@ public class ExtendSegmentTest extends AbstractEngineTest {
                 .addTemplateLocator(locator).build();
         Mustache sub = engine.getMustache("sub");
         assertEquals("foobar", sub.render(null));
+    }
+
+    @Test
+    public void testCachedPartialSegmentUsed() {
+        Map<String, String> map = new HashMap<>();
+        map.put("super", "{{$section1}}Martin{{/section1}}");
+        map.put("sub", "{{<super}}{{$section1}}{{this}}{{/section1}}{{/super}}");
+        MapTemplateLocator locator = new MapTemplateLocator(map);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(locator).build();
+        Mustache mustache = engine.getMustache("sub");
+        assertEquals("foo", mustache.render("foo"));
+        map.put("super", "{{$section2}}Martin{{/section2}}");
+        engine.invalidateTemplateCache();
+        assertEquals("foo", mustache.render("foo"));
+    }
+
+    @Test
+    public void testCachedPartialSegmentNotUsed() {
+        Map<String, String> map = new HashMap<>();
+        map.put("super", "{{$section1}}Martin{{/section1}}");
+        map.put("sub", "{{<super}}{{$section1}}{{this}}{{/section1}}{{/super}}");
+        MapTemplateLocator locator = new MapTemplateLocator(map);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(locator).setProperty(EngineConfigurationKey.DEBUG_MODE, true).build();
+        Mustache mustache = engine.getMustache("sub");
+        assertEquals("foo", mustache.render("foo"));
+        map.put("super", "{{$section2}}Martin{{/section2}}");
+        engine.invalidateTemplateCache();
+        assertEquals("Martin", mustache.render("foo"));
     }
 
 }

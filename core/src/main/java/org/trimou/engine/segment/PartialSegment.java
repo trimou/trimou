@@ -18,6 +18,7 @@ package org.trimou.engine.segment;
 import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
@@ -36,10 +37,27 @@ public class PartialSegment extends AbstractSegment {
 
     private final TextSegment indentation;
 
+    /**
+     * Cache the partial template if possible, i.e. if the cache is enabled, no
+     * expiration timeout is set and debug mode is not enabled
+     */
+    private final AtomicReference<Template> cachedPartialTemplate;
+
+    private volatile List<List<Segment>> cachedPartialLines;
+
+    /**
+     *
+     * @param text
+     * @param origin
+     * @param indentation
+     */
     public PartialSegment(String text, Origin origin, String indentation) {
         super(text, origin);
         this.indentation = indentation != null ? new TextSegment(indentation,
                 new Origin(origin.getTemplate())) : null;
+        this.cachedPartialTemplate = Segments
+                .isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<Template>()
+                : null;
     }
 
     @Override
@@ -50,8 +68,8 @@ public class PartialSegment extends AbstractSegment {
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        Template partialTemplate = (Template) getEngine()
-                .getMustache(getText());
+        Template partialTemplate = Segments.getTemplate(cachedPartialTemplate,
+                getText(), getEngine());
 
         if (partialTemplate == null) {
             throw new MustacheException(
@@ -82,14 +100,19 @@ public class PartialSegment extends AbstractSegment {
     private void prependIndentation(Appendable appendable,
             ExecutionContext context, Template partialTemplate) {
 
-        // Note that we can't cache this because the partial template contents
-        // can change at any time
-        List<List<Segment>> partialLines = Segments
-                .readSegmentLinesBeforeRendering(partialTemplate
-                        .getRootSegment());
+        List<List<Segment>> partialLines;
 
-        for (List<Segment> line : partialLines) {
-            line.add(0, indentation);
+        if (cachedPartialTemplate != null) {
+            if (cachedPartialLines == null) {
+                synchronized (this) {
+                    if (cachedPartialLines == null) {
+                        cachedPartialLines = getPartialLines(partialTemplate);
+                    }
+                }
+            }
+            partialLines = cachedPartialLines;
+        } else {
+            partialLines = getPartialLines(partialTemplate);
         }
 
         for (List<Segment> line : partialLines) {
@@ -97,6 +120,16 @@ public class PartialSegment extends AbstractSegment {
                 segment.execute(appendable, context);
             }
         }
+    }
+
+    private List<List<Segment>> getPartialLines(Template partialTemplate) {
+        List<List<Segment>> partialLines = Segments
+                .readSegmentLinesBeforeRendering(partialTemplate
+                        .getRootSegment());
+        for (List<Segment> line : partialLines) {
+            line.add(0, indentation);
+        }
+        return partialLines;
     }
 
 }
