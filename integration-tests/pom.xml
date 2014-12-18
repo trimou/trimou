@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.trimou</groupId>
         <artifactId>trimou-parent</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
+        <version>1.7.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>trimou-integration-tests</artifactId>
