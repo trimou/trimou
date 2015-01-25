@@ -63,7 +63,8 @@ import org.trimou.util.Checker;
  * {{log "Number of items found: {}" items.size}}
  * </code>
  * <p>
- * Not that the final output will depend on SLF4J configuration.
+ * Note that the final output will depend on the specified {@link LoggerAdapter}
+ * and underlying logging framework configuration.
  * </p>
  *
  * @author Martin Kouba

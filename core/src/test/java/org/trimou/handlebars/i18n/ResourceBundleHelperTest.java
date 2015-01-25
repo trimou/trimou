@@ -3,18 +3,14 @@ package org.trimou.handlebars.i18n;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
 import java.util.Locale;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
@@ -29,24 +25,11 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
     @Override
     @Before
     public void buildEngine() {
-        engine = MustacheEngineBuilder.newBuilder()
-                .setLocaleSupport(new LocaleSupport() {
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return new Locale("en");
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).registerHelper("msg", new ResourceBundleHelper("messages"))
+        engine = MustacheEngineBuilder
+                .newBuilder()
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .registerHelper("msg", new ResourceBundleHelper("messages"))
                 .build();
-
     }
 
     @Test
@@ -114,8 +97,8 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
         String templateContents = "{{msg \"echo_one\" locale='de'}},{{msg \"echo.two\" locale=myLocale}},{{msg key locale='de'}}";
         Mustache mustache = engine.compileMustache("bundle_helper",
                 templateContents);
-        assertEquals("Hallo,He,oche",
-                mustache.render(ImmutableMap.<String, Object>of("key", "echo", "myLocale", Locale.GERMAN)));
+        assertEquals("Hallo,He,oche", mustache.render(ImmutableMap
+                .<String, Object> of("key", "echo", "myLocale", Locale.GERMAN)));
     }
 
 }

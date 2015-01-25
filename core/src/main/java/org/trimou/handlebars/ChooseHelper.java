@@ -55,7 +55,7 @@ import org.trimou.util.Nested;
  *   {{#otherwise}}
  *      No match.
  *   {{/otherwise}}
- * {{/switch}}
+ * {{/choose}}
  * </pre>
  *
  * will render "Hello active!" if last context object (i.e. "this" before we
