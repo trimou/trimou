@@ -30,15 +30,24 @@ import org.trimou.engine.priority.WithPriority;
 public class MapTemplateLocator extends AbstractTemplateLocator {
 
     /**
-     * Name to contents
+     * Name to contents map
      */
-    private Map<String, String> templates;
+    private final Map<String, String> templates;
 
+    /**
+     *
+     * @param priority
+     * @param templates
+     */
     public MapTemplateLocator(int priority, Map<String, String> templates) {
         super(priority);
         this.templates = templates;
     }
 
+    /**
+     *
+     * @param templates
+     */
     public MapTemplateLocator(Map<String, String> templates) {
         super(WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY);
         this.templates = templates;
