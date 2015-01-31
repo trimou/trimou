@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Files;
 
 /**
  * Abstract file-based template locator.
@@ -66,7 +67,7 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
     @Override
     public Set<String> getAllIdentifiers() {
 
-        List<File> files = listFiles(getRootDir());
+        List<File> files = Files.listFiles(getRootDir(), getSuffix());
 
         if (files.isEmpty()) {
             return Collections.emptySet();
@@ -74,7 +75,7 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
 
         Set<String> identifiers = new HashSet<String>();
         for (File file : files) {
-            if (isFileUsable(file)) {
+            if (Files.isFileUsable(file)) {
                 String id = stripSuffix(constructVirtualPath(file));
                 identifiers.add(id);
                 logger.debug("Template available: {}", id);
@@ -126,70 +127,12 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
      */
     protected abstract Reader locateRealPath(String realPath);
 
-    /**
-     *
-     * @param dir
-     * @return the list of matching files/templates
-     */
-    protected List<File> listFiles(File dir) {
-
-        List<File> files = new ArrayList<File>();
-
-        if (dir.isDirectory()) {
-
-            for (File file : dir.listFiles()) {
-                if (file.isDirectory()) {
-                    files.addAll(listFiles(file));
-                } else if (file.isFile()) {
-                    if (getSuffix() != null
-                            && !file.getName().endsWith(getSuffix())) {
-                        continue;
-                    }
-                    files.add(file);
-                }
-            }
-        }
-        return files;
-    }
-
-    protected boolean isDirectoryUsable(File dir) {
-        if (!dir.exists()) {
-            logger.warn("Dir not usable - does not exist: {}", dir);
-            return false;
-        }
-        if (!dir.canRead()) {
-            logger.warn("Dir not usable - cannot read: {}", dir);
-            return false;
-        }
-        if (!dir.isDirectory()) {
-            logger.warn("Dir not usable - not a directory: {}", dir);
-            return false;
-        }
-        return true;
-    }
-
-    protected boolean isFileUsable(File file) {
-        if (!file.exists()) {
-            logger.warn("File not usable - does not exist: {}", file);
-            return false;
-        }
-        if (!file.canRead()) {
-            logger.warn("File not usable - cannot read: {}", file);
-            return false;
-        }
-        if (!file.isFile()) {
-            logger.warn("File not usable - not a normal file: {}", file);
-            return false;
-        }
-        return true;
-    }
-
     protected void checkRootDir() {
         File rootDir = getRootDir();
         if(rootDir == null) {
             return;
         }
-        if (!isDirectoryUsable(rootDir)) {
+        if (!Files.isDirectoryUsable(rootDir)) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION,
                     "Invalid root dir: %s", rootDir);

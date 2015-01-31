@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
+import org.trimou.util.Files;
 import org.trimou.util.Strings;
 
 /**
@@ -68,7 +69,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
             File template = new File(new File(getRootPath()),
                     addSuffix(realPath));
 
-            if (!isFileUsable(template)) {
+            if (!Files.isFileUsable(template)) {
                 return null;
             }
             logger.debug("Template located: {}", template.getAbsolutePath());

@@ -103,23 +103,23 @@ public class ServletContextTemplateLocatorTest {
         TemplateLocator locator3 = new ServletContextTemplateLocator(8,
                 "/WEB-INF/templates");
 
-        MustacheEngine factory = MustacheEngineBuilder.newBuilder()
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(locator1).addTemplateLocator(locator2)
                 .addTemplateLocator(locator3).build();
 
-        Mustache foo = factory.getMustache("foo");
+        Mustache foo = engine.getMustache("foo");
         assertNotNull(foo);
         assertEquals("<html/>", foo.render(null));
 
-        Mustache bar = factory.getMustache("bart");
+        Mustache bar = engine.getMustache("bart");
         assertNotNull(bar);
         assertEquals("<html/>", bar.render(null));
 
-        Mustache alpha = factory.getMustache("alpha.xml");
+        Mustache alpha = engine.getMustache("alpha.xml");
         assertNotNull(alpha);
         assertEquals("<xml/>", alpha.render(null));
 
-        Mustache charlie = factory.getMustache("cool/charlie");
+        Mustache charlie = engine.getMustache("cool/charlie");
         assertNotNull(charlie);
         assertEquals("<html/>", charlie.render(null));
     }
@@ -130,13 +130,13 @@ public class ServletContextTemplateLocatorTest {
         TemplateLocator locator = new ServletContextTemplateLocator(10,
                 "/templates", "html");
 
-        MustacheEngine factory = MustacheEngineBuilder
+        MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
                 .addTemplateLocator(locator)
                 .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING,
                         "windows-1250").build();
 
-        Mustache encoding = factory.getMustache("encoding");
+        Mustache encoding = engine.getMustache("encoding");
         assertNotNull(encoding);
         assertEquals("Hurá ěščřřžžýá!", encoding.render(null));
     }
