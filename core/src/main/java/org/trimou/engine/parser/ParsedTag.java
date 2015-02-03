@@ -28,7 +28,6 @@ class ParsedTag {
     private MustacheTagType type;
 
     public ParsedTag(String content, MustacheTagType type) {
-        super();
         this.content = content;
         this.type = type;
     }

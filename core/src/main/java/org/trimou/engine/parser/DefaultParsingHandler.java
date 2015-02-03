@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -67,9 +66,6 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultParsingHandler.class);
-
-    private static Pattern handlebarsNameValidationPattern = Patterns
-            .newHelperNameValidationPattern();
 
     private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
 
@@ -211,25 +207,29 @@ class DefaultParsingHandler implements ParsingHandler {
                     tag.getType(), line, delimiters.getStart());
         }
 
-        if (handlebarsSupportEnabled
-                && MustacheTagType.contentMustBeValidated(tag.getType())) {
-            if (!handlebarsNameValidationPattern.matcher(tag.getContent())
-                    .matches()) {
-                throw new MustacheException(
-                        COMPILE_INVALID_TAG,
-                        "Invalid tag content detected [template: %s, type: %s, line: %s]",
-                        templateName, tag.getType(), line);
+        if (handlebarsSupportEnabled) {
+            // Only validate segments which cannot have a HelperExecutionHandler
+            // associated
+            if (MustacheTagType.contentMustBeValidated(tag.getType())
+                    && !MustacheTagType.supportsHelpers(tag.getType())
+                    && StringUtils.containsWhitespace(tag.getContent())) {
+                contentMustBeNonWhitespaceSequenceException(tag.getType());
             }
         } else {
             if (MustacheTagType.contentMustBeNonWhitespaceCharacterSequence(tag
                     .getType())
                     && StringUtils.containsWhitespace(tag.getContent())) {
-                throw new MustacheException(
-                        COMPILE_INVALID_TAG,
-                        "Tag content must be a non-whitespace character sequence [template: %s, type: %s, line: %s]",
-                        templateName, tag.getType(), line);
+                contentMustBeNonWhitespaceSequenceException(tag.getType());
             }
         }
+    }
+
+    private MustacheException contentMustBeNonWhitespaceSequenceException(
+            MustacheTagType tagType) {
+        throw new MustacheException(
+                COMPILE_INVALID_TAG,
+                "Tag content must be a non-whitespace character sequence [template: %s, type: %s, line: %s]",
+                templateName, tagType, line);
     }
 
     private void endSection(String key) {

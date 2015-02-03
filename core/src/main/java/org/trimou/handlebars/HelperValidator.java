@@ -15,10 +15,16 @@
  */
 package org.trimou.handlebars;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
+import org.trimou.engine.segment.Segment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
@@ -96,37 +102,116 @@ public final class HelperValidator {
     }
 
     /**
-    *
-    * @param helperClazz
-    * @param definition
-    * @param hashSize
-    * @throws MustacheException
-    *             If the helper tag params
-    */
-   public static void checkHash(Class<?> helperClazz,
-           HelperDefinition definition, int hashSize) {
-       Checker.checkArgumentNotNull(definition);
-       Preconditions.checkArgument(hashSize >= 0,
-               "Helper may only require zero or more hash entries");
+     *
+     * @param helperClazz
+     * @param definition
+     * @param hashSize
+     * @throws MustacheException
+     *             If the helper tag params
+     */
+    public static void checkHash(Class<?> helperClazz,
+            HelperDefinition definition, int hashSize) {
+        Checker.checkArgumentNotNull(definition);
+        Preconditions.checkArgument(hashSize >= 0,
+                "Helper may only require zero or more hash entries");
 
-       int size = definition.getHash().size();
+        int size = definition.getHash().size();
 
-       if (size < hashSize) {
-           throw new MustacheException(
-                   MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                   "Insufficient number of hash entries for helper %s [expected: %s, current: %s, template: %s, line: %s]",
-                   helperClazz.getName(), hashSize, size, definition
-                           .getTagInfo().getTemplateName(), definition
-                           .getTagInfo().getLine());
-       }
+        if (size < hashSize) {
+            throw new MustacheException(
+                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                    "Insufficient number of hash entries for helper %s [expected: %s, current: %s, template: %s, line: %s]",
+                    helperClazz.getName(), hashSize, size, definition
+                            .getTagInfo().getTemplateName(), definition
+                            .getTagInfo().getLine());
+        }
 
-       if (size > hashSize) {
-           logger.trace(
-                   "{} superfluous hash entries detected [helper: {}, template: {}, line: {}]",
-                   size - hashSize, helperClazz.getName(), definition
-                           .getTagInfo().getTemplateName(), definition
-                           .getTagInfo().getLine());
-       }
-   }
+        if (size > hashSize) {
+            logger.trace(
+                    "{} superfluous hash entries detected [helper: {}, template: {}, line: {}]",
+                    size - hashSize, helperClazz.getName(), definition
+                            .getTagInfo().getTemplateName(), definition
+                            .getTagInfo().getLine());
+        }
+    }
+
+    /**
+     *
+     * @param character
+     * @return <code>true</code> if the char is a string literal separator,
+     *         <code>false</code> otherwise
+     */
+    public static boolean isStringLiteralSeparator(char character) {
+        return character == '"' || character == '\'';
+    }
+
+    /**
+     * Extracts parts from an input string. This implementation is quite naive
+     * and should be possibly rewritten. Note that we can't use a simple
+     * splitter because of string literals may contain whitespace chars.
+     *
+     * @param name
+     * @param segment
+     * @return the parts of the helper name
+     * @throws MustacheException
+     *             If a compilation problem occures
+     */
+    @Internal
+    public static Iterator<String> splitHelperName(String name, Segment segment) {
+
+        boolean stringLiteral = false;
+        boolean space = false;
+        List<String> parts = new ArrayList<String>();
+        StringBuilder buffer = new StringBuilder();
+
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == ' ') {
+                if (!space) {
+                    if (!stringLiteral) {
+                        parts.add(buffer.toString());
+                        buffer = new StringBuilder();
+                        space = true;
+                    } else {
+                        buffer.append(name.charAt(i));
+                    }
+                }
+            } else {
+                if (isStringLiteralSeparator(name.charAt(i))) {
+                    stringLiteral = !stringLiteral;
+                }
+                space = false;
+                buffer.append(name.charAt(i));
+            }
+        }
+
+        if (buffer.length() > 0) {
+            if (stringLiteral) {
+                throw new MustacheException(
+                        MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                        "Unterminated string literal detected: %s", segment);
+            }
+            parts.add(buffer.toString());
+        }
+        return parts.iterator();
+    }
+
+    /**
+     *
+     * @param part
+     * @return the index of an equals char outside of any string literal, <code>-1</code> if no such char is found
+     */
+    public static int getFirstDeterminingEqualsCharPosition(String part) {
+        boolean stringLiteral = false;
+        for (int i = 0; i < part.length(); i++) {
+            if (isStringLiteralSeparator(part.charAt(i))) {
+                stringLiteral = !stringLiteral;
+            } else {
+                if (!stringLiteral && part.charAt(i) == '=') {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
 }

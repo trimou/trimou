@@ -62,15 +62,22 @@ public final class Patterns {
     }
 
     /**
+     * A valid key: letter, digit, dot, dash, underscore. A valid literal:
+     * letter, digit, punctation char, symbol, whitespace.
+     *
      * @return the pattern to validate a helper name
+     * @deprecated Not used right now
      */
+    @Deprecated
     public static Pattern newHelperNameValidationPattern() {
         return Pattern.compile("([\\p{L}\\p{Nd}\\p{P}\\p{S}=]+[ ]*)+?");
     }
 
     /**
-     * @return the pattern to macth a string literal in a helper name
+     * @return the pattern to match a string literal in a helper name
+     * @deprecated Not used right now
      */
+    @Deprecated
     public static Pattern newHelperStringLiteralPattern() {
         return Pattern.compile("(\")(.*)(\")");
     }

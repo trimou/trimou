@@ -37,6 +37,7 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
 import org.trimou.handlebars.HelperDefinition;
 import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
+import org.trimou.handlebars.HelperValidator;
 import org.trimou.handlebars.Options;
 import org.trimou.util.Checker;
 import org.trimou.util.Strings;
@@ -78,7 +79,9 @@ class HelperExecutionHandler {
     static HelperExecutionHandler from(String name, MustacheEngine engine,
             HelperAwareSegment segment) {
 
-        Iterator<String> parts = splitHelperName(name, segment);
+        // First detect unterminated literals
+        Iterator<String> parts = HelperValidator.splitHelperName(name, segment);
+
         Helper helper = engine.getConfiguration().getHelpers()
                 .get(parts.next());
 
@@ -90,12 +93,20 @@ class HelperExecutionHandler {
         ImmutableMap.Builder<String, Object> hash = ImmutableMap.builder();
 
         while (parts.hasNext()) {
-            String paramOrHash = parts.next();
-            if (paramOrHash.contains(Strings.EQUALS)) {
-                hash.put(getKey(paramOrHash),
-                        getLiteralOrPlaceholder(getValue(paramOrHash), segment));
+            String part = parts.next();
+            // TODO KeySplitter should be responsible for key validation
+            // https://github.com/trimou/trimou/issues/56
+            // String literal may contain anything
+            int position = HelperValidator
+                    .getFirstDeterminingEqualsCharPosition(part);
+            if (position != -1) {
+                hash.put(
+                        part.substring(0, position),
+                        getLiteralOrPlaceholder(
+                                part.substring(position + 1, part.length()),
+                                segment));
             } else {
-                params.add(getLiteralOrPlaceholder(paramOrHash, segment));
+                params.add(getLiteralOrPlaceholder(part, segment));
             }
         }
 
@@ -126,7 +137,7 @@ class HelperExecutionHandler {
 
     private static Object getLiteralOrPlaceholder(String value,
             HelperAwareSegment segment) {
-        if (isStringLiteralSeparator(value.charAt(0))) {
+        if (HelperValidator.isStringLiteralSeparator(value.charAt(0))) {
             return value.substring(1, value.length() - 1);
         } else {
             return new DefaultValuePlaceholder(value);
@@ -442,8 +453,9 @@ class HelperExecutionHandler {
                         "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
                         new Object[] {
                                 pushed,
-                                splitHelperName(getTagInfo().getText(), segment)
-                                        .next(), getTagInfo().getTemplateName() });
+                                HelperValidator.splitHelperName(
+                                        getTagInfo().getText(), segment).next(),
+                                getTagInfo().getTemplateName() });
             }
         }
 
@@ -461,65 +473,6 @@ class HelperExecutionHandler {
             return name;
         }
 
-    }
-
-    /**
-     * This implementation is quite naive and should be possibly rewritten. Note
-     * that we can't use a simple splitter because of string literals may
-     * contain whitespace chars.
-     *
-     * @param name
-     * @return the parts of the helper name
-     */
-    static Iterator<String> splitHelperName(String name,
-            HelperAwareSegment segment) {
-
-        boolean stringLiteral = false;
-        boolean space = false;
-        List<String> parts = new ArrayList<String>();
-        StringBuilder buffer = new StringBuilder();
-
-        for (int i = 0; i < name.length(); i++) {
-            if (name.charAt(i) == ' ') {
-                if (!space) {
-                    if (!stringLiteral) {
-                        parts.add(buffer.toString());
-                        buffer = new StringBuilder();
-                        space = true;
-                    } else {
-                        buffer.append(name.charAt(i));
-                    }
-                }
-            } else {
-                if (isStringLiteralSeparator(name.charAt(i))) {
-                    stringLiteral = stringLiteral ? false : true;
-                }
-                space = false;
-                buffer.append(name.charAt(i));
-            }
-        }
-
-        if (buffer.length() > 0) {
-            if (stringLiteral) {
-                throw new MustacheException(
-                        MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                        "Unterminated string literal: %s", segment.toString());
-            }
-            parts.add(buffer.toString());
-        }
-        return parts.iterator();
-    }
-
-    private static boolean isStringLiteralSeparator(char character) {
-        return character == '"' || character == '\'';
-    }
-
-    private static String getKey(String part) {
-        return part.substring(0, part.indexOf(Strings.EQUALS));
-    }
-
-    private static String getValue(String part) {
-        return part.substring(part.indexOf(Strings.EQUALS) + 1, part.length());
     }
 
 }

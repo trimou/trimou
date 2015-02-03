@@ -6,6 +6,9 @@ import static org.junit.Assert.fail;
 import java.util.Iterator;
 
 import org.junit.Test;
+import org.trimou.Hammer;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngineBuilder;
 
 /**
  *
@@ -25,6 +28,16 @@ public class BracketDotKeySplitterTest {
         assertIterator(splitter.split("foo[\"bar\"].baz"), "foo", "bar", "baz");
         assertIterator(splitter.split("a[\"b\"].c.d[\"e\"][\"f\"]"), "a", "b",
                 "c", "d", "e", "f");
+    }
+
+    @Test
+    public void testInterpolation() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .setKeySplitter(new BracketDotKeySplitter()).build();
+        assertEquals(
+                "10",
+                engine.compileMustache("bracket_dot_key_splitter_01",
+                        "{{this[\"age\"]}}").render(new Hammer()));
     }
 
     private void assertIterator(Iterator<String> iterator, Object... elements) {

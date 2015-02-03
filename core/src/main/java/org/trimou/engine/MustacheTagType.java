@@ -53,11 +53,23 @@ public enum MustacheTagType {
     /**
      *
      * @param type
-     * @return <code>true</code> if the tag content must be validated, <code>false</code> otherwise
+     * @return <code>true</code> if the tag content must be validated,
+     *         <code>false</code> otherwise
      * @since 1.5
      */
-    public static boolean contentMustBeValidated(
-            MustacheTagType type) {
+    public static boolean contentMustBeValidated(MustacheTagType type) {
         return contentMustBeNonWhitespaceCharacterSequence(type);
     }
+
+    /**
+     *
+     * @param type
+     * @return <code>true</code> if the tag can have a helper associated,
+     *         <code>false</code> otherwise
+     */
+    public static boolean supportsHelpers(MustacheTagType type) {
+        return VARIABLE.equals(type) || UNESCAPE_VARIABLE.equals(type)
+                || SECTION.equals(type) || INVERTED_SECTION.equals(type);
+    }
+
 }

@@ -57,9 +57,11 @@ public class ValidationTest extends AbstractEngineTest {
                 "not_a_nonwhitespace_character_sequence");
         testValidTemplate(engine, "{{foo and me}}");
         testInvalidTemplate(engine, "{{#fo\no}}",
+                MustacheProblem.COMPILE_INVALID_TEMPLATE,
+                "not_a_nonwhitespace_character_sequence");
+        testInvalidTemplate(engine, "{{>fo .txt}}",
                 MustacheProblem.COMPILE_INVALID_TAG,
                 "not_a_nonwhitespace_character_sequence");
-        testValidTemplate(engine, "{{>fo .txt}}");
         assertEquals(
                 "",
                 engine.compileMustache("engine", "{{! Hello there my friends}}")
@@ -112,7 +114,7 @@ public class ValidationTest extends AbstractEngineTest {
             fail("Problem expected: " + expectedProblem);
         } catch (MustacheException e) {
             if (!expectedProblem.equals(e.getCode())) {
-                fail("Invalid problem");
+                fail("Invalid problem: " + e.getMessage());
             }
             System.out.println(e.getMessage());
         } catch (Exception e) {
