@@ -34,7 +34,6 @@ public class ResourceBundleLambda extends InputProcessingLambda implements
      * @param baseName
      */
     public ResourceBundleLambda(String baseName) {
-        super();
         this.baseName = baseName;
     }
 
@@ -44,7 +43,6 @@ public class ResourceBundleLambda extends InputProcessingLambda implements
      * @param localeSupport
      */
     public ResourceBundleLambda(String baseName, LocaleSupport localeSupport) {
-        super();
         this.baseName = baseName;
         this.localeSupport = localeSupport;
     }

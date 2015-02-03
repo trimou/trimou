@@ -56,9 +56,8 @@ public class EachHelper extends BasicSectionHelper {
         } else {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "%s is nor an Iterable nor an array [template: %s, line: %s]",
-                    value, options.getTagInfo().getTemplateName(), options
-                            .getTagInfo().getLine());
+                    "%s is nor an Iterable nor an array [%s]", value,
+                    options.getTagInfo());
         }
     }
 

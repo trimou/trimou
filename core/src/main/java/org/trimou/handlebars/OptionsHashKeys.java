@@ -36,4 +36,8 @@ public final class OptionsHashKeys {
 
     public static final String PATTERN = "pattern";
 
+    public static final String DELIMITER = "delimiter";
+
+    public static final String LAMBDA = "lambda";
+
 }
