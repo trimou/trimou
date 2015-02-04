@@ -31,12 +31,21 @@ import com.google.common.collect.Iterators;
 public class DotKeySplitter extends AbstractConfigurationAware implements
         KeySplitter {
 
-    private final Splitter splitter = Splitter.on(Strings.DOT)
-            .omitEmptyStrings();
+    private final Splitter splitter;
+
+    public DotKeySplitter() {
+        splitter = Splitter.on(Strings.DOT).omitEmptyStrings();
+    }
 
     @Override
     public Iterator<String> split(final String key) {
-        if (key.equals(Strings.DOT) || !key.contains(Strings.DOT)) {
+        if (key.equals(Strings.DOT)) {
+            return Iterators.singletonIterator(Strings.DOT);
+        }
+        if (key.equals(Strings.THIS)) {
+            return Iterators.singletonIterator(Strings.THIS);
+        }
+        if (!key.contains(Strings.DOT)) {
             return Iterators.singletonIterator(key);
         }
         return splitter.split(key).iterator();

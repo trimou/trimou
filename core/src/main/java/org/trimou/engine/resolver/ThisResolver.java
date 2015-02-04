@@ -27,7 +27,7 @@ public class ThisResolver extends AbstractResolver {
 
     public static final int THIS_RESOLVER_PRIORITY = rightAfter(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY);
 
-    public static final String NAME_THIS = "this";
+    public static final String NAME_THIS = Strings.THIS;
 
     public ThisResolver() {
         this(THIS_RESOLVER_PRIORITY);

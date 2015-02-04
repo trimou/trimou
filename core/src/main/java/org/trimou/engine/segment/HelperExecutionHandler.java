@@ -137,7 +137,7 @@ class HelperExecutionHandler {
 
     private static Object getLiteralOrPlaceholder(String value,
             HelperAwareSegment segment) {
-        if (HelperValidator.isStringLiteralSeparator(value.charAt(0))) {
+        if (Strings.isStringLiteralSeparator(value.charAt(0))) {
             return value.substring(1, value.length() - 1);
         } else {
             return new DefaultValuePlaceholder(value);

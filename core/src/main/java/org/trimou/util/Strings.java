@@ -63,4 +63,16 @@ public final class Strings {
 
     public static final String URI_PROCOTOL_JAR = "jar";
 
+    public static final String THIS = "this";
+
+    /**
+     *
+     * @param character
+     * @return <code>true</code> if the char is a string literal separator,
+     *         <code>false</code> otherwise
+     */
+    public static boolean isStringLiteralSeparator(char character) {
+        return character == '"' || character == '\'';
+    }
+
 }

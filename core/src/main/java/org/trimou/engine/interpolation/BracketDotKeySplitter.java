@@ -15,17 +15,14 @@
  */
 package org.trimou.engine.interpolation;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.segment.ValueSegment;
+import org.trimou.util.Strings;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
 /**
@@ -34,52 +31,58 @@ import com.google.common.collect.Iterators;
  *
  * @author Martin Kouba
  */
-public class BracketDotKeySplitter extends DotKeySplitter {
-
-    private static final String PREFIX = "_";
-
-    private final Pattern pattern = Pattern.compile("(\\[\")(.*?)(\"\\])");
+public class BracketDotKeySplitter extends AbstractConfigurationAware implements
+        KeySplitter {
 
     @Override
     public Iterator<String> split(final String key) {
 
-        final int matches = StringUtils.countMatches(key, "[\"");
-
-        if (matches == 0) {
-            return super.split(key);
+        if (key.equals(Strings.DOT)) {
+            return Iterators.singletonIterator(Strings.DOT);
+        }
+        if (key.equals(Strings.THIS)) {
+            return Iterators.singletonIterator(Strings.THIS);
         }
 
-        final Matcher matcher = pattern.matcher(key);
-        final StringBuffer buffer = new StringBuffer();
-        final Map<String, String> literalMap;
-        int idx = 0;
+        boolean stringLiteral = false;
+        boolean separator = false;
+        List<String> parts = new ArrayList<String>();
+        StringBuilder buffer = new StringBuilder();
 
-        if (matches == 1) {
-            if (matcher.find()) {
-                literalMap = Collections.singletonMap(PREFIX + idx, matcher.group(2));
-                matcher.appendReplacement(buffer, "." + PREFIX + idx);
-            } else {
-                literalMap = Collections.emptyMap();
-            }
-        } else {
-            literalMap = new HashMap<String, String>(4);
-            while (matcher.find()) {
-                String id = PREFIX + idx;
-                literalMap.put(id, matcher.group(2));
-                matcher.appendReplacement(buffer, "." + id);
-                idx++;
-            }
-        }
-        matcher.appendTail(buffer);
-
-        return Iterators.transform(super.split(buffer.toString()),
-                new Function<String, String>() {
-                    @Override
-                    public String apply(String input) {
-                        return literalMap.containsKey(input) ? literalMap
-                                .get(input) : input;
+        for (int i = 0; i < key.length(); i++) {
+            if (isSeparator(key.charAt(i))) {
+                // Only process the first separator - adjacent separators are
+                // ignored
+                if (!separator) {
+                    if (!stringLiteral) {
+                        if (buffer.length() > 0) {
+                            parts.add(buffer.toString());
+                            buffer = new StringBuilder();
+                        }
+                        separator = true;
+                    } else {
+                        buffer.append(key.charAt(i));
                     }
-                });
+                }
+            } else {
+                // Non-separator char
+                if (Strings.isStringLiteralSeparator(key.charAt(i))) {
+                    stringLiteral = !stringLiteral;
+                } else {
+                    buffer.append(key.charAt(i));
+                }
+                separator = false;
+            }
+        }
+
+        if (buffer.length() > 0) {
+            parts.add(buffer.toString());
+        }
+        return parts.iterator();
+    }
+
+    private boolean isSeparator(char candidate) {
+        return candidate == '.' || candidate == '[' || candidate == ']';
     }
 
 }

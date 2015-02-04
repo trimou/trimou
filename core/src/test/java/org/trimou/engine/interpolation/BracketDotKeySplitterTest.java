@@ -28,6 +28,8 @@ public class BracketDotKeySplitterTest {
         assertIterator(splitter.split("foo[\"bar\"].baz"), "foo", "bar", "baz");
         assertIterator(splitter.split("a[\"b\"].c.d[\"e\"][\"f\"]"), "a", "b",
                 "c", "d", "e", "f");
+        assertIterator(splitter.split("foo['bar']"), "foo", "bar");
+        assertIterator(splitter.split("foo['bar dot'][\"qux\"].me"), "foo", "bar dot", "qux", "me");
     }
 
     @Test

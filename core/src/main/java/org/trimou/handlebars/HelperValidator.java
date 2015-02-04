@@ -28,6 +28,7 @@ import org.trimou.engine.segment.Segment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
+import org.trimou.util.Strings;
 
 import com.google.common.base.Preconditions;
 
@@ -136,16 +137,6 @@ public final class HelperValidator {
     }
 
     /**
-     *
-     * @param character
-     * @return <code>true</code> if the char is a string literal separator,
-     *         <code>false</code> otherwise
-     */
-    public static boolean isStringLiteralSeparator(char character) {
-        return character == '"' || character == '\'';
-    }
-
-    /**
      * Extracts parts from an input string. This implementation is quite naive
      * and should be possibly rewritten. Note that we can't use a simple
      * splitter because of string literals may contain whitespace chars.
@@ -168,15 +159,17 @@ public final class HelperValidator {
             if (name.charAt(i) == ' ') {
                 if (!space) {
                     if (!stringLiteral) {
-                        parts.add(buffer.toString());
-                        buffer = new StringBuilder();
+                        if (buffer.length() > 0) {
+                            parts.add(buffer.toString());
+                            buffer = new StringBuilder();
+                        }
                         space = true;
                     } else {
                         buffer.append(name.charAt(i));
                     }
                 }
             } else {
-                if (isStringLiteralSeparator(name.charAt(i))) {
+                if (Strings.isStringLiteralSeparator(name.charAt(i))) {
                     stringLiteral = !stringLiteral;
                 }
                 space = false;
@@ -198,12 +191,13 @@ public final class HelperValidator {
     /**
      *
      * @param part
-     * @return the index of an equals char outside of any string literal, <code>-1</code> if no such char is found
+     * @return the index of an equals char outside of any string literal,
+     *         <code>-1</code> if no such char is found
      */
     public static int getFirstDeterminingEqualsCharPosition(String part) {
         boolean stringLiteral = false;
         for (int i = 0; i < part.length(); i++) {
-            if (isStringLiteralSeparator(part.charAt(i))) {
+            if (Strings.isStringLiteralSeparator(part.charAt(i))) {
                 stringLiteral = !stringLiteral;
             } else {
                 if (!stringLiteral && part.charAt(i) == '=') {
