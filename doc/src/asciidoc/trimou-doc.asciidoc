@@ -334,6 +334,11 @@ Trimou provides some useful helpers which are not registered automatically:
 |Logs debug messages.
 |log
 
+|+org.trimou.handlebars.JoinHelper+
+|Takes all the objects specified as the parameters and joins the +Object#toString()+ values together with the specified delimiter (optional). Elements of +Iterable+ and array are treated as separate objects. An optional lambda may be applied to each value.
+|join
+
+
 |+org.trimou.handlebars.EmbedHelper+
 |Embeds the template source (by default as a JavaScript snippet).
 |embed

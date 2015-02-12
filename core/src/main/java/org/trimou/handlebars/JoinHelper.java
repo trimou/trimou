@@ -53,7 +53,7 @@ import org.trimou.lambda.Lambda.InputType;
  * </pre>
  *
  * <p>
- * An optional lambda may be applied to each string literal. Note that the
+ * An optional lambda may be applied to each value. Note that the
  * lambda is always processed as with {@link InputType#LITERAL} and
  * {@link Lambda#isReturnValueInterpolated()} set to false.
  * </p>
