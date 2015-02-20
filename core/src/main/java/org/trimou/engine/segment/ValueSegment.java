@@ -20,6 +20,7 @@ import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
+import org.trimou.engine.text.TextSupport;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Strings;
 
@@ -35,6 +36,8 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
 
     private final HelperExecutionHandler helperHandler;
 
+    private final TextSupport textSupport;
+
     /**
      *
      * @param text
@@ -46,6 +49,8 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         this.unescape = unescape;
         this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
                 .from(text, getEngine(), this) : null;
+        this.textSupport = this.helperHandler == null ? origin.getTemplate()
+                .getEngine().getConfiguration().getTextSupport() : null;
     }
 
     public SegmentType getType() {
@@ -110,8 +115,7 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
     }
 
     private void writeValue(Appendable appendable, String text) {
-        append(appendable, unescape ? text : getEngineConfiguration()
-                .getTextSupport().escapeHtml(text));
+        append(appendable, unescape ? text : textSupport.escapeHtml(text));
     }
 
     private void processLambda(Appendable appendable, ExecutionContext context,
@@ -131,10 +135,9 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
             if (lambda.isReturnValueInterpolated()) {
                 // Parse and interpolate the return value
                 StringBuilder interpolated = new StringBuilder();
-                Template temp = (Template) getEngine()
-                        .compileMustache(
-                                Lambdas.constructLambdaOneoffTemplateName(this),
-                                returnValue);
+                Template temp = (Template) getEngine().compileMustache(
+                        Lambdas.constructLambdaOneoffTemplateName(this),
+                        returnValue);
                 temp.getRootSegment().execute(interpolated, context);
                 writeValue(appendable, interpolated.toString());
             } else {
