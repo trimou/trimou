@@ -40,4 +40,6 @@ public final class OptionsHashKeys {
 
     public static final String LAMBDA = "lambda";
 
+    public static final String FILTER = "filter";
+
 }

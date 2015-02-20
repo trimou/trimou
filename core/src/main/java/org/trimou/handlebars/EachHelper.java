@@ -15,6 +15,8 @@
  */
 package org.trimou.handlebars;
 
+import static org.trimou.handlebars.OptionsHashKeys.FILTER;
+
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
@@ -22,6 +24,7 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.IterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.Filters.Filter;
 
 /**
  * <code>
@@ -30,6 +33,20 @@ import org.trimou.exception.MustacheProblem;
  * {{/each}}
  * </code>
  *
+ * <p>
+ * It's possible to filter out unnecessary elements:
+ * </p>
+ * <code>
+ * {{#each items filter=mySuperFilter}}
+ *  {{name}}
+ * {{/each}}
+ * </code>
+ * <p>
+ * The filter must be an instance of {@link Filter}. Note that the filter cannot
+ * be type-safe.
+ * </p>
+ *
+ * @see Filter
  * @author Martin Kouba
  */
 public class EachHelper extends BasicSectionHelper {
@@ -48,11 +65,12 @@ public class EachHelper extends BasicSectionHelper {
     public void execute(Options options) {
 
         Object value = options.getParameters().get(0);
+        Filter filter = initFilter(options);
 
         if (value instanceof Iterable) {
-            processIterable((Iterable) value, options);
+            processIterable((Iterable) value, filter, options);
         } else if (value.getClass().isArray()) {
-            processArray(value, options);
+            processArray(value, filter, options);
         } else {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
@@ -62,7 +80,8 @@ public class EachHelper extends BasicSectionHelper {
     }
 
     @SuppressWarnings("rawtypes")
-    private void processIterable(Iterable iterable, Options options) {
+    private void processIterable(Iterable iterable, Filter filter,
+            Options options) {
 
         Iterator iterator = iterable.iterator();
 
@@ -72,12 +91,12 @@ public class EachHelper extends BasicSectionHelper {
         IterationMeta meta = new IterationMeta(iterationMetadataAlias, iterator);
         options.push(meta);
         while (iterator.hasNext()) {
-            processIteration(options, iterator.next(), meta);
+            processIteration(options, iterator.next(), meta, filter);
         }
         options.pop();
     }
 
-    private void processArray(Object array, Options options) {
+    private void processArray(Object array, Filter filter, Options options) {
 
         int length = Array.getLength(array);
 
@@ -87,17 +106,32 @@ public class EachHelper extends BasicSectionHelper {
         IterationMeta meta = new IterationMeta(iterationMetadataAlias, length);
         options.push(meta);
         for (int i = 0; i < length; i++) {
-            processIteration(options, Array.get(array, i), meta);
+            processIteration(options, Array.get(array, i), meta, filter);
         }
         options.pop();
     }
 
     private void processIteration(Options options, Object value,
-            IterationMeta meta) {
-        options.push(value);
-        options.fn();
-        options.pop();
-        meta.nextIteration();
+            IterationMeta meta, Filter filter) {
+        if (filter == null || filter.test(value)) {
+            options.push(value);
+            options.fn();
+            options.pop();
+            meta.nextIteration();
+        }
+    }
+
+    private Filter initFilter(Options options) {
+        Object filter = getHashValue(options, FILTER);
+        if (filter == null) {
+            return null;
+        }
+        if (filter instanceof Filter) {
+            return (Filter) filter;
+        }
+        throw new MustacheException(
+                MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
+                "%s is not a valid filter [%s]", filter, options.getTagInfo());
     }
 
 }

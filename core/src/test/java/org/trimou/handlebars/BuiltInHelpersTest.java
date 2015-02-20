@@ -8,8 +8,12 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
+import org.trimou.MustacheExceptionAssert;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.Filters.Filter;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -30,11 +34,44 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("each_helper2",
                         "{{#each this}}{{this}}{{#iterHasNext}},{{/iterHasNext}}{{/each}}")
                         .render(ImmutableSet.of("foo", "bar")));
+        assertEquals(
+                "foo,baz",
+                engine.compileMustache("each_helper3",
+                        "{{#each data filter=myFilter}}{{this}}{{#if iter.hasNext}},{{/if}}{{/each}}")
+                        .render(ImmutableMap.<String, Object> of("myFilter",
+                                Filters.from(new Predicate<Object>() {
+                                    @Override
+                                    public boolean apply(Object input) {
+                                        return !input.toString().equals("bar");
+                                    }
+                                }), "data",
+                                ImmutableSet.of("foo", "bar", "baz"))));
+        assertEquals(
+                "",
+                engine.compileMustache("each_helper4",
+                        "{{#each data filter=myFilter}}{{this}}{{/each}}")
+                        .render(ImmutableMap.<String, Object> of("myFilter",
+                                new Filter() {
+                                    @Override
+                                    public boolean test(Object value) {
+                                        return false;
+                                    }
+                                }, "data", ImmutableSet.of("foo", "bar", "baz"))));
         assertCompilationFails(engine, "each_helper_fail1",
                 "{{#each}}{{this}}{{/each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "each_helper_fail2", "{{each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
+        MustacheExceptionAssert.expect(
+                MustacheProblem.RENDER_HELPER_INVALID_OPTIONS).check(
+                new Runnable() {
+                    public void run() {
+                        engine.compileMustache("each_helper_filter_fail1",
+                                "{{#each data filter=foo}}{{/each}}").render(
+                                ImmutableMap.<String, Object> of("data",
+                                        new Object[] {}, "foo", Boolean.FALSE));
+                    }
+                });
     }
 
     @Test
@@ -49,20 +86,22 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         .render(false));
         assertEquals(
                 "hello",
-                engine.compileMustache("if_helper3", "{{#if this this}}hello{{/if}}")
-                        .render(Boolean.TRUE));
+                engine.compileMustache("if_helper3",
+                        "{{#if this this}}hello{{/if}}").render(Boolean.TRUE));
         assertEquals(
                 "",
-                engine.compileMustache("if_helper4", "{{#if this \"\"}}hello{{/if}}")
-                        .render(Boolean.TRUE));
+                engine.compileMustache("if_helper4",
+                        "{{#if this \"\"}}hello{{/if}}").render(Boolean.TRUE));
         assertEquals(
                 "hello",
-                engine.compileMustache("if_helper5", "{{#if this \"true\" this}}hello{{/if}}")
-                        .render(Boolean.TRUE));
+                engine.compileMustache("if_helper5",
+                        "{{#if this \"true\" this}}hello{{/if}}").render(
+                        Boolean.TRUE));
         assertEquals(
                 "hello",
-                engine.compileMustache("if_helper6", "{{#if this \"\" logic=\"or\"}}hello{{/if}}")
-                        .render(Boolean.TRUE));
+                engine.compileMustache("if_helper6",
+                        "{{#if this \"\" logic=\"or\"}}hello{{/if}}").render(
+                        Boolean.TRUE));
         assertCompilationFails(engine, "if_helper_fail1",
                 "{{#if}}{{this}}{{/if}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
@@ -92,15 +131,18 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals(
                 "",
                 engine.compileMustache("unless_helper5",
-                        "{{#unless this \"\" logic=\"and\"}}hello{{/unless}}").render(true));
+                        "{{#unless this \"\" logic=\"and\"}}hello{{/unless}}")
+                        .render(true));
         assertEquals(
                 "",
                 engine.compileMustache("unless_helper6",
-                        "{{#unless this}}hello{{/unless}}").render(new BigDecimal("0.1")));
+                        "{{#unless this}}hello{{/unless}}").render(
+                        new BigDecimal("0.1")));
         assertEquals(
                 "hello",
                 engine.compileMustache("unless_helper6",
-                        "{{#unless this}}hello{{/unless}}").render(new BigDecimal("0.000")));
+                        "{{#unless this}}hello{{/unless}}").render(
+                        new BigDecimal("0.000")));
         assertCompilationFails(engine, "unless_helper_fail1",
                 "{{#unless}}{{this}}{{/unless}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
@@ -122,7 +164,8 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals(
                 "10",
                 engine.compileMustache("with_helper_nested",
-                        "{{#with this}}{{#with age}}{{intValue}}{{/with}}{{/with}}").render(new Hammer()));
+                        "{{#with this}}{{#with age}}{{intValue}}{{/with}}{{/with}}")
+                        .render(new Hammer()));
     }
 
     @Test
@@ -137,14 +180,13 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals("hello",
                 engine.compileMustache("is_helper3", "{{is this \"hello\"}}")
                         .render(true));
-        assertEquals(
-                "&lt;html&gt;",
-                engine.compileMustache("is_helper4",
-                        "{{is this \"<html>\"}}").render(true));
+        assertEquals("&lt;html&gt;",
+                engine.compileMustache("is_helper4", "{{is this \"<html>\"}}")
+                        .render(true));
         assertEquals(
                 "<html>",
-                engine.compileMustache("is_helper5",
-                        "{{{is this \"<html>\"}}}").render(true));
+                engine.compileMustache("is_helper5", "{{{is this \"<html>\"}}}")
+                        .render(true));
     }
 
 }
