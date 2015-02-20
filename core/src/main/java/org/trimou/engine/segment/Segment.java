@@ -18,6 +18,7 @@ package org.trimou.engine.segment;
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
+import org.trimou.handlebars.Options;
 import org.trimou.lambda.Lambda.InputType;
 
 /**
@@ -52,9 +53,13 @@ public interface Segment {
     public MustacheTagInfo getTagInfo();
 
     /**
+     * Note that the text is reconstructed and will not be an exact copy when
+     * "Set Delimiter" tags are used.
+     *
      * @return the reconstructed literal block this segment represents (original
      *         text before compilation)
      * @see InputType#LITERAL
+     * @see Options#getContentLiteralBlock()
      */
     public String getLiteralBlock();
 

@@ -169,7 +169,7 @@ public class OptionsTest extends AbstractTest {
                         builder.append(options.getContentLiteralBlock());
                     }
                 }).build();
-        String literal = "This is /n a {{foo}}";
+        String literal = "This is /n a {{foo bar='ok'}}{{#each this}}{{.}}{{/each}}/n/n {{join 'foo' 'bar' delimiter=' : '}}";
         engine.compileMustache("helper_getcontentliteralblock",
                 "{{#test}}" + literal + "{{/test}}").render(null);
         assertEquals(literal, builder.toString());

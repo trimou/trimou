@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.segment.Segment;
 
 /**
  * A helper definition metadata.
@@ -50,9 +51,13 @@ public interface HelperDefinition {
     Map<String, Object> getHash();
 
     /**
+     * Note that the text is reconstructed and will not be an exact copy when
+     * "Set Delimiter" tags are used.
      *
-     * @return the reconstructed literal block (original
-     *         text before compilation) the helper contains, or an empty string for variable tag helpers
+     * @return the reconstructed literal block (original text before
+     *         compilation) the helper contains, or an empty string for variable
+     *         tag helpers
+     * @see Segment#getLiteralBlock()
      * @since 1.7
      */
     String getContentLiteralBlock();

@@ -22,10 +22,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
+import org.trimou.handlebars.HelperValidator;
 import org.trimou.handlebars.Options;
 import org.trimou.lambda.Lambda;
 
@@ -102,6 +104,23 @@ public class SectionSegment extends AbstractSectionSegment implements
         super.execute(appendable, context);
     }
 
+    @Override
+    public String getLiteralBlock() {
+        StringBuilder literal = new StringBuilder();
+        literal.append(getTagLiteral(getType().getTagType().getCommand()
+                + getText()));
+        literal.append(getContentLiteralBlock());
+        if (helperHandler != null) {
+            literal.append(getTagLiteral(MustacheTagType.SECTION_END
+                    .getCommand()
+                    + HelperValidator.splitHelperName(getText(), this).next()));
+        } else {
+            literal.append(getTagLiteral(MustacheTagType.SECTION_END
+                    .getCommand() + getText()));
+        }
+        return literal.toString();
+    }
+
     private void processValue(Appendable appendable, ExecutionContext context,
             Object value) {
         if (value instanceof Boolean) {
@@ -138,7 +157,8 @@ public class SectionSegment extends AbstractSectionSegment implements
 
         IterationMeta meta = new IterationMeta(getEngineConfiguration()
                 .getStringPropertyValue(
-                        EngineConfigurationKey.ITERATION_METADATA_ALIAS), iterator);
+                        EngineConfigurationKey.ITERATION_METADATA_ALIAS),
+                iterator);
         context.push(CONTEXT, meta);
         while (iterator.hasNext()) {
             processIteration(appendable, context, iterator.next(), meta);
@@ -157,7 +177,8 @@ public class SectionSegment extends AbstractSectionSegment implements
 
         IterationMeta meta = new IterationMeta(getEngineConfiguration()
                 .getStringPropertyValue(
-                        EngineConfigurationKey.ITERATION_METADATA_ALIAS), length);
+                        EngineConfigurationKey.ITERATION_METADATA_ALIAS),
+                length);
         context.push(CONTEXT, meta);
         for (int i = 0; i < length; i++) {
             processIteration(appendable, context, Array.get(array, i), meta);
