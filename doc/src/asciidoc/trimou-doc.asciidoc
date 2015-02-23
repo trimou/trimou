@@ -768,7 +768,7 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 
 A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
 
-WARNING: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers). However, intensive use of helpers may result in significant performance decrease.
+WARNING: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
 
 The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Check out +org.trimou.handlebars.Options+ and the source of built-in helpers to see what helpers can do.
 
