@@ -15,43 +15,26 @@
  */
 package org.trimou.handlebars;
 
-import com.google.common.base.Predicate;
-
 /**
  *
  * @author Martin Kouba
  */
-public final class Filters {
+public final class Functions {
 
-    private Filters() {
-    }
-
-    /**
-     * A generic filter interface.
-     *
-     * @see EachHelper
-     */
-    public static interface Filter {
-
-        /**
-         *
-         * @param value
-         * @return <code>true</code> if the value matches, <code>false</code> otherwise
-         */
-        boolean test(Object value);
-
+    private Functions() {
     }
 
     /**
      *
-     * @param predicate
-     * @return a predicate to filter adapter
+     * @param function
+     * @return a function adapter
      */
-    public static Filter from(final Predicate<Object> predicate) {
-        return new Filter() {
+    public static Function from(
+            final com.google.common.base.Function<Object, Object> function) {
+        return new Function() {
             @Override
-            public boolean test(Object value) {
-                return predicate.apply(value);
+            public Object apply(Object value) {
+                return function.apply(value);
             }
         };
     }

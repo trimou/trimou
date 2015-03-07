@@ -10,9 +10,8 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
 import org.trimou.MustacheExceptionAssert;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.handlebars.Filters.Filter;
 
-import com.google.common.base.Predicate;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -37,26 +36,37 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals(
                 "foo,baz",
                 engine.compileMustache("each_helper3",
-                        "{{#each data filter=myFilter}}{{this}}{{#if iter.hasNext}},{{/if}}{{/each}}")
+                        "{{#each data apply=myFilter}}{{this}}{{#if iter.hasNext}},{{/if}}{{/each}}")
                         .render(ImmutableMap.<String, Object> of("myFilter",
-                                Filters.from(new Predicate<Object>() {
+                                Functions.from(new Function<Object, Object>() {
                                     @Override
-                                    public boolean apply(Object input) {
-                                        return !input.toString().equals("bar");
+                                    public Object apply(Object input) {
+                                        return input.toString().equals("bar") ? org.trimou.handlebars.EachHelper.SKIP_RESULT : input;
                                     }
                                 }), "data",
                                 ImmutableSet.of("foo", "bar", "baz"))));
         assertEquals(
                 "",
                 engine.compileMustache("each_helper4",
-                        "{{#each data filter=myFilter}}{{this}}{{/each}}")
+                        "{{#each data apply=myFilter}}{{this}}{{/each}}")
                         .render(ImmutableMap.<String, Object> of("myFilter",
-                                new Filter() {
+                                new org.trimou.handlebars.Function() {
                                     @Override
-                                    public boolean test(Object value) {
-                                        return false;
+                                    public Object apply(Object value) {
+                                        return org.trimou.handlebars.EachHelper.SKIP_RESULT;
                                     }
                                 }, "data", ImmutableSet.of("foo", "bar", "baz"))));
+        assertEquals(
+                "332",
+                engine.compileMustache("each_helper5",
+                        "{{#each data apply=toLength}}{{this}}{{/each}}")
+                        .render(ImmutableMap.<String, Object> of("toLength",
+                                new org.trimou.handlebars.Function() {
+                                    @Override
+                                    public Object apply(Object value) {
+                                        return value.toString().length();
+                                    }
+                                }, "data", ImmutableSet.of("foo", "bar", "ba"))));
         assertCompilationFails(engine, "each_helper_fail1",
                 "{{#each}}{{this}}{{/each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
@@ -67,9 +77,9 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 new Runnable() {
                     public void run() {
                         engine.compileMustache("each_helper_filter_fail1",
-                                "{{#each data filter=foo}}{{/each}}").render(
+                                "{{#each data apply=foo}}{{/each}}").render(
                                 ImmutableMap.<String, Object> of("data",
-                                        new Object[] {}, "foo", Boolean.FALSE));
+                                        new Object[] {"foo"}, "foo", Boolean.FALSE));
                     }
                 });
     }

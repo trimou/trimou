@@ -15,7 +15,7 @@
  */
 package org.trimou.handlebars;
 
-import static org.trimou.handlebars.OptionsHashKeys.FILTER;
+import static org.trimou.handlebars.OptionsHashKeys.APPLY;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
@@ -24,7 +24,6 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.IterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.handlebars.Filters.Filter;
 
 /**
  * <code>
@@ -34,22 +33,28 @@ import org.trimou.handlebars.Filters.Filter;
  * </code>
  *
  * <p>
- * It's possible to filter out unnecessary elements:
+ * It's possible to apply a function to each element. The function must be an
+ * instance of {@link Function}. Note that the function cannot be type-safe. If
+ * the result does not equal to {@link EachHelper#SKIP_RESULT} it's used instead
+ * of the original element. If the result equals to
+ * {@link EachHelper#SKIP_RESULT} the element is skipped. This might be useful
+ * to filter out unnecessary elements or to wrap/transform elements.
  * </p>
+ *
  * <code>
- * {{#each items filter=mySuperFilter}}
+ * {{#each items apply=myFunction}}
  *  {{name}}
  * {{/each}}
  * </code>
  * <p>
- * The filter must be an instance of {@link Filter}. Note that the filter cannot
- * be type-safe.
- * </p>
  *
- * @see Filter
+ * @see Function
  * @author Martin Kouba
  */
 public class EachHelper extends BasicSectionHelper {
+
+    public static final String SKIP_RESULT = EachHelper.class.getName()
+            + ".skipResult";
 
     private String iterationMetadataAlias;
 
@@ -65,12 +70,11 @@ public class EachHelper extends BasicSectionHelper {
     public void execute(Options options) {
 
         Object value = options.getParameters().get(0);
-        Filter filter = initFilter(options);
 
         if (value instanceof Iterable) {
-            processIterable((Iterable) value, filter, options);
+            processIterable((Iterable) value, options);
         } else if (value.getClass().isArray()) {
-            processArray(value, filter, options);
+            processArray(value, options);
         } else {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
@@ -80,58 +84,72 @@ public class EachHelper extends BasicSectionHelper {
     }
 
     @SuppressWarnings("rawtypes")
-    private void processIterable(Iterable iterable, Filter filter,
-            Options options) {
+    private void processIterable(Iterable iterable, Options options) {
 
         Iterator iterator = iterable.iterator();
-
         if (!iterator.hasNext()) {
             return;
         }
-        IterationMeta meta = new IterationMeta(iterationMetadataAlias, iterator);
+
+        final Function function = initFunction(options);
+        final IterationMeta meta = new IterationMeta(iterationMetadataAlias,
+                iterator);
+
         options.push(meta);
         while (iterator.hasNext()) {
-            processIteration(options, iterator.next(), meta, filter);
+            processNextElement(options, iterator.next(), meta, function);
         }
         options.pop();
     }
 
-    private void processArray(Object array, Filter filter, Options options) {
+    private void processArray(Object array, Options options) {
 
         int length = Array.getLength(array);
-
         if (length < 1) {
             return;
         }
-        IterationMeta meta = new IterationMeta(iterationMetadataAlias, length);
+        final Function function = initFunction(options);
+        final IterationMeta meta = new IterationMeta(iterationMetadataAlias,
+                length);
+
         options.push(meta);
         for (int i = 0; i < length; i++) {
-            processIteration(options, Array.get(array, i), meta, filter);
+            processNextElement(options, Array.get(array, i), meta, function);
         }
         options.pop();
     }
 
-    private void processIteration(Options options, Object value,
-            IterationMeta meta, Filter filter) {
-        if (filter == null || filter.test(value)) {
-            options.push(value);
-            options.fn();
-            options.pop();
-            meta.nextIteration();
+    private void processNextElement(Options options, Object value,
+            IterationMeta meta, Function function) {
+        if (function != null) {
+            Object result = function.apply(value);
+            if (!result.equals(SKIP_RESULT)) {
+                next(options, result, meta);
+            }
+        } else {
+            next(options, value, meta);
         }
     }
 
-    private Filter initFilter(Options options) {
-        Object filter = getHashValue(options, FILTER);
-        if (filter == null) {
+    private void next(Options options, Object value, IterationMeta meta) {
+        options.push(value);
+        options.fn();
+        options.pop();
+        meta.nextIteration();
+    }
+
+    private Function initFunction(Options options) {
+        Object function = getHashValue(options, APPLY);
+        if (function == null) {
             return null;
         }
-        if (filter instanceof Filter) {
-            return (Filter) filter;
+        if (function instanceof Function) {
+            return (Function) function;
         }
         throw new MustacheException(
                 MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                "%s is not a valid filter [%s]", filter, options.getTagInfo());
+                "%s is not a valid function [%s]", function,
+                options.getTagInfo());
     }
 
 }
