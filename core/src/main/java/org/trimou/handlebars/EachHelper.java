@@ -53,8 +53,7 @@ import org.trimou.exception.MustacheProblem;
  */
 public class EachHelper extends BasicSectionHelper {
 
-    public static final String SKIP_RESULT = EachHelper.class.getName()
-            + ".skipResult";
+    public static final String SKIP_RESULT = "org.trimou.handlebars.skipResult";
 
     private String iterationMetadataAlias;
 
@@ -123,7 +122,7 @@ public class EachHelper extends BasicSectionHelper {
             IterationMeta meta, Function function) {
         if (function != null) {
             Object result = function.apply(value);
-            if (!result.equals(SKIP_RESULT)) {
+            if (!SKIP_RESULT.equals(result)) {
                 next(options, result, meta);
             }
         } else {
