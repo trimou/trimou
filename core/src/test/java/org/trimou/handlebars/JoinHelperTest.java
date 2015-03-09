@@ -78,7 +78,7 @@ public class JoinHelperTest extends AbstractTest {
         assertEquals(
                 "<li>foo</li>\n<li>bar</li>\n<li>baz</li>\n<li>Me</li>\n<li>alpha</li>\n<li>bravo</li>\n<li>charlie</li>",
                 engine.compileMustache("join_helper7",
-                        "{{&join list 'Me' array delimiter='\n' lambda=li}}")
+                        "{{&join list 'Me' array delimiter='\n' lambda=li foo='baz'}}")
                         .render(ImmutableMap.of("array", array, "list", list)));
     }
 

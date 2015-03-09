@@ -26,6 +26,8 @@ import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.util.Nested;
 
+import com.google.common.base.Optional;
+
 /**
  * This helper works similarly as the Java switch statement.
  *
@@ -100,6 +102,11 @@ public class SwitchHelper extends BasicSectionHelper {
         options.push(new Flow(value));
         options.fn();
         options.pop();
+    }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return NO_SUPPORTED_HASH_KEYS;
     }
 
     @Override
@@ -183,6 +190,11 @@ public class SwitchHelper extends BasicSectionHelper {
             }
         }
 
+        @Override
+        protected Optional<Set<String>> getSupportedHashKeys() {
+            return NO_SUPPORTED_HASH_KEYS;
+        }
+
         private boolean isBreak(Map<String, Object> hash) {
             if (hash.isEmpty() || !hash.containsKey(OPTION_BREAK)) {
                 return defaultIsBreak;
@@ -212,6 +224,11 @@ public class SwitchHelper extends BasicSectionHelper {
             } else {
                 throw Flow.newInvalidFlowException(options.getTagInfo());
             }
+        }
+
+        @Override
+        protected Optional<Set<String>> getSupportedHashKeys() {
+            return NO_SUPPORTED_HASH_KEYS;
         }
 
     }

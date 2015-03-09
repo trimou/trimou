@@ -18,12 +18,16 @@ package org.trimou.handlebars;
 import static org.trimou.handlebars.OptionsHashKeys.APPLY;
 
 import java.lang.reflect.Array;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.IterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+
+import com.google.common.base.Optional;
 
 /**
  * <code>
@@ -80,6 +84,11 @@ public class EachHelper extends BasicSectionHelper {
                     "%s is nor an Iterable nor an array [%s]", value,
                     options.getTagInfo());
         }
+    }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.of(Collections.singleton(APPLY));
     }
 
     @SuppressWarnings("rawtypes")

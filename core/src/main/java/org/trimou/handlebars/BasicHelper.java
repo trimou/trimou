@@ -15,7 +15,12 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.trimou.engine.MustacheTagType;
+
+import com.google.common.base.Optional;
 
 /**
  * Basic validating helper.
@@ -23,6 +28,8 @@ import org.trimou.engine.MustacheTagType;
  * @author Martin Kouba
  */
 public abstract class BasicHelper extends AbstractHelper {
+
+    protected static final Optional<Set<String>> NO_SUPPORTED_HASH_KEYS = Optional.of(Collections.<String>emptySet());
 
     protected static final MustacheTagType[] HELPER_TAG_TYPES = new MustacheTagType[] {
             MustacheTagType.SECTION, MustacheTagType.VARIABLE,
@@ -34,8 +41,7 @@ public abstract class BasicHelper extends AbstractHelper {
         HelperValidator.checkType(helperClazz, definition, allowedTagTypes());
         HelperValidator.checkParams(helperClazz, definition,
                 numberOfRequiredParameters());
-        HelperValidator.checkHash(helperClazz, definition,
-                numberOfRequiredHashEntries());
+        HelperValidator.checkHash(definition, this);
     }
 
     protected MustacheTagType[] allowedTagTypes() {
@@ -48,6 +54,14 @@ public abstract class BasicHelper extends AbstractHelper {
 
     protected int numberOfRequiredHashEntries() {
         return 0;
+    }
+
+    /**
+     *
+     * @return the supported hash keys
+     */
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.absent();
     }
 
 }

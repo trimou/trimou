@@ -26,6 +26,8 @@ import org.trimou.engine.MustacheTagType;
 import org.trimou.util.Checker;
 import org.trimou.util.Nested;
 
+import com.google.common.base.Optional;
+
 /**
  * This helper works similarly as the JSP c:choose tag. It renders the content
  * of the first <b>when</b> section whose first param is not falsy. If no
@@ -82,6 +84,11 @@ public class ChooseHelper extends BasicSectionHelper {
     }
 
     @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return NO_SUPPORTED_HASH_KEYS;
+    }
+
+    @Override
     public void validate(HelperDefinition definition) {
         super.validate(definition);
         Set<String> validNames = new HashSet<String>(4);
@@ -135,6 +142,12 @@ public class ChooseHelper extends BasicSectionHelper {
             }
         }
 
+        @Override
+        protected Optional<Set<String>> getSupportedHashKeys() {
+            return NO_SUPPORTED_HASH_KEYS;
+        }
+
+
     }
 
     public static class OtherwiseHelper extends BasicSectionHelper {
@@ -156,6 +169,11 @@ public class ChooseHelper extends BasicSectionHelper {
             } else {
                 throw Flow.newInvalidFlowException(options.getTagInfo());
             }
+        }
+
+        @Override
+        protected Optional<Set<String>> getSupportedHashKeys() {
+            return NO_SUPPORTED_HASH_KEYS;
         }
 
     }

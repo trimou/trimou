@@ -15,6 +15,10 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Set;
+
+import com.google.common.base.Optional;
+
 /**
  * Works similarly as partial tag except the name of the template to include may
  * be obtained dynamically.
@@ -31,5 +35,11 @@ public class IncludeHelper extends BasicValueHelper {
     public void execute(Options options) {
         options.partial(options.getParameters().get(0).toString());
     }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return NO_SUPPORTED_HASH_KEYS;
+    }
+
 
 }

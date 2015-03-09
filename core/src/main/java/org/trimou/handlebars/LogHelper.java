@@ -15,13 +15,19 @@
  */
 package org.trimou.handlebars;
 
+import static org.trimou.handlebars.OptionsHashKeys.LEVEL;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.util.Arrays;
 import org.trimou.util.Checker;
+
+import com.google.common.base.Optional;
 
 /**
  * <p>
@@ -76,8 +82,6 @@ public class LogHelper extends BasicValueHelper {
     private static final Logger logger = LoggerFactory
             .getLogger(LogHelper.class);
 
-    private static final String OPTION_KEY_LEVEL = "level";
-
     private final LoggerAdapter adapter;
 
     private final Level defaultLevel;
@@ -116,11 +120,16 @@ public class LogHelper extends BasicValueHelper {
                 getMessageParams(options.getParameters()));
     }
 
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.of(Collections.singleton(LEVEL));
+    }
+
     private Level getLevel(Map<String, Object> hash) {
-        if (hash.isEmpty() || !hash.containsKey(OPTION_KEY_LEVEL)) {
+        if (hash.isEmpty() || !hash.containsKey(LEVEL)) {
             return defaultLevel;
         }
-        String customLevel = hash.get(OPTION_KEY_LEVEL).toString();
+        String customLevel = hash.get(LEVEL).toString();
         Level level = Level.parse(customLevel);
         if (level == null) {
             logger.warn(

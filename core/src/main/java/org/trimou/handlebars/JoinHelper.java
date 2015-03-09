@@ -20,6 +20,7 @@ import static org.trimou.handlebars.OptionsHashKeys.LAMBDA;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,9 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.Lambda.InputType;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * This helper takes all the objects specified as the parameters and joins the
@@ -88,6 +92,13 @@ public class JoinHelper extends BasicValueHelper {
                 }
             }
         }
+    }
+
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.<Set<String>> of(ImmutableSet.<String> builder()
+                .add(DELIMITER).add(LAMBDA).build());
     }
 
     private void processValue(Options options, Object value, Object delimiter,

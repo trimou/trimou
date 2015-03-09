@@ -42,4 +42,8 @@ public final class OptionsHashKeys {
 
     public static final String APPLY = "apply";
 
+    public static final String LOGIC = "logic";
+
+    public static final String LEVEL = "level";
+
 }

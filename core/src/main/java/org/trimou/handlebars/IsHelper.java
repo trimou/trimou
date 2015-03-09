@@ -15,7 +15,11 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Set;
+
 import org.trimou.util.Checker;
+
+import com.google.common.base.Optional;
 
 /**
  * Renders the second param if the first param is not falsy, or (optionally,
@@ -49,6 +53,11 @@ public class IsHelper extends BasicValueHelper {
                 append(options, options.getParameters().get(2).toString());
             }
         }
+    }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return NO_SUPPORTED_HASH_KEYS;
     }
 
 }

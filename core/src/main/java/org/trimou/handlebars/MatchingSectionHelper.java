@@ -15,11 +15,17 @@
  */
 package org.trimou.handlebars;
 
+import static org.trimou.handlebars.OptionsHashKeys.LOGIC;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * An abstract helper which renders a block if:
@@ -40,14 +46,17 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     private static final Logger logger = LoggerFactory
             .getLogger(MatchingSectionHelper.class);
 
-    private static final String OPTION_KEY_LOGIC = "logic";
-
     @Override
     public void execute(Options options) {
         if ((options.getParameters().isEmpty() && isMatching(options.peek()))
                 || matches(options.getHash(), options.getParameters())) {
             options.fn();
         }
+    }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.of(Collections.singleton(LOGIC));
     }
 
     protected EvaluationLogic getDefaultLogic() {
@@ -125,10 +134,10 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     }
 
     private EvaluationLogic getLogic(Map<String, Object> hash) {
-        if (hash.isEmpty() || !hash.containsKey(OPTION_KEY_LOGIC)) {
+        if (hash.isEmpty() || !hash.containsKey(LOGIC)) {
             return getDefaultLogic();
         }
-        String customLogic = hash.get(OPTION_KEY_LOGIC).toString();
+        String customLogic = hash.get(LOGIC).toString();
         EvaluationLogic logic = EvaluationLogic.parse(customLogic);
         if (logic == null) {
             logger.warn(

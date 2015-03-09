@@ -18,6 +18,7 @@ package org.trimou.handlebars;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
 import org.trimou.util.Strings;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
 /**
@@ -51,7 +53,7 @@ public final class HelperValidator {
      * @param definition
      * @param paramSize
      * @throws MustacheException
-     *             If the helper tag params
+     *             If the helper expects more params
      */
     public static void checkParams(Class<?> helperClazz,
             HelperDefinition definition, int paramSize) {
@@ -108,7 +110,7 @@ public final class HelperValidator {
      * @param definition
      * @param hashSize
      * @throws MustacheException
-     *             If the helper tag params
+     *             If the helper expects more hash entries
      */
     public static void checkHash(Class<?> helperClazz,
             HelperDefinition definition, int hashSize) {
@@ -133,6 +135,31 @@ public final class HelperValidator {
                     size - hashSize, helperClazz.getName(), definition
                             .getTagInfo().getTemplateName(), definition
                             .getTagInfo().getLine());
+        }
+    }
+
+    /**
+     *
+     * @param definition
+     * @param hashSize
+     * @see #checkHash(Class, HelperDefinition, int)
+     */
+    public static void checkHash(HelperDefinition definition, BasicHelper helper) {
+        // Number of required hash entries
+        checkHash(helper.getClass(), definition,
+                helper.numberOfRequiredHashEntries());
+        // Log a warning message if an unsupported hash key is found
+        Optional<Set<String>> supportedHashKeys = helper.getSupportedHashKeys();
+        if (supportedHashKeys.isPresent()) {
+            for (String key : definition.getHash().keySet()) {
+                if (!supportedHashKeys.get().contains(key)) {
+                    logger.warn(
+                            "Unsupported hash key detected [key: {}, helper: {}, template: {}, line: {}]",
+                            key, helper.getClass().getName(), definition
+                                    .getTagInfo().getTemplateName(), definition
+                                    .getTagInfo().getLine());
+                }
+            }
         }
     }
 
