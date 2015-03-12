@@ -16,8 +16,10 @@
 package org.trimou.engine.context;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.resolver.EnhancedResolver.Hint;
 
 /**
  *
@@ -30,28 +32,28 @@ class DefaultExecutionContext extends AbstractExecutionContext {
     }
 
     @Override
-    public ValueWrapper getValue(String key, String[] keyParts) {
+    public ValueWrapper getValue(String key, String[] keyParts, AtomicReference<Hint> hintRef) {
 
         ValueWrapper value = new ValueWrapper(key);
         Object lastValue = null;
 
         if (keyParts == null || keyParts.length == 0) {
             Iterator<String> parts = configuration.getKeySplitter().split(key);
-            lastValue = resolveLeadingContextObject(parts.next(), value);
+            lastValue = resolveLeadingContextObject(parts.next(), value, hintRef);
             if (lastValue == null) {
                 // Leading context object not found - miss
                 return value;
             }
             while (parts.hasNext()) {
                 value.processNextPart();
-                lastValue = resolve(lastValue, parts.next(), value);
+                lastValue = resolve(lastValue, parts.next(), value, false);
                 if (lastValue == null) {
                     // Not found - miss
                     return value;
                 }
             }
         } else {
-            lastValue = resolveLeadingContextObject(keyParts[0], value);
+            lastValue = resolveLeadingContextObject(keyParts[0], value, hintRef);
             if (lastValue == null) {
                 // Leading context object not found - miss
                 return value;
@@ -59,7 +61,7 @@ class DefaultExecutionContext extends AbstractExecutionContext {
             if (keyParts.length > 1) {
                 for (int i = 1; i < keyParts.length; i++) {
                     value.processNextPart();
-                    lastValue = resolve(lastValue, keyParts[i], value);
+                    lastValue = resolve(lastValue, keyParts[i], value, false);
                     if (lastValue == null) {
                         // Not found - miss
                         return value;
@@ -73,7 +75,7 @@ class DefaultExecutionContext extends AbstractExecutionContext {
 
     @Override
     public ValueWrapper getValue(String key) {
-        return getValue(key, null);
+        return getValue(key, null, null);
     }
 
 }

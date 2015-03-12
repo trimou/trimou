@@ -17,12 +17,15 @@ package org.trimou.engine.segment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
+import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Strings;
@@ -43,6 +46,8 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
 
     private final String[] keyParts;
 
+    private final AtomicReference<Hint> hint;
+
     /**
      *
      * @param text
@@ -62,9 +67,17 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
                 parts.add(iterator.next());
             }
             this.keyParts = parts.toArray(new String[parts.size()]);
+            if (getEngineConfiguration().getBooleanPropertyValue(
+                    EngineConfigurationKey.RESOLVER_HINTS_ENABLED)
+                    && this.keyParts.length == 1) {
+                this.hint = new AtomicReference<Hint>();
+            } else {
+                this.hint = null;
+            }
         } else {
             this.textSupport = null;
             this.keyParts = null;
+            this.hint = null;
         }
     }
 
@@ -80,7 +93,7 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         if (helperHandler != null) {
             helperHandler.execute(appendable, context);
         } else {
-            ValueWrapper value = context.getValue(getText(), keyParts);
+            ValueWrapper value = context.getValue(getText(), keyParts, hint);
             try {
                 if (value.isNull()) {
                     Object replacement = getEngineConfiguration()
@@ -89,6 +102,9 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
                         processValue(appendable, context, replacement);
                     }
                 } else {
+                    if (hint != null && value.getHint() != null) {
+                        hint.set(value.getHint());
+                    }
                     processValue(appendable, context, value.get());
                 }
             } finally {

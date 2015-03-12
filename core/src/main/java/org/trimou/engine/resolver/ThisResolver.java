@@ -49,4 +49,14 @@ public class ThisResolver extends AbstractResolver {
         return null;
     }
 
+    @Override
+    public Hint createHint(Object contextObject, String name) {
+        return new Hint() {
+            @Override
+            public Object resolve(Object contextObject, String name) {
+                return contextObject;
+            }
+        };
+    }
+
 }

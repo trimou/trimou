@@ -16,6 +16,7 @@
 package org.trimou.engine.context;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 
@@ -37,6 +38,8 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
     private Object value = null;
 
     private int keyPartIndex = 0;
+
+    private Hint hint;
 
     /**
      *
@@ -81,6 +84,14 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
 
     void processNextPart() {
         keyPartIndex++;
+    }
+
+    public Hint getHint() {
+        return hint;
+    }
+
+    void setHint(Hint hint) {
+        this.hint = hint;
     }
 
 }

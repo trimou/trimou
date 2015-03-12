@@ -110,7 +110,8 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      */
     REUSE_LINE_SEPARATOR_SEGMENTS(true),
     /**
-     * The alias for iteration metadata object available inside an iteration block.
+     * The alias for iteration metadata object available inside an iteration
+     * block.
      *
      * <code>
      * {{#each items}}
@@ -119,7 +120,11 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * </code>
      */
     ITERATION_METADATA_ALIAS("iter"),
-    ;
+    /**
+     * If set to <code>true</code> the evaluation of simple variables, e.g.
+     * <code>{{.}}</code> or <code>{{foo}}</code>, is optimized.
+     */
+    RESOLVER_HINTS_ENABLED(true), ;
 
     private Object defaultValue;
 

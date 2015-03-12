@@ -55,4 +55,15 @@ public class MapResolver extends AbstractResolver {
         return null;
     }
 
+    @Override
+    public Hint createHint(Object contextObject, String name) {
+        final MapResolver resolver = this;
+        return new Hint() {
+            @Override
+            public Object resolve(Object contextObject, String name) {
+                return resolver.resolve(contextObject, name, null);
+            }
+        };
+    }
+
 }

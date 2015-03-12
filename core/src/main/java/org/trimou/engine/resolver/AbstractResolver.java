@@ -23,7 +23,7 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  * @author Martin Kouba
  */
 public abstract class AbstractResolver extends AbstractConfigurationAware
-        implements Resolver {
+        implements EnhancedResolver {
 
     private final int priority;
 
@@ -34,6 +34,11 @@ public abstract class AbstractResolver extends AbstractConfigurationAware
     @Override
     public int getPriority() {
         return priority;
+    }
+
+    @Override
+    public Hint createHint(Object contextObject, String name) {
+        return null;
     }
 
     @Override

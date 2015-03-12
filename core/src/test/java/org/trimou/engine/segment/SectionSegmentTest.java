@@ -15,6 +15,7 @@ import org.trimou.lambda.SpecCompliantLambda;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  *
@@ -53,6 +54,10 @@ public class SectionSegmentTest extends AbstractEngineTest {
         assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
                 .<String, Object> of("numbers", ImmutableList.of(1, 2, 3))));
 
+        mustache = engine
+                .compileMustache("iterable3", "{{#items}}{{name}}{{/items}}");
+        assertEquals("EdgarEdgar", mustache.render(ImmutableMap.<String, Object> of(
+                "items", ImmutableSet.builder().add(new Hammer()).add(new Hammer()).build())));
     }
 
     @Test

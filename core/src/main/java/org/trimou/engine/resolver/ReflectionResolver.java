@@ -106,6 +106,22 @@ public class ReflectionResolver extends AbstractResolver implements
     }
 
     @Override
+    public Hint createHint(Object contextObject, String name) {
+        MemberKey key = MemberKey.newInstance(contextObject, name);
+        MemberWrapper wrapper;
+        if (memberCache != null) {
+            Optional<MemberWrapper> found = memberCache.getIfPresent(key);
+            wrapper = found != null ? found.get() : null;
+        } else {
+            wrapper = findWrapper(key).orNull();
+        }
+        if (wrapper != null) {
+            return new ReflectionHint(key, wrapper);
+        }
+        return null;
+    }
+
+    @Override
     public void init() {
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
@@ -188,6 +204,37 @@ public class ReflectionResolver extends AbstractResolver implements
         @Override
         public Optional<MemberWrapper> compute(MemberKey key) {
             return findWrapper(key);
+        }
+
+    }
+
+    private static class ReflectionHint implements Hint {
+
+        private final MemberKey key;
+
+        private final MemberWrapper wrapper;
+
+        /**
+         *
+         * @param key
+         * @param wrapper
+         */
+        ReflectionHint(MemberKey key, MemberWrapper wrapper) {
+            this.key = key;
+            this.wrapper = wrapper;
+        }
+
+        @Override
+        public Object resolve(Object contextObject, String name) {
+            if (contextObject == null || !key.getName().equals(name)
+                    || !key.getClazz().equals(contextObject.getClass())) {
+                return null;
+            }
+            try {
+                return wrapper.getValue(contextObject);
+            } catch (Exception e) {
+                return null;
+            }
         }
 
     }

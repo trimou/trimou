@@ -19,11 +19,13 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.parser.Template;
-import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.EnhancedResolver;
+import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.exception.MustacheException;
@@ -67,18 +69,23 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     private final Resolver[] resolvers;
 
     /**
+     * Allows to skip iteration if a hint is provided
+     */
+    private Object lastContextObject;
+
+    /**
      *
      * @param configuration
      */
     protected AbstractExecutionContext(Configuration configuration) {
         this.configuration = configuration;
-        this.resolvers = configuration.getResolvers().toArray(new Resolver[configuration.getResolvers().size()]);
-
-        this.contextObjectStack =  new ArrayDeque<Object>();
+        this.resolvers = configuration.getResolvers().toArray(
+                new Resolver[configuration.getResolvers().size()]);
+        this.contextObjectStack = new ArrayDeque<Object>();
         this.templateInvocationStack = new ArrayDeque<Template>();
-
         this.templateRecursiveInvocationLimit = configuration
                 .getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
+        this.lastContextObject = null;
     }
 
     @Override
@@ -88,6 +95,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 
         switch (stack) {
         case CONTEXT:
+            lastContextObject = object;
             contextObjectStack.addFirst(object);
             break;
         case TEMPLATE_INVOCATION:
@@ -103,7 +111,9 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         Checker.checkArgumentNotNull(stack);
         switch (stack) {
         case CONTEXT:
-            return contextObjectStack.removeFirst();
+            Object element = contextObjectStack.removeFirst();
+            lastContextObject = contextObjectStack.peekFirst();
+            return element;
         case TEMPLATE_INVOCATION:
             return templateInvocationStack.removeFirst();
         default:
@@ -145,7 +155,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 
     @Override
     public void clearDefiningSections() {
-        if(definingSections != null) {
+        if (definingSections != null) {
             definingSections.clear();
         }
     }
@@ -158,25 +168,37 @@ abstract class AbstractExecutionContext implements ExecutionContext {
      * bean).
      *
      * @param name
+     * @param value
+     *            The value wrapper - ResolutionContext
+     * @param hintRef
      * @return the resolved leading context object
+     * @see Hint
      */
     protected Object resolveLeadingContextObject(String name,
-            ResolutionContext context) {
+            ValueWrapper value, AtomicReference<Hint> hintRef) {
 
         Object leading = null;
 
-        for (Object contextObject : contextObjectStack) {
-
-            leading = resolve(contextObject, name, context);
-
-            if (leading != null) {
-                // Skip following
-                break;
+        if (hintRef != null) {
+            Hint hint = hintRef.get();
+            if (hint != null && lastContextObject != null) {
+                leading = hint.resolve(lastContextObject, name);
             }
         }
+
         if (leading == null) {
-            // Try to resolve context unrelated objects
-            leading = resolve(null, name, context);
+            for (Object contextObject : contextObjectStack) {
+                leading = resolve(contextObject, name, value, hintRef != null);
+                if (leading != null) {
+                    // Leading context object found
+                    break;
+                }
+            }
+            if (leading == null) {
+                // Leading context object not found - try to resolve context
+                // unrelated objects (JNDI lookup, CDI, etc.)
+                leading = resolve(null, name, value, hintRef != null);
+            }
         }
         return leading;
     }
@@ -185,19 +207,29 @@ abstract class AbstractExecutionContext implements ExecutionContext {
      *
      * @param contextObject
      * @param name
-     * @param context
+     * @param value
+     *            The value wrapper - ResolutionContext
+     * @param initHint
      * @return the resolved object
      */
     protected Object resolve(Object contextObject, String name,
-            ResolutionContext context) {
-        Object value = null;
+            ValueWrapper value, boolean initHint) {
+        Object resolved = null;
         for (int i = 0; i < resolvers.length; i++) {
-            value = resolvers[i].resolve(contextObject, name, context);
-            if (value != null) {
+            resolved = resolvers[i].resolve(contextObject, name, value);
+            if (resolved != null) {
+                if (initHint) {
+                    // Initialize a new hint if possible
+                    Resolver resolver = resolvers[i];
+                    if (resolver instanceof EnhancedResolver) {
+                        value.setHint(((EnhancedResolver) resolver).createHint(
+                                contextObject, name));
+                    }
+                }
                 break;
             }
         }
-        return value;
+        return resolved;
     }
 
     private void pushTemplateInvocation(Template template) {

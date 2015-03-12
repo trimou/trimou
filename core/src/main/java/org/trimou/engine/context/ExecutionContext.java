@@ -15,7 +15,10 @@
  */
 package org.trimou.engine.context;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.trimou.annotations.Internal;
+import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
 
@@ -31,9 +34,10 @@ public interface ExecutionContext {
     /**
      * @param key
      * @param keyParts
+     * @param hintRef
      * @return the wrapper for the given key
      */
-    public ValueWrapper getValue(String key, String[] keyParts);
+    public ValueWrapper getValue(String key, String[] keyParts, AtomicReference<Hint> hintRef);
 
     /**
      * @param key
