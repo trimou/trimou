@@ -80,7 +80,8 @@ public class EnhancedStatsCollectorTest extends AbstractEngineTest {
         assertNotNull(stats);
         assertEquals(loop - 1, stats.getFinished());
         assertEquals(1l, stats.getErrors());
-        assertTrue(stats.getMaxTime() < (sleepConstant * 3));
+        assertTrue(stats.getMaxTime() > 0);
+        assertTrue(stats.getMinTime() > 0);
         assertTrue(stats.getMeanTime() > 0 && stats.getMeanTime() <= stats.getMaxTime());
         assertEquals(1, collector.getStats().size());
 
