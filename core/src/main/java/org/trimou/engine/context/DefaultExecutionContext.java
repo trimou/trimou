@@ -30,29 +30,50 @@ class DefaultExecutionContext extends AbstractExecutionContext {
     }
 
     @Override
-    public ValueWrapper getValue(String key) {
+    public ValueWrapper getValue(String key, String[] keyParts) {
 
         ValueWrapper value = new ValueWrapper(key);
         Object lastValue = null;
-        Iterator<String> parts = configuration.getKeySplitter().split(key);
 
-        lastValue = resolveLeadingContextObject(parts.next(), value);
-
-        if (lastValue == null) {
-            // Leading context object not found - miss
-            return value;
-        }
-
-        while (parts.hasNext()) {
-            value.processNextPart();
-            lastValue = resolve(lastValue, parts.next(), value);
+        if (keyParts == null || keyParts.length == 0) {
+            Iterator<String> parts = configuration.getKeySplitter().split(key);
+            lastValue = resolveLeadingContextObject(parts.next(), value);
             if (lastValue == null) {
-                // Not found - miss
+                // Leading context object not found - miss
                 return value;
+            }
+            while (parts.hasNext()) {
+                value.processNextPart();
+                lastValue = resolve(lastValue, parts.next(), value);
+                if (lastValue == null) {
+                    // Not found - miss
+                    return value;
+                }
+            }
+        } else {
+            lastValue = resolveLeadingContextObject(keyParts[0], value);
+            if (lastValue == null) {
+                // Leading context object not found - miss
+                return value;
+            }
+            if (keyParts.length > 1) {
+                for (int i = 1; i < keyParts.length; i++) {
+                    value.processNextPart();
+                    lastValue = resolve(lastValue, keyParts[i], value);
+                    if (lastValue == null) {
+                        // Not found - miss
+                        return value;
+                    }
+                }
             }
         }
         value.set(lastValue);
         return value;
+    }
+
+    @Override
+    public ValueWrapper getValue(String key) {
+        return getValue(key, null);
     }
 
 }

@@ -30,6 +30,13 @@ public interface ExecutionContext {
 
     /**
      * @param key
+     * @param keyParts
+     * @return the wrapper for the given key
+     */
+    public ValueWrapper getValue(String key, String[] keyParts);
+
+    /**
+     * @param key
      * @return the wrapper for the given key
      */
     public ValueWrapper getValue(String key);

@@ -15,6 +15,9 @@
  */
 package org.trimou.engine.segment;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
@@ -38,6 +41,8 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
 
     private final TextSupport textSupport;
 
+    private final String[] keyParts;
+
     /**
      *
      * @param text
@@ -49,8 +54,18 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         this.unescape = unescape;
         this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
                 .from(text, getEngine(), this) : null;
-        this.textSupport = this.helperHandler == null ? origin.getTemplate()
-                .getEngine().getConfiguration().getTextSupport() : null;
+        if (helperHandler == null) {
+            this.textSupport = getEngineConfiguration().getTextSupport();
+            ArrayList<String> parts = new ArrayList<String>();
+            for (Iterator<String> iterator = getEngineConfiguration()
+                    .getKeySplitter().split(text); iterator.hasNext();) {
+                parts.add(iterator.next());
+            }
+            this.keyParts = parts.toArray(new String[parts.size()]);
+        } else {
+            this.textSupport = null;
+            this.keyParts = null;
+        }
     }
 
     public SegmentType getType() {
@@ -62,15 +77,11 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
     }
 
     public void execute(Appendable appendable, ExecutionContext context) {
-
         if (helperHandler != null) {
             helperHandler.execute(appendable, context);
         } else {
-
-            ValueWrapper value = context.getValue(getText());
-
+            ValueWrapper value = context.getValue(getText(), keyParts);
             try {
-
                 if (value.isNull()) {
                     Object replacement = getEngineConfiguration()
                             .getMissingValueHandler().handle(getTagInfo());
@@ -80,7 +91,6 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
                 } else {
                     processValue(appendable, context, value.get());
                 }
-
             } finally {
                 value.release();
             }
