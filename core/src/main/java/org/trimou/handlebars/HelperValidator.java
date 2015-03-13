@@ -153,7 +153,7 @@ public final class HelperValidator {
         if (supportedHashKeys.isPresent()) {
             for (String key : definition.getHash().keySet()) {
                 if (!supportedHashKeys.get().contains(key)) {
-                    logger.warn(
+                    logger.info(
                             "Unsupported hash key detected [key: {}, helper: {}, template: {}, line: {}]",
                             key, helper.getClass().getName(), definition
                                     .getTagInfo().getTemplateName(), definition
