@@ -46,6 +46,12 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
 
     private final String[] keyParts;
 
+    /**
+     * The hint is currently only used to skip the resolver chain for a simple
+     * value reference - a key with single part, i.e. {{this}}
+     *
+     * @see EngineConfigurationKey#RESOLVER_HINTS_ENABLED
+     */
     private final AtomicReference<Hint> hint;
 
     /**
@@ -103,7 +109,7 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
                     }
                 } else {
                     if (hint != null && value.getHint() != null) {
-                        hint.set(value.getHint());
+                        hint.compareAndSet(null, value.getHint());
                     }
                     processValue(appendable, context, value.get());
                 }

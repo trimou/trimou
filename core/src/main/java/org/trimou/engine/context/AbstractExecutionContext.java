@@ -178,17 +178,19 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             ValueWrapper value, AtomicReference<Hint> hintRef) {
 
         Object leading = null;
+        boolean isHint = false;
 
         if (hintRef != null) {
             Hint hint = hintRef.get();
-            if (hint != null && lastContextObject != null) {
+            if (hint != null) {
+                isHint = true;
                 leading = hint.resolve(lastContextObject, name);
             }
         }
 
         if (leading == null) {
             for (Object contextObject : contextObjectStack) {
-                leading = resolve(contextObject, name, value, hintRef != null);
+                leading = resolve(contextObject, name, value, hintRef != null && !isHint);
                 if (leading != null) {
                     // Leading context object found
                     break;
@@ -197,7 +199,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             if (leading == null) {
                 // Leading context object not found - try to resolve context
                 // unrelated objects (JNDI lookup, CDI, etc.)
-                leading = resolve(null, name, value, hintRef != null);
+                leading = resolve(null, name, value, hintRef != null && !isHint);
             }
         }
         return leading;
@@ -209,16 +211,16 @@ abstract class AbstractExecutionContext implements ExecutionContext {
      * @param name
      * @param value
      *            The value wrapper - ResolutionContext
-     * @param initHint
+     * @param createHint
      * @return the resolved object
      */
     protected Object resolve(Object contextObject, String name,
-            ValueWrapper value, boolean initHint) {
+            ValueWrapper value, boolean createHint) {
         Object resolved = null;
         for (int i = 0; i < resolvers.length; i++) {
             resolved = resolvers[i].resolve(contextObject, name, value);
             if (resolved != null) {
-                if (initHint) {
+                if (createHint) {
                     // Initialize a new hint if possible
                     Resolver resolver = resolvers[i];
                     if (resolver instanceof EnhancedResolver) {
