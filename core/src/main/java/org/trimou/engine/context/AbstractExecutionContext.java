@@ -69,11 +69,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     private final Resolver[] resolvers;
 
     /**
-     * Allows to skip iteration if a hint is provided
-     */
-    private Object lastContextObject;
-
-    /**
      *
      * @param configuration
      */
@@ -85,7 +80,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         this.templateInvocationStack = new ArrayDeque<Template>();
         this.templateRecursiveInvocationLimit = configuration
                 .getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT);
-        this.lastContextObject = null;
     }
 
     @Override
@@ -95,7 +89,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
 
         switch (stack) {
         case CONTEXT:
-            lastContextObject = object;
             contextObjectStack.addFirst(object);
             break;
         case TEMPLATE_INVOCATION:
@@ -112,7 +105,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         switch (stack) {
         case CONTEXT:
             Object element = contextObjectStack.removeFirst();
-            lastContextObject = contextObjectStack.peekFirst();
             return element;
         case TEMPLATE_INVOCATION:
             return templateInvocationStack.removeFirst();
@@ -178,28 +170,28 @@ abstract class AbstractExecutionContext implements ExecutionContext {
             ValueWrapper value, AtomicReference<Hint> hintRef) {
 
         Object leading = null;
-        boolean isHint = false;
+        Hint hint = hintRef != null ? hintRef.get() : null;
 
-        if (hintRef != null) {
-            Hint hint = hintRef.get();
+        for (Object contextObject : contextObjectStack) {
             if (hint != null) {
-                isHint = true;
-                leading = hint.resolve(lastContextObject, name);
-            }
-        }
-
-        if (leading == null) {
-            for (Object contextObject : contextObjectStack) {
-                leading = resolve(contextObject, name, value, hintRef != null && !isHint);
-                if (leading != null) {
-                    // Leading context object found
-                    break;
-                }
+                leading = hint.resolve(contextObject, name);
             }
             if (leading == null) {
-                // Leading context object not found - try to resolve context
-                // unrelated objects (JNDI lookup, CDI, etc.)
-                leading = resolve(null, name, value, hintRef != null && !isHint);
+                leading = resolve(contextObject, name, value, hint == null);
+            }
+            if (leading != null) {
+                // Leading context object found
+                break;
+            }
+        }
+        if (leading == null) {
+            // Leading context object not found - try to resolve context
+            // unrelated objects (JNDI lookup, CDI, etc.)
+            if (hint != null) {
+                leading = hint.resolve(null, name);
+            }
+            if (leading == null) {
+                leading = resolve(null, name, value, hint == null);
             }
         }
         return leading;

@@ -227,7 +227,7 @@ public class ReflectionResolver extends AbstractResolver implements
         @Override
         public Object resolve(Object contextObject, String name) {
             if (contextObject == null
-                    || key.getClazz().equals(contextObject.getClass())) {
+                    || !key.getClazz().equals(contextObject.getClass())) {
                 // No context object or the runtime class of the context object
                 // changed
                 return null;
