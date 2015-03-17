@@ -49,6 +49,12 @@ public class NullCheckHelperTest extends AbstractTest {
                         "nullcheck_helper3",
                         "{{#isNotNull this.getNull this.age logic=\"or\"}}NOTNULL{{/isNotNull}}")
                         .render(new Hammer()));
+        assertEquals(
+                "ISNULL",
+                engine.compileMustache(
+                        "nullcheck_helper4",
+                        "{{#isNotNull this.getNull else='ISNULL'}}NOTNULL{{/isNotNull}}")
+                        .render(new Hammer()));
     }
 
 }

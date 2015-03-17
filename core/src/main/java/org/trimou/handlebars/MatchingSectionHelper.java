@@ -15,9 +15,9 @@
  */
 package org.trimou.handlebars;
 
+import static org.trimou.handlebars.OptionsHashKeys.ELSE;
 import static org.trimou.handlebars.OptionsHashKeys.LOGIC;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * An abstract helper which renders a block if:
@@ -35,7 +36,14 @@ import com.google.common.base.Optional;
  * <li>the parameters match according to the current evaluation logic</li>
  * </ul>
  *
+ * <p>
+ * An optional <code>else</code> may be specified. If not a string literal
+ * {@link Object#toString()} is used.
+ * </p>
+ *
+ * <p>
  * Don't make this class public until we have a proper name.
+ * </p>
  *
  * @author Martin Kouba
  * @see IfHelper
@@ -46,17 +54,25 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     private static final Logger logger = LoggerFactory
             .getLogger(MatchingSectionHelper.class);
 
+    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
+            .<String> builder().add(LOGIC).add(ELSE).build();
+
     @Override
     public void execute(Options options) {
         if ((options.getParameters().isEmpty() && isMatching(options.peek()))
                 || matches(options.getHash(), options.getParameters())) {
             options.fn();
+        } else {
+            Object elseBlock = getHashValue(options, OptionsHashKeys.ELSE);
+            if (elseBlock != null) {
+                append(options, elseBlock.toString());
+            }
         }
     }
 
     @Override
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(Collections.singleton(LOGIC));
+        return Optional.of(SUPPORTED_HASH_KEYS);
     }
 
     protected EvaluationLogic getDefaultLogic() {

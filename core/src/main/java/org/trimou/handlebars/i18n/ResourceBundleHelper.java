@@ -15,12 +15,17 @@
  */
 package org.trimou.handlebars.i18n;
 
+import static org.trimou.handlebars.OptionsHashKeys.BASE_NAME;
+import static org.trimou.handlebars.OptionsHashKeys.FORMAT;
+import static org.trimou.handlebars.OptionsHashKeys.LOCALE;
+
 import java.text.MessageFormat;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +35,9 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
 import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.util.Arrays;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * <p>
@@ -94,9 +102,8 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     private static final Logger logger = LoggerFactory
             .getLogger(ResourceBundleHelper.class);
 
-    private static final String OPTION_KEY_BASE_NAME = "baseName";
-
-    private static final String OPTION_KEY_FORMAT = "format";
+    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
+            .<String> builder().add(FORMAT).add(BASE_NAME).add(LOCALE).build();
 
     private final String defaultBaseName;
 
@@ -124,10 +131,9 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     public void execute(Options options) {
 
         String key = options.getParameters().get(0).toString();
-        String baseName = options.getHash().isEmpty()
-                || !options.getHash().containsKey(OPTION_KEY_BASE_NAME) ? defaultBaseName
-                : getHashValue(options, OPTION_KEY_BASE_NAME).toString();
-        ResourceBundle bundle = ResourceBundle.getBundle(baseName,
+        Object baseName = getHashValue(options, BASE_NAME);
+        ResourceBundle bundle = ResourceBundle.getBundle(
+                baseName != null ? baseName.toString() : defaultBaseName,
                 getLocale(options));
 
         if (bundle.containsKey(key)) {
@@ -155,11 +161,16 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
         }
     }
 
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.of(SUPPORTED_HASH_KEYS);
+    }
+
     private Format getFormat(Map<String, Object> hash) {
-        if (hash.isEmpty() || !hash.containsKey(OPTION_KEY_FORMAT)) {
+        if (hash.isEmpty() || !hash.containsKey(FORMAT)) {
             return defaultFormat;
         }
-        String customFormat = hash.get(OPTION_KEY_FORMAT).toString();
+        String customFormat = hash.get(FORMAT).toString();
         Format format = Format.parse(customFormat);
         if (format == null) {
             logger.warn(

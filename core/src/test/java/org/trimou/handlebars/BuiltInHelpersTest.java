@@ -116,6 +116,11 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("if_helper6",
                         "{{#if this \"\" logic=\"or\"}}hello{{/if}}").render(
                         Boolean.TRUE));
+        assertEquals(
+                "false",
+                engine.compileMustache("if_helper7",
+                        "{{#if this \"\" logic=\"and\" else='false'}}hello{{/if}}").render(
+                        Boolean.TRUE));
         assertCompilationFails(engine, "if_helper_fail1",
                 "{{#if}}{{this}}{{/if}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);

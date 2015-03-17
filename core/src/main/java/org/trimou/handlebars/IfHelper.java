@@ -47,6 +47,17 @@ import org.trimou.util.Checker;
  * {{/if}}
  * </pre>
  *
+ * <p>
+ * An optional <code>else</code> may be specified. If not a string literal
+ * {@link Object#toString()} is used.
+ * </p>
+ *
+ * <pre>
+ * {{#if item.active else="The item is not active!"}}
+ *   Active!
+ * {{/if}}
+ * </pre>
+ *
  * @author Martin Kouba
  */
 public class IfHelper extends MatchingSectionHelper {

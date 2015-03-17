@@ -46,4 +46,8 @@ public final class OptionsHashKeys {
 
     public static final String LEVEL = "level";
 
+    public static final String BASE_NAME = "baseName";
+
+    public static final String ELSE = "else";
+
 }

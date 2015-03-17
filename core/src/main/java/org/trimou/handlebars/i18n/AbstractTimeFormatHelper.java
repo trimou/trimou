@@ -20,12 +20,16 @@ import static org.trimou.handlebars.OptionsHashKeys.STYLE;
 import static org.trimou.handlebars.OptionsHashKeys.TIME_ZONE;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * An abstract time formatting helper.
@@ -39,6 +43,9 @@ import org.trimou.handlebars.Options;
  */
 public abstract class AbstractTimeFormatHelper<F, S> extends
         LocaleAwareValueHelper {
+
+    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
+            .<String> builder().add(PATTERN).add(STYLE).add(TIME_ZONE).build();
 
     private final TimeZone defaultTimeZone = TimeZone.getDefault();
 
@@ -66,6 +73,11 @@ public abstract class AbstractTimeFormatHelper<F, S> extends
         }
         // There's no need to escape the formatted text
         options.append(text);
+    }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return Optional.of(SUPPORTED_HASH_KEYS);
     }
 
     /**
