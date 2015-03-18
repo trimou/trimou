@@ -16,7 +16,14 @@
 package org.trimou.engine.resolver;
 
 import java.lang.reflect.Array;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
+import org.trimou.engine.validation.Validateable;
 
 /**
  * A combined resolver which is able to resolve index-based access to lists and
@@ -27,7 +34,15 @@ import java.util.List;
  * @see ListIndexResolver
  * @see ArrayIndexResolver
  */
-public class CombinedIndexResolver extends IndexResolver {
+public class CombinedIndexResolver extends IndexResolver implements Validateable {
+
+    private boolean isEnabled;
+
+    /**
+     * If set to <code>false</code> the resolver is marked as invalid.
+     */
+    public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
+            CombinedIndexResolver.class.getName() + ".enabled", true);
 
     /**
      *
@@ -68,6 +83,23 @@ public class CombinedIndexResolver extends IndexResolver {
             }
         }
         return null;
+    }
+
+
+
+    @Override
+    public void init(Configuration configuration) {
+        isEnabled = configuration.getBooleanPropertyValue(ENABLED_KEY);
+    }
+
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(ENABLED_KEY);
+    }
+
+    @Override
+    public boolean isValid() {
+        return isEnabled;
     }
 
 }
