@@ -77,6 +77,18 @@ public final class IterationMeta implements Mapper {
     }
 
     /**
+     * The name for {@link #getIndex()} was poorly chosen. We should have used
+     * <code>getCount()</code> instead. But we can't change it now - it would break
+     * backward compatibility.
+     *
+     * @return the position of the current element, the first element has
+     *         position <code>0</code>
+     */
+    public int getPosition() {
+        return index - 1;
+    }
+
+    /**
      *
      * @return <code>true</code> if the iteration has more elements,
      *         <code>false</code> otherwise

@@ -46,7 +46,7 @@ However there are some differences:
 * +java.util.List+ and array elements can be accessed via index (the key must be an unsigned integer),
 * an iteration metada object is available inside an iteration block, the default alias is +iter+:
 ** the alias can be configured, see <<configuration,Configuration>>,
-** this metadata has some useful properties: +iter.index+, +iter.hasNext+, +iter.isFirst+ and +iter.isLast+,
+** this metadata has some useful properties: +iter.index+ (the first element is at index +1+), +iter.position+ (the first element has position +0+), +iter.hasNext+, +iter.isFirst+ and +iter.isLast+,
 ** alternatively +iterIndex+, +iterHasNext+, +iterIsFirst+ and +iterIsLast+ keywords can be used,
 * Trimou allows you to define a resolver that does not handle the context object stack at all (e.g. looks up a <<cdi,CDI bean>>).
 
@@ -78,7 +78,7 @@ However there are some differences:
 <2> Try to get a value of key "bar" from the context object resolved in <1>, e.g. try to invoke bar(), getBar() or isBar() on the "foo" instance or get the value of the field with name "bar"
 <3> Get the first element
 <4> Get the sixth element
-<5> The current index of the iteration block
+<5> The current iteration index (the first element is at index 1)
 <6> Render the text for the first iteration
 <7> Render the text for the last iteration
 <8> "name" is resolved against the context object stack (iteration element, supplied data map)

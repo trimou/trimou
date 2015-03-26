@@ -47,11 +47,11 @@ public class SectionSegmentTest extends AbstractEngineTest {
                 .<String, Object> of("numbers", ImmutableList.of(1, 2, 3))));
 
         mustache = engine
-                .compileMustache("iterable2", "{{#numbers}}la{{iter.index}}{{iter.hasNext}}|{{/numbers}}");
+                .compileMustache("iterable2", "{{#numbers}}la({{iter.index}},{{iter.position}}){{iter.hasNext}}{{#iter.hasNext}}|{{/iter.hasNext}}{{/numbers}}");
 
         assertEquals("", mustache.render(ImmutableMap.<String, Object> of(
                 "numbers", Collections.emptyList())));
-        assertEquals("la1true|la2true|la3false|", mustache.render(ImmutableMap
+        assertEquals("la(1,0)true|la(2,1)true|la(3,2)false", mustache.render(ImmutableMap
                 .<String, Object> of("numbers", ImmutableList.of(1, 2, 3))));
 
         mustache = engine
