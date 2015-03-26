@@ -630,6 +630,11 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 |iter
 |The alias for iteration metadata object available inside an iteration block.
 
+|RESOLVER_HINTS_ENABLED
+*org.trimou.engine.config.resolverHintsEnabled*
+|true
+|If set to +true+ the evaluation of simple variables, e.g. +.+ or +foo+, is optimized.
+
 |===
 
 [[i18n]]
