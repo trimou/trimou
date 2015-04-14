@@ -102,8 +102,12 @@ class DefaultConfiguration implements Configuration {
 
         if (!builder.isOmitServiceLoaderConfigurationExtensions()) {
             // Process configuration extensions
+            ClassLoader cl = SecurityActions.getContextClassLoader();
+            if (cl == null) {
+                cl = SecurityActions.getClassLoader(DefaultConfiguration.class);
+            }
             for (Iterator<ConfigurationExtension> iterator = ServiceLoader
-                    .load(ConfigurationExtension.class).iterator(); iterator
+                    .load(ConfigurationExtension.class, cl).iterator(); iterator
                     .hasNext();) {
                 iterator.next().register(builder);
             }

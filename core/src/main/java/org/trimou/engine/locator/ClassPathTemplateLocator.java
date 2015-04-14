@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.util.Checker;
 import org.trimou.util.Files;
 import org.trimou.util.Strings;
 
@@ -73,7 +72,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
      *            If null, no templates will be available for precompilation
      */
     public ClassPathTemplateLocator(int priority, String rootPath) {
-        this(priority, rootPath, Thread.currentThread().getContextClassLoader());
+        this(priority, rootPath, null, null, true);
     }
 
     /**
@@ -85,8 +84,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
      *            If null, no templates will be available for precompilation
      */
     public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
-        this(priority, rootPath, suffix, Thread.currentThread()
-                .getContextClassLoader(), true);
+        this(priority, rootPath, suffix, null, true);
     }
 
     /**
@@ -95,7 +93,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
      * @param rootPath
      *            If null, no templates will be available for precompilation
      * @param classLoader
-     *            Must not be null
+     *            If null, use the TCCL or the CL of this class
      */
     public ClassPathTemplateLocator(int priority, String rootPath,
             ClassLoader classLoader) {
@@ -110,7 +108,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
      * @param rootPath
      *            If null, no templates will be available for precompilation
      * @param classLoader
-     *            Must not be null
+     *            If null, use the TCCL or the CL of this class
      * @param scanClasspath
      *            If set to <code>true</code> the locator will attempt to scan
      *            the classpath to get all available template identifiers.
@@ -118,7 +116,13 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
     public ClassPathTemplateLocator(int priority, String rootPath,
             String suffix, ClassLoader classLoader, boolean scanClasspath) {
         super(priority, rootPath, suffix);
-        Checker.checkArgumentNotNull(classLoader);
+        if (classLoader == null) {
+            classLoader = SecurityActions.getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = SecurityActions
+                        .getClassLoader(ClassPathTemplateLocator.class);
+            }
+        }
         this.classLoader = classLoader;
         this.scanClasspath = scanClasspath;
     }
@@ -313,17 +317,17 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
         }
 
         public ClassPathTemplateLocator build() {
-            ClassLoader loader;
+            ClassLoader cl;
             if (classLoader != null) {
-                loader = classLoader;
+                cl = classLoader;
             } else {
-                loader = Thread.currentThread().getContextClassLoader();
-                if (loader == null) {
-                    loader = ClassPathTemplateLocator.class.getClassLoader();
+                cl = SecurityActions.getContextClassLoader();
+                if (cl == null) {
+                    cl = ClassPathTemplateLocator.class.getClassLoader();
                 }
             }
-            return new ClassPathTemplateLocator(priority, rootPath, suffix,
-                    loader, scanClasspath);
+            return new ClassPathTemplateLocator(priority, rootPath, suffix, cl,
+                    scanClasspath);
         }
 
     }

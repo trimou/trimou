@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.config;
+package org.trimou.engine.locator;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -23,23 +23,6 @@ import java.security.PrivilegedAction;
  * @author Martin Kouba
  */
 final class SecurityActions {
-
-    /**
-     *
-     * @param key
-     * @return {@link System#getProperty(String)}
-     */
-    static String getSystemProperty(final String key) {
-        if (System.getSecurityManager() == null) {
-            return System.getProperty(key);
-        }
-        return AccessController.doPrivileged(new PrivilegedAction<String>() {
-            @Override
-            public String run() {
-                return System.getProperty(key);
-            }
-        });
-    }
 
     /**
      *
