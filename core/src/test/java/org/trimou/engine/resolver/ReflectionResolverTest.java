@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
 import org.trimou.Hammer;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 
 import com.google.common.base.Predicate;
@@ -61,6 +62,16 @@ public class ReflectionResolverTest extends AbstractEngineTest {
     }
 
     @Test
+    public void testPublicMethodOnPackagePrivateClass() {
+        Hammer data = new Hammer();
+        Mustache mustache = engine
+                .compileMustache("reflection_resolver_accessibility",
+                        "{{#this.map.entrySet}}{{key}}={{value}}{{/this.map.entrySet}}");
+        assertEquals("foo=10", mustache.render(data));
+        assertEquals("foo=10", mustache.render(data));
+    }
+
+    @Test
     public void testMemberCacheInvalidation() {
 
         final ReflectionResolver resolver = new ReflectionResolver();
@@ -86,7 +97,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         assertEquals(1, resolver.getMemberCacheSize());
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testMultipleInit() {
 
         ReflectionResolver resolver = new ReflectionResolver();

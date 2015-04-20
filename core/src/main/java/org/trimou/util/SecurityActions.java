@@ -32,11 +32,9 @@ final class SecurityActions {
      * @return {@link Class#getMethods()}
      */
     static Method[] getMethods(final Class<?> clazz) {
-
         if (System.getSecurityManager() == null) {
             return clazz.getMethods();
         }
-
         return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
             @Override
             public Method[] run() {
@@ -51,7 +49,6 @@ final class SecurityActions {
      * @return {@link Class#getFields()}
      */
     static Field[] getFields(final Class<?> clazz) {
-
         if (System.getSecurityManager() == null) {
             return clazz.getFields();
         }

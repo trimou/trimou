@@ -185,6 +185,9 @@ public class ReflectionResolver extends AbstractResolver implements
                 key.getName());
 
         if (foundMethod != null) {
+            if(!foundMethod.isAccessible()) {
+                SecurityActions.setAccessible(foundMethod);
+            }
             return Optional.<MemberWrapper> of(new MethodWrapper(foundMethod));
         }
 
@@ -192,6 +195,9 @@ public class ReflectionResolver extends AbstractResolver implements
         Field foundField = Reflections.findField(key.getClazz(), key.getName());
 
         if (foundField != null) {
+            if(!foundField.isAccessible()) {
+                SecurityActions.setAccessible(foundField);
+            }
             return Optional.<MemberWrapper> of(new FieldWrapper(foundField));
         }
         // Member not found
