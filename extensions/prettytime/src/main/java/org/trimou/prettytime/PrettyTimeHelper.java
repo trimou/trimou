@@ -15,24 +15,28 @@
  */
 package org.trimou.prettytime;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.Configuration;
+import org.trimou.engine.convert.Converter;
+import org.trimou.engine.convert.ObjectToDateConverter;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
 import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.handlebars.i18n.LocaleAwareValueHelper;
 import org.trimou.prettytime.resolver.PrettyTimeResolver;
+import org.trimou.util.Checker;
 
 /**
+ * <p>
  * Developers are encouraged to use this helper instead of
  * {@link PrettyTimeResolver} to avoid the negative performance impact during
  * interpolation.
+ * </p>
  *
  * <p>
  * A {@link MustacheException} is thrown in case of the passed parameter is not
@@ -60,7 +64,9 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
     public static final String COMPUTING_CACHE_CONSUMER_ID = PrettyTimeHelper.class
             .getName();
 
-    private final PrettyTimeFactory prettyTimeFactory;
+    private final PrettyTimeFactory factory;
+
+    private final Converter<Object, Date> converter;
 
     /**
      * Lazy loading cache of PrettyTime instances
@@ -75,8 +81,20 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
      *
      * @param prettyTimeFactory
      */
-    public PrettyTimeHelper(final PrettyTimeFactory prettyTimeFactory) {
-        this.prettyTimeFactory = prettyTimeFactory;
+    public PrettyTimeHelper(PrettyTimeFactory prettyTimeFactory) {
+        this(prettyTimeFactory, new ObjectToDateConverter());
+    }
+
+    /**
+     *
+     * @param factory
+     * @param converter
+     */
+    private PrettyTimeHelper(PrettyTimeFactory factory,
+            Converter<Object, Date> converter) {
+        Checker.checkArgumentsNotNull(factory, converter);
+        this.factory = factory;
+        this.converter = converter;
     }
 
     @Override
@@ -87,35 +105,78 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
                 new ComputingCache.Function<Locale, PrettyTime>() {
                     @Override
                     public PrettyTime compute(Locale key) {
-                        return prettyTimeFactory.createPrettyTime(key);
+                        return factory.createPrettyTime(key);
                     }
                 }, null, 10l, null);
     }
 
     @Override
     public void execute(Options options) {
-        append(options,
-                prettyTimeCache.get(getLocale(options)).format(
-                        getFormattableObject(options)));
-    }
-
-    private Date getFormattableObject(Options options) {
-
-        Object value = options.getParameters().get(0);
-
-        if (value instanceof Date) {
-            return (Date) value;
-        } else if (value instanceof Calendar) {
-            return ((Calendar) value).getTime();
-        } else if (value instanceof Long) {
-            return new Date((Long) value);
-        } else {
+        Object param = options.getParameters().get(0);
+        if (param == null) {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "Formattable object for PrettyTime not found [template: %s, line: %s]",
+                    "PrettyTimeHelper - no instance to format [template: %s, line: %s, param: %s]",
                     options.getTagInfo().getTemplateName(), options
                             .getTagInfo().getLine());
         }
+        Date value = converter.convert(param);
+        if (value == null) {
+            throw new MustacheException(
+                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
+                    "Unable to get java.util.Date instance for PrettyTime [template: %s, line: %s, param: %s]",
+                    options.getTagInfo().getTemplateName(), options
+                            .getTagInfo().getLine(), param);
+        }
+        append(options, prettyTimeCache.get(getLocale(options)).format(value));
+    }
+
+    /**
+     *
+     * @return a new builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     *
+     * @author Martin Kouba
+     *
+     */
+    public static class Builder {
+
+        private PrettyTimeFactory factory;
+
+        private Converter<Object, Date> converter;
+
+        public Builder setFactory(PrettyTimeFactory factory) {
+            this.factory = factory;
+            return this;
+        }
+
+        /**
+         * Might be useful to customize the conversion of the context object to
+         * the {@link Date} instance.
+         *
+         * @param converter
+         * @return self
+         */
+        public Builder setConverter(Converter<Object, Date> converter) {
+            this.converter = converter;
+            return this;
+        }
+
+        public PrettyTimeHelper build() {
+            if (factory == null) {
+                factory = new DefaultPrettyTimeFactory();
+            }
+            if (converter == null) {
+                converter = new ObjectToDateConverter();
+            }
+            return new PrettyTimeHelper(factory, converter);
+        }
+
     }
 
 }

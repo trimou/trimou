@@ -16,6 +16,8 @@
 package org.trimou.exception;
 
 /**
+ * Ordinal of this enum should not be used - we don't keep the ordering between
+ * versions.
  *
  * @author Martin Kouba
  */
@@ -42,8 +44,8 @@ public enum MustacheProblem implements ProblemCode {
     RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
     RENDER_HELPER_INVALID_OPTIONS,
     RENDER_HELPER_INVALID_POP_OPERATION,
+    RENDER_GENERIC_ERROR,
     // Configuration problems
-    CONFIG_PROPERTY_INVALID_VALUE,
-    ;
+    CONFIG_PROPERTY_INVALID_VALUE, ;
 
 }

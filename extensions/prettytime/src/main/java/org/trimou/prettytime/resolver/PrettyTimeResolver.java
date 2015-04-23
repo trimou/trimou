@@ -17,7 +17,6 @@ package org.trimou.prettytime.resolver;
 
 import static org.trimou.engine.priority.Priorities.rightAfter;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
@@ -29,6 +28,8 @@ import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
+import org.trimou.engine.convert.Converter;
+import org.trimou.engine.convert.ObjectToDateConverter;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
@@ -36,11 +37,17 @@ import org.trimou.engine.resolver.TransformResolver;
 import org.trimou.engine.validation.Validateable;
 import org.trimou.prettytime.DefaultPrettyTimeFactory;
 import org.trimou.prettytime.PrettyTimeFactory;
+import org.trimou.prettytime.PrettyTimeHelper;
+import org.trimou.util.Checker;
 
 import com.google.common.collect.ImmutableSet;
 
 /**
- * PrettyTime resolver.
+ * <p>
+ * The PrettyTime resolver. Developers are encouraged to use
+ * {@link PrettyTimeHelper} instead of this resolver to avoid the negative
+ * performance impact during interpolation.
+ * </p>
  *
  * <p>
  * Use {@link #MATCH_NAME_KEY} configuration property to customize the name to
@@ -54,6 +61,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Martin Kouba
  * @see Resolver
+ * @see PrettyTimeHelper
  */
 public class PrettyTimeResolver extends TransformResolver implements
         Validateable {
@@ -72,7 +80,9 @@ public class PrettyTimeResolver extends TransformResolver implements
     private static final Logger logger = LoggerFactory
             .getLogger(PrettyTimeResolver.class);
 
-    private final PrettyTimeFactory prettyTimeFactory;
+    private final PrettyTimeFactory factory;
+
+    private final Converter<Object, Date> converter;
 
     /**
      * Lazy loading cache of PrettyTime instances
@@ -89,23 +99,34 @@ public class PrettyTimeResolver extends TransformResolver implements
     /**
      *
      * @param priority
+     * @param prettyTimeFactory
      */
     public PrettyTimeResolver(int priority, PrettyTimeFactory prettyTimeFactory) {
+        this(priority, prettyTimeFactory, new ObjectToDateConverter());
+    }
+
+    /**
+     *
+     * @param priority
+     * @param factory
+     * @param converter
+     */
+    public PrettyTimeResolver(int priority, PrettyTimeFactory factory,
+            Converter<Object, Date> converter) {
         super(priority);
-        this.prettyTimeFactory = prettyTimeFactory;
+        Checker.checkArgumentsNotNull(factory, converter);
+        this.factory = factory;
+        this.converter = converter;
     }
 
     @Override
     public Object transform(Object contextObject, String name,
             ResolutionContext context) {
-
-        Date formattableObject = getFormattableObject(contextObject);
-
-        if (formattableObject == null) {
+        Date value = converter.convert(contextObject);
+        if (value == null) {
             return null;
         }
-        return prettyTimeCache.get(getCurrentLocale())
-                .format(formattableObject);
+        return prettyTimeCache.get(getCurrentLocale()).format(value);
     }
 
     @Override
@@ -125,21 +146,10 @@ public class PrettyTimeResolver extends TransformResolver implements
                 new ComputingCache.Function<Locale, PrettyTime>() {
                     @Override
                     public PrettyTime compute(Locale key) {
-                        return prettyTimeFactory.createPrettyTime(key);
+                        return factory.createPrettyTime(key);
                     }
                 }, null, 10l, null);
         logger.info("Initialized [matchingName: {}]", matchingName(0));
-    }
-
-    private Date getFormattableObject(Object contextObject) {
-        if (contextObject instanceof Date) {
-            return (Date) contextObject;
-        } else if (contextObject instanceof Calendar) {
-            return ((Calendar) contextObject).getTime();
-        } else if (contextObject instanceof Long) {
-            return new Date((Long) contextObject);
-        }
-        return null;
     }
 
     @Override

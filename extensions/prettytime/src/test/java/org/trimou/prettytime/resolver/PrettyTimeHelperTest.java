@@ -3,10 +3,8 @@ package org.trimou.prettytime.resolver;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Set;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -15,9 +13,8 @@ import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.convert.Converter;
+import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.engine.resolver.ThisResolver;
 import org.trimou.prettytime.PrettyTimeFactory;
 import org.trimou.prettytime.PrettyTimeHelper;
@@ -33,21 +30,8 @@ public class PrettyTimeHelperTest {
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(new ThisResolver())
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(new ThisResolver())
                 .registerHelper("pretty", new PrettyTimeHelper()).build();
 
         String expected = new Resources_en().getString("JustNowPastPrefix");
@@ -81,22 +65,8 @@ public class PrettyTimeHelperTest {
         // Just to init the resolver
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(new ThisResolver())
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(new ThisResolver())
                 .registerHelper("pretty", helper).build();
 
         Resources_en bundle = new Resources_en();
@@ -116,23 +86,40 @@ public class PrettyTimeHelperTest {
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(new ThisResolver())
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(new ThisResolver())
                 .registerHelper("pretty", new PrettyTimeHelper()).build();
 
-        assertEquals( new Resources_cs().getString("JustNowPastPrefix"), engine.compileMustache("pretty_helper_locale", "{{{pretty this locale='cs'}}}").render(new Date()));
+        assertEquals(
+                new Resources_cs().getString("JustNowPastPrefix"),
+                engine.compileMustache("pretty_helper_locale",
+                        "{{{pretty this locale='cs'}}}").render(new Date()));
+    }
+
+    @Test
+    public void testCustomConverter() {
+
+        final Calendar day = Calendar.getInstance();
+        day.set(Calendar.YEAR, day.get(Calendar.YEAR) - 1);
+        day.set(Calendar.MONTH, day.get(Calendar.MONTH) - 1);
+
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(new ThisResolver())
+                .registerHelper(
+                        "pretty",
+                        PrettyTimeHelper.builder()
+                                .setConverter(new Converter<Object, Date>() {
+
+                                    @Override
+                                    public Date convert(Object from) {
+                                        return day.getTime();
+                                    }
+                                }).build()).build();
+        assertEquals("1 year ago",
+                engine.compileMustache("pretty_conv", "{{pretty this}}")
+                        .render(Calendar.getInstance()));
     }
 }
