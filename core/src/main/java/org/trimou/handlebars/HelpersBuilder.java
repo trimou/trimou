@@ -80,6 +80,8 @@ public final class HelpersBuilder {
 
     public static final String JOIN = "join";
 
+    public static final String EVAL = "eval";
+
     private final ImmutableMap.Builder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -302,6 +304,17 @@ public final class HelpersBuilder {
     }
 
     /**
+     * Add an instance of {@link EvalHelper}.
+     *
+     * @return self
+     */
+    public HelpersBuilder addEval() {
+        builder.put(EVAL, new EvalHelper());
+        return this;
+    }
+
+
+    /**
      *
      * @return self
      */
@@ -331,6 +344,7 @@ public final class HelpersBuilder {
         addChoose();
         addSwitch();
         addJoin();
+        addEval();
         return this;
     }
 

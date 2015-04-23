@@ -27,7 +27,7 @@ public class ChooseHelperTest extends AbstractTest {
                 "transient",
                 engine.compileMustache("choose_helper1",
                         "{{#choose}}"
-                        + "{{#when this.up.isPersistent}}persistent{{/when}}"
+                        + "{{#when up.isPersistent}}persistent{{/when}}"
                         + "{{#otherwise}}transient{{/otherwise}}"
                         + "{{/choose}}").render(
                         new Hammer()));

@@ -48,7 +48,7 @@ import com.google.common.base.Optional;
  *
  * <pre>
  * {{#choose}}
- *   {{#when this.up}}
+ *   {{#when up}}
  *      Hello active!
  *   {{/when}}
  *   {{#when foo}}
