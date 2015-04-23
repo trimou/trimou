@@ -15,6 +15,7 @@
  */
 package org.trimou.handlebars;
 
+import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.exception.MustacheException;
 
 /**
@@ -41,8 +42,8 @@ public interface Options extends HelperDefinition {
     void fn();
 
     /**
-     * Render the template with the current context and append the result
-     * to the rendered template.
+     * Render the template with the current context and append the result to the
+     * rendered template.
      *
      * @param templateId
      * @throws MustacheException
@@ -89,7 +90,8 @@ public interface Options extends HelperDefinition {
     Object peek();
 
     /**
-     * In most cases it's better to use the convenient method {@link #append(CharSequence)} instead.
+     * In most cases it's better to use the convenient method
+     * {@link #append(CharSequence)} instead.
      *
      * @return The appendable to append the rendered template to
      * @see org.trimou.Mustache#render(Appendable, Object)
@@ -98,13 +100,25 @@ public interface Options extends HelperDefinition {
     Appendable getAppendable();
 
     /**
-     * Proceed with execution, i.e. execute the block. This is no-op
-     * for variable tag helpers.
+     * Proceed with execution, i.e. execute the block. This is no-op for
+     * variable tag helpers.
      *
      * @param appendable
      *            The appendable to append the rendered block to
      * @since 1.7
      */
     void fn(Appendable appendable);
+
+    /**
+     * The key is first processed by the {@link KeySplitter} and then processed
+     * by the resolver chain.
+     *
+     * @param key
+     * @return the value from the context for the given key, or
+     *         <code>null</code> if no such value exists
+     * @see KeySplitter
+     * @since 1.8
+     */
+    Object getValue(String key);
 
 }

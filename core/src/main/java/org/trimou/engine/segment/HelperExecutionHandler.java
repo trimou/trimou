@@ -426,6 +426,11 @@ class HelperExecutionHandler {
         }
 
         @Override
+        public Object getValue(String key) {
+            return executionContext.getValue(key).get();
+        }
+
+        @Override
         public String getContentLiteralBlock() {
             if (segment instanceof ContainerSegment) {
                 return ((ContainerSegment) segment).getContentLiteralBlock();
