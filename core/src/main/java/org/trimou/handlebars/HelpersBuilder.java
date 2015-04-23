@@ -20,6 +20,7 @@ import java.util.Map;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.handlebars.EmbedHelper.SourceProcessor;
+import org.trimou.handlebars.EvalHelper.Notation;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -81,6 +82,8 @@ public final class HelpersBuilder {
     public static final String JOIN = "join";
 
     public static final String EVAL = "eval";
+
+    public static final String NUMERIC_EXPRESSION = "numExpr";
 
     private final ImmutableMap.Builder<String, Helper> builder;
 
@@ -313,6 +316,26 @@ public final class HelpersBuilder {
         return this;
     }
 
+    /**
+     * Add an instance of {@link EvalHelper}.
+     *
+     * @param notation
+     * @return self
+     */
+    public HelpersBuilder addEval(Notation notation) {
+        builder.put(EVAL, new EvalHelper(notation));
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link NumericExpressionHelper}.
+     *
+     * @return self
+     */
+    public HelpersBuilder addNumExpr() {
+        builder.put(NUMERIC_EXPRESSION, new NumericExpressionHelper());
+        return this;
+    }
 
     /**
      *
@@ -345,6 +368,7 @@ public final class HelpersBuilder {
         addSwitch();
         addJoin();
         addEval();
+        addNumExpr();
         return this;
     }
 

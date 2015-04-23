@@ -50,4 +50,8 @@ public final class OptionsHashKeys {
 
     public static final String ELSE = "else";
 
+    public static final String OPERATOR = "op";
+
+    public static final String OUTPUT = "out";
+
 }
