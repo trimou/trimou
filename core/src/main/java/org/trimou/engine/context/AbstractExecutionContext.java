@@ -86,7 +86,6 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     public void push(TargetStack stack, Object object) {
         Checker.checkArgumentNotNull(stack);
         Checker.checkArgumentNotNull(object);
-
         switch (stack) {
         case CONTEXT:
             contextObjectStack.addFirst(object);
@@ -104,8 +103,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
         Checker.checkArgumentNotNull(stack);
         switch (stack) {
         case CONTEXT:
-            Object element = contextObjectStack.removeFirst();
-            return element;
+            return contextObjectStack.removeFirst();
         case TEMPLATE_INVOCATION:
             return templateInvocationStack.removeFirst();
         default:
@@ -227,9 +225,7 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     }
 
     private void pushTemplateInvocation(Template template) {
-
         Checker.checkArgumentNotNull(template);
-
         if (getTemplateInvocations(template) > templateRecursiveInvocationLimit) {
             throw new MustacheException(
                     MustacheProblem.RENDER_TEMPLATE_INVOCATION_RECURSIVE_LIMIT_EXCEEDED,
@@ -240,6 +236,9 @@ abstract class AbstractExecutionContext implements ExecutionContext {
     }
 
     private int getTemplateInvocations(Template template) {
+        if (templateInvocationStack.isEmpty()) {
+            return 0;
+        }
         int invocations = 0;
         for (Template invocation : templateInvocationStack) {
             if (invocation.equals(template)) {
