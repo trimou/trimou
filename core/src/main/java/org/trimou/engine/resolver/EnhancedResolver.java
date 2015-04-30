@@ -21,6 +21,20 @@ import org.trimou.engine.config.EngineConfigurationKey;
  * An enhanced resolver should be able to create a {@link Hint} for a
  * sucessfully resolved context object and name.
  *
+ * <p>
+ * Note that hints may not always give better results. E.g. if we have a tag
+ * <code>{{foo.bar}}</code> and first we pass data where foo is resolved as a
+ * map and then another data where foo is resolved as an integer, the hint
+ * created for the map will not work for integer. In this case, the hint should
+ * inform that it's not applicable and the resolver chain will be used to
+ * resolve the value.
+ * </p>
+ *
+ * <p>
+ * {@link EngineConfigurationKey#RESOLVER_HINTS_ENABLED} can be used to disable
+ * the hints entirely.
+ * </p>
+ *
  * @author Martin Kouba
  * @see EngineConfigurationKey#RESOLVER_HINTS_ENABLED
  */
@@ -37,17 +51,22 @@ public interface EnhancedResolver extends Resolver {
      * <code>{{foo}}</code> or <code>{{foo.bar}}</code>.
      * </p>
      *
+     * <p>
+     * This method must not return <code>null</code>.
+     * </p>
+     *
      * @param contextObject
      * @param name
-     * @return the hint or <code>null</code> if it's not possible to create one
+     * @return the hint
+     * @see #INAPPLICABLE_HINT
      */
     Hint createHint(Object contextObject, String name);
 
     /**
-     * A hint could be used to skip the resolver chain for a specific context
-     * object and name (the key or its part). The hint can only be used for the
-     * same variable tag. However, the runtime class of the context object may
-     * be different than the class used to create the hint.
+     * A hint could be used to skip the resolver chain for a part of the key of
+     * a specific tag. The hint can only be used for the same tag for which the
+     * context object and name were resolved. However, the resolver is permitted
+     * to reuse a hint instance.
      *
      * <p>
      * Implementations must be thread-safe.
@@ -63,8 +82,8 @@ public interface EnhancedResolver extends Resolver {
          * than the class used to create the hint.
          *
          * <p>
-         * If <code>null</code> is returned, the resolver chain will be used to
-         * resolve the value.
+         * If a hint is not applicable it should return <code>null</code> and
+         * the resolver chain will be used to resolve the value.
          * </p>
          *
          * @param contextObject
@@ -76,5 +95,17 @@ public interface EnhancedResolver extends Resolver {
         Object resolve(Object contextObject, String name);
 
     }
+
+    /**
+     * A hint which is never applicable. Implementations are encouraged to use
+     * this instance if it's not possible to create a hint.
+     */
+    public static Hint INAPPLICABLE_HINT = new Hint() {
+
+        @Override
+        public Object resolve(Object contextObject, String name) {
+            return null;
+        }
+    };
 
 }
