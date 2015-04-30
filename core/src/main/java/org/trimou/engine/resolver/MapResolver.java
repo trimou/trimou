@@ -29,12 +29,20 @@ public class MapResolver extends AbstractResolver {
 
     public static final int MAP_RESOLVER_PRIORITY = rightAfter(ThisResolver.THIS_RESOLVER_PRIORITY);
 
+    private final Hint hint;
+
     public MapResolver() {
         this(MAP_RESOLVER_PRIORITY);
     }
 
     public MapResolver(int priority) {
         super(priority);
+        this.hint = new Hint() {
+            @Override
+            public Object resolve(Object contextObject, String name) {
+                return MapResolver.this.resolve(contextObject, name, null);
+            }
+        };
     }
 
     @SuppressWarnings("rawtypes")
@@ -57,13 +65,7 @@ public class MapResolver extends AbstractResolver {
 
     @Override
     public Hint createHint(Object contextObject, String name) {
-        final MapResolver resolver = this;
-        return new Hint() {
-            @Override
-            public Object resolve(Object contextObject, String name) {
-                return resolver.resolve(contextObject, name, null);
-            }
-        };
+        return hint;
     }
 
 }

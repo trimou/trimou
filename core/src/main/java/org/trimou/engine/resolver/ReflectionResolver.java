@@ -118,7 +118,8 @@ public class ReflectionResolver extends AbstractResolver implements
         if (wrapper != null) {
             return new ReflectionHint(key, wrapper);
         }
-        return null;
+        // This should never happen
+        return EnhancedResolver.INAPPLICABLE_HINT;
     }
 
     @Override

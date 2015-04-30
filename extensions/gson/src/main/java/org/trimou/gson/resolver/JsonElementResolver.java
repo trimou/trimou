@@ -35,7 +35,8 @@ import com.google.gson.JsonPrimitive;
  * Gson's parser API resolver.
  *
  * @author Martin Kouba
- * @see <a href="http://code.google.com/p/google-gson/">http://code.google.com/p/google-gson/</a>
+ * @see <a
+ *      href="http://code.google.com/p/google-gson/">http://code.google.com/p/google-gson/</a>
  */
 public class JsonElementResolver extends IndexResolver {
 
@@ -47,6 +48,8 @@ public class JsonElementResolver extends IndexResolver {
             JsonElementResolver.class.getName() + ".unwrapJsonPrimitive", true);
 
     private boolean unwrapJsonPrimitive;
+
+    private final Hint hint;
 
     /**
     *
@@ -61,6 +64,13 @@ public class JsonElementResolver extends IndexResolver {
      */
     public JsonElementResolver(int priority) {
         super(priority);
+        this.hint = new Hint() {
+            @Override
+            public Object resolve(Object contextObject, String name) {
+                return JsonElementResolver.this.resolve(contextObject, name,
+                        null);
+            }
+        };
     }
 
     @Override
@@ -104,6 +114,11 @@ public class JsonElementResolver extends IndexResolver {
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
         return Collections.singleton(UNWRAP_JSON_PRIMITIVE_KEY);
+    }
+
+    @Override
+    public Hint createHint(Object contextObject, String name) {
+        return hint;
     }
 
     private Object unwrapJsonPrimitiveIfNecessary(JsonElement jsonElement) {

@@ -29,12 +29,20 @@ public class ThisResolver extends AbstractResolver {
 
     public static final String NAME_THIS = Strings.THIS;
 
+    private final Hint hint;
+
     public ThisResolver() {
         this(THIS_RESOLVER_PRIORITY);
     }
 
     public ThisResolver(int priority) {
         super(priority);
+        this.hint = new Hint() {
+            @Override
+            public Object resolve(Object contextObject, String name) {
+                return contextObject;
+            }
+        };
     }
 
     @Override
@@ -51,12 +59,7 @@ public class ThisResolver extends AbstractResolver {
 
     @Override
     public Hint createHint(Object contextObject, String name) {
-        return new Hint() {
-            @Override
-            public Object resolve(Object contextObject, String name) {
-                return contextObject;
-            }
-        };
+        return hint;
     }
 
 }
