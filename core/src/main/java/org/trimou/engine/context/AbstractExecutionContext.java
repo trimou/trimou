@@ -175,7 +175,8 @@ abstract class AbstractExecutionContext implements ExecutionContext {
                 leading = hint.resolve(contextObject, name);
             }
             if (leading == null) {
-                leading = resolve(contextObject, name, value, hint == null);
+                leading = resolve(contextObject, name, value, hint == null
+                        && hintRef != null);
             }
             if (leading != null) {
                 // Leading context object found
@@ -189,7 +190,8 @@ abstract class AbstractExecutionContext implements ExecutionContext {
                 leading = hint.resolve(null, name);
             }
             if (leading == null) {
-                leading = resolve(null, name, value, hint == null);
+                leading = resolve(null, name, value, hint == null
+                        && hintRef != null);
             }
         }
         return leading;

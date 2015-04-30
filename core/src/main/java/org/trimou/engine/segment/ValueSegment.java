@@ -74,8 +74,7 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
             }
             this.keyParts = parts.toArray(new String[parts.size()]);
             if (getEngineConfiguration().getBooleanPropertyValue(
-                    EngineConfigurationKey.RESOLVER_HINTS_ENABLED)
-                    && this.keyParts.length == 1) {
+                    EngineConfigurationKey.RESOLVER_HINTS_ENABLED)) {
                 this.hint = new AtomicReference<Hint>();
             } else {
                 this.hint = null;

@@ -7,11 +7,16 @@ public class Hammer {
 
     public String nail = "NAIL";
 
-    public Integer age = Integer.valueOf(15);
+    public Integer age;
 
     private Map<String, Integer> map;
 
     public Hammer() {
+        this(Integer.valueOf(10));
+    }
+
+    public Hammer(Integer age) {
+        this.age = age;
         this.map = new HashMap<String, Integer>();
         this.map.put("foo", 10);
     }
@@ -21,7 +26,7 @@ public class Hammer {
     }
 
     public Integer getAge() {
-        return 10;
+        return age;
     }
 
     public boolean isPersistent() {
