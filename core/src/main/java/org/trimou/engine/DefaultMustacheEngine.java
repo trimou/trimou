@@ -65,7 +65,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     /**
      * Workaround for CDI (JSR 299, JSR 346) - make this type proxyable so that
-     * it's possible to produce application-scoped CDI bean.
+     * it's possible to produce an application-scoped CDI bean.
      */
     DefaultMustacheEngine() {
         configuration = null;
@@ -177,7 +177,8 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private <K, V> ComputingCache<K, V> buildCache(String name,
-            ComputingCache.Function<K, V> loader, ComputingCache.Listener<K> listener) {
+            ComputingCache.Function<K, V> loader,
+            ComputingCache.Listener<K> listener) {
 
         Long expirationTimeout = configuration
                 .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
@@ -189,7 +190,8 @@ class DefaultMustacheEngine implements MustacheEngine {
         } else {
             expirationTimeout = null;
         }
-        return configuration.getComputingCacheFactory().create(MustacheEngine.COMPUTING_CACHE_CONSUMER_ID, loader,
+        return configuration.getComputingCacheFactory().create(
+                MustacheEngine.COMPUTING_CACHE_CONSUMER_ID, loader,
                 expirationTimeout, null, listener);
     }
 

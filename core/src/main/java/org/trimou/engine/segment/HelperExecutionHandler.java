@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.context.ExecutionContext.TargetStack;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
 import org.trimou.exception.MustacheException;
@@ -308,7 +307,7 @@ class HelperExecutionHandler {
 
         private int pushed = 0;
 
-        private final ExecutionContext executionContext;
+        private ExecutionContext executionContext;
 
         private final HelperAwareSegment segment;
 
@@ -392,14 +391,16 @@ class HelperExecutionHandler {
         @Override
         public void push(Object contextObject) {
             pushed++;
-            executionContext.push(TargetStack.CONTEXT, contextObject);
+            executionContext = executionContext.setContextObject(contextObject);
         }
 
         @Override
         public Object pop() {
             if (pushed > 0) {
                 pushed--;
-                return executionContext.pop(TargetStack.CONTEXT);
+                Object top = executionContext.getFirstContextObject();
+                executionContext = executionContext.getParent();
+                return top;
             }
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_POP_OPERATION);
@@ -407,7 +408,7 @@ class HelperExecutionHandler {
 
         @Override
         public Object peek() {
-            return executionContext.peek(TargetStack.CONTEXT);
+            return executionContext.getFirstContextObject();
         }
 
         @Override
@@ -449,11 +450,8 @@ class HelperExecutionHandler {
                 }
             }
             if (pushed > 0) {
-                // Remove all remaining pushed objects at the end of helper
-                // execution
-                for (int i = 0; i < pushed; i++) {
-                    executionContext.pop(TargetStack.CONTEXT);
-                }
+                // All remaining pushed objects are garbage collected
+                // automatically at the end of helper execution
                 logger.warn(
                         "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
                         new Object[] {

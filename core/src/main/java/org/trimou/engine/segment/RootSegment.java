@@ -15,13 +15,10 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
-
 import java.util.List;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
-import org.trimou.engine.context.ExecutionContext.TargetStack;
 
 /**
  * The root segment of a template. The {@link TargetStack#TEMPLATE_INVOCATION} stack is modified when this segment is executed.
@@ -47,9 +44,7 @@ public class RootSegment extends AbstractContainerSegment {
 
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
-        context.push(TEMPLATE_INVOCATION, getTemplate());
-        super.execute(appendable, context);
-        context.pop(TEMPLATE_INVOCATION);
+        super.execute(appendable, context.setTemplateInvocation(getTemplate()));
     }
 
 }

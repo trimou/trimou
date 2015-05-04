@@ -29,7 +29,8 @@ import org.trimou.engine.context.ExecutionContext;
 @Internal
 public class ExtendSectionSegment extends AbstractSectionSegment {
 
-    public ExtendSectionSegment(String text, Origin origin, List<Segment> segments) {
+    public ExtendSectionSegment(String text, Origin origin,
+            List<Segment> segments) {
         super(text, origin, segments);
     }
 
@@ -41,7 +42,8 @@ public class ExtendSectionSegment extends AbstractSectionSegment {
     @Override
     public void execute(Appendable appendable, ExecutionContext context) {
 
-        ExtendSectionSegment defining = context.getDefiningSection(getText());
+        ExtendSectionSegment defining = (ExtendSectionSegment) context
+                .getDefiningSection(getText());
 
         if (defining != null) {
             defining.executeNoDefiningLookup(appendable, context);

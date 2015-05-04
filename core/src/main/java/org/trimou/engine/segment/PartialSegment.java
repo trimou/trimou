@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.context.ExecutionContext.TargetStack.TEMPLATE_INVOCATION;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -81,9 +79,7 @@ public class PartialSegment extends AbstractSegment {
         if (indentation == null) {
             partialTemplate.getRootSegment().execute(appendable, context);
         } else {
-            context.push(TEMPLATE_INVOCATION, partialTemplate);
-            prependIndentation(appendable, context, partialTemplate);
-            context.pop(TEMPLATE_INVOCATION);
+            prependIndentation(appendable, context.setTemplateInvocation(partialTemplate), partialTemplate);
         }
     }
 
