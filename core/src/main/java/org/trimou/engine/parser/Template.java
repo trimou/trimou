@@ -15,14 +15,13 @@
  */
 package org.trimou.engine.parser;
 
-import static org.trimou.engine.config.EngineConfigurationKey.DEBUG_MODE;
-
 import java.util.List;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.context.ExecutionContextBuilder;
+import org.trimou.engine.context.ExecutionContext;
+import org.trimou.engine.context.ExecutionContexts;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.listener.MustacheRenderingEvent;
 import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
@@ -46,7 +45,7 @@ public class Template implements Mustache {
 
     private final MustacheEngine engine;
 
-    private final boolean debugMode;
+    private final ExecutionContext globalExecutionContext;
 
     private volatile RootSegment rootSegment;
 
@@ -60,8 +59,8 @@ public class Template implements Mustache {
         this.generatedId = generatedId;
         this.name = name;
         this.engine = engine;
-        this.debugMode = engine.getConfiguration().getBooleanPropertyValue(
-                DEBUG_MODE);
+        this.globalExecutionContext = ExecutionContexts
+                .newGlobalExecutionContext(engine.getConfiguration());
     }
 
     @Override
@@ -89,9 +88,9 @@ public class Template implements Mustache {
                         .generate(MustacheRenderingEvent.class));
         try {
             renderingStarted(event);
-            // Build the execution context and execute the root segment
             rootSegment.execute(appendable,
-                    ExecutionContextBuilder.build(engine, data, debugMode));
+                    data != null ? globalExecutionContext.setContextObject(data)
+                            : globalExecutionContext);
             renderingFinished(event);
         } finally {
             event.release();

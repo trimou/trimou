@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.segment;
 
-import static org.trimou.engine.context.ExecutionContext.TargetStack.CONTEXT;
-
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
@@ -139,9 +137,7 @@ public class SectionSegment extends AbstractSectionSegment implements
             processLambda(appendable, context, value);
         } else {
             // Nested context
-            context.push(CONTEXT, value);
-            super.execute(appendable, context);
-            context.pop(CONTEXT);
+            super.execute(appendable, context.setContextObject(value));
         }
     }
 
@@ -159,11 +155,10 @@ public class SectionSegment extends AbstractSectionSegment implements
                 .getStringPropertyValue(
                         EngineConfigurationKey.ITERATION_METADATA_ALIAS),
                 iterator);
-        context.push(CONTEXT, meta);
         while (iterator.hasNext()) {
-            processIteration(appendable, context, iterator.next(), meta);
+            processIteration(appendable, context.setContextObject(meta),
+                    iterator.next(), meta);
         }
-        context.pop(CONTEXT);
     }
 
     private void processArray(Appendable appendable, ExecutionContext context,
@@ -179,18 +174,15 @@ public class SectionSegment extends AbstractSectionSegment implements
                 .getStringPropertyValue(
                         EngineConfigurationKey.ITERATION_METADATA_ALIAS),
                 length);
-        context.push(CONTEXT, meta);
         for (int i = 0; i < length; i++) {
-            processIteration(appendable, context, Array.get(array, i), meta);
+            processIteration(appendable, context.setContextObject(meta),
+                    Array.get(array, i), meta);
         }
-        context.pop(CONTEXT);
     }
 
     private void processIteration(Appendable appendable,
             ExecutionContext context, Object value, IterationMeta meta) {
-        context.push(CONTEXT, value);
-        super.execute(appendable, context);
-        context.pop(CONTEXT);
+        super.execute(appendable, context.setContextObject(value));
         meta.nextIteration();
     }
 

@@ -44,7 +44,9 @@ public class ExtendSegment extends AbstractSectionSegment {
 
     public ExtendSegment(String text, Origin origin, List<Segment> segments) {
         super(text, origin, segments);
-        this.cachedExtendedTemplate = Segments.isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<Template>() : null;
+        this.cachedExtendedTemplate = Segments
+                .isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<Template>()
+                : null;
     }
 
     @Override
@@ -64,13 +66,7 @@ public class ExtendSegment extends AbstractSectionSegment {
                     "No template to extend found for the given key: %s %s",
                     getText(), getOrigin());
         }
-
-        for (Segment extendSection : this) {
-            context.addDefiningSection(extendSection.getText(),
-                    (ExtendSectionSegment) extendSection);
-        }
-        extended.getRootSegment().execute(appendable, context);
-        context.clearDefiningSections();
+        extended.getRootSegment().execute(appendable, context.setDefiningSections(this));
     }
 
 }

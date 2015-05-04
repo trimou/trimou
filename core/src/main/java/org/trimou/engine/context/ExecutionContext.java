@@ -18,13 +18,16 @@ package org.trimou.engine.context;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.annotations.Internal;
+import org.trimou.engine.parser.Template;
 import org.trimou.engine.resolver.EnhancedResolver.Hint;
-import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
+import org.trimou.engine.segment.Segment;
 
 /**
- * A new execution context is created for each template rendering. Execution
- * context is not considered to be thread-safe.
+ * The execution context is implemented as a hierarchy of immutable objects.
+ * Each modification results in a new child context whose parent represents the
+ * state before the modification. The child context does not copy the entire
+ * state. Instead, it's delegating to parent in some cases.
  *
  * @author Martin Kouba
  */
@@ -37,45 +40,45 @@ public interface ExecutionContext {
      * @param hintRef
      * @return the wrapper for the given key
      */
-    public ValueWrapper getValue(String key, String[] keyParts, AtomicReference<Hint> hintRef);
+    ValueWrapper getValue(String key, String[] keyParts,
+            AtomicReference<Hint> hintRef);
 
     /**
      * @param key
      * @return the wrapper for the given key
      */
-    public ValueWrapper getValue(String key);
+    ValueWrapper getValue(String key);
 
     /**
-     * Push the object on the specified stack.
      *
      * @param object
+     * @return a new child execution context
      */
-    public void push(TargetStack stack, Object object);
+    ExecutionContext setContextObject(Object object);
 
     /**
-     * Remove the object at the top of the specified stack.
      *
-     * @return the removed object
+     * @return the first non-null context object (walking up the hierarchy if
+     *         needed), or <code>null</code> if not found
      */
-    public Object pop(TargetStack stack);
+    Object getFirstContextObject();
 
     /**
-     * Returns the object at the top of the context stack.
      *
-     * @param stack
-     * @return the object at the top of the context stack
+     * @param template
+     * @return a new child execution context
      */
-    Object peek(TargetStack stack);
+    ExecutionContext setTemplateInvocation(Template template);
 
     /**
-     * Associate the specified defining section with the context, but only if no
-     * defining section with the same name is associated.
+     * Associate the given defining sections with the context, but only if no
+     * defining section with the same name is already associated.
      *
-     * @param name
-     * @param segment
+     * @param segments
+     * @return a new child execution context
      * @see ExtendSegment
      */
-    public void addDefiningSection(String name, ExtendSectionSegment segment);
+    ExecutionContext setDefiningSections(Iterable<Segment> segments);
 
     /**
      * @param name
@@ -83,28 +86,12 @@ public interface ExecutionContext {
      *         if no such associated with the context
      * @see ExtendSegment
      */
-    public ExtendSectionSegment getDefiningSection(String name);
-
-    /**
-     * Remove all defining sections. This method should be always called after
-     * an extend segment is executed.
-     */
-    public void clearDefiningSections();
+    Segment getDefiningSection(String name);
 
     /**
      *
-     * @author Martin Kouba
-     *
+     * @return the parent execution context or <code>null</code>
      */
-    public enum TargetStack {
-        /**
-         * Context object stack
-         */
-        CONTEXT,
-        /**
-         * Template invocations stack
-         */
-        TEMPLATE_INVOCATION,
-    }
+    ExecutionContext getParent();
 
 }
