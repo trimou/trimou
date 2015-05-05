@@ -197,8 +197,7 @@ class HelperExecutionHandler {
         public DefaultOptions build(Appendable appendable,
                 ExecutionContext executionContext) {
 
-            ImmutableList.Builder<ValueWrapper> valueWrappers = ImmutableList
-                    .builder();
+            List<ValueWrapper> valueWrappers = new ArrayList<ValueWrapper>();
             List<Object> finalParams;
             Map<String, Object> finalHash;
 
@@ -253,11 +252,11 @@ class HelperExecutionHandler {
             }
 
             return new DefaultOptions(appendable, executionContext, segment,
-                    finalParams, finalHash, valueWrappers.build(), engine);
+                    finalParams, finalHash, valueWrappers, engine);
         }
 
         private Object resolveValue(Object value,
-                ImmutableList.Builder<ValueWrapper> valueWrappers,
+                List<ValueWrapper> valueWrappers,
                 ExecutionContext executionContext) {
 
             if (value instanceof ValuePlaceholder) {
@@ -341,7 +340,7 @@ class HelperExecutionHandler {
 
         @Override
         public void fn() {
-            segment.fn(appendable, executionContext);
+            fn(appendable);
         }
 
         @Override
@@ -428,7 +427,9 @@ class HelperExecutionHandler {
 
         @Override
         public Object getValue(String key) {
-            return executionContext.getValue(key).get();
+            ValueWrapper wrapper = executionContext.getValue(key);
+            valueWrappers.add(wrapper);
+            return wrapper.get();
         }
 
         @Override
@@ -450,10 +451,8 @@ class HelperExecutionHandler {
                 }
             }
             if (pushed > 0) {
-                // All remaining pushed objects are garbage collected
-                // automatically at the end of helper execution
-                logger.warn(
-                        "Cleaned up {} objects pushed on the context stack [helperName: {}, template: {}]",
+                logger.info(
+                        "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
                         new Object[] {
                                 pushed,
                                 HelperValidator.splitHelperName(

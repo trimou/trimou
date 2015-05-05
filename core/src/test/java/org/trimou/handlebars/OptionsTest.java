@@ -2,10 +2,12 @@ package org.trimou.handlebars;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -18,6 +20,9 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.locator.MapTemplateLocator;
+import org.trimou.engine.resolver.AbstractResolver;
+import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.collect.ImmutableMap;
@@ -209,9 +214,42 @@ public class OptionsTest extends AbstractTest {
                     }
                 }).build();
         String literal = "This is /n a foo";
-        assertEquals("", engine.compileMustache("helper_fnappendable",
-                "{{#test}}" + literal + "{{/test}}").render(null));
+        assertEquals(
+                "",
+                engine.compileMustache("helper_fnappendable",
+                        "{{#test}}" + literal + "{{/test}}").render(null));
         assertEquals(literal, builder.toString());
+    }
+
+    @Test
+    public void testGetValue() {
+        final AtomicBoolean released = new AtomicBoolean(false);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(new AbstractResolver(1) {
+                    @Override
+                    public Object resolve(Object contextObject, String name,
+                            ResolutionContext context) {
+                        context.registerReleaseCallback(new ReleaseCallback() {
+
+                            @Override
+                            public void release() {
+                                released.set(true);
+                            }
+                        });
+                        return "foo";
+                    }
+                }).registerHelper("test", new AbstractHelper() {
+                    @Override
+                    public void execute(Options options) {
+                        options.append(options.getValue("key").toString());
+                    }
+                }).build();
+        assertEquals(
+                "foo",
+                engine.compileMustache("helper_getvalue", "{{test}}").render(
+                        "bar"));
+        assertTrue(released.get());
     }
 
 }
