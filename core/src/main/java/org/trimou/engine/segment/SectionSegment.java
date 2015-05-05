@@ -155,8 +155,9 @@ public class SectionSegment extends AbstractSectionSegment implements
                 .getStringPropertyValue(
                         EngineConfigurationKey.ITERATION_METADATA_ALIAS),
                 iterator);
+        context = context.setContextObject(meta);
         while (iterator.hasNext()) {
-            processIteration(appendable, context.setContextObject(meta),
+            processIteration(appendable, context,
                     iterator.next(), meta);
         }
     }
@@ -174,9 +175,9 @@ public class SectionSegment extends AbstractSectionSegment implements
                 .getStringPropertyValue(
                         EngineConfigurationKey.ITERATION_METADATA_ALIAS),
                 length);
+        context = context.setContextObject(meta);
         for (int i = 0; i < length; i++) {
-            processIteration(appendable, context.setContextObject(meta),
-                    Array.get(array, i), meta);
+            processIteration(appendable, context, Array.get(array, i), meta);
         }
     }
 
