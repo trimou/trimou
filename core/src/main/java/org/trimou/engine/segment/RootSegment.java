@@ -21,7 +21,7 @@ import org.trimou.annotations.Internal;
 import org.trimou.engine.context.ExecutionContext;
 
 /**
- * The root segment of a template. The {@link TargetStack#TEMPLATE_INVOCATION} stack is modified when this segment is executed.
+ * The root segment of a template.
  *
  * @author Martin Kouba
  */
@@ -43,8 +43,13 @@ public class RootSegment extends AbstractContainerSegment {
     }
 
     @Override
-    public void execute(Appendable appendable, ExecutionContext context) {
-        super.execute(appendable, context.setTemplateInvocation(getTemplate()));
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
+        return super.execute(appendable,
+                context.setTemplateInvocation(getTemplate()));
+    }
+
+    public static void flushAsyncAppendable(Appendable appendable) {
+        AsyncAppendable.flushIfNeeded(appendable);
     }
 
 }

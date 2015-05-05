@@ -15,21 +15,34 @@
  */
 package org.trimou.handlebars;
 
+import org.trimou.handlebars.Options.HelperExecutable;
+
 /**
- * Works similarly as partial tag except the name of the template to include may
- * be obtained dynamically.
+ * A simple helper whose content is rendered asynchronously.
  *
  * <code>
- * {{include data.template}}
+ * {{#async}}
+ *  This will be rendered asynchronously!
+ * {{/async}}
  * </code>
  *
  * @author Martin Kouba
  */
-public class IncludeHelper extends BasicValueHelper {
+public class AsyncHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
-        options.partial(options.getParameters().get(0).toString());
+        options.executeAsync(new HelperExecutable() {
+            @Override
+            public void execute(Options asyncOptions) {
+                asyncOptions.fn();
+            }
+        });
+    }
+
+    @Override
+    protected int numberOfRequiredParameters() {
+        return 0;
     }
 
 }

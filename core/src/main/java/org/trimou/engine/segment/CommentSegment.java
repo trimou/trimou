@@ -41,8 +41,9 @@ public class CommentSegment extends AbstractSegment {
     }
 
     @Override
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
         // No-op
+        return appendable;
     }
 
     @Override

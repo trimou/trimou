@@ -36,8 +36,9 @@ public class LineSeparatorSegment extends AbstractSegment {
     }
 
     @Override
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
         append(appendable, getText());
+        return appendable;
     }
 
     @Override

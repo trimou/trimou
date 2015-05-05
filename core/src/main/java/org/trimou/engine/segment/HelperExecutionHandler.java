@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,12 +126,13 @@ class HelperExecutionHandler {
      * @param appendable
      * @param executionContext
      */
-    void execute(Appendable appendable, ExecutionContext executionContext) {
+    Appendable execute(Appendable appendable, ExecutionContext executionContext) {
 
         DefaultOptions options = optionsBuilder.build(appendable,
                 executionContext);
         try {
             helper.execute(options);
+            return options.getAppendable();
         } finally {
             options.release();
         }
@@ -300,13 +304,15 @@ class HelperExecutionHandler {
         private static final Logger logger = LoggerFactory
                 .getLogger(DefaultOptions.class);
 
+        protected final List<ValueWrapper> valueWrappers;
+
+        protected Appendable appendable;
+
+        protected int pushed;
+
+        protected ExecutionContext executionContext;
+
         private final MustacheEngine engine;
-
-        private final List<ValueWrapper> valueWrappers;
-
-        private int pushed = 0;
-
-        private ExecutionContext executionContext;
 
         private final HelperAwareSegment segment;
 
@@ -314,19 +320,39 @@ class HelperExecutionHandler {
 
         private final Map<String, Object> hash;
 
-        private final Appendable appendable;
-
-        public DefaultOptions(Appendable appendable,
+        /**
+         *
+         * @param appendable
+         * @param executionContext
+         * @param segment
+         * @param parameters
+         * @param hash
+         * @param valueWrappers
+         * @param engine
+         */
+        DefaultOptions(Appendable appendable,
                 ExecutionContext executionContext, HelperAwareSegment segment,
                 List<Object> parameters, Map<String, Object> hash,
                 List<ValueWrapper> valueWrappers, MustacheEngine engine) {
             this.appendable = appendable;
+            this.valueWrappers = valueWrappers;
+            this.executionContext = executionContext;
+            this.pushed = 0;
             this.executionContext = executionContext;
             this.segment = segment;
             this.parameters = parameters;
             this.hash = hash;
-            this.valueWrappers = valueWrappers;
             this.engine = engine;
+        }
+
+        @Override
+        public List<Object> getParameters() {
+            return parameters;
+        }
+
+        @Override
+        public Map<String, Object> getHash() {
+            return hash;
         }
 
         @Override
@@ -340,51 +366,12 @@ class HelperExecutionHandler {
 
         @Override
         public void fn() {
-            fn(appendable);
+            appendable = segment.fn(appendable, executionContext);
         }
 
         @Override
         public void partial(String templateId) {
-            Checker.checkArgumentNotEmpty(templateId);
-
-            Template partialTemplate = (Template) engine
-                    .getMustache(templateId);
-
-            if (partialTemplate == null) {
-                throw new MustacheException(
-                        MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
-                        "No partial found for the given key: %s %s",
-                        templateId, segment.getOrigin());
-            }
-
-            // Note that indentation is not supported
-            partialTemplate.getRootSegment().execute(appendable,
-                    executionContext);
-        }
-
-        @Override
-        public String source(String templateId) {
-            Checker.checkArgumentNotEmpty(templateId);
-
-            String mustacheSource = engine.getMustacheSource(templateId);
-
-            if (mustacheSource == null) {
-                throw new MustacheException(
-                        MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
-                        "No mustache template found for the given key: %s %s",
-                        templateId, segment.getOrigin());
-            }
-            return mustacheSource;
-        }
-
-        @Override
-        public List<Object> getParameters() {
-            return parameters;
-        }
-
-        @Override
-        public Map<String, Object> getHash() {
-            return hash;
+            partial(templateId, appendable);
         }
 
         @Override
@@ -411,8 +398,63 @@ class HelperExecutionHandler {
         }
 
         @Override
-        public MustacheTagInfo getTagInfo() {
-            return segment.getTagInfo();
+        public Object getValue(String key) {
+            ValueWrapper wrapper = executionContext.getValue(key);
+            valueWrappers.add(wrapper);
+            return wrapper.get();
+        }
+
+        @Override
+        public void partial(String templateId, Appendable appendable) {
+            partial(templateId, appendable, executionContext);
+        }
+
+        @Override
+        public void executeAsync(final HelperExecutable executable) {
+            // For async execution we need to wrap the original appendable
+            final AsyncAppendable asyncAppendable = new AsyncAppendable(
+                    appendable);
+
+            // Now submit the executable and get the future
+            ExecutorService executor = engine.getConfiguration()
+                    .geExecutorService();
+            if (executor == null) {
+                throw new MustacheException(
+                        MustacheProblem.RENDER_ASYNC_PROCESSING_ERROR,
+                        "ExecutorService must be set in order to submit an asynchronous task");
+            }
+            Future<AsyncAppendable> future = executor
+                    .submit(new Callable<AsyncAppendable>() {
+                        @Override
+                        public AsyncAppendable call() throws Exception {
+                            // We need a separate appendable for the async
+                            // execution
+                            DefaultOptions asyncOptions = new DefaultOptions(
+                                    new AsyncAppendable(asyncAppendable),
+                                    executionContext, segment, parameters,
+                                    hash, new ArrayList<ValueWrapper>(), engine);
+                            executable.execute(asyncOptions);
+                            return (AsyncAppendable) asyncOptions
+                                    .getAppendable();
+                        }
+                    });
+            asyncAppendable.setFuture(future);
+            this.appendable = asyncAppendable;
+        }
+
+        @Override
+        public String source(String templateId) {
+            Checker.checkArgumentNotEmpty(templateId);
+
+            String mustacheSource = engine.getMustacheSource(templateId);
+
+            if (mustacheSource == null) {
+                throw new MustacheException(
+                        MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
+                        "No mustache template found for the given key: %s %s",
+                        templateId, segment.getOrigin());
+            }
+            return mustacheSource;
         }
 
         @Override
@@ -426,10 +468,8 @@ class HelperExecutionHandler {
         }
 
         @Override
-        public Object getValue(String key) {
-            ValueWrapper wrapper = executionContext.getValue(key);
-            valueWrappers.add(wrapper);
-            return wrapper.get();
+        public MustacheTagInfo getTagInfo() {
+            return segment.getTagInfo();
         }
 
         @Override
@@ -439,6 +479,24 @@ class HelperExecutionHandler {
             } else {
                 return Strings.EMPTY;
             }
+        }
+
+        protected void partial(String templateId, Appendable appendable,
+                ExecutionContext executionContext) {
+            Checker.checkArgumentsNotNull(templateId, appendable);
+
+            Template partialTemplate = (Template) engine
+                    .getMustache(templateId);
+
+            if (partialTemplate == null) {
+                throw new MustacheException(
+                        MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
+                        "No partial found for the given key: %s %s",
+                        templateId, segment.getOrigin());
+            }
+            // Note that indentation is not supported
+            partialTemplate.getRootSegment().execute(appendable,
+                    executionContext);
         }
 
         void release() {
@@ -455,9 +513,11 @@ class HelperExecutionHandler {
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
                         new Object[] {
                                 pushed,
-                                HelperValidator.splitHelperName(
-                                        getTagInfo().getText(), segment).next(),
-                                getTagInfo().getTemplateName() });
+                                HelperValidator
+                                        .splitHelperName(
+                                                segment.getTagInfo().getText(),
+                                                segment).next(),
+                                segment.getTagInfo().getTemplateName() });
             }
         }
 

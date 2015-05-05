@@ -64,7 +64,7 @@ public class PartialSegment extends AbstractSegment {
     }
 
     @Override
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
 
         Template partialTemplate = Segments.getTemplate(cachedPartialTemplate,
                 getText(), getEngine());
@@ -77,10 +77,11 @@ public class PartialSegment extends AbstractSegment {
         }
 
         if (indentation == null) {
-            partialTemplate.getRootSegment().execute(appendable, context);
+            appendable = partialTemplate.getRootSegment().execute(appendable, context);
         } else {
             prependIndentation(appendable, context.setTemplateInvocation(partialTemplate), partialTemplate);
         }
+        return appendable;
     }
 
     @Override

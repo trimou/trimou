@@ -48,11 +48,13 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
         return SegmentType.INVERTED_SECTION;
     }
 
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
         ValueWrapper value = context.getValue(getText());
         try {
             if (value.isNull() || process(value.get())) {
-                super.execute(appendable, context);
+                return super.execute(appendable, context);
+            } else {
+                return appendable;
             }
         } finally {
             value.release();

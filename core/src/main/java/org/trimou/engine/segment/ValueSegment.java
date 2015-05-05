@@ -94,9 +94,9 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         return unescape;
     }
 
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
         if (helperHandler != null) {
-            helperHandler.execute(appendable, context);
+            return helperHandler.execute(appendable, context);
         } else {
             ValueWrapper value = context.getValue(getText(), keyParts, hint);
             try {
@@ -115,12 +115,14 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
             } finally {
                 value.release();
             }
+            return appendable;
         }
     }
 
     @Override
-    public void fn(Appendable appendable, ExecutionContext context) {
+    public Appendable fn(Appendable appendable, ExecutionContext context) {
         // No-op
+        return appendable;
     }
 
     @Override

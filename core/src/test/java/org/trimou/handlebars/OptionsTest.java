@@ -252,4 +252,34 @@ public class OptionsTest extends AbstractTest {
         assertTrue(released.get());
     }
 
+    @Test
+    public void testAsyncExecution() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .registerHelper("async", new AbstractHelper() {
+
+                    @Override
+                    public void execute(Options options) {
+                        options.executeAsync(new Options.HelperExecutable() {
+
+                            @Override
+                            public void execute(Options options) {
+                                try {
+                                    Thread.sleep(50);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                options.append("done");
+                            }
+                        });
+                    }
+                }).build();
+
+        assertEquals(
+                "done my friend",
+                engine.compileMustache("helper_asynexec", "{{async}} my friend")
+                        .render("bar"));
+
+    }
+
 }

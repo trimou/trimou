@@ -15,56 +15,31 @@
  */
 package org.trimou.engine.segment;
 
-import java.util.Iterator;
-
 import org.trimou.engine.resolver.Mapper;
 
 /**
- * Iteration metadata.
+ * Immutable iteration metadata.
  *
  * @author Martin Kouba
  */
-public final class IterationMeta implements Mapper {
-
-    static final String KEY_INDEX = "iterIndex";
-
-    static final String KEY_HAS_NEXT = "iterHasNext";
-
-    static final String KEY_FIRST = "iterIsFirst";
-
-    static final String KEY_LAST = "iterIsLast";
+public final class ImmutableIterationMeta implements Mapper {
 
     private final String alias;
 
-    private final Iterator<?> iterator;
+    private final int size;
 
-    private final int length;
-
-    private int index;
+    private final int index;
 
     /**
      *
      * @param alias
-     * @param iterator
+     * @param size
+     * @param index
      */
-    public IterationMeta(String alias, Iterator<?> iterator) {
-        this(alias, iterator, 0);
-    }
-
-    /**
-     *
-     * @param alias
-     * @param length
-     */
-    public IterationMeta(String alias, int length) {
-        this(alias, null, length);
-    }
-
-    private IterationMeta(String alias, Iterator<?> iterator, int length) {
+    public ImmutableIterationMeta(String alias, int size, int index) {
         this.alias = alias;
-        this.iterator = iterator;
-        this.index = 1;
-        this.length = length;
+        this.size = size;
+        this.index = index;
     }
 
     /**
@@ -78,8 +53,8 @@ public final class IterationMeta implements Mapper {
 
     /**
      * The name for {@link #getIndex()} was poorly chosen. We should have used
-     * <code>getCount()</code> instead. But we can't change it now - it would break
-     * backward compatibility.
+     * <code>getCount()</code> instead. But we can't change it now - it would
+     * break backward compatibility.
      *
      * @return the position of the current element, the first element has
      *         position <code>0</code>
@@ -94,7 +69,7 @@ public final class IterationMeta implements Mapper {
      *         <code>false</code> otherwise
      */
     public boolean hasNext() {
-        return iterator != null ? iterator.hasNext() : (index < length);
+        return index < size;
     }
 
     /**
@@ -112,7 +87,7 @@ public final class IterationMeta implements Mapper {
      *         otherwise
      */
     public boolean isLast() {
-        return iterator != null ? !iterator.hasNext() : (index == length);
+        return index == size;
     }
 
     /**
@@ -133,23 +108,19 @@ public final class IterationMeta implements Mapper {
         return index % 2 == 0;
     }
 
-    public void nextIteration() {
-        index++;
-    }
-
     @Override
     public Object get(String key) {
         if (alias.equals(key)) {
             return this;
         }
         // Preserved for backwards compatibility
-        if (KEY_INDEX.equals(key)) {
+        if (IterationMeta.KEY_INDEX.equals(key)) {
             return getIndex();
-        } else if (KEY_HAS_NEXT.equals(key)) {
+        } else if (IterationMeta.KEY_HAS_NEXT.equals(key)) {
             return hasNext();
-        } else if (KEY_FIRST.equals(key)) {
+        } else if (IterationMeta.KEY_FIRST.equals(key)) {
             return isFirst();
-        } else if (KEY_LAST.equals(key)) {
+        } else if (IterationMeta.KEY_LAST.equals(key)) {
             return isLast();
         }
         return null;

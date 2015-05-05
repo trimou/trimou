@@ -44,10 +44,11 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
         this.segments = segments;
     }
 
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
         for (Segment segment : segments) {
-            segment.execute(appendable, context);
+            appendable = segment.execute(appendable, context);
         }
+        return appendable;
     }
 
     @Override

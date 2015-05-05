@@ -19,8 +19,8 @@ import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.exception.MustacheException;
 
 /**
- * Options represent a helper execution context - a new instance is created for
- * every execution.
+ * This objects represents a helper execution context. A new instance is created
+ * for every execution. It is not thread-safe.
  *
  * @author Martin Kouba
  * @since 1.5
@@ -120,5 +120,40 @@ public interface Options extends HelperDefinition {
      * @since 1.8
      */
     Object getValue(String key);
+
+    /**
+     * Render the template with the current context and append the result to the
+     * given appendable.
+     *
+     * @param templateId
+     * @throws MustacheException
+     *             If there's no such template
+     * @since 1.8
+     */
+    void partial(String templateId, Appendable appendable);
+
+    /**
+     * Executes the given {@link HelperExecutable} asynchronously.
+     *
+     * @param executable
+     * @since 1.8
+     */
+    void executeAsync(HelperExecutable executable);
+
+    /**
+     * A helper task to be executed asynchronously.
+     *
+     * @author Martin Kouba
+     * @since 1.8
+     */
+    public interface HelperExecutable {
+
+        /**
+         *
+         * @param options
+         */
+        void execute(Options asyncOptions);
+
+    }
 
 }

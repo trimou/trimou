@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,8 @@ class DefaultConfiguration implements Configuration {
     private final ComputingCacheFactory computingCacheFactory;
 
     private final IdentifierGenerator identifierGenerator;
+
+    private final ExecutorService executorService;
 
     /**
      *
@@ -186,6 +189,7 @@ class DefaultConfiguration implements Configuration {
         this.resolvers = ImmutableList.copyOf(resolvers);
         this.mustacheListeners = mustacheListeners.isEmpty() ? null
                 : mustacheListeners;
+        this.executorService = builder.getExecutorService();
     }
 
     @Override
@@ -324,6 +328,11 @@ class DefaultConfiguration implements Configuration {
     @Override
     public IdentifierGenerator getIdentifierGenerator() {
         return identifierGenerator;
+    }
+
+    @Override
+    public ExecutorService geExecutorService() {
+        return executorService;
     }
 
     private void initializeConfigurationAwareComponents(

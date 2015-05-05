@@ -29,7 +29,8 @@ import com.google.common.base.Optional;
  */
 public abstract class BasicHelper extends AbstractHelper {
 
-    protected static final Optional<Set<String>> NO_SUPPORTED_HASH_KEYS = Optional.of(Collections.<String>emptySet());
+    protected static final Optional<Set<String>> NO_SUPPORTED_HASH_KEYS = Optional
+            .of(Collections.<String> emptySet());
 
     protected static final MustacheTagType[] HELPER_TAG_TYPES = new MustacheTagType[] {
             MustacheTagType.SECTION, MustacheTagType.VARIABLE,

@@ -45,6 +45,7 @@ public enum MustacheProblem implements ProblemCode {
     RENDER_HELPER_INVALID_OPTIONS,
     RENDER_HELPER_INVALID_POP_OPERATION,
     RENDER_GENERIC_ERROR,
+    RENDER_ASYNC_PROCESSING_ERROR,
     // Configuration problems
     CONFIG_PROPERTY_INVALID_VALUE, ;
 

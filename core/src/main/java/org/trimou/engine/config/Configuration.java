@@ -17,6 +17,7 @@ package org.trimou.engine.config;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
@@ -30,6 +31,7 @@ import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
+import org.trimou.handlebars.Options;
 
 /**
  * Mustache engine configuration.
@@ -135,5 +137,13 @@ public interface Configuration {
      * @since 1.7
      */
     public IdentifierGenerator getIdentifierGenerator();
+
+    /**
+     *
+     * @return the executor service to be used for async tasks
+     * @see Options#executeAsync(org.trimou.handlebars.Options.HelperExecutable)
+     * @since 1.8
+     */
+    public ExecutorService geExecutorService();
 
 }

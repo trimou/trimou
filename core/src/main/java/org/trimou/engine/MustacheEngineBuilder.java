@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -87,6 +88,8 @@ public final class MustacheEngineBuilder implements
     private ComputingCacheFactory computingCacheFactory;
 
     private IdentifierGenerator identifierGenerator;
+
+    private ExecutorService executorService;
 
     /**
      * Don't create a new instance.
@@ -350,6 +353,19 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * Set the {@link ExecutorService} to be used for async tasks.
+     *
+     * @param executorService
+     * @return self
+     */
+    public MustacheEngineBuilder setExecutorService(ExecutorService executorService) {
+        Checker.checkArgumentNotNull(executorService);
+        checkIsMutable("setExecutorService()");
+        this.executorService = executorService;
+        return this;
+    }
+
+    /**
      *
      * @return new instance of builder
      */
@@ -418,6 +434,10 @@ public final class MustacheEngineBuilder implements
 
     public IdentifierGenerator getIdentifierGenerator() {
         return identifierGenerator;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
     private void checkIsMutable(String methodName) {

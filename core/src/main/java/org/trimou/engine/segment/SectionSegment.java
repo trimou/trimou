@@ -26,7 +26,6 @@ import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
 import org.trimou.handlebars.HelperValidator;
-import org.trimou.handlebars.Options;
 import org.trimou.lambda.Lambda;
 
 /**
@@ -76,30 +75,25 @@ public class SectionSegment extends AbstractSectionSegment implements
         return SegmentType.SECTION;
     }
 
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
         if (helperHandler != null) {
-            helperHandler.execute(appendable, context);
+            return helperHandler.execute(appendable, context);
         } else {
             ValueWrapper value = context.getValue(getText());
             try {
                 if (value.isNull()) {
-                    return;
+                    return appendable;
                 }
                 processValue(appendable, context, value.get());
             } finally {
                 value.release();
             }
+            return appendable;
         }
     }
 
-    /**
-     *
-     * @param appendable
-     * @param context
-     * @see Options#fn()
-     */
-    public void fn(Appendable appendable, ExecutionContext context) {
-        super.execute(appendable, context);
+    public Appendable fn(Appendable appendable, ExecutionContext context) {
+        return super.execute(appendable, context);
     }
 
     @Override

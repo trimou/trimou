@@ -88,9 +88,12 @@ public class Template implements Mustache {
                         .generate(MustacheRenderingEvent.class));
         try {
             renderingStarted(event);
-            rootSegment.execute(appendable,
-                    data != null ? globalExecutionContext.setContextObject(data)
-                            : globalExecutionContext);
+            appendable = rootSegment.execute(
+                    appendable,
+                    data != null ? globalExecutionContext
+                            .setContextObject(data) : globalExecutionContext);
+            // We need for flush the async appendable if needed
+            RootSegment.flushAsyncAppendable(appendable);
             renderingFinished(event);
         } finally {
             event.release();

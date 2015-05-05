@@ -40,21 +40,21 @@ public class ExtendSectionSegment extends AbstractSectionSegment {
     }
 
     @Override
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
 
         ExtendSectionSegment defining = (ExtendSectionSegment) context
                 .getDefiningSection(getText());
 
         if (defining != null) {
-            defining.executeNoDefiningLookup(appendable, context);
+            return defining.executeNoDefiningLookup(appendable, context);
         } else {
-            super.execute(appendable, context);
+            return super.execute(appendable, context);
         }
     }
 
-    protected void executeNoDefiningLookup(Appendable appendable,
+    protected Appendable executeNoDefiningLookup(Appendable appendable,
             ExecutionContext context) {
-        super.execute(appendable, context);
+        return super.execute(appendable, context);
     }
 
 }

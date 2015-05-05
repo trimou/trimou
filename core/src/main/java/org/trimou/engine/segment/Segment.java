@@ -68,7 +68,8 @@ public interface Segment {
      *
      * @param appendable
      * @param context
+     * @return the appendable which should be used for the next executions
      */
-    public void execute(Appendable appendable, ExecutionContext context);
+    public Appendable execute(Appendable appendable, ExecutionContext context);
 
 }

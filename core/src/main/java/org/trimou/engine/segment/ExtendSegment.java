@@ -55,7 +55,7 @@ public class ExtendSegment extends AbstractSectionSegment {
     }
 
     @Override
-    public void execute(Appendable appendable, ExecutionContext context) {
+    public Appendable execute(Appendable appendable, ExecutionContext context) {
 
         Template extended = Segments.getTemplate(cachedExtendedTemplate,
                 getText(), getEngine());
@@ -66,7 +66,7 @@ public class ExtendSegment extends AbstractSectionSegment {
                     "No template to extend found for the given key: %s %s",
                     getText(), getOrigin());
         }
-        extended.getRootSegment().execute(appendable, context.setDefiningSections(this));
+        return extended.getRootSegment().execute(appendable, context.setDefiningSections(this));
     }
 
 }

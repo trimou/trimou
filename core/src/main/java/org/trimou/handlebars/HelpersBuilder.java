@@ -85,6 +85,8 @@ public final class HelpersBuilder {
 
     public static final String NUMERIC_EXPRESSION = "numExpr";
 
+    public static final String ASYNC = "async";
+
     private final ImmutableMap.Builder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -338,6 +340,17 @@ public final class HelpersBuilder {
     }
 
     /**
+     * Add an instance of {@link AsyncHelper}.
+     *
+     * @return self
+     */
+    public HelpersBuilder addAsync() {
+        builder.put(ASYNC, new AsyncHelper());
+        return this;
+    }
+
+
+    /**
      *
      * @return self
      */
@@ -369,6 +382,7 @@ public final class HelpersBuilder {
         addJoin();
         addEval();
         addNumExpr();
+        addAsync();
         return this;
     }
 
