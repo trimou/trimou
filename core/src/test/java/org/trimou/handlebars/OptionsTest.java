@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -254,7 +255,11 @@ public class OptionsTest extends AbstractTest {
 
     @Test
     public void testAsyncExecution() {
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .setExecutorService(
+                        Executors.newFixedThreadPool(Runtime.getRuntime()
+                                .availableProcessors()))
                 .omitServiceLoaderConfigurationExtensions()
                 .registerHelper("async", new AbstractHelper() {
 
