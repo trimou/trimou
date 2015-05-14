@@ -49,21 +49,10 @@ import com.google.common.cache.RemovalNotification;
 public class ReflectionResolver extends AbstractResolver implements
         RemovalListener<MemberKey, Optional<MemberWrapper>> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(ReflectionResolver.class);
-
     public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
     public static final String COMPUTING_CACHE_CONSUMER_ID = ReflectionResolver.class
             .getName();
-
-    public ReflectionResolver() {
-        this(REFLECTION_RESOLVER_PRIORITY);
-    }
-
-    public ReflectionResolver(int priority) {
-        super(priority);
-    }
 
     /**
      * Limit the size of the cache (e.g. to avoid problems when dynamic class
@@ -73,9 +62,28 @@ public class ReflectionResolver extends AbstractResolver implements
             ReflectionResolver.class.getName() + ".memberCacheMaxSize", 10000l);
 
     /**
+     * Even if the runtime class of the context object changes try to apply the resolver.  
+     */
+    public static final ConfigurationKey HINT_FALLBACK_ENABLED_KEY = new SimpleConfigurationKey(
+            ReflectionResolver.class.getName() + ".hintFallbackEnabled", true);
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(ReflectionResolver.class);
+
+    /**
      * Lazy loading cache of lookup attempts (contains both hits and misses)
      */
     private ComputingCache<MemberKey, Optional<MemberWrapper>> memberCache;
+
+    private boolean hintFallbackEnabled;
+
+    public ReflectionResolver() {
+        this(REFLECTION_RESOLVER_PRIORITY);
+    }
+
+    public ReflectionResolver(int priority) {
+        super(priority);
+    }
 
     @Override
     public Object resolve(Object contextObject, String name,
@@ -132,6 +140,8 @@ public class ReflectionResolver extends AbstractResolver implements
                     COMPUTING_CACHE_CONSUMER_ID, new MemberComputingFunction(),
                     null, memberCacheMaxSize, null);
         }
+        hintFallbackEnabled = configuration
+                .getBooleanPropertyValue(HINT_FALLBACK_ENABLED_KEY);
     }
 
     @Override
@@ -186,7 +196,7 @@ public class ReflectionResolver extends AbstractResolver implements
                 key.getName());
 
         if (foundMethod != null) {
-            if(!foundMethod.isAccessible()) {
+            if (!foundMethod.isAccessible()) {
                 SecurityActions.setAccessible(foundMethod);
             }
             return Optional.<MemberWrapper> of(new MethodWrapper(foundMethod));
@@ -196,7 +206,7 @@ public class ReflectionResolver extends AbstractResolver implements
         Field foundField = Reflections.findField(key.getClazz(), key.getName());
 
         if (foundField != null) {
-            if(!foundField.isAccessible()) {
+            if (!foundField.isAccessible()) {
                 SecurityActions.setAccessible(foundField);
             }
             return Optional.<MemberWrapper> of(new FieldWrapper(foundField));
@@ -215,7 +225,7 @@ public class ReflectionResolver extends AbstractResolver implements
 
     }
 
-    private static class ReflectionHint implements Hint {
+    private class ReflectionHint implements Hint {
 
         private final MemberKey key;
 
@@ -233,17 +243,22 @@ public class ReflectionResolver extends AbstractResolver implements
 
         @Override
         public Object resolve(Object contextObject, String name) {
-            if (contextObject == null
-                    || !key.getClazz().equals(contextObject.getClass())) {
-                // No context object or the runtime class of the context object
-                // changed
+            if (contextObject == null) {
                 return null;
             }
-            try {
-                return wrapper.getValue(contextObject);
-            } catch (Exception e) {
-                return null;
+            if (key.getClazz().equals(contextObject.getClass())) {
+                try {
+                    return wrapper.getValue(contextObject);
+                } catch (Exception e) {
+                    return null;
+                }
             }
+            // The runtime class of the context object changed
+            if (ReflectionResolver.this.hintFallbackEnabled) {
+                return ReflectionResolver.this.resolve(contextObject, name,
+                        null);
+            }
+            return null;
         }
     }
 
