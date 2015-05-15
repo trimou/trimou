@@ -76,7 +76,8 @@
         <version.springframework>3.1.0.RELEASE</version.springframework>
         <version.dropwizard>0.7.0</version.dropwizard>
         <version.jersey.test.framework>1.18.1</version.jersey.test.framework>
-        <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
     </properties>
 
     <build>

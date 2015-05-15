@@ -15,9 +15,12 @@
  */
 package org.trimou.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -58,6 +61,8 @@ public final class MustacheEngineBuilder implements
 
     private static final Logger logger = LoggerFactory
             .getLogger(MustacheEngineBuilder.class);
+
+    private static final String BUILD_PROPERTIES_FILE = "/trimou-build.properties";
 
     private boolean omitServiceLoaderConfigurationExtensions;
 
@@ -117,12 +122,48 @@ public final class MustacheEngineBuilder implements
         for (EngineBuiltCallback callback : engineReadyCallbacks) {
             callback.engineBuilt(engine);
         }
-        Package pack = MustacheEngine.class.getPackage();
-        logger.info(
-                "Engine built {}{}",
-                StringUtils.isEmpty(pack.getSpecificationVersion()) ? "SNAPSHOT"
-                        : pack.getSpecificationVersion(), engine
-                        .getConfiguration().getInfo());
+
+        String version = null;
+        String timestamp = null;
+
+        // First try to get trimou-build.properties file
+        InputStream in = MustacheEngineBuilder.class
+                .getResourceAsStream(BUILD_PROPERTIES_FILE);
+
+        try {
+            if (in != null) {
+                try {
+                    Properties buildProperties = new Properties();
+                    buildProperties.load(in);
+                    version = buildProperties.getProperty("version");
+                    timestamp = buildProperties.getProperty("timestamp");
+                } finally {
+                    in.close();
+                }
+            }
+        } catch (IOException e) {
+            // No-op
+        }
+        if (version == null) {
+            // If not available use the manifest info
+            Package pack = MustacheEngineBuilder.class.getPackage();
+            version = pack.getSpecificationVersion();
+            timestamp = pack.getImplementationVersion();
+        }
+        if (StringUtils.isEmpty(version)) {
+            version = "SNAPSHOT";
+            timestamp = "n/a";
+        }
+
+        int idx = timestamp.indexOf('T');
+        if (idx > 0) {
+            timestamp = timestamp.substring(0, idx);
+        }
+
+        logger.info("Engine built {} ({})", version, timestamp);
+        logger.debug("Engine configuration: "
+                + engine.getConfiguration().getInfo());
+
         isMutable = false;
         return engine;
     }
@@ -358,7 +399,8 @@ public final class MustacheEngineBuilder implements
      * @param executorService
      * @return self
      */
-    public MustacheEngineBuilder setExecutorService(ExecutorService executorService) {
+    public MustacheEngineBuilder setExecutorService(
+            ExecutorService executorService) {
         Checker.checkArgumentNotNull(executorService);
         checkIsMutable("setExecutorService()");
         this.executorService = executorService;
