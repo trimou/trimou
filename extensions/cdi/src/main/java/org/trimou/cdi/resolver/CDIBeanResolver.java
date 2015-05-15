@@ -49,7 +49,6 @@ import com.google.common.base.Optional;
  *
  * @author Martin Kouba
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class CDIBeanResolver extends AbstractResolver {
 
     private static final Logger logger = LoggerFactory
@@ -65,21 +64,37 @@ public class CDIBeanResolver extends AbstractResolver {
 
     private BeanManager beanManager;
 
-    private ComputingCache<String, Optional<Bean>> beanCache;
+    private ComputingCache<String, Optional<Bean<?>>> beanCache;
 
+    /**
+     *
+     */
     public CDIBeanResolver() {
         this(CDI_BEAN_RESOLVER_PRIORITY);
     }
 
+    /**
+     *
+     * @param priority
+     */
     public CDIBeanResolver(int priority) {
         super(priority);
     }
 
+    /**
+     *
+     * @param beanManager
+     * @param priority
+     */
     public CDIBeanResolver(BeanManager beanManager, int priority) {
         this(priority);
         this.beanManager = beanManager;
     }
 
+    /**
+     *
+     * @param beanManager
+     */
     public CDIBeanResolver(BeanManager beanManager) {
         this(CDI_BEAN_RESOLVER_PRIORITY);
         this.beanManager = beanManager;
@@ -93,7 +108,7 @@ public class CDIBeanResolver extends AbstractResolver {
             return null;
         }
 
-        Optional<Bean> bean = beanCache.get(name);
+        Optional<Bean<?>> bean = beanCache.get(name);
 
         if (!bean.isPresent()) {
             // Unsuccessful lookup already performed
@@ -119,9 +134,9 @@ public class CDIBeanResolver extends AbstractResolver {
 
         beanCache = configuration.getComputingCacheFactory().create(
                 COMPUTING_CACHE_CONSUMER_ID,
-                new ComputingCache.Function<String, Optional<Bean>>() {
+                new ComputingCache.Function<String, Optional<Bean<?>>>() {
                     @Override
-                    public Optional<Bean> compute(String key) {
+                    public Optional<Bean<?>> compute(String key) {
 
                         Set<Bean<?>> beans = beanManager.getBeans(key);
 
@@ -131,7 +146,7 @@ public class CDIBeanResolver extends AbstractResolver {
                         }
 
                         try {
-                            return Optional.of((Bean) beanManager
+                            return Optional.<Bean<?>> of((Bean<?>) beanManager
                                     .resolve(beans));
                         } catch (AmbiguousResolutionException e) {
                             logger.warn(
@@ -142,7 +157,7 @@ public class CDIBeanResolver extends AbstractResolver {
 
                     }
                 }, null, beanCacheMaxSize, null);
-        logger.info("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
+        logger.debug("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
     }
 
     @Override
@@ -151,15 +166,15 @@ public class CDIBeanResolver extends AbstractResolver {
                 .<ConfigurationKey> singleton(BEAN_CACHE_MAX_SIZE_KEY);
     }
 
-    private Object getReference(Bean bean, ResolutionContext context) {
+    private <T> Object getReference(Bean<T> bean, ResolutionContext context) {
 
-        CreationalContext creationalContext = beanManager
+        CreationalContext<T> creationalContext = beanManager
                 .createCreationalContext(bean);
 
         if (Dependent.class.equals(bean.getScope())) {
-            Object reference = bean.create(creationalContext);
-            context.registerReleaseCallback(new DependentDestroyCallback(bean,
-                    creationalContext, reference));
+            T reference = bean.create(creationalContext);
+            context.registerReleaseCallback(new DependentDestroyCallback<T>(
+                    bean, creationalContext, reference));
             return reference;
 
         } else {
@@ -168,17 +183,28 @@ public class CDIBeanResolver extends AbstractResolver {
         }
     }
 
-    static class DependentDestroyCallback implements ReleaseCallback {
+    @Override
+    public Hint createHint(Object contextObject, String name,
+            ResolutionContext context) {
+        if (contextObject == null) {
+            Optional<Bean<?>> bean = beanCache.getIfPresent(name);
+            if (bean.isPresent()) {
+                return new CDIBeanHint(bean.get());
+            }
+        }
+        return INAPPLICABLE_HINT;
+    }
 
-        private final Bean bean;
+    static class DependentDestroyCallback<T> implements ReleaseCallback {
 
-        private final CreationalContext creationalContext;
+        private final Bean<T> bean;
 
-        private final Object instance;
+        private final CreationalContext<T> creationalContext;
 
-        private DependentDestroyCallback(Bean<?> bean,
-                CreationalContext<?> creationalContext, Object instance) {
-            super();
+        private final T instance;
+
+        private DependentDestroyCallback(Bean<T> bean,
+                CreationalContext<T> creationalContext, T instance) {
             this.bean = bean;
             this.creationalContext = creationalContext;
             this.instance = instance;
@@ -187,6 +213,29 @@ public class CDIBeanResolver extends AbstractResolver {
         @Override
         public void release() {
             bean.destroy(instance, creationalContext);
+        }
+
+    }
+
+    private class CDIBeanHint implements Hint {
+
+        private final Bean<?> bean;
+
+        /**
+         *
+         * @param bean
+         */
+        public CDIBeanHint(Bean<?> bean) {
+            this.bean = bean;
+        }
+
+        @Override
+        public Object resolve(Object contextObject, String name,
+                ResolutionContext context) {
+            if (contextObject != null) {
+                return null;
+            }
+            return CDIBeanResolver.this.getReference(bean, context);
         }
 
     }

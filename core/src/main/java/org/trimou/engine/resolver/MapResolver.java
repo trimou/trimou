@@ -39,8 +39,9 @@ public class MapResolver extends AbstractResolver {
         super(priority);
         this.hint = new Hint() {
             @Override
-            public Object resolve(Object contextObject, String name) {
-                return MapResolver.this.resolve(contextObject, name, null);
+            public Object resolve(Object contextObject, String name,
+                    ResolutionContext context) {
+                return MapResolver.this.resolve(contextObject, name, context);
             }
         };
     }
@@ -64,7 +65,8 @@ public class MapResolver extends AbstractResolver {
     }
 
     @Override
-    public Hint createHint(Object contextObject, String name) {
+    public Hint createHint(Object contextObject, String name,
+            ResolutionContext context) {
         return hint;
     }
 

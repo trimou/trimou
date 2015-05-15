@@ -66,9 +66,10 @@ public class JsonElementResolver extends IndexResolver {
         super(priority);
         this.hint = new Hint() {
             @Override
-            public Object resolve(Object contextObject, String name) {
+            public Object resolve(Object contextObject, String name,
+                    ResolutionContext context) {
                 return JsonElementResolver.this.resolve(contextObject, name,
-                        null);
+                        context);
             }
         };
     }
@@ -117,7 +118,8 @@ public class JsonElementResolver extends IndexResolver {
     }
 
     @Override
-    public Hint createHint(Object contextObject, String name) {
+    public Hint createHint(Object contextObject, String name,
+            ResolutionContext context) {
         return hint;
     }
 

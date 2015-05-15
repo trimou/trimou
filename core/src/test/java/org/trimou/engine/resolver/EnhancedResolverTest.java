@@ -40,10 +40,10 @@ public class EnhancedResolverTest extends AbstractTest {
             }
 
             @Override
-            public Hint createHint(Object contextObject, String name) {
+            public Hint createHint(Object contextObject, String name, ResolutionContext context) {
                 return new Hint() {
                     @Override
-                    public Object resolve(Object contextObject, String name) {
+                    public Object resolve(Object contextObject, String name, ResolutionContext context) {
                         hintCounter.incrementAndGet();
                         if (hintCounter.get() <= 2) {
                             hintNames.add(name);
@@ -96,10 +96,10 @@ public class EnhancedResolverTest extends AbstractTest {
             }
 
             @Override
-            public Hint createHint(Object contextObject, String name) {
+            public Hint createHint(Object contextObject, String name, ResolutionContext context) {
                 return new Hint() {
                     @Override
-                    public Object resolve(Object contextObject, String name) {
+                    public Object resolve(Object contextObject, String name, ResolutionContext context) {
                         hintCounter.incrementAndGet();
                         if (hintCounter.get() <= 2) {
                             hintNames.add(name);
@@ -141,7 +141,7 @@ public class EnhancedResolverTest extends AbstractTest {
             }
 
             @Override
-            public Hint createHint(Object contextObject, String name) {
+            public Hint createHint(Object contextObject, String name, ResolutionContext context) {
                 hintCreate.set(true);
                 return null;
             }

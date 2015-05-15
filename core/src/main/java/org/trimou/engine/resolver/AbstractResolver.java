@@ -37,7 +37,8 @@ public abstract class AbstractResolver extends AbstractConfigurationAware
     }
 
     @Override
-    public Hint createHint(Object contextObject, String name) {
+    public Hint createHint(Object contextObject, String name,
+            ResolutionContext context) {
         return EnhancedResolver.INAPPLICABLE_HINT;
     }
 

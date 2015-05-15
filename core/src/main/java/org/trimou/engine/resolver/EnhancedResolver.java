@@ -57,10 +57,11 @@ public interface EnhancedResolver extends Resolver {
      *
      * @param contextObject
      * @param name
+     * @param context
      * @return the hint
      * @see #INAPPLICABLE_HINT
      */
-    Hint createHint(Object contextObject, String name);
+    Hint createHint(Object contextObject, String name, ResolutionContext context);
 
     /**
      * A hint could be used to skip the resolver chain for a part of the key of
@@ -90,9 +91,12 @@ public interface EnhancedResolver extends Resolver {
          *            The current context object, may be <code>null</code>
          * @param name
          *            The name (the key or its part) is never <code>null</code>
+         * @param context
+         *            The resolution context
          * @return the resolved object or <code>null</code>
          */
-        Object resolve(Object contextObject, String name);
+        Object resolve(Object contextObject, String name,
+                ResolutionContext context);
 
     }
 
@@ -103,7 +107,8 @@ public interface EnhancedResolver extends Resolver {
     public static Hint INAPPLICABLE_HINT = new Hint() {
 
         @Override
-        public Object resolve(Object contextObject, String name) {
+        public Object resolve(Object contextObject, String name,
+                ResolutionContext context) {
             return null;
         }
     };

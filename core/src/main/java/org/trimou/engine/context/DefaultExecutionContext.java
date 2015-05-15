@@ -224,7 +224,7 @@ final class DefaultExecutionContext implements ExecutionContext {
             // unrelated objects (JNDI lookup, CDI, etc.)
             Hint hint = hintRef != null ? hintRef.get() : null;
             if (hint != null) {
-                leading = hint.resolve(null, name);
+                leading = hint.resolve(null, name, value);
             }
             if (leading == null) {
                 leading = resolve(null, name, value, hint == null
@@ -242,7 +242,7 @@ final class DefaultExecutionContext implements ExecutionContext {
         if (contextObject != null) {
             Hint hint = hintRef != null ? hintRef.get() : null;
             if (hint != null) {
-                leading = hint.resolve(contextObject, name);
+                leading = hint.resolve(contextObject, name, value);
             }
             if (leading == null) {
                 leading = resolve(contextObject, name, value, hint == null
@@ -266,7 +266,7 @@ final class DefaultExecutionContext implements ExecutionContext {
                     Resolver resolver = resolvers[i];
                     if (resolver instanceof EnhancedResolver) {
                         value.setHint(((EnhancedResolver) resolver).createHint(
-                                contextObject, name));
+                                contextObject, name, value));
                     }
                 }
                 break;

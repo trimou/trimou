@@ -62,7 +62,8 @@ public class ReflectionResolver extends AbstractResolver implements
             ReflectionResolver.class.getName() + ".memberCacheMaxSize", 10000l);
 
     /**
-     * Even if the runtime class of the context object changes try to apply the resolver.  
+     * Even if the runtime class of the context object changes try to apply the
+     * resolver.
      */
     public static final ConfigurationKey HINT_FALLBACK_ENABLED_KEY = new SimpleConfigurationKey(
             ReflectionResolver.class.getName() + ".hintFallbackEnabled", true);
@@ -114,7 +115,8 @@ public class ReflectionResolver extends AbstractResolver implements
     }
 
     @Override
-    public Hint createHint(Object contextObject, String name) {
+    public Hint createHint(Object contextObject, String name,
+            ResolutionContext context) {
         MemberKey key = MemberKey.newInstance(contextObject, name);
         MemberWrapper wrapper;
         if (memberCache != null) {
@@ -134,7 +136,7 @@ public class ReflectionResolver extends AbstractResolver implements
     public void init() {
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
-        logger.info("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);
+        logger.debug("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);
         if (memberCacheMaxSize > 0) {
             memberCache = configuration.getComputingCacheFactory().create(
                     COMPUTING_CACHE_CONSUMER_ID, new MemberComputingFunction(),
@@ -242,7 +244,8 @@ public class ReflectionResolver extends AbstractResolver implements
         }
 
         @Override
-        public Object resolve(Object contextObject, String name) {
+        public Object resolve(Object contextObject, String name,
+                ResolutionContext context) {
             if (contextObject == null) {
                 return null;
             }
@@ -256,7 +259,7 @@ public class ReflectionResolver extends AbstractResolver implements
             // The runtime class of the context object changed
             if (ReflectionResolver.this.hintFallbackEnabled) {
                 return ReflectionResolver.this.resolve(contextObject, name,
-                        null);
+                        context);
             }
             return null;
         }

@@ -39,7 +39,7 @@ public class ThisResolver extends AbstractResolver {
         super(priority);
         this.hint = new Hint() {
             @Override
-            public Object resolve(Object contextObject, String name) {
+            public Object resolve(Object contextObject, String name, ResolutionContext context) {
                 return contextObject;
             }
         };
@@ -58,7 +58,7 @@ public class ThisResolver extends AbstractResolver {
     }
 
     @Override
-    public Hint createHint(Object contextObject, String name) {
+    public Hint createHint(Object contextObject, String name, ResolutionContext context) {
         return hint;
     }
 
