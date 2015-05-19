@@ -26,7 +26,7 @@ import org.trimou.exception.MustacheProblem;
 /**
  * Converts {@link Object} to {@link Date} if possible, i.e. if the object is an
  * instance of {@link Date}, {@link Calendar}, {@link Long} or {@link String}
- * and the pattern is set.
+ * (if the pattern is set).
  *
  * @author Martin Kouba
  */

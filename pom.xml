@@ -68,7 +68,7 @@
         <version.weld2>2.2.5.Final</version.weld2>
         <version.weld1>1.1.25.Final</version.weld1>
         <version.cdi-api>1.0-SP4</version.cdi-api>
-        <version.prettytime>3.2.1.Final</version.prettytime>
+        <version.prettytime>3.2.7.Final</version.prettytime>
         <version.jboss-servlet-api>1.0.2.Final</version.jboss-servlet-api>
         <version.htmlcompressor>1.5.2</version.htmlcompressor>
         <version.htmlunit>2.12</version.htmlunit>

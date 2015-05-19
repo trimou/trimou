@@ -3,19 +3,15 @@ package org.trimou.handlebars.i18n;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locale.FixedLocaleSupport;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -29,22 +25,8 @@ public class DateTimeFormatHelperTest extends AbstractEngineTest {
     public void buildEngine() {
         engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("formatTime", new DateTimeFormatHelper())
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).build();
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .build();
     }
 
     @Test

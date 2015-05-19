@@ -35,7 +35,10 @@ public class PrettyTimeHelperTest {
                 .registerHelper("pretty", new PrettyTimeHelper()).build();
 
         String expected = new Resources_en().getString("JustNowPastPrefix");
+        // JustNow the first time unit in the default list has max quantity 5
+        // mins
         Calendar now = Calendar.getInstance();
+        now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
 
         assertEquals(
                 expected,
