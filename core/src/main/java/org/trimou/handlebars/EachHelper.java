@@ -23,11 +23,12 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.trimou.engine.config.EngineConfigurationKey;
-import org.trimou.engine.segment.IterationMeta;
+import org.trimou.engine.segment.ImmutableIterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 
 /**
  * <code>
@@ -93,42 +94,35 @@ public class EachHelper extends BasicSectionHelper {
 
     @SuppressWarnings("rawtypes")
     private void processIterable(Iterable iterable, Options options) {
-
-        Iterator iterator = iterable.iterator();
-        if (!iterator.hasNext()) {
+        int size = Iterables.size(iterable);
+        if (size < 1) {
             return;
         }
-
+        Iterator iterator = iterable.iterator();
         final Function function = initFunction(options);
-        final IterationMeta meta = new IterationMeta(iterationMetadataAlias,
-                iterator);
-
-        options.push(meta);
+        int i = 1;
         while (iterator.hasNext()) {
-            processNextElement(options, iterator.next(), meta, function);
+            processNextElement(options, iterator.next(),
+                    new ImmutableIterationMeta(iterationMetadataAlias, size,
+                            i++), function);
         }
-        options.pop();
     }
 
     private void processArray(Object array, Options options) {
-
         int length = Array.getLength(array);
         if (length < 1) {
             return;
         }
         final Function function = initFunction(options);
-        final IterationMeta meta = new IterationMeta(iterationMetadataAlias,
-                length);
-
-        options.push(meta);
         for (int i = 0; i < length; i++) {
-            processNextElement(options, Array.get(array, i), meta, function);
+            processNextElement(options, Array.get(array, i),
+                    new ImmutableIterationMeta(iterationMetadataAlias, length,
+                            i + 1), function);
         }
-        options.pop();
     }
 
     private void processNextElement(Options options, Object value,
-            IterationMeta meta, Function function) {
+            ImmutableIterationMeta meta, Function function) {
         if (function != null) {
             Object result = function.apply(value);
             if (!SKIP_RESULT.equals(result)) {
@@ -139,11 +133,12 @@ public class EachHelper extends BasicSectionHelper {
         }
     }
 
-    private void next(Options options, Object value, IterationMeta meta) {
+    private void next(Options options, Object value, ImmutableIterationMeta meta) {
+        options.push(meta);
         options.push(value);
         options.fn();
         options.pop();
-        meta.nextIteration();
+        options.pop();
     }
 
     private Function initFunction(Options options) {

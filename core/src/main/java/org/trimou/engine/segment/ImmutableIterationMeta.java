@@ -18,7 +18,8 @@ package org.trimou.engine.segment;
 import org.trimou.engine.resolver.Mapper;
 
 /**
- * Immutable iteration metadata.
+ * An immutable iteration metadata. This is a replacement for
+ * {@link IterationMeta} which can't be used in asynchronous scenarios.
  *
  * @author Martin Kouba
  */

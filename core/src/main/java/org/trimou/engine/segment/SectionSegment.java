@@ -28,6 +28,8 @@ import org.trimou.engine.parser.Template;
 import org.trimou.handlebars.HelperValidator;
 import org.trimou.lambda.Lambda;
 
+import com.google.common.collect.Iterables;
+
 /**
  * Section segment.
  *
@@ -63,12 +65,17 @@ import org.trimou.lambda.Lambda;
 public class SectionSegment extends AbstractSectionSegment implements
         HelperAwareSegment {
 
+    private final String iterationMetaAlias;
+
     private final HelperExecutionHandler helperHandler;
 
     public SectionSegment(String text, Origin origin, List<Segment> segments) {
         super(text, origin, segments);
         this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
                 .from(text, getEngine(), this) : null;
+        this.iterationMetaAlias = getEngineConfiguration()
+                .getStringPropertyValue(
+                        EngineConfigurationKey.ITERATION_METADATA_ALIAS);
     }
 
     public SegmentType getType() {
@@ -137,48 +144,38 @@ public class SectionSegment extends AbstractSectionSegment implements
 
     @SuppressWarnings("rawtypes")
     private void processIterable(Appendable appendable,
-            ExecutionContext context, Object iterable) {
-
-        Iterator iterator = ((Iterable) iterable).iterator();
-
-        if (!iterator.hasNext()) {
+            ExecutionContext context, Object value) {
+        Iterable<?> iterable = (Iterable<?>) value;
+        int size = Iterables.size(iterable);
+        if (size < 1) {
             return;
         }
-
-        IterationMeta meta = new IterationMeta(getEngineConfiguration()
-                .getStringPropertyValue(
-                        EngineConfigurationKey.ITERATION_METADATA_ALIAS),
-                iterator);
-        context = context.setContextObject(meta);
+        Iterator iterator = iterable.iterator();
+        int i = 1;
         while (iterator.hasNext()) {
-            processIteration(appendable, context,
-                    iterator.next(), meta);
+            processIteration(appendable,
+                    context.setContextObject(new ImmutableIterationMeta(
+                            iterationMetaAlias, size, i++)), iterator.next());
         }
     }
 
     private void processArray(Appendable appendable, ExecutionContext context,
             Object array) {
-
         int length = Array.getLength(array);
-
         if (length < 1) {
             return;
         }
-
-        IterationMeta meta = new IterationMeta(getEngineConfiguration()
-                .getStringPropertyValue(
-                        EngineConfigurationKey.ITERATION_METADATA_ALIAS),
-                length);
-        context = context.setContextObject(meta);
         for (int i = 0; i < length; i++) {
-            processIteration(appendable, context, Array.get(array, i), meta);
+            processIteration(appendable,
+                    context.setContextObject(new ImmutableIterationMeta(
+                            iterationMetaAlias, length, i + 1)), Array.get(
+                            array, i));
         }
     }
 
     private void processIteration(Appendable appendable,
-            ExecutionContext context, Object value, IterationMeta meta) {
+            ExecutionContext context, Object value) {
         super.execute(appendable, context.setContextObject(value));
-        meta.nextIteration();
     }
 
     private void processLambda(Appendable appendable, ExecutionContext context,
