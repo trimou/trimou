@@ -34,6 +34,7 @@ import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBui
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
+import org.trimou.engine.interpolation.LiteralSupport;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
@@ -95,6 +96,8 @@ public final class MustacheEngineBuilder implements
     private IdentifierGenerator identifierGenerator;
 
     private ExecutorService executorService;
+
+    private LiteralSupport literalSupport;
 
     /**
      * Don't create a new instance.
@@ -408,6 +411,20 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * Set the custom {@link LiteralSupport}.
+     *
+     * @param literalSupport
+     * @return self
+     */
+    public MustacheEngineBuilder setLiteralSupport(
+            LiteralSupport literalSupport) {
+        Checker.checkArgumentNotNull(literalSupport);
+        checkIsMutable("setLiteralSupport()");
+        this.literalSupport = literalSupport;
+        return this;
+    }
+
+    /**
      *
      * @return new instance of builder
      */
@@ -480,6 +497,10 @@ public final class MustacheEngineBuilder implements
 
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    public LiteralSupport getLiteralSupport() {
+        return literalSupport;
     }
 
     private void checkIsMutable(String methodName) {

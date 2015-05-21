@@ -89,22 +89,27 @@ public class NumberHelpersTest extends AbstractTest {
         assertEquals(
                 "true",
                 engine.compileMustache("number_pos1",
-                        "{{numExpr this op='positive'}}")
-                        .render(Long.valueOf(1)));
+                        "{{numExpr this op='pos'}}").render(
+                        Long.valueOf(1)));
         assertEquals(
                 "",
                 engine.compileMustache("number_pos2",
-                        "{{numExpr this op='positive'}}").render(
+                        "{{numExpr this op='pos'}}").render(
                         Long.valueOf(-1)));
+        assertEquals(
+                "true",
+                engine.compileMustache("number_pos3",
+                        "{{numExpr 10 op='pos'}}").render(null));
+
         assertEquals(
                 "",
                 engine.compileMustache("number_neg1",
-                        "{{numExpr this op='negative'}}")
-                        .render(Long.valueOf(1)));
+                        "{{numExpr this op='neg'}}").render(
+                        Long.valueOf(1)));
         assertEquals(
                 "yes",
                 engine.compileMustache("number_neg2",
-                        "{{numExpr this op='negative' out='yes'}}").render(
+                        "{{numExpr this op='neg' out='yes'}}").render(
                         Long.valueOf(-1)));
         assertEquals("true",
                 engine.compileMustache("number_eq1", "{{numExpr this '1'}}")
@@ -120,30 +125,40 @@ public class NumberHelpersTest extends AbstractTest {
                         "{{#numExpr this '1' op='eq'}}yes{{/numExpr}}").render(
                         Long.valueOf(1)));
         assertEquals(
+                "Not equal!",
+                engine.compileMustache("number_neq1",
+                        "{{numExpr -2 +2 op='neq' out='Not equal!'}}").render(
+                        Long.valueOf(1)));
+        assertEquals(
                 "yes",
                 engine.compileMustache("number_gt1",
-                        "{{#numExpr val1 val2 op='gt'}}yes{{/numExpr}}").render(
-                        data));
+                        "{{#numExpr val1 val2 op='gt'}}yes{{/numExpr}}")
+                        .render(data));
         assertEquals(
                 "yes",
                 engine.compileMustache("number_gt2",
-                        "{{#numExpr val1 '0.1' op='gt'}}yes{{/numExpr}}").render(
-                        data));
+                        "{{#numExpr val1 '0.1' op='gt'}}yes{{/numExpr}}")
+                        .render(data));
         assertEquals(
                 "yes",
                 engine.compileMustache("number_ge1",
-                        "{{#numExpr val3 '10' op='ge'}}yes{{/numExpr}}").render(
-                        data));
+                        "{{#numExpr val3 '10' op='ge'}}yes{{/numExpr}}")
+                        .render(data));
         assertEquals(
                 "",
                 engine.compileMustache("number_ge2",
-                        "{{#numExpr val2 val3 op='ge'}}yes{{/numExpr}}").render(
-                        data));
+                        "{{#numExpr val2 val3 op='ge'}}yes{{/numExpr}}")
+                        .render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_ge3",
+                        "{{#numExpr this 5 op='ge'}}yes{{/numExpr}}")
+                        .render(10));
         assertEquals(
                 "yes",
                 engine.compileMustache("number_le1",
-                        "{{#numExpr val2 val3 op='le'}}yes{{/numExpr}}").render(
-                        data));
+                        "{{#numExpr val2 val3 op='le'}}yes{{/numExpr}}")
+                        .render(data));
         assertEquals(
                 "yes",
                 engine.compileMustache("number_lt1",

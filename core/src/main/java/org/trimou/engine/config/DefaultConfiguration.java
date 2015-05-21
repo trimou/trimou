@@ -37,8 +37,10 @@ import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.cache.DefaultComputingCacheFactory;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.id.SequenceIdentifierGenerator;
+import org.trimou.engine.interpolation.DefaultLiteralSupport;
 import org.trimou.engine.interpolation.DotKeySplitter;
 import org.trimou.engine.interpolation.KeySplitter;
+import org.trimou.engine.interpolation.LiteralSupport;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.interpolation.NoOpMissingValueHandler;
 import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
@@ -96,6 +98,8 @@ class DefaultConfiguration implements Configuration {
 
     private final ExecutorService executorService;
 
+    private final LiteralSupport literalSupport;
+
     /**
      *
      * @param builder
@@ -143,6 +147,11 @@ class DefaultConfiguration implements Configuration {
         } else {
             this.identifierGenerator = new SequenceIdentifierGenerator();
         }
+        if (builder.getLiteralSupport() != null) {
+            this.literalSupport = builder.getLiteralSupport();
+        } else {
+            this.literalSupport = new DefaultLiteralSupport();
+        }
 
         // All configuration aware components must be availabe at this time
         // so that it's possible to collect all configuration keys
@@ -159,6 +168,7 @@ class DefaultConfiguration implements Configuration {
                 : Collections.<ConfigurationAware> emptySet());
         components.addAll(mustacheListeners);
         components.addAll(helpers.values());
+        components.add(literalSupport);
 
         this.properties = initializeProperties(builder,
                 getConfigurationKeysToProcess(components));
@@ -333,6 +343,11 @@ class DefaultConfiguration implements Configuration {
     @Override
     public ExecutorService geExecutorService() {
         return executorService;
+    }
+
+    @Override
+    public LiteralSupport getLiteralSupport() {
+        return literalSupport;
     }
 
     private void initializeConfigurationAwareComponents(

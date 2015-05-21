@@ -24,7 +24,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterators;
 
 /**
- * A default {@link KeySplitter} implementation which follows the dot notation.
+ * The default {@link KeySplitter} implementation which follows the dot notation.
  *
  * @author Martin Kouba
  */

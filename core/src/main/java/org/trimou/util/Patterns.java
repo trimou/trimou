@@ -82,4 +82,12 @@ public final class Patterns {
         return Pattern.compile("(\")(.*)(\")");
     }
 
+    /**
+     *
+     * @return  the pattern to match an integer literal in a helper name
+     */
+    public static Pattern newHelperIntegerLiteralPattern() {
+        return Pattern.compile("(\\+|-)?\\d{1,10}");
+    }
+
 }

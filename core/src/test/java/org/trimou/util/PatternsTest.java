@@ -88,4 +88,20 @@ public class PatternsTest {
                 .matches());
     }
 
+    @Test
+    public void testHelperIntOrLongLiteralPattern() {
+        assertFalse(Patterns.newHelperIntegerLiteralPattern()
+                .matcher("\"foo\"").matches());
+        assertTrue(Patterns.newHelperIntegerLiteralPattern().matcher("1")
+                .matches());
+        assertTrue(Patterns.newHelperIntegerLiteralPattern().matcher("+12")
+                .matches());
+        assertTrue(Patterns.newHelperIntegerLiteralPattern().matcher("-10000")
+                .matches());
+        assertFalse(Patterns.newHelperIntegerLiteralPattern().matcher("1.0")
+                .matches());
+        assertFalse(Patterns.newHelperIntegerLiteralPattern()
+                .matcher("1000000000000").matches());
+    }
+
 }

@@ -225,6 +225,10 @@ public final class HelperValidator {
         boolean stringLiteral = false;
         for (int i = 0; i < part.length(); i++) {
             if (Strings.isStringLiteralSeparator(part.charAt(i))) {
+                if (i == 0) {
+                    // The first char is a string literal separator
+                    return -1;
+                }
                 stringLiteral = !stringLiteral;
             } else {
                 if (!stringLiteral && part.charAt(i) == '=') {

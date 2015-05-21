@@ -65,14 +65,24 @@ public class HelperValidatorTest {
     @Test
     public void testGetFirstDeterminingEqualsCharPosition() {
         assertEquals(3,
-                HelperValidator.getFirstDeterminingEqualsCharPosition("foo=bar"));
+                HelperValidator
+                        .getFirstDeterminingEqualsCharPosition("foo=bar"));
         assertEquals(3,
                 HelperValidator
                         .getFirstDeterminingEqualsCharPosition("foo='bar='"));
+        assertEquals(1,
+                HelperValidator
+                        .getFirstDeterminingEqualsCharPosition("1='bar='"));
         assertEquals(-1,
                 HelperValidator.getFirstDeterminingEqualsCharPosition("'m=n'"));
         assertEquals(-1,
-                HelperValidator.getFirstDeterminingEqualsCharPosition(" ' m=n'"));
+                HelperValidator
+                        .getFirstDeterminingEqualsCharPosition(" ' m=n'"));
+        assertEquals(-1,
+                HelperValidator.getFirstDeterminingEqualsCharPosition("'1'"));
+        assertEquals(-1,
+                HelperValidator
+                        .getFirstDeterminingEqualsCharPosition("\"foo\""));
     }
 
     private void assertHelperNameParts(String name, String... parts) {

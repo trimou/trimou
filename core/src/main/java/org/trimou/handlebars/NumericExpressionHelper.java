@@ -28,20 +28,21 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 
 /**
- * A simple numeric expression helper.
+ * A simple numeric expression helper. During evaluation all the params are
+ * converted to {@link BigDecimal}s.
  *
  * <pre>
- * {{numExpr val op="negative" out='It's a negative number!'}}
+ * {{numExpr val op="neg" out='It's a negative number!'}}
  * {{#numExpr val "90" op="gt"}}
  *  val > 90
  * {{/numExpr}}
- * {{#numExpr val "10" op="eq"}}
- *  val = 10
+ * {{#numExpr val 10 op="eq"}}
+ *  val == 10
  * {{/numExpr}}
  * {{#numExpr val1 val2 op="le"}}
  *  val1 <= val2
  * {{/numExpr}}
- * {{#numExpr val "1" "2" "3" op="in"}}
+ * {{#numExpr val "1" 2 '3' op="in"}}
  *  val = 1 or val = 2 or val = 3
  * {{/numExpr}}
  * </pre>
@@ -59,8 +60,9 @@ public class NumericExpressionHelper extends BasicHelper {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "More parameters required [helper: %s, template: %s, line: %s]",
-                    NumericExpressionHelper.class.getName(), options.getTagInfo()
-                            .getTemplateName(), options.getTagInfo().getLine());
+                    NumericExpressionHelper.class.getName(), options
+                            .getTagInfo().getTemplateName(), options
+                            .getTagInfo().getLine());
         }
 
         boolean result = operator.evaluate(options);
@@ -128,14 +130,14 @@ public class NumericExpressionHelper extends BasicHelper {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "Parameter is not valid [param: %s, helper: %s, template: %s, line: %s]",
-                    value, NumericExpressionHelper.class.getName(), options.getTagInfo()
-                            .getTemplateName(), options.getTagInfo().getLine());
+                    value, NumericExpressionHelper.class.getName(), options
+                            .getTagInfo().getTemplateName(), options
+                            .getTagInfo().getLine());
         }
         return decimal;
     }
 
     /**
-     * TODO add description to all operators
      *
      * @author Martin Kouba
      */
@@ -189,13 +191,13 @@ public class NumericExpressionHelper extends BasicHelper {
                 return val1.compareTo(val2) <= 0;
             }
         }),
-        NEGATIVE(1, new Evaluator() {
+        NEG(1, new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
                 return getDecimal(0, options).compareTo(BigDecimal.ZERO) < 0;
             }
         }),
-        POSITIVE(1, new Evaluator() {
+        POS(1, new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
                 return getDecimal(0, options).compareTo(BigDecimal.ZERO) > 0;

@@ -106,9 +106,9 @@ class HelperExecutionHandler {
                         part.substring(0, position),
                         getLiteralOrPlaceholder(
                                 part.substring(position + 1, part.length()),
-                                segment));
+                                engine));
             } else {
-                params.add(getLiteralOrPlaceholder(part, segment));
+                params.add(getLiteralOrPlaceholder(part, engine));
             }
         }
 
@@ -139,12 +139,10 @@ class HelperExecutionHandler {
     }
 
     private static Object getLiteralOrPlaceholder(String value,
-            HelperAwareSegment segment) {
-        if (Strings.isStringLiteralSeparator(value.charAt(0))) {
-            return value.substring(1, value.length() - 1);
-        } else {
-            return new DefaultValuePlaceholder(value);
-        }
+            MustacheEngine engine) {
+        Object literal = engine.getConfiguration().getLiteralSupport()
+                .getLiteral(value);
+        return literal != null ? literal : new DefaultValuePlaceholder(value);
     }
 
     private static class OptionsBuilder implements HelperDefinition {

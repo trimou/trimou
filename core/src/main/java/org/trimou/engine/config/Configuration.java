@@ -24,6 +24,7 @@ import org.trimou.annotations.Internal;
 import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
+import org.trimou.engine.interpolation.LiteralSupport;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.LocaleSupport;
@@ -145,5 +146,12 @@ public interface Configuration {
      * @since 1.8
      */
     public ExecutorService geExecutorService();
+
+    /**
+     *
+     * @return the literal support implementation
+     * @since 1.8
+     */
+    public LiteralSupport getLiteralSupport();
 
 }
