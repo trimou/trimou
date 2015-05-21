@@ -17,6 +17,7 @@ package org.trimou.engine.segment;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -65,11 +66,11 @@ class AsyncAppendable implements Appendable {
     }
 
     /**
-     *
+     * Append the result to the parent.
      */
     private void flush() {
         try {
-            parent.append(future.get().collect(this));
+            parent.append(future.get(60, TimeUnit.SECONDS).collect(this));
             parent.append(buffer);
             if (parent instanceof AsyncAppendable) {
                 ((AsyncAppendable) parent).flush();
@@ -83,33 +84,42 @@ class AsyncAppendable implements Appendable {
     /**
      *
      * @param latch
+     *            The top-level async appendable
      * @return the collected output
      */
-    private String collect(AsyncAppendable latch) {
+    private CharSequence collect(AsyncAppendable latch) {
 
-        StringBuilder ret = new StringBuilder();
+        if (parent.equals(latch) && future == null) {
+            return buffer;
+        }
+
+        StringBuilder ret = null;
 
         if (parent instanceof AsyncAppendable && !parent.equals(latch)) {
+            ret = new StringBuilder();
             ret.append(((AsyncAppendable) parent).collect(latch));
         }
 
         if (future != null) {
             try {
-                AsyncAppendable result = future.get();
+                if (ret == null) {
+                    ret = new StringBuilder();
+                }
+                AsyncAppendable result = future.get(60, TimeUnit.SECONDS);
                 if (result.future != null) {
                     ret.append(result.collect(this));
                 } else {
                     ret.append(result.buffer);
                     ret.append(buffer);
                 }
+                return ret;
             } catch (Exception e) {
                 throw new MustacheException(
                         MustacheProblem.RENDER_ASYNC_PROCESSING_ERROR, e);
             }
         } else {
-            ret.append(buffer);
+            return ret != null ? ret.append(buffer) : buffer;
         }
-        return ret.toString();
     }
 
     void setFuture(Future<AsyncAppendable> future) {
