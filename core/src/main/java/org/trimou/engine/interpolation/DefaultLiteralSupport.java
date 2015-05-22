@@ -18,6 +18,7 @@ package org.trimou.engine.interpolation;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.util.Patterns;
 import org.trimou.util.Strings;
@@ -35,7 +36,7 @@ public class DefaultLiteralSupport extends AbstractConfigurationAware implements
             .newHelperIntegerLiteralPattern();
 
     @Override
-    public Object getLiteral(String value) {
+    public Object getLiteral(String value, MustacheTagInfo tagInfo) {
         if (StringUtils.isEmpty(value)) {
             return null;
         }

@@ -19,7 +19,6 @@ import org.trimou.engine.resolver.CombinedIndexResolver;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ThisResolver;
-import org.trimou.handlebars.HelpersBuilder;
 
 /**
  * Registers the default resolvers.
@@ -34,8 +33,6 @@ public class DefaultConfigurationExtension implements ConfigurationExtension {
         builder.addResolver(new ReflectionResolver())
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new CombinedIndexResolver());
-        // Register built-in helpers
-        builder.registerHelpers(HelpersBuilder.builtin().build());
     }
 
 }

@@ -16,6 +16,7 @@
 
 package org.trimou.engine.interpolation;
 
+import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.handlebars.Helper;
 
@@ -32,9 +33,10 @@ public interface LiteralSupport extends ConfigurationAware {
     /**
      *
      * @param value
+     * @param tagInfo
      * @return the literal instance for the given value or <code>null</code> if
      *         the value does not represent any supported literal type
      */
-    Object getLiteral(String value);
+    Object getLiteral(String value, MustacheTagInfo tagInfo);
 
 }

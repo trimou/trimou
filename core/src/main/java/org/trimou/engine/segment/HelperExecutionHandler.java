@@ -106,9 +106,9 @@ class HelperExecutionHandler {
                         part.substring(0, position),
                         getLiteralOrPlaceholder(
                                 part.substring(position + 1, part.length()),
-                                engine));
+                                engine, segment));
             } else {
-                params.add(getLiteralOrPlaceholder(part, engine));
+                params.add(getLiteralOrPlaceholder(part, engine, segment));
             }
         }
 
@@ -139,9 +139,9 @@ class HelperExecutionHandler {
     }
 
     private static Object getLiteralOrPlaceholder(String value,
-            MustacheEngine engine) {
+            MustacheEngine engine, HelperAwareSegment segment) {
         Object literal = engine.getConfiguration().getLiteralSupport()
-                .getLiteral(value);
+                .getLiteral(value, segment.getTagInfo());
         return literal != null ? literal : new DefaultValuePlaceholder(value);
     }
 

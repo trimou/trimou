@@ -18,8 +18,11 @@ package org.trimou.engine;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -29,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
 import org.trimou.engine.cache.ComputingCacheFactory;
+import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.config.ConfigurationExtension;
 import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBuilder;
 import org.trimou.engine.config.ConfigurationKey;
@@ -42,6 +46,7 @@ import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
+import org.trimou.handlebars.HelpersBuilder;
 import org.trimou.util.Checker;
 
 import com.google.common.collect.ImmutableList;
@@ -49,11 +54,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * A builder for {@link MustacheEngine}. It's not thread-safe until
- * {@link #build()} method is called - the builder is considered immutable
- * afterwards and subsequent invocations of any modifying method or
- * {@link #build()} results in {@link IllegalStateException}. Thus it's not
- * reusable.
+ * A builder for {@link MustacheEngine}. It's not thread-safe. The builder is
+ * considered immutable once the {@link #build()} method is called. Subsequent
+ * invocations of any modifying method or {@link #build()} result in an
+ * {@link IllegalStateException}.
+ *
+ * <p>
+ * Note that most {@link ConfigurationAware} components are tied to the specific
+ * engine instance and cannot be reused as well.
+ * </p>
  *
  * @author Martin Kouba
  */
@@ -65,31 +74,31 @@ public final class MustacheEngineBuilder implements
 
     private static final String BUILD_PROPERTIES_FILE = "/trimou-build.properties";
 
+    private boolean isBuilt;
+
     private boolean omitServiceLoaderConfigurationExtensions;
 
-    private boolean isMutable;
+    private final Set<Resolver> resolvers;
 
-    private final ImmutableSet.Builder<Resolver> resolversBuilder;
+    private final Set<TemplateLocator> templateLocators;
 
-    private final ImmutableSet.Builder<TemplateLocator> templateLocators;
-
-    private final ImmutableMap.Builder<String, Object> globalData;
+    private final Map<String, Object> globalData;
 
     private TextSupport textSupport;
 
     private LocaleSupport localeSupport;
 
-    private final ImmutableMap.Builder<String, Object> properties;
+    private final Map<String, Object> properties;
 
     private final List<EngineBuiltCallback> engineReadyCallbacks;
 
-    private final ImmutableList.Builder<MustacheListener> mustacheListeners;
+    private final List<MustacheListener> mustacheListeners;
 
     private KeySplitter keySplitter;
 
     private MissingValueHandler missingValueHandler;
 
-    private final ImmutableMap.Builder<String, Helper> helpers;
+    private final Map<String, Helper> helpers;
 
     private ComputingCacheFactory computingCacheFactory;
 
@@ -104,13 +113,14 @@ public final class MustacheEngineBuilder implements
      */
     private MustacheEngineBuilder() {
         this.omitServiceLoaderConfigurationExtensions = false;
-        this.isMutable = true;
-        this.resolversBuilder = ImmutableSet.builder();
-        this.templateLocators = ImmutableSet.builder();
-        this.globalData = ImmutableMap.builder();
-        this.properties = ImmutableMap.builder();
-        this.mustacheListeners = ImmutableList.builder();
-        this.helpers = ImmutableMap.builder();
+        this.resolvers = new HashSet<Resolver>();
+        this.templateLocators = new HashSet<TemplateLocator>();
+        this.globalData = new HashMap<String, Object>();
+        this.properties = new HashMap<String, Object>();
+        this.mustacheListeners = new ArrayList<MustacheListener>();
+        this.helpers = new HashMap<String, Helper>();
+        // Register the built-in helpers
+        registerHelpers(HelpersBuilder.builtin().build());
         this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
     }
 
@@ -120,7 +130,6 @@ public final class MustacheEngineBuilder implements
      * @return the built engine
      */
     public MustacheEngine build() {
-        checkIsMutable("build()");
         MustacheEngine engine = new DefaultMustacheEngine(this);
         for (EngineBuiltCallback callback : engineReadyCallbacks) {
             callback.engineBuilt(engine);
@@ -166,8 +175,7 @@ public final class MustacheEngineBuilder implements
         logger.info("Engine built {} ({})", version, timestamp);
         logger.debug("Engine configuration: "
                 + engine.getConfiguration().getInfo());
-
-        isMutable = false;
+        isBuilt = true;
         return engine;
     }
 
@@ -183,7 +191,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addGlobalData(String name, Object value) {
         Checker.checkArgumentsNotNull(name, value);
-        checkIsMutable("addGlobalData()");
+        checkNotBuilt();
         this.globalData.put(name, value);
         return this;
     }
@@ -196,7 +204,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addTemplateLocator(TemplateLocator locator) {
         Checker.checkArgumentNotNull(locator);
-        checkIsMutable("addTemplateLocator()");
+        checkNotBuilt();
         this.templateLocators.add(locator);
         return this;
     }
@@ -209,8 +217,8 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addResolver(Resolver resolver) {
         Checker.checkArgumentNotNull(resolver);
-        checkIsMutable("addResolver()");
-        this.resolversBuilder.add(resolver);
+        checkNotBuilt();
+        this.resolvers.add(resolver);
         return this;
     }
 
@@ -223,7 +231,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setProperty(String key, Object value) {
         Checker.checkArgumentsNotNull(key, value);
-        checkIsMutable("setProperty()");
+        checkNotBuilt();
         this.properties.put(key, value);
         return this;
     }
@@ -240,7 +248,7 @@ public final class MustacheEngineBuilder implements
     public <T extends ConfigurationKey> MustacheEngineBuilder setProperty(
             T configurationKey, Object value) {
         Checker.checkArgumentsNotNull(configurationKey, value);
-        checkIsMutable("setProperty()");
+        checkNotBuilt();
         setProperty(configurationKey.get(), value);
         return this;
     }
@@ -253,7 +261,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
         Checker.checkArgumentNotNull(textSupport);
-        checkIsMutable("setTextSupport()");
+        checkNotBuilt();
         this.textSupport = textSupport;
         return this;
     }
@@ -266,7 +274,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setLocaleSupport(LocaleSupport localeSupport) {
         Checker.checkArgumentNotNull(localeSupport);
-        checkIsMutable("setLocaleSupport()");
+        checkNotBuilt();
         this.localeSupport = localeSupport;
         return this;
     }
@@ -280,7 +288,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
         Checker.checkArgumentNotNull(callback);
-        checkIsMutable("registerCallback()");
+        checkNotBuilt();
         this.engineReadyCallbacks.add(callback);
         return this;
     }
@@ -294,7 +302,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
         Checker.checkArgumentNotNull(listener);
-        checkIsMutable("addMustacheListener()");
+        checkNotBuilt();
         this.mustacheListeners.add(listener);
         return this;
     }
@@ -306,7 +314,7 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngineBuilder setKeySplitter(KeySplitter keySplitter) {
         Checker.checkArgumentNotNull(keySplitter);
-        checkIsMutable("setKeySplitter()");
+        checkNotBuilt();
         this.keySplitter = keySplitter;
         return this;
     }
@@ -319,7 +327,7 @@ public final class MustacheEngineBuilder implements
     public MustacheEngineBuilder setMissingValueHandler(
             MissingValueHandler missingValueHandler) {
         Checker.checkArgumentNotNull(missingValueHandler);
-        checkIsMutable("setMissingValueHandler()");
+        checkNotBuilt();
         this.missingValueHandler = missingValueHandler;
         return this;
     }
@@ -327,33 +335,72 @@ public final class MustacheEngineBuilder implements
     /**
      * Each helper must be registered with a unique name. If there are more
      * helpers registered with the same name an {@link IllegalArgumentException}
-     * is thrown during {@link #build()}.
+     * is thrown. Use {@link #registerHelper(String, Helper, boolean)} to
+     * overwrite the helper.
      *
      * @param name
      * @param helper
      * @return self
      */
     public MustacheEngineBuilder registerHelper(String name, Helper helper) {
+        return registerHelper(name, helper, false);
+    }
+
+    /**
+     * Each helper must be registered with a unique name. If there is a helper
+     * registered with the same name and the param <code>overwrite</code> is
+     * <code>true</code> the previous instance is replaced, otherwise an
+     * {@link IllegalArgumentException} is thrown.
+     *
+     * @param name
+     * @param helper
+     * @param overwrite
+     * @return self
+     */
+    public MustacheEngineBuilder registerHelper(String name, Helper helper,
+            boolean overwrite) {
         Checker.checkArgumentsNotNull(name, helper);
-        checkIsMutable("registerHelper()");
-        this.helpers.put(name, helper);
+        checkNotBuilt();
+        Object prev = this.helpers.put(name, helper);
+        if (!overwrite && prev != null) {
+            throw new IllegalArgumentException(
+                    "A helper with the name is already registered: " + name);
+        }
         return this;
     }
 
     /**
      * Each helper must be registered with a unique name. If there are more
      * helpers registered with the same name an {@link IllegalArgumentException}
-     * is thrown during {@link #build()}.
+     * is thrown. Use {@link #registerHelpers(Map, boolean)} to overwrite the
+     * helpers.
      *
      * @param helpers
      * @return self
      */
     public MustacheEngineBuilder registerHelpers(Map<String, Helper> helpers) {
+        return registerHelpers(helpers, false);
+    }
+
+    /**
+     * Each helper must be registered with a unique name. If there is a helper
+     * registered with the same name and the param <code>overwrite</code> is
+     * <code>true</code> the previous instance is replaced, otherwise an
+     * {@link IllegalArgumentException} is thrown.
+     *
+     * @param helpers
+     * @param overwrite
+     * @return
+     */
+    public MustacheEngineBuilder registerHelpers(Map<String, Helper> helpers,
+            boolean overwrite) {
         if (Checker.isNullOrEmpty(helpers)) {
             return this;
         }
-        checkIsMutable("registerHelpers()");
-        this.helpers.putAll(helpers);
+        checkNotBuilt();
+        for (Entry<String, Helper> entry : helpers.entrySet()) {
+            registerHelper(entry.getKey(), entry.getValue(), overwrite);
+        }
         return this;
     }
 
@@ -363,7 +410,7 @@ public final class MustacheEngineBuilder implements
      * @see ConfigurationExtension
      */
     public MustacheEngineBuilder omitServiceLoaderConfigurationExtensions() {
-        checkIsMutable("omitServiceLoaderConfigurationExtensions()");
+        checkNotBuilt();
         this.omitServiceLoaderConfigurationExtensions = true;
         return this;
     }
@@ -377,7 +424,7 @@ public final class MustacheEngineBuilder implements
     public MustacheEngineBuilder setComputingCacheFactory(
             ComputingCacheFactory cacheFactory) {
         Checker.checkArgumentNotNull(cacheFactory);
-        checkIsMutable("setCacheFactory()");
+        checkNotBuilt();
         this.computingCacheFactory = cacheFactory;
         return this;
     }
@@ -391,7 +438,7 @@ public final class MustacheEngineBuilder implements
     public MustacheEngineBuilder setIdentifierGenerator(
             IdentifierGenerator identifierGenerator) {
         Checker.checkArgumentNotNull(identifierGenerator);
-        checkIsMutable("setIdentifierGenerator()");
+        checkNotBuilt();
         this.identifierGenerator = identifierGenerator;
         return this;
     }
@@ -405,7 +452,7 @@ public final class MustacheEngineBuilder implements
     public MustacheEngineBuilder setExecutorService(
             ExecutorService executorService) {
         Checker.checkArgumentNotNull(executorService);
-        checkIsMutable("setExecutorService()");
+        checkNotBuilt();
         this.executorService = executorService;
         return this;
     }
@@ -416,10 +463,9 @@ public final class MustacheEngineBuilder implements
      * @param literalSupport
      * @return self
      */
-    public MustacheEngineBuilder setLiteralSupport(
-            LiteralSupport literalSupport) {
+    public MustacheEngineBuilder setLiteralSupport(LiteralSupport literalSupport) {
         Checker.checkArgumentNotNull(literalSupport);
-        checkIsMutable("setLiteralSupport()");
+        checkNotBuilt();
         this.literalSupport = literalSupport;
         return this;
     }
@@ -444,15 +490,15 @@ public final class MustacheEngineBuilder implements
     }
 
     public Set<TemplateLocator> buildTemplateLocators() {
-        return templateLocators.build();
+        return ImmutableSet.copyOf(templateLocators);
     }
 
     public Set<Resolver> buildResolvers() {
-        return resolversBuilder.build();
+        return ImmutableSet.copyOf(resolvers);
     }
 
     public Map<String, Object> buildGlobalData() {
-        return globalData.build();
+        return ImmutableMap.copyOf(globalData);
     }
 
     public TextSupport getTextSupport() {
@@ -468,11 +514,11 @@ public final class MustacheEngineBuilder implements
     }
 
     public Map<String, Object> buildProperties() {
-        return properties.build();
+        return ImmutableMap.copyOf(properties);
     }
 
     public List<MustacheListener> buildMustacheListeners() {
-        return mustacheListeners.build();
+        return ImmutableList.copyOf(mustacheListeners);
     }
 
     public KeySplitter getKeySplitter() {
@@ -484,7 +530,7 @@ public final class MustacheEngineBuilder implements
     }
 
     public Map<String, Helper> buildHelpers() {
-        return helpers.build();
+        return ImmutableMap.copyOf(helpers);
     }
 
     public ComputingCacheFactory getComputingCacheFactory() {
@@ -503,11 +549,10 @@ public final class MustacheEngineBuilder implements
         return literalSupport;
     }
 
-    private void checkIsMutable(String methodName) {
-        if (!isMutable) {
+    private void checkNotBuilt() {
+        if (isBuilt) {
             throw new IllegalStateException(
-                    "Invalid method invocation - builder already built: "
-                            + methodName);
+                    "Invalid method invocation - builder already built!");
         }
     }
 

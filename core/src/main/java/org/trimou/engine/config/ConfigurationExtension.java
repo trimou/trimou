@@ -86,12 +86,30 @@ public interface ConfigurationExtension {
         ConfigurationExtensionBuilder registerHelper(String name, Helper helper);
 
         /**
+         * Register a helper instance.
+         *
+         * @param name
+         * @param helper
+         * @param overwrite
+         * @return self
+         */
+        ConfigurationExtensionBuilder registerHelper(String name, Helper helper, boolean overwrite);
+
+        /**
          * Register all the helper instances.
          *
          * @param helpers
          * @return self
          */
         ConfigurationExtensionBuilder registerHelpers(Map<String, Helper> helpers);
+
+        /**
+         * Register all the helper instances.
+         *
+         * @param helpers
+         * @return self
+         */
+        ConfigurationExtensionBuilder registerHelpers(Map<String, Helper> helpers, boolean overwrite);
 
     }
 }
