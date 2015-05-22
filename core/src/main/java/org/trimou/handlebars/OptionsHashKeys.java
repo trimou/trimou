@@ -54,4 +54,8 @@ public final class OptionsHashKeys {
 
     public static final String OUTPUT = "out";
 
+    public static final String AS = "as";
+
+    public static final String BREAK = "break";
+
 }

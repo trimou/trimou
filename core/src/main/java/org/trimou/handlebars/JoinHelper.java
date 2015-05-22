@@ -97,8 +97,7 @@ public class JoinHelper extends BasicValueHelper {
 
     @Override
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.<Set<String>> of(ImmutableSet.<String> builder()
-                .add(DELIMITER).add(LAMBDA).build());
+        return Optional.<Set<String>> of(ImmutableSet.of(DELIMITER, LAMBDA));
     }
 
     private void processValue(Options options, Object value, Object delimiter,

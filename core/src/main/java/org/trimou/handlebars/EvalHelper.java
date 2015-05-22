@@ -61,7 +61,7 @@ import com.google.common.base.Optional;
  * is equivalent to (provided the idx evaluates to 1):
  *
  * <pre>
- * {{#with "list.1"}}
+ * {{#with list.1}}
  *  Element name: {{name}}
  * {{/with}}
  * </pre>

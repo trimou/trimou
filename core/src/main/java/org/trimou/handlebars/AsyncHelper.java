@@ -15,7 +15,11 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Set;
+
 import org.trimou.handlebars.Options.HelperExecutable;
+
+import com.google.common.base.Optional;
 
 /**
  * A simple helper whose content is rendered asynchronously.
@@ -45,6 +49,11 @@ public class AsyncHelper extends BasicSectionHelper {
     @Override
     protected int numberOfRequiredParameters() {
         return 0;
+    }
+
+    @Override
+    protected Optional<Set<String>> getSupportedHashKeys() {
+        return NO_SUPPORTED_HASH_KEYS;
     }
 
 }

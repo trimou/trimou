@@ -36,6 +36,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Martin Kouba
  * @see MustacheEngineBuilder#registerHelpers(Map)
+ * @see MustacheEngineBuilder#registerHelpers(Map, boolean)
  */
 public final class HelpersBuilder {
 

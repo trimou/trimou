@@ -15,6 +15,9 @@
  */
 package org.trimou.handlebars;
 
+import static org.trimou.handlebars.OptionsHashKeys.BREAK;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -149,8 +152,6 @@ public class SwitchHelper extends BasicSectionHelper {
      */
     public static class CaseHelper extends BasicSectionHelper {
 
-        private static final String OPTION_BREAK = "break";
-
         private final boolean defaultIsBreak;
 
         /**
@@ -192,14 +193,14 @@ public class SwitchHelper extends BasicSectionHelper {
 
         @Override
         protected Optional<Set<String>> getSupportedHashKeys() {
-            return NO_SUPPORTED_HASH_KEYS;
+            return Optional.of(Collections.singleton(BREAK));
         }
 
         private boolean isBreak(Map<String, Object> hash) {
-            if (hash.isEmpty() || !hash.containsKey(OPTION_BREAK)) {
+            if (hash.isEmpty() || !hash.containsKey(BREAK)) {
                 return defaultIsBreak;
             }
-            return Boolean.valueOf(hash.get(OPTION_BREAK).toString());
+            return Boolean.valueOf(hash.get(BREAK).toString());
         }
 
     }

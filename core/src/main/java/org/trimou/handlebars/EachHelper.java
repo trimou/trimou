@@ -16,9 +16,9 @@
 package org.trimou.handlebars;
 
 import static org.trimou.handlebars.OptionsHashKeys.APPLY;
+import static org.trimou.handlebars.OptionsHashKeys.AS;
 
 import java.lang.reflect.Array;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -28,6 +28,7 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
 /**
@@ -51,7 +52,17 @@ import com.google.common.collect.Iterables;
  *  {{name}}
  * {{/each}}
  * </code>
+ *
  * <p>
+ * It's also possible to supply an alias to access the value of the current
+ * iteration:
+ * </p>
+ *
+ * <code>
+ * {{#each items as='item'}}
+ *  {{item.name}}
+ * {{/each}}
+ * </code>
  *
  * @see Function
  * @author Martin Kouba
@@ -89,7 +100,7 @@ public class EachHelper extends BasicSectionHelper {
 
     @Override
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(Collections.singleton(APPLY));
+        return Optional.<Set<String>> of(ImmutableSet.of(APPLY, AS));
     }
 
     @SuppressWarnings("rawtypes")
@@ -98,13 +109,11 @@ public class EachHelper extends BasicSectionHelper {
         if (size < 1) {
             return;
         }
-        Iterator iterator = iterable.iterator();
-        final Function function = initFunction(options);
+        final Iterator iterator = iterable.iterator();
         int i = 1;
         while (iterator.hasNext()) {
-            processNextElement(options, iterator.next(),
-                    new ImmutableIterationMeta(iterationMetadataAlias, size,
-                            i++), function);
+            nextElement(options, iterator.next(), size, i++,
+                    initFunction(options), initValueAlias(options));
         }
     }
 
@@ -113,32 +122,33 @@ public class EachHelper extends BasicSectionHelper {
         if (length < 1) {
             return;
         }
-        final Function function = initFunction(options);
         for (int i = 0; i < length; i++) {
-            processNextElement(options, Array.get(array, i),
-                    new ImmutableIterationMeta(iterationMetadataAlias, length,
-                            i + 1), function);
+            nextElement(options, Array.get(array, i), length, i + 1,
+                    initFunction(options), initValueAlias(options));
         }
     }
 
-    private void processNextElement(Options options, Object value,
-            ImmutableIterationMeta meta, Function function) {
+    private void nextElement(Options options, Object value, int size,
+            int index, Function function, String valueAlias) {
         if (function != null) {
-            Object result = function.apply(value);
-            if (!SKIP_RESULT.equals(result)) {
-                next(options, result, meta);
+            value = function.apply(value);
+            if (SKIP_RESULT.equals(value)) {
+                return;
             }
-        } else {
-            next(options, value, meta);
         }
-    }
-
-    private void next(Options options, Object value, ImmutableIterationMeta meta) {
-        options.push(meta);
-        options.push(value);
-        options.fn();
-        options.pop();
-        options.pop();
+        if (valueAlias != null) {
+            options.push(new ImmutableIterationMeta(iterationMetadataAlias,
+                    size, index, valueAlias, value));
+            options.fn();
+            options.pop();
+        } else {
+            options.push(new ImmutableIterationMeta(iterationMetadataAlias,
+                    size, index));
+            options.push(value);
+            options.fn();
+            options.pop();
+            options.pop();
+        }
     }
 
     private Function initFunction(Options options) {
@@ -153,6 +163,14 @@ public class EachHelper extends BasicSectionHelper {
                 MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                 "%s is not a valid function [%s]", function,
                 options.getTagInfo());
+    }
+
+    private String initValueAlias(Options options) {
+        Object as = getHashValue(options, AS);
+        if (as == null) {
+            return null;
+        }
+        return as.toString();
     }
 
 }

@@ -31,6 +31,10 @@ public final class ImmutableIterationMeta implements Mapper {
 
     private final int index;
 
+    private final String valueAlias;
+
+    private final Object value;
+
     /**
      *
      * @param alias
@@ -38,9 +42,25 @@ public final class ImmutableIterationMeta implements Mapper {
      * @param index
      */
     public ImmutableIterationMeta(String alias, int size, int index) {
+        this(alias, size, index, null, null);
+    }
+
+    /**
+     *
+     * @param alias
+     * @param size
+     * @param index
+     * @param valueAlias
+     * @param value
+     */
+    public ImmutableIterationMeta(String alias, int size, int index,
+            String valueAlias, Object value) {
+        super();
         this.alias = alias;
         this.size = size;
         this.index = index;
+        this.valueAlias = valueAlias;
+        this.value = value;
     }
 
     /**
@@ -109,10 +129,29 @@ public final class ImmutableIterationMeta implements Mapper {
         return index % 2 == 0;
     }
 
+    /**
+     *
+     * @return the value alias or <code>null</code> if not set
+     */
+    public String getValueAlias() {
+        return valueAlias;
+    }
+
+    /**
+     *
+     * @return the current value or <code>null</code> if not set
+     */
+    public Object getValue() {
+        return value;
+    }
+
     @Override
     public Object get(String key) {
         if (alias.equals(key)) {
             return this;
+        }
+        if (valueAlias != null && valueAlias.equals(key)) {
+            return value;
         }
         // Preserved for backwards compatibility
         if (IterationMeta.KEY_INDEX.equals(key)) {

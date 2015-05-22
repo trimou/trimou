@@ -7,8 +7,11 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
+import org.trimou.DummyHelper;
 import org.trimou.Hammer;
 import org.trimou.MustacheExceptionAssert;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.common.collect.ImmutableMap;
@@ -70,6 +73,11 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                                         return value.toString().length();
                                     }
                                 }, "data", ImmutableSet.of("foo", "bar", "ba"))));
+        assertEquals(
+                "332",
+                engine.compileMustache("each_helper6",
+                        "{{#each this as='item'}}{{item.length}}{{/each}}")
+                        .render(ImmutableSet.of("foo", "bar", "ba")));
         assertCompilationFails(engine, "each_helper_fail1",
                 "{{#each}}{{this}}{{/each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
@@ -119,8 +127,8 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals(
                 "false",
                 engine.compileMustache("if_helper7",
-                        "{{#if this \"\" logic=\"and\" else='false'}}hello{{/if}}").render(
-                        Boolean.TRUE));
+                        "{{#if this \"\" logic=\"and\" else='false'}}hello{{/if}}")
+                        .render(Boolean.TRUE));
         assertCompilationFails(engine, "if_helper_fail1",
                 "{{#if}}{{this}}{{/if}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
@@ -206,6 +214,22 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 "<html>",
                 engine.compileMustache("is_helper5", "{{{is this \"<html>\"}}}")
                         .render(true));
+    }
+
+    @Test
+    public void testOverwriteHelper() {
+        MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .registerHelper(HelpersBuilder.EACH, new DummyHelper(), true)
+                .registerHelpers(
+                        HelpersBuilder.empty()
+                                .add(HelpersBuilder.IF, new DummyHelper())
+                                .build(), true).build();
+        assertEquals(
+                "",
+                engine.compileMustache("helper_dummy1",
+                        "{{#each this}}EACH{{/each}}{{#if this}}IF{{/if}}")
+                        .render(new String[] { "hey" }));
     }
 
 }
