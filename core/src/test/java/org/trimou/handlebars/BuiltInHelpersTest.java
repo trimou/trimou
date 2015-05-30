@@ -78,6 +78,10 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("each_helper6",
                         "{{#each this as='item'}}{{item.length}}{{/each}}")
                         .render(ImmutableSet.of("foo", "bar", "ba")));
+        assertEquals(
+                "",
+                engine.compileMustache("each_helper7",
+                        "{{#each this}}foo{{/each}}").render(null));
         assertCompilationFails(engine, "each_helper_fail1",
                 "{{#each}}{{this}}{{/each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);

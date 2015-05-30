@@ -86,7 +86,10 @@ public class EachHelper extends BasicSectionHelper {
 
         Object value = options.getParameters().get(0);
 
-        if (value instanceof Iterable) {
+        if (value == null) {
+            // Treat null values as empty objects
+            return;
+        } else if (value instanceof Iterable) {
             processIterable((Iterable) value, options);
         } else if (value.getClass().isArray()) {
             processArray(value, options);
