@@ -25,8 +25,8 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.parser.Template;
 import org.trimou.engine.resolver.EnhancedResolver;
 import org.trimou.engine.resolver.EnhancedResolver.Hint;
-import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.resolver.Placeholder;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.Segment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -117,10 +117,9 @@ final class DefaultExecutionContext implements ExecutionContext {
             }
         }
 
-        if(Placeholder.NULL.equals(lastValue)) {
-            lastValue = null;
+        if (!Placeholder.NULL.equals(lastValue)) {
+            value.set(lastValue);
         }
-        value.set(lastValue);
         return value;
     }
 
