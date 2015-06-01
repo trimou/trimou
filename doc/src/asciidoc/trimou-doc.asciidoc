@@ -9,7 +9,7 @@
 [[intro]]
 == What is Trimou?
 
-Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. Since 1.5 a *helpers API* inspired by http://handlebarsjs.com/[Handlebars.js] is also supported. The goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. There are some ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime],  http://code.google.com/p/htmlcompressor/[HtmlCompressor], http://code.google.com/p/google-gson/[google-gson], http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC] and https://dropwizard.github.io/dropwizard/[Dropwizard] (see <<extensions,Extensions>> section for more info).
+Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. *Helpers API* inspired by http://handlebarsjs.com/[Handlebars.js] is also supported. The goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. There are some ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime],  http://code.google.com/p/htmlcompressor/[HtmlCompressor], http://code.google.com/p/google-gson/[google-gson], http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC] and https://dropwizard.github.io/dropwizard/[Dropwizard] (see <<extensions,Extensions>> section for more info).
 
 NOTE: Trimou is available under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache License 2.0].
 
@@ -326,6 +326,10 @@ Trimou provides some useful helpers which are not registered automatically:
 |Works similarly as WithHelper except the current hash is pushed on the context stack.
 |set
 
+|+org.trimou.handlebars.EvalHelper+
+|Allows to build the key dynamically and evaluate it afterwards.
+|eval
+
 |+org.trimou.handlebars.IncludeHelper+
 | Works similarly as the partial tag except the name of the template to include may be obtained dynamically.
 |include
@@ -338,7 +342,6 @@ Trimou provides some useful helpers which are not registered automatically:
 |Takes all the objects specified as the parameters and joins the +Object#toString()+ values together with the specified delimiter (optional). Elements of +Iterable+ and array are treated as separate objects. An optional lambda may be applied to each value.
 |join
 
-
 |+org.trimou.handlebars.EmbedHelper+
 |Embeds the template source (by default as a JavaScript snippet).
 |embed
@@ -350,6 +353,10 @@ Trimou provides some useful helpers which are not registered automatically:
 |+org.trimou.handlebars.EqualsHelper+
 |Renders a block if the first param does/doesn't equal to the second param.
 |isEq/isNotEq
+
+|+org.trimou.handlebars.NumericExpressionHelper+
+|A simple numeric expression helper. +{{#numExpr myVal 10 op="gt"}}+
+|numExpr
 
 |+org.trimou.handlebars.NumberIsEvenHelper+
 |Renders a block/text if the param is an even number.
@@ -367,9 +374,13 @@ Trimou provides some useful helpers which are not registered automatically:
 |Displays localized times.
 |N/A
 
+|+org.trimou.handlebars.AsyncHelper+
+|A helper whose content is rendered asynchronously.
+|async
+
 |===
 
-==== Example of ResourceBundleHelper use
+==== Example of ResourceBundleHelper
 
 Suppose we have the following resource bundle file:
 
@@ -732,6 +743,12 @@ All resolvers have a priority and resolvers with *higher priority* are called *f
 
 TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup normal-scoped CDI beans with name. <<servlets,trimou-extension-servlet>> extension provides +HttpServletRequestResolver+ to get the current Servlet request wrapper.
 
+==== EnhancedResolver
+
+An enhanced resolver should be able to create a +Hint+ for a sucessfully resolved context object and name. A hint could be used to skip the resolver chain for a part of the key of a specific tag and improve the interpolation performance.
+
+NOTE: Hints are enabled by default. See +RESOLVER_HINTS_ENABLED+ in <<configuration,Configuration properties>>.
+
 [[template_locator]]
 === TemplateLocator
 
@@ -797,6 +814,10 @@ The main advantage of helpers is the ability to consume multiple parameters and 
 
 +org.trimou.engine.id.IdentifierGenerator+ is used to generate identifiers for various components and use-cases (e.g. +Mustache+, +MustacheRenderingEvent+ and one-off lambda names).  There are some restrictions on the uniqueness of the generated id - see also the javadoc.
 
+[[literalSupport]]
+=== LiteralSupport
+
++org.trimou.engine.interpolation.LiteralSupport+ allows to customize the way the helpers extract literals from params and hash values. The default implementation currently supports string and integer literals.
 
 [[extensions]]
 == Extensions

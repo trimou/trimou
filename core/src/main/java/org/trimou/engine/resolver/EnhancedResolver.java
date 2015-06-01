@@ -59,7 +59,7 @@ public interface EnhancedResolver extends Resolver {
      * @param name
      * @param context
      * @return the hint
-     * @see #INAPPLICABLE_HINT
+     * @see Hints#INAPPLICABLE_HINT
      */
     Hint createHint(Object contextObject, String name, ResolutionContext context);
 
@@ -75,6 +75,7 @@ public interface EnhancedResolver extends Resolver {
      *
      * @author Martin Kouba
      * @see EnhancedResolver#createHint(Object, String)
+     * @see Hints#INAPPLICABLE_HINT
      */
     public interface Hint {
 
@@ -99,18 +100,5 @@ public interface EnhancedResolver extends Resolver {
                 ResolutionContext context);
 
     }
-
-    /**
-     * A hint which is never applicable. Implementations are encouraged to use
-     * this instance if it's not possible to create a hint.
-     */
-    public static Hint INAPPLICABLE_HINT = new Hint() {
-
-        @Override
-        public Object resolve(Object contextObject, String name,
-                ResolutionContext context) {
-            return null;
-        }
-    };
 
 }

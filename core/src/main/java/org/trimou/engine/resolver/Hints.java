@@ -13,25 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.annotations;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.trimou.engine.resolver;
 
 /**
- * Internal component - annotated element may be subject of incompatible changes
- * in future releases - actually it's not supposed to be a part of a public
- * client API.
  *
  * @author Martin Kouba
  */
-@Retention(RetentionPolicy.CLASS)
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR,
-        ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
-@Documented
-public @interface Internal {
+public final class Hints {
+
+    /**
+     * A hint which is never applicable. Implementations are encouraged to use
+     * this instance if it's not possible to create a hint.
+     */
+    public static final EnhancedResolver.Hint INAPPLICABLE_HINT = new EnhancedResolver.Hint() {
+
+        @Override
+        public Object resolve(Object contextObject, String name,
+                ResolutionContext context) {
+            return null;
+        }
+    };
+
+    private Hints() {
+    }
 
 }

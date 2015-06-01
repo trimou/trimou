@@ -110,6 +110,8 @@ public final class MustacheEngineBuilder implements
 
     /**
      * Don't create a new instance.
+     *
+     * @see #newBuilder()
      */
     private MustacheEngineBuilder() {
         this.omitServiceLoaderConfigurationExtensions = false;
@@ -119,8 +121,6 @@ public final class MustacheEngineBuilder implements
         this.properties = new HashMap<String, Object>();
         this.mustacheListeners = new ArrayList<MustacheListener>();
         this.helpers = new HashMap<String, Helper>();
-        // Register the built-in helpers
-        registerHelpers(HelpersBuilder.builtin().build());
         this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
     }
 
@@ -130,6 +130,9 @@ public final class MustacheEngineBuilder implements
      * @return the built engine
      */
     public MustacheEngine build() {
+
+        registerBuiltinHelpersIfNecessary();
+
         MustacheEngine engine = new DefaultMustacheEngine(this);
         for (EngineBuiltCallback callback : engineReadyCallbacks) {
             callback.engineBuilt(engine);
@@ -361,10 +364,11 @@ public final class MustacheEngineBuilder implements
             boolean overwrite) {
         Checker.checkArgumentsNotNull(name, helper);
         checkNotBuilt();
+        registerBuiltinHelpersIfNecessary();
         Object prev = this.helpers.put(name, helper);
         if (!overwrite && prev != null) {
             throw new IllegalArgumentException(
-                    "A helper with the name is already registered: " + name);
+                    "A helper with this name is already registered: " + name);
         }
         return this;
     }
@@ -405,7 +409,8 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
-     * Don't use the ServiceLoader mechanism to load configuration extensions.
+     * Don't use the ServiceLoader mechanism to load configuration extensions
+     * (i.e. the default resolvers are not added automatically).
      *
      * @see ConfigurationExtension
      */
@@ -553,6 +558,13 @@ public final class MustacheEngineBuilder implements
         if (isBuilt) {
             throw new IllegalStateException(
                     "Invalid method invocation - builder already built!");
+        }
+    }
+
+    private void registerBuiltinHelpersIfNecessary() {
+        if (!omitServiceLoaderConfigurationExtensions && helpers.isEmpty()) {
+            // Register the built-in helpers lazily
+            helpers.putAll(HelpersBuilder.builtin().build());
         }
     }
 

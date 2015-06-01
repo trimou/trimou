@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.annotations;
+package org.trimou.engine.resolver;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * Internal component - annotated element may be subject of incompatible changes
- * in future releases - actually it's not supposed to be a part of a public
- * client API.
  *
  * @author Martin Kouba
  */
-@Retention(RetentionPolicy.CLASS)
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR,
-        ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
-@Documented
-public @interface Internal {
+public enum Placeholder {
 
+    /**
+     * This might be useful to distinguish the case when a value resolver should
+     * return a value which should be interpreted as a <code>null</code>. E.g.
+     * {@link ObjectUtils#NULL}.
+     */
+    NULL,
 }

@@ -121,16 +121,16 @@ class DefaultConfiguration implements Configuration {
         }
 
         // Non-final components
-        List<Resolver> resolvers = identifyResolvers(builder);
+        List<Resolver> resolvers = initResolvers(builder);
         List<MustacheListener> mustacheListeners = new ArrayList<MustacheListener>(
                 builder.buildMustacheListeners());
-        MissingValueHandler missingValueHandler = identifyMissingValueHandler(builder);
+        MissingValueHandler missingValueHandler = initMissingValueHandler(builder);
         Map<String, Helper> helpers = builder.buildHelpers();
 
-        this.textSupport = identifyTextSupport(builder);
-        this.localeSupport = identifyLocaleSupport(builder);
-        this.keySplitter = identifyKeySplitter(builder);
-        this.templateLocators = identifyTemplateLocators(builder);
+        this.textSupport = initTextSupport(builder);
+        this.localeSupport = initLocaleSupport(builder);
+        this.keySplitter = initKeySplitter(builder);
+        this.templateLocators = initTemplateLocators(builder);
         Map<String, Object> globalData = builder.buildGlobalData();
         if (globalData.isEmpty()) {
             this.globalData = null;
@@ -357,7 +357,7 @@ class DefaultConfiguration implements Configuration {
         }
     }
 
-    private List<Resolver> identifyResolvers(MustacheEngineBuilder builder) {
+    private List<Resolver> initResolvers(MustacheEngineBuilder builder) {
         Set<Resolver> builderResolvers = builder.buildResolvers();
         List<Resolver> resolvers = new ArrayList<Resolver>();
         if (!builderResolvers.isEmpty()) {
@@ -433,29 +433,29 @@ class DefaultConfiguration implements Configuration {
         return keys;
     }
 
-    private TextSupport identifyTextSupport(MustacheEngineBuilder builder) {
+    private TextSupport initTextSupport(MustacheEngineBuilder builder) {
         return builder.getTextSupport() != null ? builder.getTextSupport()
                 : new TextSupportFactory().createTextSupport();
     }
 
-    private LocaleSupport identifyLocaleSupport(MustacheEngineBuilder builder) {
+    private LocaleSupport initLocaleSupport(MustacheEngineBuilder builder) {
         return builder.getLocaleSupport() != null ? builder.getLocaleSupport()
                 : new LocaleSupportFactory().createLocateSupport();
     }
 
-    private KeySplitter identifyKeySplitter(MustacheEngineBuilder builder) {
+    private KeySplitter initKeySplitter(MustacheEngineBuilder builder) {
         // Factory does not make sense here
         return builder.getKeySplitter() != null ? builder.getKeySplitter()
                 : new DotKeySplitter();
     }
 
-    private MissingValueHandler identifyMissingValueHandler(
+    private MissingValueHandler initMissingValueHandler(
             MustacheEngineBuilder builder) {
         return builder.getMissingValueHandler() != null ? builder
                 .getMissingValueHandler() : new NoOpMissingValueHandler();
     }
 
-    private List<TemplateLocator> identifyTemplateLocators(
+    private List<TemplateLocator> initTemplateLocators(
             MustacheEngineBuilder builder) {
         Set<TemplateLocator> builderTemplateLocators = builder
                 .buildTemplateLocators();

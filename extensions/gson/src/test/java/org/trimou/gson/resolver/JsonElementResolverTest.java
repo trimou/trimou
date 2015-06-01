@@ -11,9 +11,12 @@ import org.junit.Test;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.resolver.MapResolver;
+import org.trimou.engine.resolver.ThisResolver;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
@@ -31,8 +34,10 @@ public class JsonElementResolverTest {
         MustacheEngineBuilder.newBuilder().addResolver(resolver).build();
         assertNull(resolver.resolve(null, "foo", null));
         assertNull(resolver.resolve("bar", "foo", null));
-        assertEquals(Boolean.TRUE, resolver.resolve(new JsonPrimitive(true), "unwrapThis", null));
+        assertEquals(Boolean.TRUE,
+                resolver.resolve(new JsonPrimitive(true), "unwrapThis", null));
         assertNull(resolver.resolve(new JsonPrimitive(true), "whatever", null));
+        assertNull(resolver.resolve(JsonNull.INSTANCE, "whatever", null));
     }
 
     @Test
@@ -91,8 +96,26 @@ public class JsonElementResolverTest {
                         .render(loadJsonData("data_array.json")));
     }
 
+    @Test
+    public void testUnwrapJsonNull() throws JsonIOException,
+            JsonSyntaxException, FileNotFoundException {
+        MustacheEngine engine = getEngine();
+        assertEquals(
+                "Jimtrue",
+                engine.compileMustache("json_unwrap_null_test1",
+                        "{{#this}}{{unwrapThis}}{{/this}}").render(
+                        loadJsonData("data_array_with_null.json")));
+        assertEquals(
+                "",
+                engine.compileMustache("json_unwrap_null_test2",
+                        "{{firstName}}").render(
+                        loadJsonData("data_array_with_null.json")));
+    }
+
     private MustacheEngine getEngine() {
         return MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new JsonElementResolver()).build();
     }
 

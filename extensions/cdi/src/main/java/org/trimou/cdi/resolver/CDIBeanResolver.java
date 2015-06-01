@@ -35,6 +35,7 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
+import org.trimou.engine.resolver.Hints;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.ReleaseCallback;
 
@@ -192,7 +193,7 @@ public class CDIBeanResolver extends AbstractResolver {
                 return new CDIBeanHint(bean.get());
             }
         }
-        return INAPPLICABLE_HINT;
+        return Hints.INAPPLICABLE_HINT;
     }
 
     static class DependentDestroyCallback<T> implements ReleaseCallback {

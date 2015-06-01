@@ -35,7 +35,7 @@ public class ChooseHelperTest extends AbstractTest {
                 "P",
                 engine.compileMustache("choose_helper2",
                         "{{#choose}}"
-                        + "{{#when this}}P{{/when}}"
+                        + "{{#when up}}P{{/when}}"
                         + "{{#otherwise}}T{{/otherwise}}"
                         + "{{/choose}}").render(
                         "not a falsy"));
@@ -43,8 +43,8 @@ public class ChooseHelperTest extends AbstractTest {
                 "2",
                 engine.compileMustache("choose_helper3",
                         "{{#choose}}"
-                        + "{{#when this.up.null}}1{{/when}}"
-                        + "{{#when this.up.age}}2{{/when}}"
+                        + "{{#when up.null}}1{{/when}}"
+                        + "{{#when up.age}}2{{/when}}"
                         + "{{#otherwise}}3{{/otherwise}}"
                         + "{{/choose}}").render(
                         new Hammer()));

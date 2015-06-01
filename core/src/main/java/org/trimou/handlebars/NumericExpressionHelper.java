@@ -32,7 +32,7 @@ import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
  * converted to {@link BigDecimal}s.
  *
  * <pre>
- * {{numExpr val op="neg" out='It's a negative number!'}}
+ * {{numExpr val op="neg" out='It is a negative number!'}}
  * {{#numExpr val "90" op="gt"}}
  *  val > 90
  * {{/numExpr}}

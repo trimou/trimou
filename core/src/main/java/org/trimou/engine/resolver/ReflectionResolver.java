@@ -129,7 +129,7 @@ public class ReflectionResolver extends AbstractResolver implements
             return new ReflectionHint(key, wrapper);
         }
         // This should never happen
-        return EnhancedResolver.INAPPLICABLE_HINT;
+        return Hints.INAPPLICABLE_HINT;
     }
 
     @Override
