@@ -31,7 +31,8 @@ public interface Mustache extends Identified {
      * represents a full (possibly virtual) path of the template.
      *
      * Note that it's possible to have more than one template with the same name
-     * for a {@link org.trimou.engine.MustacheEngine} instance, due to existence of
+     * for a {@link org.trimou.engine.MustacheEngine} instance, due to existence
+     * of
      * {@link org.trimou.engine.MustacheEngine#compileMustache(String, String)}.
      *
      * @return the template name
@@ -53,6 +54,9 @@ public interface Mustache extends Identified {
      *
      * Watch out! Any appendable-specific operations (e.g. stream flushing and
      * closing) are not performed automatically.
+     *
+     * Note that if an asynchronous helper is used the "append" operations may be
+     * delayed due to the use of an intermediate buffer.
      *
      * @param appendable
      *            The appendable to append the rendered template to
