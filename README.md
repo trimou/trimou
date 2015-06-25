@@ -23,4 +23,6 @@ Simply run:
 Microbenchmarks
 ---------------
 
+![Example results](https://github.com/trimou/trimou-benchmarks/blob/master/trimou-microbenchmarks.png)
+
 See also https://github.com/trimou/trimou-benchmarks
