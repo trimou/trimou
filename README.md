@@ -2,7 +2,8 @@ Trimou - Trim Your Mustache Templates!
 ======
 
 [![Travis CI Build Status](https://travis-ci.org/trimou/trimou.png)](https://travis-ci.org/trimou/trimou)
-[![Maven Cetnral](http://img.shields.io/maven-central/v/org.trimou/trimou-core.svg)](http://search.maven.org/#search|ga|1|trimou-core)
+[![Maven Central](http://img.shields.io/maven-central/v/org.trimou/trimou-core.svg)](http://search.maven.org/#search|ga|1|trimou-core)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/trimou/trimou)
 
 
 Trimou is a Mustache implementation written in Java. **Helpers API** inspired by [Handlebars.js](http://handlebarsjs.com/) is also supported. The goal is to provide a simple to use and easy to extend templating engine for any Java SE or Java EE application. 
