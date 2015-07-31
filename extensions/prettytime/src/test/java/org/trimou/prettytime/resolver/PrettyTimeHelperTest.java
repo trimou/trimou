@@ -93,10 +93,15 @@ public class PrettyTimeHelperTest {
                 .addResolver(new ThisResolver())
                 .registerHelper("pretty", new PrettyTimeHelper()).build();
 
+        // JustNow the first time unit in the default list has max quantity 5
+        // mins
+        Calendar now = Calendar.getInstance();
+        now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
+
         assertEquals(
                 new Resources_cs().getString("JustNowPastPrefix"),
                 engine.compileMustache("pretty_helper_locale",
-                        "{{{pretty this locale='cs'}}}").render(new Date()));
+                        "{{{pretty this locale='cs'}}}").render(now));
     }
 
     @Test

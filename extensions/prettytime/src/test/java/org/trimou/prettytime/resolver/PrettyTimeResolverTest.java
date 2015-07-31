@@ -19,6 +19,7 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.prettytime.PrettyTimeFactory;
@@ -39,22 +40,8 @@ public class PrettyTimeResolverTest {
         // Just to init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(resolver).build();
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(resolver).build();
 
         assertNull(resolver.resolve(null, "prettyTime", null));
         assertNull(resolver.resolve("foo", "prettyTime", null));
@@ -69,25 +56,15 @@ public class PrettyTimeResolverTest {
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(new MapResolver())
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(new MapResolver())
                 .addResolver(new PrettyTimeResolver()).build();
 
         String expected = new Resources_en().getString("JustNowPastPrefix");
+        // JustNow the first time unit in the default list has max quantity 5
+        // mins
         Calendar now = Calendar.getInstance();
+        now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
 
         assertEquals(expected,
                 engine.compileMustache("pretty_cal", "{{now.prettyTime}}")
@@ -112,22 +89,8 @@ public class PrettyTimeResolverTest {
         // Just to init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(resolver)
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(resolver)
                 .setProperty(PrettyTimeResolver.MATCH_NAME_KEY, "pretty")
                 .build();
 
