@@ -786,13 +786,15 @@ NOTE: Code inside a listener may throw an unchecked exception - this aborts furt
 [[custom_helpers]]
 === Helper
 
-+org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly it does not define "inverse" section, so for example +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate()+) and fail fast if there's invalid number of arguments etc.
++org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly, it does not define "inverse" section, so for example the built-in +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate()+) and fail fast if there's invalid number of arguments etc.
 
-A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There are some <<helpers,built-in helpers>> registered automatically.
+A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There is a special method `MustacheEngineBuilder.registerHelpers(Map<String, Helper>, boolean)` which allows to overwrite the existing helper instance (e.g. to define a custom `if` helper). Some <<helpers,built-in helpers>> are registered automatically.
 
 WARNING: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
 
 The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Check out +org.trimou.handlebars.Options+ and the source of built-in helpers to see what helpers can do.
+
+TIP: If you're using Java 8 and want to register a simple helper utilizing functional interfaces, try `SimpleHelpers` from <<jdk8>> extension.
 
 [[missingvaluehandler]]
 === MissingValueHandler
@@ -1107,7 +1109,7 @@ This extension provides a basic https://dropwizard.github.io/dropwizard/[Dropwiz
 [[jdk8]]
 === JDK 8
 
-Trimou requires Java 7. However, there are some interesting parts in JDK8. Therefore we have a special extension for JDK8 users.
+Trimou requires Java 7. However, there is a lot of interesting stuff in JDK8. Therefore we have a special extension for JDK8 users.
 
 ==== MapBackedComputingCacheFactory
 
@@ -1116,5 +1118,18 @@ A computing cache factory producing computing cache implementations backed by +j
 ==== TimeFormatHelper
 
 An alternative to +DateTimeFormatHelper+  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
+
+==== SimpleHelpers
+
+This utility class and its builder allow to create simple helpers using JDK8 funcional interfaces. It's even possible to validate the helper definition and provide configuration keys.
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+        .newBuilder()
+        .registerHelper("toLowerCase", SimpleHelpers.execute((o, c) -> {
+            o.append(o.getParameters().get(0).toString().toLowerCase());
+         })).build();
+----
 
 '''
