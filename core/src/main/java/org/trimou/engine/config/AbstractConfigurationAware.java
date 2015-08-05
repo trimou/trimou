@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public abstract class AbstractConfigurationAware implements ConfigurationAware {
 
-    protected Configuration configuration;
+    protected volatile Configuration configuration;
 
     @Override
     public void init(Configuration configuration) {

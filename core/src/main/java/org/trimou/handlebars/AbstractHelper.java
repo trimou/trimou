@@ -27,7 +27,7 @@ import org.trimou.engine.text.TextSupport;
 public abstract class AbstractHelper extends AbstractConfigurationAware
         implements Helper {
 
-    private TextSupport textSupport;
+    private volatile TextSupport textSupport;
 
     @Override
     public void validate(HelperDefinition definition) {
