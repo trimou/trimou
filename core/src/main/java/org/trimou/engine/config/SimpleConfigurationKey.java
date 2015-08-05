@@ -21,9 +21,9 @@ package org.trimou.engine.config;
  */
 public class SimpleConfigurationKey implements ConfigurationKey {
 
-    private String key;
+    private final String key;
 
-    private Object defaultValue;
+    private final Object defaultValue;
 
     /**
      *
@@ -31,7 +31,6 @@ public class SimpleConfigurationKey implements ConfigurationKey {
      * @param defaultValue
      */
     public SimpleConfigurationKey(String key, Object defaultValue) {
-        super();
         this.key = key;
         this.defaultValue = defaultValue;
     }
@@ -51,6 +50,36 @@ public class SimpleConfigurationKey implements ConfigurationKey {
         return String.format(
                 "SimpleConfigurationKey [key:%s, defaultValue: %s]", key,
                 defaultValue);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((key == null) ? 0 : key.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        SimpleConfigurationKey other = (SimpleConfigurationKey) obj;
+        if (key == null) {
+            if (other.key != null) {
+                return false;
+            }
+        } else if (!key.equals(other.key)) {
+            return false;
+        }
+        return true;
     }
 
 }

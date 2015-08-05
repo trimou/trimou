@@ -115,7 +115,7 @@ public class OptionsTest extends AbstractTest {
 
     @Test
     public void testPartial() {
-        MustacheEngine engine = MustacheEngineBuilder
+        final MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
                 .addTemplateLocator(
                         new MapTemplateLocator(ImmutableMap.of("foo",
@@ -123,14 +123,21 @@ public class OptionsTest extends AbstractTest {
                 .registerHelper("test", new AbstractHelper() {
                     @Override
                     public void execute(Options options) {
-                        options.partial("foo");
-                        ;
+                        options.partial(options.getParameters().get(0)
+                                .toString());
                     }
                 }).build();
-        assertEquals(
-                "HELLO",
-                engine.compileMustache("helper_partial", "{{test}}").render(
-                        "HELLO"));
+        assertEquals("HELLO",
+                engine.compileMustache("helper_partial01", "{{test 'foo'}}")
+                        .render("HELLO"));
+        MustacheExceptionAssert.expect(
+                MustacheProblem.RENDER_INVALID_PARTIAL_KEY).check(
+                new Runnable() {
+                    public void run() {
+                        engine.compileMustache("helper_partial02",
+                                "{{test 'bar'}}").render("HELLO");
+                    }
+                });
     }
 
     @Test
@@ -284,7 +291,34 @@ public class OptionsTest extends AbstractTest {
                 "done my friend",
                 engine.compileMustache("helper_asynexec", "{{async}} my friend")
                         .render("bar"));
+    }
 
+    @Test
+    public void testSource() {
+        final MustacheEngine engine = MustacheEngineBuilder
+                .newBuilder()
+                .addTemplateLocator(
+                        new MapTemplateLocator(ImmutableMap.of("foo",
+                                "{{this}}")))
+                .registerHelper("test", new AbstractHelper() {
+                    @Override
+                    public void execute(Options options) {
+                        append(options,
+                                options.source(options.getParameters().get(0)
+                                        .toString()));
+                    }
+                }).build();
+        assertEquals("{{this}}",
+                engine.compileMustache("helper_source01", "{{test 'foo'}}")
+                        .render(null));
+        MustacheExceptionAssert.expect(
+                MustacheProblem.RENDER_INVALID_PARTIAL_KEY).check(
+                new Runnable() {
+                    public void run() {
+                        engine.compileMustache("helper_source02",
+                                "{{test 'bar'}}").render(null);
+                    }
+                });
     }
 
 }

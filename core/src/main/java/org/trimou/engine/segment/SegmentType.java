@@ -17,6 +17,7 @@ package org.trimou.engine.segment;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
+import org.trimou.util.Checker;
 
 /**
  * Type of segment.
@@ -51,12 +52,8 @@ public enum SegmentType {
         return tagType;
     }
 
-    boolean hasName() {
-        return this.equals(SECTION) || this.equals(INVERTED_SECTION)
-                || this.equals(PARTIAL) || this.equals(VALUE);
-    }
-
     public static SegmentType fromTag(MustacheTagType tagType) {
+        Checker.checkArgumentNotNull(tagType);
         for (SegmentType type : values()) {
             if(tagType.equals(type.getTagType())) {
                 return type;
