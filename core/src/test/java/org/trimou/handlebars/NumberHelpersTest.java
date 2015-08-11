@@ -3,10 +3,14 @@ package org.trimou.handlebars;
 import static org.junit.Assert.assertEquals;
 import static org.trimou.AssertUtil.assertCompilationFails;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
+import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.exception.MustacheProblem;
@@ -80,32 +84,31 @@ public class NumberHelpersTest extends AbstractTest {
 
     @Test
     public void testNumericExpressionHelper() {
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addGlobalData("operator", "lt")
                 .registerHelpers(HelpersBuilder.empty().addNumExpr().build())
                 .build();
-        Map<String, Number> data = ImmutableMap.<String, Number> of("val1",
+        Map<String, Object> data = ImmutableMap.<String, Object> of("val1",
                 Integer.valueOf(2), "val2", Integer.valueOf(1), "val3",
-                Long.valueOf(10));
+                Long.valueOf(10), "val4", BigDecimal.ZERO, "val5",
+                BigInteger.ONE);
         assertEquals(
                 "true",
                 engine.compileMustache("number_pos1",
-                        "{{numExpr this op='pos'}}").render(
-                        Long.valueOf(1)));
+                        "{{numExpr this op='pos'}}").render(Long.valueOf(1)));
         assertEquals(
                 "",
                 engine.compileMustache("number_pos2",
-                        "{{numExpr this op='pos'}}").render(
-                        Long.valueOf(-1)));
+                        "{{numExpr this op='pos'}}").render(Long.valueOf(-1)));
         assertEquals(
                 "true",
-                engine.compileMustache("number_pos3",
-                        "{{numExpr 10 op='pos'}}").render(null));
+                engine.compileMustache("number_pos3", "{{numExpr 10 op='pos'}}")
+                        .render(null));
 
         assertEquals(
                 "",
                 engine.compileMustache("number_neg1",
-                        "{{numExpr this op='neg'}}").render(
-                        Long.valueOf(1)));
+                        "{{numExpr this op='neg'}}").render(Long.valueOf(1)));
         assertEquals(
                 "yes",
                 engine.compileMustache("number_neg2",
@@ -138,6 +141,16 @@ public class NumberHelpersTest extends AbstractTest {
                 "yes",
                 engine.compileMustache("number_gt2",
                         "{{#numExpr val1 '0.1' op='gt'}}yes{{/numExpr}}")
+                        .render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_gt3",
+                        "{{#numExpr '0.1' val4 op='gt'}}yes{{/numExpr}}")
+                        .render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_lt1",
+                        "{{#numExpr val2 val1 op='lt'}}yes{{/numExpr}}")
                         .render(data));
         assertEquals(
                 "yes",
@@ -179,6 +192,54 @@ public class NumberHelpersTest extends AbstractTest {
                 engine.compileMustache("number_in2",
                         "{{#numExpr val1 '0' '5' val1 op='in'}}yes{{/numExpr}}")
                         .render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_unknown_op",
+                        "{{#numExpr val1 2 op='unknown!'}}yes{{/numExpr}}")
+                        .render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_default_op",
+                        "{{#numExpr val1 2}}yes{{/numExpr}}").render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_dynamic_op",
+                        "{{#numExpr val1 3 op=operator}}yes{{/numExpr}}")
+                        .render(data));
+        assertEquals(
+                "yes",
+                engine.compileMustache("number_biginteger_val",
+                        "{{#numExpr val5 val4 op='gt'}}yes{{/numExpr}}")
+                        .render(data));
+        MustacheExceptionAssert.expect(
+                MustacheProblem.RENDER_HELPER_INVALID_OPTIONS).check(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        engine.compileMustache("number_invalid_val",
+                                "{{#numExpr this op='neg'}}yes{{/numExpr}}")
+                                .render(new ArrayList<>());
+                    }
+                });
+        MustacheExceptionAssert.expect(
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE).check(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        engine.compileMustache("number_invalid_params",
+                                "{{#numExpr this op='eq'}}yes{{/numExpr}}");
+                    }
+                });
+        MustacheExceptionAssert.expect(
+                MustacheProblem.RENDER_HELPER_INVALID_OPTIONS).check(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        engine.compileMustache("number_invalid_val",
+                                "{{#numExpr this op=operator}}yes{{/numExpr}}")
+                                .render(new ArrayList<>());
+                    }
+                });
     }
 
 }

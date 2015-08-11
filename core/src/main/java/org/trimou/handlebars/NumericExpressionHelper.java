@@ -57,6 +57,7 @@ public class NumericExpressionHelper extends BasicHelper {
         Operator operator = initOperator(options);
 
         if (operator.getMinParams() > options.getParameters().size()) {
+            // We need this check because the operator may be set dynamically
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "More parameters required [helper: %s, template: %s, line: %s]",
@@ -104,11 +105,12 @@ public class NumericExpressionHelper extends BasicHelper {
     }
 
     private Operator initOperator(Options options) {
+        Operator operator = null;
         Object value = getHashValue(options, OPERATOR);
         if (value != null) {
-            return Operator.from(value.toString());
+            operator = Operator.from(value.toString());
         }
-        return Operator.EQ;
+        return operator != null ? operator : Operator.EQ;
     }
 
     private static BigDecimal getDecimal(int index, Options options) {
@@ -244,9 +246,11 @@ public class NumericExpressionHelper extends BasicHelper {
         }
 
         static Operator from(String value) {
-            for (Operator operator : values()) {
-                if (operator.toString().equalsIgnoreCase(value)) {
-                    return operator;
+            if (value != null) {
+                for (Operator operator : values()) {
+                    if (operator.toString().equalsIgnoreCase(value)) {
+                        return operator;
+                    }
                 }
             }
             return null;

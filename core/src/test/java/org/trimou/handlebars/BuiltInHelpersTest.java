@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.trimou.AssertUtil.assertCompilationFails;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
@@ -82,6 +83,14 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 "",
                 engine.compileMustache("each_helper7",
                         "{{#each this}}foo{{/each}}").render(null));
+        assertEquals(
+                "",
+                engine.compileMustache("each_helper_empty_array",
+                        "{{#each this}}foo{{/each}}").render(new String[]{}));
+        assertEquals(
+                "",
+                engine.compileMustache("each_helper_empty_collection",
+                        "{{#each this}}foo{{/each}}").render(new ArrayList<>()));
         assertCompilationFails(engine, "each_helper_fail1",
                 "{{#each}}{{this}}{{/each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
