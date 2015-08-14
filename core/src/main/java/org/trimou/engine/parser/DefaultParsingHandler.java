@@ -113,16 +113,16 @@ class DefaultParsingHandler implements ParsingHandler {
         RootSegmentBase rootSegmentBase = validate();
 
         // Post processing
-        if (engine.getConfiguration().getBooleanPropertyValue(
-                REMOVE_STANDALONE_LINES)) {
+        if (engine.getConfiguration()
+                .getBooleanPropertyValue(REMOVE_STANDALONE_LINES)) {
             SegmentBases.removeStandaloneLines(rootSegmentBase);
         }
-        if (engine.getConfiguration().getBooleanPropertyValue(
-                REMOVE_UNNECESSARY_SEGMENTS)) {
+        if (engine.getConfiguration()
+                .getBooleanPropertyValue(REMOVE_UNNECESSARY_SEGMENTS)) {
             SegmentBases.removeUnnecessarySegments(rootSegmentBase);
         }
-        if (engine.getConfiguration().getBooleanPropertyValue(
-                REUSE_LINE_SEPARATOR_SEGMENTS)) {
+        if (engine.getConfiguration()
+                .getBooleanPropertyValue(REUSE_LINE_SEPARATOR_SEGMENTS)) {
             SegmentBases.reuseLineSeparatorSegments(rootSegmentBase);
         }
 
@@ -132,8 +132,7 @@ class DefaultParsingHandler implements ParsingHandler {
         template.setRootSegment(rootSegmentBase.asSegment(template));
 
         logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
-                new Object[] { templateName,
-                        System.currentTimeMillis() - start,
+                new Object[] { templateName, System.currentTimeMillis() - start,
                         template.getRootSegment().getSegmentsSize(true) });
 
         rootSegmentBase = null;
@@ -201,8 +200,7 @@ class DefaultParsingHandler implements ParsingHandler {
         }
 
         if (tag.getContent().contains(delimiters.getStart())) {
-            throw new MustacheException(
-                    COMPILE_INVALID_TAG,
+            throw new MustacheException(COMPILE_INVALID_TAG,
                     "Tag content contains current start delimiter [type: %s, line: %s, delimiter: %s]",
                     tag.getType(), line, delimiters.getStart());
         }
@@ -216,8 +214,8 @@ class DefaultParsingHandler implements ParsingHandler {
                 contentMustBeNonWhitespaceSequenceException(tag.getType());
             }
         } else {
-            if (MustacheTagType.contentMustBeNonWhitespaceCharacterSequence(tag
-                    .getType())
+            if (MustacheTagType
+                    .contentMustBeNonWhitespaceCharacterSequence(tag.getType())
                     && StringUtils.containsWhitespace(tag.getContent())) {
                 contentMustBeNonWhitespaceSequenceException(tag.getType());
             }
@@ -226,8 +224,7 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private MustacheException contentMustBeNonWhitespaceSequenceException(
             MustacheTagType tagType) {
-        throw new MustacheException(
-                COMPILE_INVALID_TAG,
+        throw new MustacheException(COMPILE_INVALID_TAG,
                 "Tag content must be a non-whitespace character sequence [template: %s, type: %s, line: %s]",
                 templateName, tagType, line);
     }
@@ -236,11 +233,13 @@ class DefaultParsingHandler implements ParsingHandler {
 
         ContainerSegmentBase container = pop();
 
-        if (container == null
-                || container instanceof RootSegmentBase
+        if (container == null || (container instanceof RootSegmentBase)
                 || (!handlebarsSupportEnabled
-                        && !key.equals(container.getContent()) || (handlebarsSupportEnabled && !container
-                        .getContent().startsWith(key)))) {
+                        && !key.equals(container.getContent()))
+                || (handlebarsSupportEnabled
+                        && !container.getContent().startsWith(key))
+                || (handlebarsSupportEnabled && !container.getContent().contains(" ")
+                        && !key.equals(container.getContent()))) {
             // a) No container on the stack
             // b) Handlebars support not enabled and section start key does not
             // equal to section end key
@@ -262,8 +261,8 @@ class DefaultParsingHandler implements ParsingHandler {
             msg.append(" [line: %s]");
             params.add("" + line);
             throw new MustacheException(
-                    MustacheProblem.COMPILE_INVALID_SECTION_END,
-                    msg.toString(), params.toArray());
+                    MustacheProblem.COMPILE_INVALID_SECTION_END, msg.toString(),
+                    params.toArray());
         }
 
         addSegment(container);
@@ -284,8 +283,8 @@ class DefaultParsingHandler implements ParsingHandler {
                     "Invalid set delimiters tag: %s [line: %s]", key, line);
         }
 
-        Matcher matcher = Patterns.newSetDelimitersContentPattern().matcher(
-                key.substring(1, key.length() - 1));
+        Matcher matcher = Patterns.newSetDelimitersContentPattern()
+                .matcher(key.substring(1, key.length() - 1));
 
         if (matcher.find()) {
             delimiters.setNewValues(matcher.group(1), matcher.group(3));
@@ -364,8 +363,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
     }
 
-    static class ContainerSegmentBase extends SegmentBase implements
-            Iterable<SegmentBase> {
+    static class ContainerSegmentBase extends SegmentBase
+            implements Iterable<SegmentBase> {
 
         private final List<SegmentBase> segments;
 
@@ -405,8 +404,8 @@ class DefaultParsingHandler implements ParsingHandler {
                 return new ExtendSectionSegment(getContent(),
                         getOrigin(template), getSegments(template));
             default:
-                throw new IllegalStateException("Invalid tag type: "
-                        + getType());
+                throw new IllegalStateException(
+                        "Invalid tag type: " + getType());
             }
         }
 
@@ -456,13 +455,14 @@ class DefaultParsingHandler implements ParsingHandler {
         ValueSegmentBase(ParsedTag tag, int line, int index,
                 boolean skipValueEscaping) {
             super(SegmentType.VALUE, tag.getContent(), line, index);
-            unescape = skipValueEscaping ? true : tag.getType().equals(
-                    MustacheTagType.UNESCAPE_VARIABLE);
+            unescape = skipValueEscaping ? true
+                    : tag.getType().equals(MustacheTagType.UNESCAPE_VARIABLE);
         }
 
         @Override
         ValueSegment asSegment(Template template) {
-            return new ValueSegment(getContent(), getOrigin(template), unescape);
+            return new ValueSegment(getContent(), getOrigin(template),
+                    unescape);
         }
 
     }
@@ -528,8 +528,8 @@ class DefaultParsingHandler implements ParsingHandler {
             case DELIMITERS:
                 return new SetDelimitersSegment(content, getOrigin(template));
             default:
-                throw new IllegalStateException("Unsupported segment type: "
-                        + type);
+                throw new IllegalStateException(
+                        "Unsupported segment type: " + type);
             }
         }
 
