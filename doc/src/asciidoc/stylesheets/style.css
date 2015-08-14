@@ -14,15 +14,10 @@ div.listingblock pre .tag .title {
 }
 
 div.listingblock div.content {
-    background-color: #161616;
-    /*background-color: #F8F8F8;*/
-    /*background-color: #2f2f2f;*/
+    background-color: #2a2a2b;
     color: white;
     padding: 15px;
     border-radius: 6px;
-    border-style: solid;
-    border-color: silver;
-    border-width: 4px;
     font-family: Cousine, ​ "Liberation Mono", ​monospace;
 }
 
@@ -45,19 +40,13 @@ h2,h3,h4,h5 {
     margin-top: 1.6em;
 }
 
-h2 {
-    /*border-bottom: 1px dashed #6CAE37;*/
-}
-
 div.admonitionblock {
-    background-color: #f9f9f9;
     border-radius: 4px 4px 4px 4px;
-    /*border-top: 1px dotted #4f9854;*/
+    margin-top: 15px;
 }
 
 div.admonitionblock .icon .title {
     font-weight: bold;
-    /*text-transform: uppercase;*/
     color: #404040;
     border-right: 1px solid silver;
     padding: 10px;
@@ -65,14 +54,17 @@ div.admonitionblock .icon .title {
 
 div.warning {
     border: 1px solid #F9A996;
+    background-color: #f2dede;
 }
 
 div.note {
     border: 1px solid #7dcf7d;
+    background-color: #dff0d8;
 }
 
 div.tip {
     border: 1px solid yellow;
+    background-color: #fcf8e3;
 }
 
 div.admonitionblock .content {
@@ -108,7 +100,7 @@ pre {
 }
 
 #content pre code {
-    background: none repeat scroll 0 0 #161616;
+    background: none repeat scroll 0 0;
     color: white;
     /*background: none repeat scroll 0 0 #F8F8F8;*/
 }

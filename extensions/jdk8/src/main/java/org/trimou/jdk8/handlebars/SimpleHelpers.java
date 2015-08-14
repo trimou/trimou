@@ -26,6 +26,7 @@ import org.trimou.handlebars.AbstractHelper;
 import org.trimou.handlebars.Helper;
 import org.trimou.handlebars.HelperDefinition;
 import org.trimou.handlebars.Options;
+import org.trimou.util.Checker;
 
 /**
  * Allows to create simple helpers using JDK8 funcional interfaces.
@@ -110,17 +111,16 @@ public final class SimpleHelpers {
         private SimpleHelper(Set<ConfigurationKey> configurationKeys,
                 BiConsumer<Options, Configuration> executionCallback,
                 BiConsumer<HelperDefinition, Configuration> validationCallback) {
-            this.configurationKeys = configurationKeys == null ? Collections
-                    .emptySet() : configurationKeys;
+            Checker.checkArgumentNotNull(executionCallback);
+            this.configurationKeys = configurationKeys == null
+                    ? Collections.emptySet() : configurationKeys;
             this.executionCallback = executionCallback;
             this.validationCallback = validationCallback;
         }
 
         @Override
         public void execute(Options options) {
-            if (executionCallback != null) {
-                executionCallback.accept(options, configuration);
-            }
+            executionCallback.accept(options, configuration);
         }
 
         @Override

@@ -215,7 +215,10 @@ results in:
 -> the variable is not interpolated
 ----
 
-However this might be a little bit more useful:
+TIP: If you're using Java 8 and want to create a simple lambda utilizing functional interfaces, try `SimpleLambdas` from <<jdk8>> extension.
+
+Alternatively, you can use predefined abstract classes like `org.trimou.lambda.InputProcessingLambda`:
+
 [source,java]
 ----
 Lambda makeMeUppercase = new InputProcessingLambda() {
@@ -1119,17 +1122,34 @@ A computing cache factory producing computing cache implementations backed by +j
 
 An alternative to +DateTimeFormatHelper+  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
 
-==== SimpleHelpers
 
-This utility class and its builder allow to create simple helpers using JDK8 funcional interfaces. It's even possible to validate the helper definition and provide configuration keys.
+==== Simple helpers
+
+`org.trimou.jdk8.handlebars.SimpleHelpers` utility class and its builder allow to create simple helpers using JDK8 funcional interfaces. It's even possible to validate the helper definition and provide configuration keys.
 
 [source,java]
 ----
 MustacheEngine engine = MustacheEngineBuilder
         .newBuilder()
-        .registerHelper("toLowerCase", SimpleHelpers.execute((o, c) -> {
-            o.append(o.getParameters().get(0).toString().toLowerCase());
-         })).build();
+        .registerHelper("toLowerCase", SimpleHelpers.execute(
+            (o, c) -> {
+                o.append(o.getParameters().get(0).toString().toLowerCase());
+            })
+        ).build();
 ----
+
+==== Simple lambdas
+
+`org.trimou.jdk8.lambda.SimpleLambdas` utility class and its builder allow to create simple lambdas using JDK8 funcional interfaces:
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+        .newBuilder()
+        .addGlobalData("toLowerCase",
+            SimpleLambdas.invoke((t) -> t.toLowerCase())
+        ).build();
+----
+
 
 '''
