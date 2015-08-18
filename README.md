@@ -2,9 +2,7 @@ Trimou - Trim Your Mustache Templates!
 ======
 
 [![Travis CI Build Status](https://travis-ci.org/trimou/trimou.png)](https://travis-ci.org/trimou/trimou)
-
 [![Maven Central](http://img.shields.io/maven-central/v/org.trimou/trimou-core.svg)](http://search.maven.org/#search|ga|1|trimou-core)
-
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/trimou/trimou)
 
 
@@ -14,7 +12,34 @@ There are some ready-to-use extensions which provide integration with [CDI](http
 
 See also the project site: [http://trimou.org](http://trimou.org "Trimou Site")
 
-Don't forget to check the example web application: https://github.com/trimou/trimou/tree/master/examples/ping
+Get Started
+-------------
+
+All the artifacts are available in the Maven Central Repository:
+
+```xml
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-core</artifactId>
+  <version>1.8.1.Final</version>
+</dependency>
+```
+And now use the `MustacheEngine` to compile a `Mustache` template and render the output:
+
+```java
+// We don't configure anything - use sensible defaults
+MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+// We provide the template contents - no caching and no template locators used
+Mustache mustache = engine.compileMustache("hello", "Hello {{this}}!");
+// Renders "Hello world!"
+System.out.println(mustache.render("world"));
+```
+
+Examples
+-------------
+
+* a really [simple example](https://github.com/trimou/trimou/tree/master/examples/simple) 
+* a little bit more complex [web application example](https://github.com/trimou/trimou/tree/master/examples/ping). 
 
 Building Trimou
 -------------
