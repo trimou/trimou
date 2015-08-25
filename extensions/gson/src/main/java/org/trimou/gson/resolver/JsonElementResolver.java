@@ -37,7 +37,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Martin Kouba
  * @see <a
- *      href="http://code.google.com/p/google-gson/">http://code.google.com/p/google-gson/</a>
+ * href="http://code.google.com/p/google-gson/">http://code.google.com/p/google-gson/</a>
  */
 public class JsonElementResolver extends IndexResolver {
 
@@ -61,14 +61,13 @@ public class JsonElementResolver extends IndexResolver {
     private final Hint hint;
 
     /**
-    *
-    */
+     *
+     */
     public JsonElementResolver() {
         this(JSON_ELEMENT_RESOLVER_PRIORITY);
     }
 
     /**
-     *
      * @param priority
      */
     public JsonElementResolver(int priority) {
@@ -76,7 +75,7 @@ public class JsonElementResolver extends IndexResolver {
         this.hint = new Hint() {
             @Override
             public Object resolve(Object contextObject, String name,
-                    ResolutionContext context) {
+                                  ResolutionContext context) {
                 return JsonElementResolver.this.resolve(contextObject, name,
                         context);
             }
@@ -85,7 +84,7 @@ public class JsonElementResolver extends IndexResolver {
 
     @Override
     public Object resolve(Object contextObject, String name,
-            ResolutionContext context) {
+                          ResolutionContext context) {
 
         if (contextObject == null || !(contextObject instanceof JsonElement)) {
             return null;
@@ -97,8 +96,12 @@ public class JsonElementResolver extends IndexResolver {
             // Index-based access of JsonArray elements
             JsonArray jsonArray = (JsonArray) element;
             // #26 Unwrap the element if necessary
-            return unwrapJsonElementIfNecessary(jsonArray.get(getIndexValue(
-                    name, jsonArray.size())));
+            final Integer indexValue = getIndexValue(
+                    name, jsonArray.size());
+            if (indexValue == null) {
+                throw new IndexOutOfBoundsException(String.format("Trying to request index %s but array have only %s elements. Context: '%s'", name, jsonArray.size(), context.getKey()));
+            }
+            return unwrapJsonElementIfNecessary(jsonArray.get(indexValue));
         } else if (element.isJsonObject()) {
             // JsonObject properties
             JsonObject jsonObject = (JsonObject) element;
@@ -125,7 +128,7 @@ public class JsonElementResolver extends IndexResolver {
 
     @Override
     public Hint createHint(Object contextObject, String name,
-            ResolutionContext context) {
+                           ResolutionContext context) {
         return hint;
     }
 

@@ -2,6 +2,7 @@ package org.trimou.gson.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,6 +78,24 @@ public class JsonElementResolverTest {
         Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
         assertEquals("One of users is izeye.", mustache.render(jsonElement));
+    }
+
+    @Test
+    public void testOutOfBoundIndexException() throws JsonIOException,
+            JsonSyntaxException, FileNotFoundException {
+        // https://github.com/trimou/trimou/issues/73
+        String json = "{numbers: [1,2]}";
+        String template = "One of users is {{numbers.2}}.";
+        JsonElement jsonElement = new JsonParser().parse(json);
+        MustacheEngine engine = getEngine();
+        Mustache mustache = engine.compileMustache("unwrap_array_index",
+                template);
+        try{
+            mustache.render(jsonElement);
+            fail("Shouldn't access this code.");
+        }catch (IndexOutOfBoundsException ex){
+           assertEquals("Trying to request index 2 but array have only 2 elements. Context: 'numbers.2'", ex.getMessage());
+        }
     }
 
     @Test
