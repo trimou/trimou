@@ -20,6 +20,8 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 import java.util.Collections;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.ArrayIndexResolver;
@@ -48,7 +50,7 @@ public class JsonElementResolver extends IndexResolver {
      * "this" would be normally matched by ThisResolver)
      */
     public static final String NAME_UNWRAP_THIS = "unwrapThis";
-
+    private static final Logger logger = LoggerFactory.getLogger(JsonElementResolver.class);
     /**
      * If set to <code>true</code> instances of JsonPrimitive and JsonNull are
      * unwrapped automatically.
@@ -99,7 +101,8 @@ public class JsonElementResolver extends IndexResolver {
             final Integer indexValue = getIndexValue(
                     name, jsonArray.size());
             if (indexValue == null) {
-                throw new IndexOutOfBoundsException(String.format("Trying to request index %s but array have only %s elements. Context: '%s'", name, jsonArray.size(), context.getKey()));
+                logger.warn("Trying to request index {} but array have only {} elements. Key: '{}'",name,jsonArray.size(),context.getKey());
+                return null;
             }
             return unwrapJsonElementIfNecessary(jsonArray.get(indexValue));
         } else if (element.isJsonObject()) {

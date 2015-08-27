@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ThisResolver;
 
@@ -21,6 +22,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import org.trimou.exception.MustacheException;
 
 /**
  *
@@ -87,14 +89,18 @@ public class JsonElementResolverTest {
         String json = "{numbers: [1,2]}";
         String template = "One of users is {{numbers.2}}.";
         JsonElement jsonElement = new JsonParser().parse(json);
-        MustacheEngine engine = getEngine();
+        MustacheEngine engine =   MustacheEngineBuilder.newBuilder()
+                .setMissingValueHandler(new ThrowingExceptionMissingValueHandler())
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(new ThisResolver()).addResolver(new MapResolver())
+                .addResolver(new JsonElementResolver()).build();
         Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
         try{
             mustache.render(jsonElement);
             fail("Shouldn't access this code.");
-        }catch (IndexOutOfBoundsException ex){
-           assertEquals("Trying to request index 2 but array have only 2 elements. Context: 'numbers.2'", ex.getMessage());
+        }catch (MustacheException ex){
+           assertEquals("RENDER_NO_VALUE: No value for the given key found: numbers.2 [template: unwrap_array_index, line: 1]", ex.getMessage());
         }
     }
 
