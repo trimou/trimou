@@ -65,7 +65,8 @@ class HelperExecutionHandler {
      * @param helper
      * @param optionsBuilder
      */
-    private HelperExecutionHandler(Helper helper, OptionsBuilder optionsBuilder) {
+    private HelperExecutionHandler(Helper helper,
+            OptionsBuilder optionsBuilder) {
         this.helper = helper;
         this.optionsBuilder = optionsBuilder;
     }
@@ -102,8 +103,7 @@ class HelperExecutionHandler {
             int position = HelperValidator
                     .getFirstDeterminingEqualsCharPosition(part);
             if (position != -1) {
-                hash.put(
-                        part.substring(0, position),
+                hash.put(part.substring(0, position),
                         getLiteralOrPlaceholder(
                                 part.substring(position + 1, part.length()),
                                 engine, segment));
@@ -126,9 +126,9 @@ class HelperExecutionHandler {
      * @param appendable
      * @param executionContext
      */
-    Appendable execute(Appendable appendable, ExecutionContext executionContext) {
-
-        DefaultOptions options = optionsBuilder.build(appendable,
+    Appendable execute(Appendable appendable,
+            ExecutionContext executionContext) {
+        final DefaultOptions options = optionsBuilder.build(appendable,
                 executionContext);
         try {
             helper.execute(options);
@@ -155,10 +155,10 @@ class HelperExecutionHandler {
 
         private final MustacheEngine engine;
 
-        // true if not placeholder found, also if params list is empty
+        // true if no placeholder found, also if params list is empty
         private final boolean isParamValuePlaceholderFound;
 
-        // true if not placeholder found, also if hash map is empty
+        // true if no placeholder found, also if hash map is empty
         private final boolean isHashValuePlaceholderFound;
 
         private OptionsBuilder(List<Object> parameters,
@@ -168,8 +168,10 @@ class HelperExecutionHandler {
             this.hash = hash;
             this.segment = segment;
             this.engine = engine;
-            this.isParamValuePlaceholderFound = initParamValuePlaceholderFound(parameters);
-            this.isHashValuePlaceholderFound = initHashValuePlaceholderFound(hash);
+            this.isParamValuePlaceholderFound = initParamValuePlaceholderFound(
+                    parameters);
+            this.isHashValuePlaceholderFound = initHashValuePlaceholderFound(
+                    hash);
         }
 
         @Override
@@ -198,34 +200,43 @@ class HelperExecutionHandler {
 
         public DefaultOptions build(Appendable appendable,
                 ExecutionContext executionContext) {
+            List<ValueWrapper> valueWrappers = isParamValuePlaceholderFound
+                    || isHashValuePlaceholderFound
+                            ? new ArrayList<ValueWrapper>(5) : null;
+            return new DefaultOptions(appendable, executionContext, segment,
+                    getFinalParameters(executionContext, valueWrappers),
+                    getFinalHash(executionContext, valueWrappers),
+                    valueWrappers, engine);
+        }
 
-            List<ValueWrapper> valueWrappers = new ArrayList<ValueWrapper>();
-            List<Object> finalParams;
-            Map<String, Object> finalHash;
-
+        private List<Object> getFinalParameters(
+                ExecutionContext executionContext,
+                List<ValueWrapper> valueWrappers) {
             if (isParamValuePlaceholderFound) {
                 // At this point parameters list is never empty
                 int size = parameters.size();
                 switch (size) {
                 case 1:
                     // Very often there will be only single param
-                    finalParams = Collections
+                    return Collections
                             .singletonList(resolveValue(parameters.get(0),
                                     valueWrappers, executionContext));
-                    break;
                 default:
-                    finalParams = new ArrayList<Object>(size);
+                    List<Object> finalParams = new ArrayList<Object>(size);
                     for (Object param : parameters) {
                         finalParams.add(resolveValue(param, valueWrappers,
                                 executionContext));
                     }
-                    finalParams = Collections.unmodifiableList(finalParams);
-                    break;
+                    return Collections.unmodifiableList(finalParams);
                 }
             } else {
-                finalParams = parameters;
+                return parameters;
             }
+        }
 
+        private Map<String, Object> getFinalHash(
+                ExecutionContext executionContext,
+                List<ValueWrapper> valueWrappers) {
             if (isHashValuePlaceholderFound) {
                 // At this point hash map is never empty
                 int size = hash.size();
@@ -233,28 +244,21 @@ class HelperExecutionHandler {
                 case 1:
                     Entry<String, Object> singleEntry = hash.entrySet()
                             .iterator().next();
-                    finalHash = Collections.singletonMap(
-                            singleEntry.getKey(),
+                    return Collections.singletonMap(singleEntry.getKey(),
                             resolveValue(singleEntry.getValue(), valueWrappers,
                                     executionContext));
-                    break;
                 default:
-                    finalHash = new HashMap<String, Object>();
+                    Map<String, Object> finalHash = new HashMap<String, Object>();
                     for (Entry<String, Object> entry : hash.entrySet()) {
-                        finalHash.put(
-                                entry.getKey(),
+                        finalHash.put(entry.getKey(),
                                 resolveValue(entry.getValue(), valueWrappers,
                                         executionContext));
                     }
-                    finalHash = Collections.unmodifiableMap(finalHash);
-                    break;
+                    return Collections.unmodifiableMap(finalHash);
                 }
             } else {
-                finalHash = hash;
+                return hash;
             }
-
-            return new DefaultOptions(appendable, executionContext, segment,
-                    finalParams, finalHash, valueWrappers, engine);
         }
 
         private Object resolveValue(Object value,
@@ -271,7 +275,8 @@ class HelperExecutionHandler {
             }
         }
 
-        private boolean initParamValuePlaceholderFound(List<Object> parameters) {
+        private boolean initParamValuePlaceholderFound(
+                List<Object> parameters) {
             if (parameters.isEmpty()) {
                 return false;
             }
@@ -283,7 +288,8 @@ class HelperExecutionHandler {
             return false;
         }
 
-        private boolean initHashValuePlaceholderFound(Map<String, Object> hash) {
+        private boolean initHashValuePlaceholderFound(
+                Map<String, Object> hash) {
             if (hash.isEmpty()) {
                 return false;
             }
@@ -302,7 +308,7 @@ class HelperExecutionHandler {
         private static final Logger logger = LoggerFactory
                 .getLogger(DefaultOptions.class);
 
-        protected final List<ValueWrapper> valueWrappers;
+        protected List<ValueWrapper> valueWrappers;
 
         protected Appendable appendable;
 
@@ -328,10 +334,10 @@ class HelperExecutionHandler {
          * @param valueWrappers
          * @param engine
          */
-        DefaultOptions(Appendable appendable,
-                ExecutionContext executionContext, HelperAwareSegment segment,
-                List<Object> parameters, Map<String, Object> hash,
-                List<ValueWrapper> valueWrappers, MustacheEngine engine) {
+        DefaultOptions(Appendable appendable, ExecutionContext executionContext,
+                HelperAwareSegment segment, List<Object> parameters,
+                Map<String, Object> hash, List<ValueWrapper> valueWrappers,
+                MustacheEngine engine) {
             this.appendable = appendable;
             this.valueWrappers = valueWrappers;
             this.executionContext = executionContext;
@@ -397,6 +403,9 @@ class HelperExecutionHandler {
 
         @Override
         public Object getValue(String key) {
+            if (valueWrappers == null) {
+                valueWrappers = new ArrayList<ValueWrapper>(5);
+            }
             ValueWrapper wrapper = executionContext.getValue(key);
             valueWrappers.add(wrapper);
             return wrapper.get();
@@ -429,8 +438,8 @@ class HelperExecutionHandler {
                             // execution
                             DefaultOptions asyncOptions = new DefaultOptions(
                                     new AsyncAppendable(asyncAppendable),
-                                    executionContext, segment, parameters,
-                                    hash, new ArrayList<ValueWrapper>(), engine);
+                                    executionContext, segment, parameters, hash,
+                                    new ArrayList<ValueWrapper>(), engine);
                             executable.execute(asyncOptions);
                             return (AsyncAppendable) asyncOptions
                                     .getAppendable();
@@ -489,8 +498,8 @@ class HelperExecutionHandler {
             if (partialTemplate == null) {
                 throw new MustacheException(
                         MustacheProblem.RENDER_INVALID_PARTIAL_KEY,
-                        "No partial found for the given key: %s %s",
-                        templateId, segment.getOrigin());
+                        "No partial found for the given key: %s %s", templateId,
+                        segment.getOrigin());
             }
             // Note that indentation is not supported
             partialTemplate.getRootSegment().execute(appendable,
@@ -498,23 +507,23 @@ class HelperExecutionHandler {
         }
 
         void release() {
-            int wrappersSize = valueWrappers.size();
-            if (wrappersSize == 1) {
-                valueWrappers.get(0).release();
-            } else if (wrappersSize > 1) {
-                for (ValueWrapper wrapper : valueWrappers) {
-                    wrapper.release();
+            if (valueWrappers != null) {
+                int wrappersSize = valueWrappers.size();
+                if (wrappersSize == 1) {
+                    valueWrappers.get(0).release();
+                } else if (wrappersSize > 1) {
+                    for (ValueWrapper wrapper : valueWrappers) {
+                        wrapper.release();
+                    }
                 }
             }
             if (pushed > 0) {
                 logger.info(
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
-                        new Object[] {
-                                pushed,
-                                HelperValidator
-                                        .splitHelperName(
-                                                segment.getTagInfo().getText(),
-                                                segment).next(),
+                        new Object[] { pushed,
+                                HelperValidator.splitHelperName(
+                                        segment.getTagInfo().getText(), segment)
+                                .next(),
                                 segment.getTagInfo().getTemplateName() });
             }
         }
