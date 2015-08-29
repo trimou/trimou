@@ -16,6 +16,8 @@
 package org.trimou.engine.resolver;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract index-based resolver.
@@ -25,6 +27,9 @@ import org.apache.commons.lang3.math.NumberUtils;
  * @see ArrayIndexResolver
  */
 public abstract class IndexResolver extends AbstractResolver {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(IndexResolver.class);
 
     public IndexResolver(int priority) {
         super(priority);
@@ -41,8 +46,8 @@ public abstract class IndexResolver extends AbstractResolver {
 
     /**
      * @param name
-     * @return <code>true</code> if the given key represents an index
-     *         (must only contain digits)
+     * @return <code>true</code> if the given key represents an index (must only
+     *         contain digits)
      */
     protected boolean isAnIndex(String name) {
         return NumberUtils.isDigits(name);
@@ -50,23 +55,39 @@ public abstract class IndexResolver extends AbstractResolver {
 
     /**
      *
+     * @param name
+     * @param maxSize
+     * @return the index value or <code>null</code> in case of invalid index
+     */
+    protected Integer getIndexValue(String name, int maxSize) {
+        return getIndexValue(name, null, maxSize);
+    }
+
+    /**
+     *
+     * @param name
      * @param key
      * @param maxSize
      * @return the index value or <code>null</code> in case of invalid index
      */
-    protected Integer getIndexValue(String key, int maxSize) {
+    protected Integer getIndexValue(String name, String key, int maxSize) {
 
-        Integer index = null;
+        final Integer index;
 
         try {
-            index = Integer.valueOf(key);
+            index = Integer.valueOf(name);
         } catch (NumberFormatException e) {
             // Index is not an integer
+            logger.warn("Index '{}' is not a valid integer value, key: '{}'",
+                    name, maxSize, key != null ? key : "n/a");
             return null;
         }
 
         if (index < 0 || index >= maxSize) {
             // Index out of bound
+            logger.warn(
+                    "Trying to access index {} but the list/array has only {} elements, key: '{}'",
+                    index, maxSize, key != null ? key : "n/a");
             return null;
         }
         return index;

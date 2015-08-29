@@ -63,21 +63,18 @@ public class CombinedIndexResolver extends IndexResolver implements Validateable
     @Override
     public Object resolve(Object contextObject, String name,
             ResolutionContext context) {
-
         if (contextObject == null || notAnIndex(name)) {
             return null;
         }
-
         if (contextObject instanceof List) {
             List list = (List) contextObject;
-            Integer index = getIndexValue(name, list.size());
+            Integer index = getIndexValue(name, context.getKey(), list.size());
             if (index != null) {
                 return list.get(index);
             }
         }
-
         if (contextObject.getClass().isArray()) {
-            Integer index = getIndexValue(name, Array.getLength(contextObject));
+            Integer index = getIndexValue(name, context.getKey(), Array.getLength(contextObject));
             if (index != null) {
                 return Array.get(contextObject, index);
             }
