@@ -2,6 +2,7 @@ package org.trimou.gson.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ThisResolver;
 
@@ -20,6 +22,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import org.trimou.exception.MustacheException;
 
 /**
  *
@@ -77,6 +80,28 @@ public class JsonElementResolverTest {
         Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
         assertEquals("One of users is izeye.", mustache.render(jsonElement));
+    }
+
+    @Test
+    public void testOutOfBoundIndexException() throws JsonIOException,
+            JsonSyntaxException, FileNotFoundException {
+        // https://github.com/trimou/trimou/issues/73
+        String json = "{numbers: [1,2]}";
+        String template = "One of users is {{numbers.2}}.";
+        JsonElement jsonElement = new JsonParser().parse(json);
+        MustacheEngine engine =   MustacheEngineBuilder.newBuilder()
+                .setMissingValueHandler(new ThrowingExceptionMissingValueHandler())
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(new ThisResolver()).addResolver(new MapResolver())
+                .addResolver(new JsonElementResolver()).build();
+        Mustache mustache = engine.compileMustache("unwrap_array_index",
+                template);
+        try{
+            mustache.render(jsonElement);
+            fail("Shouldn't access this code.");
+        }catch (MustacheException ex){
+           assertEquals("RENDER_NO_VALUE: No value for the given key found: numbers.2 [template: unwrap_array_index, line: 1]", ex.getMessage());
+        }
     }
 
     @Test
