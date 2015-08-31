@@ -2,7 +2,6 @@ package org.trimou.gson.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,12 +9,12 @@ import java.io.FileReader;
 
 import org.junit.Test;
 import org.trimou.Mustache;
+import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ThisResolver;
-import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 import com.google.gson.JsonElement;
@@ -87,21 +86,22 @@ public class JsonElementResolverTest {
         // https://github.com/trimou/trimou/issues/73
         String json = "{numbers: [1,2]}";
         String template = "One of users is {{numbers.2}}.";
-        JsonElement jsonElement = new JsonParser().parse(json);
+        final JsonElement jsonElement = new JsonParser().parse(json);
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .setMissingValueHandler(
                         new ThrowingExceptionMissingValueHandler())
                 .omitServiceLoaderConfigurationExtensions()
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new JsonElementResolver()).build();
-        Mustache mustache = engine.compileMustache("unwrap_array_index",
+        final Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
-        try {
-            mustache.render(jsonElement);
-            fail("Shouldn't access this code.");
-        } catch (MustacheException e) {
-            assertEquals(MustacheProblem.RENDER_NO_VALUE, e.getCode());
-        }
+        MustacheExceptionAssert.expect(MustacheProblem.RENDER_NO_VALUE)
+                .check(new Runnable() {
+                    @Override
+                    public void run() {
+                        mustache.render(jsonElement);
+                    }
+                });
     }
 
     @Test
