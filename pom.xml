@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <version>9</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -110,21 +110,6 @@
                     <systemPropertyVariables>
                         <org.slf4j.simpleLogger.defaultLogLevel>WARN</org.slf4j.simpleLogger.defaultLogLevel>
                     </systemPropertyVariables>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Implementation-Title>${project.name}</Implementation-Title>
-                            <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                            <Specification-Title>${project.name}</Specification-Title>
-                            <Specification-Version>${project.version}</Specification-Version>
-                        </manifestEntries>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>
