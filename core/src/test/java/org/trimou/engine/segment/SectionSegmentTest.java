@@ -152,13 +152,21 @@ public class SectionSegmentTest extends AbstractEngineTest {
 
     @Test
     public void testIterOddAndEven() {
-
         Mustache mustache = engine
                 .compileMustache(
                         "iter_odd_even",
                         "{{#this}}{{#iter.isOdd}}ODD{{/iter.isOdd}}{{#iter.isEven}}EVEN{{/iter.isEven}}{{/this}}");
-
         assertEquals("ODDEVENODD",
+                mustache.render(new String[] { "1", "2", "3" }));
+    }
+
+    @Test
+    public void testIterationIndexParity() {
+        Mustache mustache = engine
+                .compileMustache(
+                        "iter_index_parity",
+                        "{{#this}}{{indexParity}}{{/this}}");
+        assertEquals("oddevenodd",
                 mustache.render(new String[] { "1", "2", "3" }));
     }
 

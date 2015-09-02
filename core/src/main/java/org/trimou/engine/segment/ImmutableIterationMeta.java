@@ -131,6 +131,17 @@ public final class ImmutableIterationMeta implements Mapper {
 
     /**
      *
+     * @return the current index parity, e.g. either {@code "odd"} or
+     *         {@code "even"}
+     * @see #isEven()
+     * @see #isOdd()
+     */
+    public String getIndexParity() {
+        return isEven() ? "even" : "odd";
+    }
+
+    /**
+     *
      * @return the value alias or <code>null</code> if not set
      */
     public String getValueAlias() {
