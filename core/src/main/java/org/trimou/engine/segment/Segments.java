@@ -20,6 +20,7 @@ import static org.trimou.engine.config.EngineConfigurationKey.TEMPLATE_CACHE_ENA
 import static org.trimou.engine.config.EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,10 +47,9 @@ final class Segments {
      */
     static boolean isTemplateCachingAllowed(Configuration configuration) {
         return !configuration.getBooleanPropertyValue(DEBUG_MODE)
-                && configuration
-                        .getBooleanPropertyValue(TEMPLATE_CACHE_ENABLED)
-                && configuration
-                        .getLongPropertyValue(TEMPLATE_CACHE_EXPIRATION_TIMEOUT) <= 0;
+                && configuration.getBooleanPropertyValue(TEMPLATE_CACHE_ENABLED)
+                && configuration.getLongPropertyValue(
+                        TEMPLATE_CACHE_EXPIRATION_TIMEOUT) <= 0;
     }
 
     /**
@@ -103,6 +103,15 @@ final class Segments {
             lines.add(currentLine);
         }
         return lines;
+    }
+
+    static String[] getKeyParts(String text, Configuration configuration) {
+        ArrayList<String> parts = new ArrayList<String>();
+        for (Iterator<String> iterator = configuration.getKeySplitter()
+                .split(text); iterator.hasNext();) {
+            parts.add(iterator.next());
+        }
+        return parts.toArray(new String[parts.size()]);
     }
 
 }

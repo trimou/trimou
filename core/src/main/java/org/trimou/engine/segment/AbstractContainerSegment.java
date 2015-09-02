@@ -35,12 +35,12 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
 
     /**
      *
-     * @param name
+     * @param text
      * @param origin
      * @param segments
      */
-    public AbstractContainerSegment(String name, Origin origin, List<Segment> segments) {
-        super(name, origin);
+    protected AbstractContainerSegment(String text, Origin origin, List<Segment> segments) {
+        super(text, origin);
         this.segments = segments;
     }
 

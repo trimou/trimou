@@ -16,6 +16,7 @@
 package org.trimou.engine.config;
 
 import org.trimou.engine.interpolation.MissingValueHandler;
+import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.segment.LineSeparatorSegment;
 import org.trimou.handlebars.Helper;
 
@@ -55,13 +56,12 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      *
      * @deprecated see also {@link MissingValueHandler}
      */
-    @Deprecated
-    NO_VALUE_INDICATES_PROBLEM(false),
+    @Deprecated NO_VALUE_INDICATES_PROBLEM(false),
     /**
      * <code>true</code> in case of debug mode should be enabled,
      * <code>false</code> otherwise. Debug mode disables the template cache and
      * provides some more logging during template rendering.
-     * */
+     */
     DEBUG_MODE(false),
     /**
      * <code>true</code> in case of the section-based literal blocks should be
@@ -121,10 +121,12 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      */
     ITERATION_METADATA_ALIAS("iter"),
     /**
-     * If set to <code>true</code> the evaluation of simple variables, e.g.
-     * <code>{{.}}</code> or <code>{{foo}}</code>, is optimized.
+     * If set to <code>true</code> a hint may be used to skip the resolver chain
+     * for some parts of the key during evaluation of variables.
+     *
+     * @see Hint
      */
-    RESOLVER_HINTS_ENABLED(true), ;
+    RESOLVER_HINTS_ENABLED(true),;
 
     private Object defaultValue;
 
@@ -132,8 +134,8 @@ public enum EngineConfigurationKey implements ConfigurationKey {
 
     EngineConfigurationKey(Object defaultValue) {
         this.key = ConfigurationProperties.buildPropertyKey(this.toString(),
-                new String[] { EngineConfigurationKey.class.getPackage()
-                        .getName() });
+                new String[] {
+                        EngineConfigurationKey.class.getPackage().getName() });
         this.defaultValue = defaultValue;
     }
 

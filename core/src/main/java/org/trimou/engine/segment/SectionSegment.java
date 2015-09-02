@@ -62,20 +62,35 @@ import com.google.common.collect.Iterables;
  * @see InvertedSectionSegment
  */
 @Internal
-public class SectionSegment extends AbstractSectionSegment implements
-        HelperAwareSegment {
+public class SectionSegment extends AbstractSectionSegment
+        implements HelperAwareSegment {
 
     private final String iterationMetaAlias;
 
     private final HelperExecutionHandler helperHandler;
 
+    private final ValueProvider provider;
+
+    /**
+     *
+     * @param text
+     * @param origin
+     * @param segments
+     */
     public SectionSegment(String text, Origin origin, List<Segment> segments) {
         super(text, origin, segments);
-        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
-                .from(text, getEngine(), this) : null;
-        this.iterationMetaAlias = getEngineConfiguration()
-                .getStringPropertyValue(
-                        EngineConfigurationKey.ITERATION_METADATA_ALIAS);
+        this.helperHandler = isHandlebarsSupportEnabled()
+                ? HelperExecutionHandler.from(text, getEngine(), this) : null;
+
+        if (helperHandler == null) {
+            this.iterationMetaAlias = getEngineConfiguration()
+                    .getStringPropertyValue(
+                            EngineConfigurationKey.ITERATION_METADATA_ALIAS);
+            this.provider = new ValueProvider(text, getEngineConfiguration());
+        } else {
+            this.iterationMetaAlias = null;
+            this.provider = null;
+        }
     }
 
     public SegmentType getType() {
@@ -86,12 +101,13 @@ public class SectionSegment extends AbstractSectionSegment implements
         if (helperHandler != null) {
             return helperHandler.execute(appendable, context);
         } else {
-            ValueWrapper value = context.getValue(getText());
+            ValueWrapper value = provider.get(context);
             try {
                 if (value.isNull()) {
                     return appendable;
+                } else {
+                    processValue(appendable, context, value.get());
                 }
-                processValue(appendable, context, value.get());
             } finally {
                 value.release();
             }
@@ -106,16 +122,16 @@ public class SectionSegment extends AbstractSectionSegment implements
     @Override
     public String getLiteralBlock() {
         StringBuilder literal = new StringBuilder();
-        literal.append(getTagLiteral(getType().getTagType().getCommand()
-                + getText()));
+        literal.append(
+                getTagLiteral(getType().getTagType().getCommand() + getText()));
         literal.append(getContentLiteralBlock());
         if (helperHandler != null) {
-            literal.append(getTagLiteral(MustacheTagType.SECTION_END
-                    .getCommand()
-                    + HelperValidator.splitHelperName(getText(), this).next()));
+            literal.append(getTagLiteral(
+                    MustacheTagType.SECTION_END.getCommand() + HelperValidator
+                            .splitHelperName(getText(), this).next()));
         } else {
-            literal.append(getTagLiteral(MustacheTagType.SECTION_END
-                    .getCommand() + getText()));
+            literal.append(getTagLiteral(
+                    MustacheTagType.SECTION_END.getCommand() + getText()));
         }
         return literal.toString();
     }
@@ -153,9 +169,9 @@ public class SectionSegment extends AbstractSectionSegment implements
         Iterator iterator = iterable.iterator();
         int i = 1;
         while (iterator.hasNext()) {
-            processIteration(appendable,
-                    context.setContextObject(new ImmutableIterationMeta(
-                            iterationMetaAlias, size, i++)), iterator.next());
+            processIteration(appendable, context.setContextObject(
+                    new ImmutableIterationMeta(iterationMetaAlias, size, i++)),
+                    iterator.next());
         }
     }
 
@@ -168,8 +184,8 @@ public class SectionSegment extends AbstractSectionSegment implements
         for (int i = 0; i < length; i++) {
             processIteration(appendable,
                     context.setContextObject(new ImmutableIterationMeta(
-                            iterationMetaAlias, length, i + 1)), Array.get(
-                            array, i));
+                            iterationMetaAlias, length, i + 1)),
+                    Array.get(array, i));
         }
     }
 

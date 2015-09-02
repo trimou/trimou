@@ -39,9 +39,12 @@ import org.trimou.engine.context.ValueWrapper;
 @Internal
 public class InvertedSectionSegment extends AbstractSectionSegment {
 
+    private final ValueProvider provider;
+
     public InvertedSectionSegment(String text, Origin origin,
             List<Segment> segments) {
         super(text, origin, segments);
+        this.provider = new ValueProvider(text, getEngineConfiguration());
     }
 
     public SegmentType getType() {
@@ -49,7 +52,7 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
     }
 
     public Appendable execute(Appendable appendable, ExecutionContext context) {
-        ValueWrapper value = context.getValue(getText());
+        ValueWrapper value = provider.get(context);
         try {
             if (value.isNull() || process(value.get())) {
                 return super.execute(appendable, context);

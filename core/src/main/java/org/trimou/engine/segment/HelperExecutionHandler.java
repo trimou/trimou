@@ -142,7 +142,8 @@ class HelperExecutionHandler {
             MustacheEngine engine, HelperAwareSegment segment) {
         Object literal = engine.getConfiguration().getLiteralSupport()
                 .getLiteral(value, segment.getTagInfo());
-        return literal != null ? literal : new DefaultValuePlaceholder(value);
+        return literal != null ? literal
+                : new DefaultValuePlaceholder(value, engine);
     }
 
     private static class OptionsBuilder implements HelperDefinition {
@@ -264,10 +265,15 @@ class HelperExecutionHandler {
         private Object resolveValue(Object value,
                 List<ValueWrapper> valueWrappers,
                 ExecutionContext executionContext) {
-
             if (value instanceof ValuePlaceholder) {
-                ValueWrapper wrapper = executionContext
-                        .getValue(((ValuePlaceholder) value).getName());
+                final ValueWrapper wrapper;
+                if (value instanceof DefaultValuePlaceholder) {
+                    wrapper = ((DefaultValuePlaceholder) value).getProvider()
+                            .get(executionContext);
+                } else {
+                    wrapper = executionContext
+                            .getValue(((ValuePlaceholder) value).getName());
+                }
                 valueWrappers.add(wrapper);
                 return wrapper.get();
             } else {
@@ -534,12 +540,19 @@ class HelperExecutionHandler {
 
         private final String name;
 
-        public DefaultValuePlaceholder(String name) {
+        private final ValueProvider provider;
+
+        DefaultValuePlaceholder(String name, MustacheEngine engine) {
             this.name = name;
+            this.provider = new ValueProvider(name, engine.getConfiguration());
         }
 
         public String getName() {
             return name;
+        }
+
+        ValueProvider getProvider() {
+            return provider;
         }
 
     }

@@ -15,17 +15,11 @@
  */
 package org.trimou.engine.segment;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
-import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
-import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Strings;
@@ -36,23 +30,16 @@ import org.trimou.util.Strings;
  * @author Martin Kouba
  */
 @Internal
-public class ValueSegment extends AbstractSegment implements HelperAwareSegment {
+public class ValueSegment extends AbstractSegment
+        implements HelperAwareSegment {
 
     private final boolean unescape;
 
-    private final HelperExecutionHandler helperHandler;
-
     private final TextSupport textSupport;
 
-    private final String[] keyParts;
+    private final HelperExecutionHandler helperHandler;
 
-    /**
-     * The hint is currently only used to skip the resolver chain for a simple
-     * value reference - a key with single part, i.e. {{this}}
-     *
-     * @see EngineConfigurationKey#RESOLVER_HINTS_ENABLED
-     */
-    private final AtomicReference<Hint> hint;
+    private final ValueProvider provider;
 
     /**
      *
@@ -63,26 +50,15 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
     public ValueSegment(String text, Origin origin, boolean unescape) {
         super(text, origin);
         this.unescape = unescape;
-        this.helperHandler = isHandlebarsSupportEnabled() ? HelperExecutionHandler
-                .from(text, getEngine(), this) : null;
+        this.helperHandler = isHandlebarsSupportEnabled()
+                ? HelperExecutionHandler.from(text, getEngine(), this) : null;
+
         if (helperHandler == null) {
             this.textSupport = getEngineConfiguration().getTextSupport();
-            ArrayList<String> parts = new ArrayList<String>();
-            for (Iterator<String> iterator = getEngineConfiguration()
-                    .getKeySplitter().split(text); iterator.hasNext();) {
-                parts.add(iterator.next());
-            }
-            this.keyParts = parts.toArray(new String[parts.size()]);
-            if (getEngineConfiguration().getBooleanPropertyValue(
-                    EngineConfigurationKey.RESOLVER_HINTS_ENABLED)) {
-                this.hint = new AtomicReference<Hint>();
-            } else {
-                this.hint = null;
-            }
+            this.provider = new ValueProvider(text, getEngineConfiguration());
         } else {
             this.textSupport = null;
-            this.keyParts = null;
-            this.hint = null;
+            this.provider = null;
         }
     }
 
@@ -98,7 +74,7 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
         if (helperHandler != null) {
             return helperHandler.execute(appendable, context);
         } else {
-            ValueWrapper value = context.getValue(getText(), keyParts, hint);
+            ValueWrapper value = provider.get(context);
             try {
                 if (value.isNull()) {
                     Object replacement = getEngineConfiguration()
@@ -107,9 +83,6 @@ public class ValueSegment extends AbstractSegment implements HelperAwareSegment 
                         processValue(appendable, context, replacement);
                     }
                 } else {
-                    if (hint != null && value.getHint() != null) {
-                        hint.compareAndSet(null, value.getHint());
-                    }
                     processValue(appendable, context, value.get());
                 }
             } finally {

@@ -86,6 +86,11 @@ public final class ValueWrapper extends AbstractReleaseCallbackContainer
         keyPartIndex++;
     }
 
+    /**
+     * A hint is only set if a new instance is created during resolution.
+     *
+     * @return a new hint
+     */
     public Hint getHint() {
         return hint;
     }
