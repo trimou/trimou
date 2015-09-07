@@ -36,37 +36,40 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         assertNull(resolver.resolve(null, "whatever", null));
         assertNotNull(resolver.resolve(hammer, "age", null));
         // Methods have higher priority
-        assertEquals(Integer.valueOf(10), resolver.resolve(hammer, "age", null));
+        assertEquals(Integer.valueOf(10),
+                resolver.resolve(hammer, "age", null));
         assertNull(resolver.resolve(hammer, "getAgeForName", null));
     }
 
     @Test
     public void testInterpolation() {
+        int[] array = new int[] { 1, 2 };
         Map<String, Object> data = ImmutableMap.<String, Object> of("hammer",
-                new Hammer(), "type", ArchiveType.class);
-        assertEquals(
-                "Hello Edgar of age 10, persistent: false and !",
-                engine.compileMustache(
-                        "reflection_resolver",
+                new Hammer(), "type", ArchiveType.class, "array", array);
+        assertEquals("Hello Edgar of age 10, persistent: false and !",
+                engine.compileMustache("reflection_resolver",
                         "Hello {{hammer.name}} of age {{hammer.age}}, persistent: {{hammer.persistent}} and {{hammer.invalidName}}!")
+                .render(data));
+        assertEquals(
+                "NAIL|jar", engine
+                        .compileMustache("reflection_resolver_fields",
+                                "{{hammer.nail}}|{{type.JAR.suffix}}")
                         .render(data));
-        assertEquals(
-                "NAIL|jar",
-                engine.compileMustache("reflection_resolver_fields",
-                        "{{hammer.nail}}|{{type.JAR.suffix}}").render(data));
-        assertEquals(
-                "jar,war,ear,",
+        assertEquals("jar,war,ear,",
                 engine.compileMustache("reflection_resolver_static_method",
                         "{{#type.values}}{{this.suffix}},{{/type.values}}")
-                        .render(data));
+                .render(data));
+        assertEquals("" + array.length,
+                engine.compileMustache("reflection_resolver_array",
+                        "{{array.length}}").render(data));
     }
 
     @Test
     public void testPublicMethodOnPackagePrivateClass() {
         Hammer data = new Hammer();
-        Mustache mustache = engine
-                .compileMustache("reflection_resolver_accessibility",
-                        "{{#this.map.entrySet}}{{key}}={{value}}{{/this.map.entrySet}}");
+        Mustache mustache = engine.compileMustache(
+                "reflection_resolver_accessibility",
+                "{{#this.map.entrySet}}{{key}}={{value}}{{/this.map.entrySet}}");
         assertEquals("foo=10", mustache.render(data));
         assertEquals("foo=10", mustache.render(data));
     }

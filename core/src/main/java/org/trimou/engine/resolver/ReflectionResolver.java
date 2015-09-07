@@ -17,7 +17,9 @@ package org.trimou.engine.resolver;
 
 import static org.trimou.engine.priority.Priorities.rightBefore;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -70,6 +72,15 @@ public class ReflectionResolver extends AbstractResolver implements
 
     private static final Logger logger = LoggerFactory
             .getLogger(ReflectionResolver.class);
+
+    private static final MemberWrapper ARRAY_GET_LENGTH = new MemberWrapper() {
+
+        @Override
+        public Object getValue(Object instance) throws IllegalAccessException,
+                IllegalArgumentException, InvocationTargetException {
+            return Array.getLength(instance);
+        }
+    };
 
     /**
      * Lazy loading cache of lookup attempts (contains both hits and misses)
@@ -192,6 +203,15 @@ public class ReflectionResolver extends AbstractResolver implements
     }
 
     private static Optional<MemberWrapper> findWrapper(MemberKey key) {
+        // Get length of array objects
+        if(key.getClazz().isArray()) {
+            if(key.getName().equals("length")) {
+                return Optional.of(ARRAY_GET_LENGTH);
+            } else {
+                return Optional.absent();
+            }
+        }
+
         // Find accesible method with the given name, no
         // parameters and non-void return type
         Method foundMethod = Reflections.findMethod(key.getClazz(),
