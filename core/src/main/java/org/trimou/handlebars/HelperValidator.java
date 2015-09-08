@@ -55,7 +55,7 @@ public final class HelperValidator {
      * @throws MustacheException
      *             If the helper expects more params
      */
-    public static void checkParams(Class<?> helperClazz,
+    public static void checkParams(Class<? extends Helper> helperClazz,
             HelperDefinition definition, int paramSize) {
         Checker.checkArgumentNotNull(definition);
         Preconditions.checkArgument(paramSize >= 0,
@@ -64,20 +64,16 @@ public final class HelperValidator {
         int size = definition.getParameters().size();
 
         if (size < paramSize) {
-            throw new MustacheException(
-                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                    "Insufficient number of parameters for helper %s [expected: %s, current: %s, template: %s, line: %s]",
-                    helperClazz.getName(), paramSize, size, definition
-                            .getTagInfo().getTemplateName(), definition
-                            .getTagInfo().getLine());
+            throw newValidationException(String.format(
+                    "Insufficient number of parameters - expected: %s, current: %s",
+                    paramSize, size), helperClazz, definition);
         }
-
         if (size > paramSize) {
             logger.trace(
                     "{} superfluous parameters detected [helper: {}, template: {}, line: {}]",
-                    size - paramSize, helperClazz.getName(), definition
-                            .getTagInfo().getTemplateName(), definition
-                            .getTagInfo().getLine());
+                    size - paramSize, helperClazz.getName(),
+                    definition.getTagInfo().getTemplateName(),
+                    definition.getTagInfo().getLine());
         }
     }
 
@@ -90,17 +86,13 @@ public final class HelperValidator {
      *             If the helper tag type does not match any one of the
      *             specified types
      */
-    public static void checkType(Class<?> helperClazz,
+    public static void checkType(Class<? extends Helper> helperClazz,
             HelperDefinition definition, MustacheTagType... allowedTypes) {
         Checker.checkArgumentsNotNull(definition, allowedTypes);
-        if (!ArrayUtils.contains(allowedTypes, definition.getTagInfo()
-                .getType())) {
-            throw new MustacheException(
-                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                    "Unsupported tag type [helper: %s, template: %s, line: %s]",
-                    helperClazz.getName(), definition.getTagInfo()
-                            .getTemplateName(), definition.getTagInfo()
-                            .getLine());
+        if (!ArrayUtils.contains(allowedTypes,
+                definition.getTagInfo().getType())) {
+            throw newValidationException("Unsupported tag type", helperClazz,
+                    definition);
         }
     }
 
@@ -112,7 +104,7 @@ public final class HelperValidator {
      * @throws MustacheException
      *             If the helper expects more hash entries
      */
-    public static void checkHash(Class<?> helperClazz,
+    public static void checkHash(Class<? extends Helper> helperClazz,
             HelperDefinition definition, int hashSize) {
         Checker.checkArgumentNotNull(definition);
         Preconditions.checkArgument(hashSize >= 0,
@@ -121,20 +113,16 @@ public final class HelperValidator {
         int size = definition.getHash().size();
 
         if (size < hashSize) {
-            throw new MustacheException(
-                    MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                    "Insufficient number of hash entries for helper %s [expected: %s, current: %s, template: %s, line: %s]",
-                    helperClazz.getName(), hashSize, size, definition
-                            .getTagInfo().getTemplateName(), definition
-                            .getTagInfo().getLine());
+            throw newValidationException(String.format(
+                    "Insufficient number of hash entries - expected: %s, current: %s",
+                    hashSize, size), helperClazz, definition);
         }
-
         if (size > hashSize) {
             logger.trace(
                     "{} superfluous hash entries detected [helper: {}, template: {}, line: {}]",
-                    size - hashSize, helperClazz.getName(), definition
-                            .getTagInfo().getTemplateName(), definition
-                            .getTagInfo().getLine());
+                    size - hashSize, helperClazz.getName(),
+                    definition.getTagInfo().getTemplateName(),
+                    definition.getTagInfo().getLine());
         }
     }
 
@@ -144,7 +132,8 @@ public final class HelperValidator {
      * @param hashSize
      * @see #checkHash(Class, HelperDefinition, int)
      */
-    public static void checkHash(HelperDefinition definition, BasicHelper helper) {
+    public static void checkHash(HelperDefinition definition,
+            BasicHelper helper) {
         // Number of required hash entries
         checkHash(helper.getClass(), definition,
                 helper.numberOfRequiredHashEntries());
@@ -155,9 +144,9 @@ public final class HelperValidator {
                 if (!supportedHashKeys.get().contains(key)) {
                     logger.info(
                             "Unsupported hash key detected [key: {}, helper: {}, template: {}, line: {}]",
-                            key, helper.getClass().getName(), definition
-                                    .getTagInfo().getTemplateName(), definition
-                                    .getTagInfo().getLine());
+                            key, helper.getClass().getName(),
+                            definition.getTagInfo().getTemplateName(),
+                            definition.getTagInfo().getLine());
                 }
             }
         }
@@ -172,10 +161,11 @@ public final class HelperValidator {
      * @param segment
      * @return the parts of the helper name
      * @throws MustacheException
-     *             If a compilation problem occures
+     *             If a compilation problem occurs
      */
     @Internal
-    public static Iterator<String> splitHelperName(String name, Segment segment) {
+    public static Iterator<String> splitHelperName(String name,
+            Segment segment) {
 
         boolean stringLiteral = false;
         boolean space = false;
@@ -237,6 +227,16 @@ public final class HelperValidator {
             }
         }
         return -1;
+    }
+
+    public static MustacheException newValidationException(String msg,
+            Class<? extends Helper> helperClazz, HelperDefinition definition) {
+        return new MustacheException(
+                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                msg + " [helper: %s, template: %s, line: %s]",
+                helperClazz.getName(),
+                definition.getTagInfo().getTemplateName(),
+                definition.getTagInfo().getLine());
     }
 
 }

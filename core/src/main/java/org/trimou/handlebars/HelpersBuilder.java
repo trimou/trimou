@@ -88,6 +88,8 @@ public final class HelpersBuilder {
 
     public static final String ASYNC = "async";
 
+    public static final String INVOKE = "invoke";
+
     private final ImmutableMap.Builder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -350,6 +352,15 @@ public final class HelpersBuilder {
         return this;
     }
 
+    /**
+     * Add an instance of {@link InvokeHelper}.
+     *
+     * @return self
+     */
+    public HelpersBuilder addInvoke() {
+        builder.put(INVOKE, new InvokeHelper());
+        return this;
+    }
 
     /**
      *
@@ -384,6 +395,7 @@ public final class HelpersBuilder {
         addEval();
         addNumExpr();
         addAsync();
+        addInvoke();
         return this;
     }
 

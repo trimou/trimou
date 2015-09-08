@@ -16,12 +16,14 @@
 package org.trimou.engine.resolver;
 
 import static org.trimou.engine.priority.Priorities.rightBefore;
+import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Set;
 
@@ -48,10 +50,11 @@ import com.google.common.cache.RemovalNotification;
  * @see Reflections#findField(Class, String)
  * @see Reflections#findMethod(Class, String)
  */
-public class ReflectionResolver extends AbstractResolver implements
-        RemovalListener<MemberKey, Optional<MemberWrapper>> {
+public class ReflectionResolver extends AbstractResolver
+        implements RemovalListener<MemberKey, Optional<MemberWrapper>> {
 
-    public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(
+            WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
 
     public static final String COMPUTING_CACHE_CONSUMER_ID = ReflectionResolver.class
             .getName();
@@ -81,6 +84,9 @@ public class ReflectionResolver extends AbstractResolver implements
             return Array.getLength(instance);
         }
     };
+
+    public static final String GET_PREFIX = "get";
+    public static final String IS_PREFIX = "is";
 
     /**
      * Lazy loading cache of lookup attempts (contains both hits and misses)
@@ -147,7 +153,8 @@ public class ReflectionResolver extends AbstractResolver implements
     public void init() {
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
-        logger.debug("Initialized [memberCacheMaxSize: {}]", memberCacheMaxSize);
+        logger.debug("Initialized [memberCacheMaxSize: {}]",
+                memberCacheMaxSize);
         if (memberCacheMaxSize > 0) {
             memberCache = configuration.getComputingCacheFactory().create(
                     COMPUTING_CACHE_CONSUMER_ID, new MemberComputingFunction(),
@@ -204,8 +211,8 @@ public class ReflectionResolver extends AbstractResolver implements
 
     private static Optional<MemberWrapper> findWrapper(MemberKey key) {
         // Get length of array objects
-        if(key.getClazz().isArray()) {
-            if(key.getName().equals("length")) {
+        if (key.getClazz().isArray()) {
+            if (key.getName().equals("length")) {
                 return Optional.of(ARRAY_GET_LENGTH);
             } else {
                 return Optional.absent();
@@ -214,8 +221,7 @@ public class ReflectionResolver extends AbstractResolver implements
 
         // Find accesible method with the given name, no
         // parameters and non-void return type
-        Method foundMethod = Reflections.findMethod(key.getClazz(),
-                key.getName());
+        Method foundMethod = findMethod(key.getClazz(), key.getName());
 
         if (foundMethod != null) {
             if (!foundMethod.isAccessible()) {
@@ -225,7 +231,7 @@ public class ReflectionResolver extends AbstractResolver implements
         }
 
         // Find public field
-        Field foundField = Reflections.findField(key.getClazz(), key.getName());
+        Field foundField = findField(key.getClazz(), key.getName());
 
         if (foundField != null) {
             if (!foundField.isAccessible()) {
@@ -283,6 +289,98 @@ public class ReflectionResolver extends AbstractResolver implements
             }
             return null;
         }
+    }
+
+    /**
+     * First tries to find a valid method with the same name, afterwards method
+     * following JavaBean naming convention (the method starts with
+     * <b>get/is</b> prefix).
+     *
+     * @param clazz
+     * @param name
+     * @return the found method or <code>null</code>
+     */
+    static Method findMethod(Class<?> clazz, String name) {
+
+        checkArgumentNotNull(clazz);
+        checkArgumentNotNull(name);
+
+        Method foundMatch = null;
+        Method foundGetMatch = null;
+        Method foundIsMatch = null;
+
+        for (Method method : SecurityActions.getMethods(clazz)) {
+
+            if (!isMethodValid(method)) {
+                continue;
+            }
+
+            if (method.isBridge()) {
+                logger.debug("Skipping bridge method {}", method);
+                continue;
+            }
+
+            if (name.equals(method.getName())) {
+                foundMatch = method;
+            } else if (Reflections.matchesPrefix(name, method.getName(),
+                    GET_PREFIX)) {
+                foundGetMatch = method;
+            } else if (Reflections.matchesPrefix(name, method.getName(),
+                    IS_PREFIX)) {
+                foundIsMatch = method;
+            }
+        }
+
+        if (foundMatch == null) {
+            foundMatch = (foundGetMatch != null ? foundGetMatch : foundIsMatch);
+        }
+
+        logger.debug("{} method {}found [type: {}]", new Object[] { name,
+                foundMatch != null ? "" : "not ", clazz.getName() });
+        return foundMatch;
+    }
+
+    /**
+     * Tries to find a public field with the given name on the given class.
+     *
+     * @param clazz
+     * @param name
+     * @return the found field or <code>null</code>
+     */
+    static Field findField(Class<?> clazz, String name) {
+
+        checkArgumentNotNull(clazz);
+        checkArgumentNotNull(name);
+
+        Field found = null;
+
+        for (Field field : SecurityActions.getFields(clazz)) {
+            if (field.getName().equals(name)) {
+                found = field;
+            }
+        }
+        logger.debug("{} field {}found [type: {}]", new Object[] { name,
+                found != null ? "" : "not ", clazz.getName() });
+        return found;
+    }
+
+    /**
+     * A valid method:
+     * <ul>
+     * <li>is public</li>
+     * <li>has no parameters</li>
+     * <li>has non-void return type</li>
+     * <li>its declaring class is not {@link Object}</li>
+     * </ul>
+     *
+     * @param method
+     * @return <code>true</code> if the given method is considered a read method
+     */
+    private static boolean isMethodValid(Method method) {
+        return method != null && Modifier.isPublic(method.getModifiers())
+                && method.getParameterTypes().length == 0
+                && !method.getReturnType().equals(Void.TYPE)
+                && !Object.class.equals(method.getDeclaringClass());
     }
 
 }

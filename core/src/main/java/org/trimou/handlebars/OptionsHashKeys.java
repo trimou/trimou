@@ -58,4 +58,12 @@ public final class OptionsHashKeys {
 
     public static final String BREAK = "break";
 
+    public static final String M = "m";
+
+    public static final String METHOD = "method";
+
+    public static final String ON = "on";
+
+    public static final String CLASS = "class";
+
 }

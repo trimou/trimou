@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.resolver;
+package org.trimou.handlebars;
 
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -26,23 +25,6 @@ import java.security.PrivilegedAction;
  * @author Martin Kouba
  */
 final class SecurityActions {
-
-    /**
-     *
-     * @param accessibleObject
-     */
-    static void setAccessible(final AccessibleObject accessibleObject) {
-        if (System.getSecurityManager() == null) {
-            accessibleObject.setAccessible(true);
-        }
-        AccessController.doPrivileged(new PrivilegedAction<AccessibleObject>() {
-            @Override
-            public AccessibleObject run() {
-                accessibleObject.setAccessible(true);
-                return accessibleObject;
-            }
-        });
-    }
 
     /**
      *
@@ -63,19 +45,53 @@ final class SecurityActions {
 
     /**
      *
-     * @param clazz
-     * @return {@link Class#getFields()}
+     * @param accessibleObject
      */
-    static Field[] getFields(final Class<?> clazz) {
+    static void setAccessible(final AccessibleObject accessibleObject) {
         if (System.getSecurityManager() == null) {
-            return clazz.getFields();
+            accessibleObject.setAccessible(true);
         }
-        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
+        AccessController.doPrivileged(new PrivilegedAction<AccessibleObject>() {
             @Override
-            public Field[] run() {
-                return clazz.getFields();
+            public AccessibleObject run() {
+                accessibleObject.setAccessible(true);
+                return accessibleObject;
             }
         });
+    }
+
+    /**
+     *
+     * @return the TCCL
+     */
+    static ClassLoader getContextClassLoader() {
+        if (System.getSecurityManager() == null) {
+            return Thread.currentThread().getContextClassLoader();
+        }
+        return AccessController
+                .doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return Thread.currentThread().getContextClassLoader();
+                    }
+                });
+    }
+
+    /**
+     *
+     * @return the ClassLoader for the given class
+     */
+    static ClassLoader getClassLoader(final Class<?> clazz) {
+        if (System.getSecurityManager() == null) {
+            return clazz.getClassLoader();
+        }
+        return AccessController
+                .doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return clazz.getClassLoader();
+                    }
+                });
     }
 
 }

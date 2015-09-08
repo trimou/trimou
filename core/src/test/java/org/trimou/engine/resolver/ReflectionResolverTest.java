@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.junit.Test;
@@ -111,6 +112,92 @@ public class ReflectionResolverTest extends AbstractEngineTest {
                 .addResolver(resolver).build();
 
         resolver.init(null);
+    }
+
+    @Test
+    public void testGetMembers() {
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "name"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "old"));
+        assertNotNull(
+                ReflectionResolver.findMethod(Charlie.class, "hasSomething"));
+        assertNotNull(
+                ReflectionResolver.findMethod(Charlie.class, "getAnotherName"));
+        assertNotNull(
+                ReflectionResolver.findMethod(Charlie.class, "anotherName"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "isOk"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "ok"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "info"));
+        assertNull(ReflectionResolver.findMethod(Charlie.class, "getPrice"));
+        assertNotNull(
+                ReflectionResolver.findField(Charlie.class, "publicField"));
+        assertNull(ReflectionResolver.findField(Charlie.class, "privateField"));
+    }
+
+    public static class Alpha {
+
+        @SuppressWarnings("unused")
+        private String privateField;
+
+        // OK
+        public String getName() {
+            return null;
+        }
+
+        // OK
+        public int isOld() {
+            return 1;
+        }
+
+        // OK
+        public boolean hasSomething() {
+            return true;
+        }
+
+        // Not read method - private
+        @SuppressWarnings("unused")
+        private BigDecimal getPrice() {
+            return null;
+        }
+
+        // OK
+        public String getInfo() {
+            return null;
+        }
+
+        // Not read method - protected
+        protected String getProtected() {
+            return null;
+        }
+
+    }
+
+    public static class Bravo extends Alpha {
+
+        public final String publicField = "foo";
+
+        // Not read method - has param
+        public String getWithParam(String param) {
+            return null;
+        }
+
+        // Not read method - no return value
+        public void getNoReturnValue() {
+        }
+
+        // OK
+        public String getAnotherName() {
+            return null;
+        }
+
+    }
+
+    public static class Charlie extends Bravo {
+
+        // OK
+        public Boolean isOk() {
+            return null;
+        }
+
     }
 
 }

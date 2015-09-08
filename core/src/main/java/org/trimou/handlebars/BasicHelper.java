@@ -38,7 +38,7 @@ public abstract class BasicHelper extends AbstractHelper {
 
     @Override
     public void validate(HelperDefinition definition) {
-        Class<?> helperClazz = this.getClass();
+        Class<? extends Helper> helperClazz = this.getClass();
         HelperValidator.checkType(helperClazz, definition, allowedTagTypes());
         HelperValidator.checkParams(helperClazz, definition,
                 numberOfRequiredParameters());
