@@ -90,4 +90,12 @@ public final class Patterns {
         return Pattern.compile("(\\+|-)?\\d{1,10}");
     }
 
+    /**
+    *
+    * @return  the pattern to match a long literal in a helper name
+    */
+   public static Pattern newHelperLongLiteralPattern() {
+       return Pattern.compile("(\\+|-)?\\d{1,19}(L|l)");
+   }
+
 }

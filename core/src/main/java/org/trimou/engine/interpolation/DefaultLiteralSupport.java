@@ -18,6 +18,8 @@ package org.trimou.engine.interpolation;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.util.Patterns;
@@ -29,11 +31,17 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  */
-public class DefaultLiteralSupport extends AbstractConfigurationAware implements
-        LiteralSupport {
+public class DefaultLiteralSupport extends AbstractConfigurationAware
+        implements LiteralSupport {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(DefaultLiteralSupport.class);
 
     private final Pattern integerLiteralPattern = Patterns
             .newHelperIntegerLiteralPattern();
+
+    private final Pattern longLiteralPattern = Patterns
+            .newHelperLongLiteralPattern();
 
     @Override
     public Object getLiteral(String value, MustacheTagInfo tagInfo) {
@@ -47,7 +55,14 @@ public class DefaultLiteralSupport extends AbstractConfigurationAware implements
             try {
                 literal = Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                // Ignored
+                logger.warn("Unable to parse integer literal: " + value, e);
+            }
+        } else if (longLiteralPattern.matcher(value).matches()) {
+            try {
+                literal = Long
+                        .parseLong(value.substring(0, value.length() - 1));
+            } catch (NumberFormatException e) {
+                logger.warn("Unable to parse long literal: " + value, e);
             }
         }
         return literal;
