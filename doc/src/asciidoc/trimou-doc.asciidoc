@@ -381,6 +381,11 @@ Trimou provides some useful helpers which are not registered automatically:
 |A helper whose content is rendered asynchronously.
 |async
 
+|+org.trimou.handlebars.InvokeHelper+
+|Invokes public methods with parameters via reflection.
++{{invoke "f" "b" on="foo" m="replace"}}+
+|invoke
+
 |===
 
 ==== Example of ResourceBundleHelper
