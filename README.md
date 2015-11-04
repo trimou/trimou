@@ -47,37 +47,101 @@ MustacheEngine engine = MustacheEngineBuilder
 Mustache mustache = engine.getMustache("foo");
 ```
 
-Moreover, if the template cache is enabled (it is by default) the compiled template is automatically put in the cache and no compilation happens the next time the template is requested.
+Moreover, if the template cache is enabled (default) the compiled template is automatically put in the cache and no compilation happens the next time the template is requested.
 
 [TemplateLocator](http://trimou.org/doc/latest.html#template_locator) | [Configuration properties](http://trimou.org/doc/latest.html#configuration)
 
-### Basic i18n support
+### Helpers
+
+Trimou's Helper API is inspired by Handlebars but it’s not 100% compatible. Mainly, it does not define "inverse" section, so for example the built-in if helper doesn’t support else block. On the other hand, any helper is able to validate its tag definition (see `org.trimou.handlebars.Helper.validate()`) and fail fast if there's invalid number of arguments etc.
+
+Helpers are de-facto *tags which are able to consume multiple parameters and optional hash map*. There are some built-in helpers registered automatically (if, unless, each, etc.). Trimou also provides some useful helpers which are not registered automatically...
+
+[Built-in helpers](http://trimou.org/doc/latest.html#helpers) |
+[Custom helpers](http://trimou.org/doc/latest.html#custom_helpers) |
+[Example of ResourceBundleHelper](http://trimou.org/doc/latest.html#_example_of_resourcebundlehelper)
 
 #### ResourceBundleHelper
 
-TODO
+It's a way to use `java.util.ResourceBundle` in your templates:
+```java
+MustacheEngine engine = MustacheEngineBuilder
+                           .newBuilder()
+                           .registerHelper("msg", new ResourceBundleHelper("messages"))
+                           .build();
+```
+Properties file:
+```
+helloworld=Hello world %s!
+```
+Template:
+```
+{{msg "helloworld" "Martin"}}
+```
 
 #### DateTimeFormatHelper
 
-TODO
-
-### Some more useful built-in helpers
+Format dates easily:
+```java
+MustacheEngine engine = MustacheEngineBuilder
+                           .newBuilder()
+                           .registerHelper("formatTime", new DateTimeFormatHelper())
+                           .build();
+```
+Template:
+```
+{{formatTime now pattern="DD-MM-yyyy HH:mm"}}
+```
 
 #### ChooseHelper
 
-TODO
+This helper works similarly as the JSP `c:choose` tag:
+```
+{{#each items}}
+  {{#choose}}
+    {{#when active}}
+      Hello active item!
+    {{/when}}
+    {{#otherwise}}
+      No match.
+    {{/otherwise}}
+  {{/choose}}
+{{/each}}
+```
 
 #### LogHelper
 
-TODO
+First register the helper instance:
+```java
+MustacheEngineBuilder.newBuilder().registerHelper("log", LogHelper.builder().setDefaultLevel(Level.WARN).build()).build();
+```
+Than use the helper in the template:
+```
+{{#each items}}
+  {{#unless active}}
+    {{! Log a warning if an inactive item is found}}{{log "An inactive item found: {}" name}}
+  {{/unless}}
+{{/each}}
+```
 
 #### NumericExpressionHelper
 
-TODO
+A simple numeric expression helper:
+
+```
+{{#numExpr foo.price "90" op="gt"}}
+foo.price evaluates to a number > 90
+{{/numExpr}}
+```
 
 #### InvokeHelper
 
-TODO
+Invokes public methods with parameters via reflection:
+
+```
+{{#invoke 'MILLISECONDS' class='java.util.concurrent.TimeUnit' m='valueOf'}}{{invoke 1000L m='toSeconds'}}{{/invoke}}
+```
+
 
 ## Examples
 
