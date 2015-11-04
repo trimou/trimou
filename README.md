@@ -34,9 +34,22 @@ System.out.println(mustache.render("world"));
 
 ## Some useful features
 
-### Template caching
+### Template locators and caching
 
-TODO
+Let's automatically locate the template contents for the given template id so that it’s not necessary to supply the template contents every time the template is compiled:
+
+```java
+MustacheEngine engine = MustacheEngineBuilder
+        .newBuilder()
+        .addTemplateLocator(new FilesystemTemplateLocator(1, "/home/trimou/templates", "html"))
+        .build();
+// Whenever the template is needed, obtain the reference from the engine
+Mustache mustache = engine.getMustache("foo");
+```
+
+Moreover, if the template cache is enabled (it is by default) the compiled template is automatically put in the cache and no compilation happens the next time the template is requested.
+
+[TemplateLocator](http://trimou.org/doc/latest.html#template_locator) | [Configuration properties](http://trimou.org/doc/latest.html#configuration)
 
 ### Basic i18n support
 
