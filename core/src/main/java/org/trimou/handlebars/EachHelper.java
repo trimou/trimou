@@ -113,10 +113,12 @@ public class EachHelper extends BasicSectionHelper {
             return;
         }
         final Iterator iterator = iterable.iterator();
+        final Function function = initFunction(options);
+        final String alias = initValueAlias(options);
         int i = 1;
         while (iterator.hasNext()) {
             nextElement(options, iterator.next(), size, i++,
-                    initFunction(options), initValueAlias(options));
+                    function, alias);
         }
     }
 
@@ -125,9 +127,11 @@ public class EachHelper extends BasicSectionHelper {
         if (length < 1) {
             return;
         }
+        final Function function = initFunction(options);
+        final String alias = initValueAlias(options);
         for (int i = 0; i < length; i++) {
             nextElement(options, Array.get(array, i), length, i + 1,
-                    initFunction(options), initValueAlias(options));
+                    function, alias);
         }
     }
 
