@@ -53,15 +53,26 @@ Moreover, if the template cache is enabled (default) the compiled template is au
 
 ### Helpers
 
-Trimou's Helper API is inspired by Handlebars but it’s not 100% compatible. Mainly, it does not define "inverse" section, so for example the built-in if helper doesn’t support else block. On the other hand, any helper is able to validate its tag definition (see `org.trimou.handlebars.Helper.validate()`) and fail fast if there's invalid number of arguments etc.
+Helpers are de-facto *tags which are able to consume multiple parameters and optional hash map*. Trimou's Helper API is inspired by Handlebars but it’s not 100% compatible. Mainly, it does not define "inverse" section, so for example the built-in if helper doesn’t support else block. On the other hand, any helper is able to validate its tag definition (see `org.trimou.handlebars.Helper.validate()`) and fail fast if there's invalid number of arguments etc.
 
-Helpers are de-facto *tags which are able to consume multiple parameters and optional hash map*. There are some built-in helpers registered automatically (if, unless, each, etc.). Trimou also provides some useful helpers which are not registered automatically...
+#### Built-in helpers
 
-[Built-in helpers](http://trimou.org/doc/latest.html#helpers) |
-[Custom helpers](http://trimou.org/doc/latest.html#custom_helpers) |
-[Example of ResourceBundleHelper](http://trimou.org/doc/latest.html#_example_of_resourcebundlehelper)
+Five built-in helpers are registered automatically: 'if', 'unless', 'each', 'with' and 'is'. Some of them have extended functionality, e.g. for 'if' multiple params may be evaluated and an optional `else` may be specified:
+```
+{{#if item.active item.valid logic="or" else="The item is not active or valid!"}}
+  {{item.name}}
+{{/if}}
+```
+For `each` it's possible to supply an alias to access the value of the current iteration and it's also possible to apply a function to each element:
+```
+{{#each items as='item' apply=mySuperFunction}}
+  {{item.name}}
+{{/each}}
+```
 
-#### ResourceBundleHelper
+Trimou also provides some useful helpers which are not registered automatically - see also [Built-in helpers](http://trimou.org/doc/latest.html#helpers).
+
+##### ResourceBundleHelper
 
 It's a way to use `java.util.ResourceBundle` in your templates:
 ```java
@@ -93,7 +104,7 @@ Template:
 {{formatTime now pattern="DD-MM-yyyy HH:mm"}}
 ```
 
-#### ChooseHelper
+##### ChooseHelper
 
 This helper works similarly as the JSP `c:choose` tag:
 ```
@@ -109,7 +120,7 @@ This helper works similarly as the JSP `c:choose` tag:
 {{/each}}
 ```
 
-#### LogHelper
+##### LogHelper
 
 First register the helper instance:
 ```java
@@ -124,7 +135,7 @@ Than use the helper in the template:
 {{/each}}
 ```
 
-#### NumericExpressionHelper
+##### NumericExpressionHelper
 
 A simple numeric expression helper:
 
@@ -134,14 +145,13 @@ foo.price evaluates to a number > 90
 {{/numExpr}}
 ```
 
-#### InvokeHelper
+##### InvokeHelper
 
 Invokes public methods with parameters via reflection:
 
 ```
 {{#invoke 'MILLISECONDS' class='java.util.concurrent.TimeUnit' m='valueOf'}}{{invoke 1000L m='toSeconds'}}{{/invoke}}
 ```
-
 
 ## Examples
 
