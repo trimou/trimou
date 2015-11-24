@@ -348,7 +348,6 @@ class HelperExecutionHandler {
             this.valueWrappers = valueWrappers;
             this.executionContext = executionContext;
             this.pushed = 0;
-            this.executionContext = executionContext;
             this.segment = segment;
             this.parameters = parameters;
             this.hash = hash;
