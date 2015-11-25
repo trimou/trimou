@@ -17,6 +17,7 @@ package org.trimou.engine.locator;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,6 +72,29 @@ public class MapTemplateLocator extends AbstractTemplateLocator {
     public String toString() {
         return String.format("%s [priority: %s]", getClass().getName(),
                 getPriority());
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private final Map<String, String> templates;
+
+        private Builder() {
+            this.templates = new HashMap<>();
+        }
+
+        public Builder put(String name, String template) {
+            this.templates.put(name, template);
+            return this;
+        }
+
+        public MapTemplateLocator build() {
+            return new MapTemplateLocator(new HashMap<>(templates));
+        }
+
     }
 
 }

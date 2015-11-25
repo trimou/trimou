@@ -21,13 +21,13 @@ import org.trimou.engine.MustacheTagType;
  *
  * @author Martin Kouba
  */
-class ParsedTag {
+final class ParsedTag {
 
-    private String content;
+    private final String content;
 
-    private MustacheTagType type;
+    private final MustacheTagType type;
 
-    public ParsedTag(String content, MustacheTagType type) {
+    ParsedTag(String content, MustacheTagType type) {
         this.content = content;
         this.type = type;
     }
@@ -35,15 +35,20 @@ class ParsedTag {
     /**
      * @return the tag content
      */
-    public String getContent() {
+    String getContent() {
         return content;
     }
 
     /**
      * @return the tag type
      */
-    public MustacheTagType getType() {
+    MustacheTagType getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ParsedTag [content=%s, type=%s]", content, type);
     }
 
 }

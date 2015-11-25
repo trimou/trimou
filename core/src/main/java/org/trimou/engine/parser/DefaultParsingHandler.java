@@ -69,6 +69,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
 
+    private final List<Template> nestedTemplates = new ArrayList<>();
+
     private MustacheEngine engine;
 
     private String templateName;
@@ -81,11 +83,13 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private int line = 1;
 
-    private int index = 1;
+    private int index = 0;
 
     private boolean skipValueEscaping;
 
     private boolean handlebarsSupportEnabled;
+
+    private NestedTemplateBase currentNestedBase;
 
     @Override
     public void startTemplate(String name, Delimiters delimiters,
@@ -128,19 +132,25 @@ class DefaultParsingHandler implements ParsingHandler {
 
         template = new Template(engine.getConfiguration()
                 .getIdentifierGenerator().generate(Mustache.class),
-                templateName, engine);
+                templateName, engine, nestedTemplates);
         template.setRootSegment(rootSegmentBase.asSegment(template));
+        for (Template nested : nestedTemplates) {
+            nested.setParent(template);
+        }
 
         logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
                 new Object[] { templateName, System.currentTimeMillis() - start,
                         template.getRootSegment().getSegmentsSize(true) });
 
         rootSegmentBase = null;
+        nestedTemplates.clear();
+        containerStack.clear();
     }
 
     @Override
     public void text(String text) {
-        addSegment(new SegmentBase(SegmentType.TEXT, text, line, getIndex()));
+        addSegment(new SegmentBase(SegmentType.TEXT, text, line,
+                incrementAndGetIndex()));
     }
 
     @Override
@@ -150,25 +160,28 @@ class DefaultParsingHandler implements ParsingHandler {
 
         switch (tag.getType()) {
         case COMMENT:
-            addSegment(new SegmentBase(tag, line, getIndex()));
+            addSegment(new SegmentBase(tag, line, incrementAndGetIndex()));
             break;
         case UNESCAPE_VARIABLE:
         case VARIABLE:
-            addSegment(new ValueSegmentBase(tag, line, getIndex(),
-                    skipValueEscaping));
+            valueSegment(tag);
             break;
         case PARTIAL:
-            addSegment(new PartialSegmentBase(tag, line, getIndex()));
+            addSegment(
+                    new PartialSegmentBase(tag, line, incrementAndGetIndex()));
             break;
         case DELIMITER:
             changeDelimiters(tag.getContent());
-            addSegment(new SegmentBase(tag, line, getIndex()));
+            addSegment(new SegmentBase(tag, line, incrementAndGetIndex()));
             break;
         case SECTION:
         case INVERTED_SECTION:
         case EXTEND:
         case EXTEND_SECTION:
-            push(new ContainerSegmentBase(tag, line, getIndex()));
+            push(new ContainerSegmentBase(tag, line, incrementAndGetIndex()));
+            break;
+        case NESTED_TEMPLATE:
+            nestedTemplate(tag);
             break;
         case SECTION_END:
             endSection(tag.getContent());
@@ -180,7 +193,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
     @Override
     public void lineSeparator(String separator) {
-        addSegment(new LineSeparatorBase(separator, line, getIndex()));
+        addSegment(
+                new LineSeparatorBase(separator, line, incrementAndGetIndex()));
         line++;
     }
 
@@ -233,12 +247,13 @@ class DefaultParsingHandler implements ParsingHandler {
 
         ContainerSegmentBase container = pop();
 
-        if (container == null || (container instanceof RootSegmentBase)
+        if (container == null || SegmentType.ROOT.equals(container.getType())
                 || (!handlebarsSupportEnabled
                         && !key.equals(container.getContent()))
                 || (handlebarsSupportEnabled
                         && !container.getContent().startsWith(key))
-                || (handlebarsSupportEnabled && !container.getContent().contains(" ")
+                || (handlebarsSupportEnabled
+                        && !container.getContent().contains(" ")
                         && !key.equals(container.getContent()))) {
             // a) No container on the stack
             // b) Handlebars support not enabled and section start key does not
@@ -265,7 +280,18 @@ class DefaultParsingHandler implements ParsingHandler {
                     params.toArray());
         }
 
-        addSegment(container);
+        if (container instanceof NestedTemplateBase) {
+            // Do not add nested template as a segment
+            NestedTemplateBase nestedBase = (NestedTemplateBase) container;
+            Template nested = new Template(engine.getConfiguration()
+                    .getIdentifierGenerator().generate(Mustache.class),
+                    container.getContent(), engine);
+            nested.setRootSegment(nestedBase.asSegment(nested));
+            nestedTemplates.add(nested);
+            currentNestedBase = null;
+        } else {
+            addSegment(container);
+        }
     }
 
     /**
@@ -337,14 +363,42 @@ class DefaultParsingHandler implements ParsingHandler {
         if (!(root instanceof RootSegmentBase)) {
             throw new MustacheException(
                     MustacheProblem.COMPILE_INVALID_TEMPLATE,
-                    "Incorrect last container segment on the stack: %s [line: %s]",
+                    "Incorrect last container segment on the stack: %s",
                     containerStack.peekFirst().toString(), line);
         }
         return (RootSegmentBase) root;
     }
 
-    private int getIndex() {
-        return index++;
+    private int incrementAndGetIndex() {
+        return ++index;
+    }
+
+    private void valueSegment(ParsedTag tag) {
+        addSegment(new ValueSegmentBase(tag, line, incrementAndGetIndex(),
+                skipValueEscaping));
+    }
+
+    private void nestedTemplate(ParsedTag tag) {
+        if (engine.getConfiguration().getBooleanPropertyValue(
+                EngineConfigurationKey.NESTED_TEMPLATE_SUPPORT_ENABLED)) {
+            NestedTemplateBase nestedBase = new NestedTemplateBase(
+                    tag.getContent(), line, index);
+            if (currentNestedBase != null) {
+                throw new MustacheException(
+                        MustacheProblem.COMPILE_INVALID_TEMPLATE,
+                        "Nested templates within nested template definitions are not supported: %s",
+                        containerStack.peekFirst().toString());
+            } else {
+                currentNestedBase = nestedBase;
+            }
+            push(nestedBase);
+        } else {
+            valueSegment(
+                    new ParsedTag(
+                            MustacheTagType.NESTED_TEMPLATE.getCommand()
+                                    + tag.getContent(),
+                            MustacheTagType.VARIABLE));
+        }
     }
 
     /**
@@ -354,6 +408,19 @@ class DefaultParsingHandler implements ParsingHandler {
 
         RootSegmentBase() {
             super(SegmentType.ROOT, null, 0, 0);
+        }
+
+        @Override
+        public RootSegment asSegment(Template template) {
+            return new RootSegment(new Origin(template), getSegments(template));
+        }
+
+    }
+
+    static class NestedTemplateBase extends ContainerSegmentBase {
+
+        NestedTemplateBase(String content, int line, int index) {
+            super(null, content, line, index);
         }
 
         @Override
@@ -535,6 +602,12 @@ class DefaultParsingHandler implements ParsingHandler {
 
         protected Origin getOrigin(Template template) {
             return new Origin(template, line, index);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[type: %s, content: %s, line: %s, idx: %s]",
+                    type, content, line, index);
         }
 
     }

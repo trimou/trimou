@@ -243,7 +243,7 @@ public class ParsingTest extends AbstractEngineTest {
         validateSegment(segments, 2, SegmentType.TEXT, "Hello!");
     }
 
-    private void validateSegment(List<Segment> segments, int index,
+    static void validateSegment(List<Segment> segments, int index,
             SegmentType expectedType, String expectedText) {
         Segment segment = segments.get(index);
         assertEquals(expectedType, segment.getType());

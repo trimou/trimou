@@ -15,7 +15,9 @@
  */
 package org.trimou.engine.parser;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.trimou.Mustache;
 import org.trimou.annotations.Internal;
@@ -29,6 +31,7 @@ import org.trimou.engine.segment.RootSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 /**
@@ -47,6 +50,10 @@ public class Template implements Mustache {
 
     private final ExecutionContext globalExecutionContext;
 
+    private final Map<String, Template> nestedTemplates;
+
+    private volatile Template parent;
+
     private volatile RootSegment rootSegment;
 
     /**
@@ -56,11 +63,47 @@ public class Template implements Mustache {
      * @param engine
      */
     public Template(Long generatedId, String name, MustacheEngine engine) {
+        this(generatedId, name, engine, null);
+    }
+
+    /**
+     *
+     * @param generatedId
+     * @param name
+     * @param engine
+     * @param nestedTemplates
+     */
+    public Template(Long generatedId, String name, MustacheEngine engine,
+            List<Template> nestedTemplates) {
+        this(generatedId, name, engine, nestedTemplates, null);
+    }
+
+   /**
+     *
+     * @param generatedId
+     * @param name
+     * @param engine
+     * @param nestedTemplates
+     * @param parent
+     */
+    private Template(Long generatedId, String name, MustacheEngine engine,
+            List<Template> nestedTemplates, Template parent) {
         this.generatedId = generatedId;
         this.name = name;
         this.engine = engine;
         this.globalExecutionContext = ExecutionContexts
                 .newGlobalExecutionContext(engine.getConfiguration());
+        if (nestedTemplates == null || nestedTemplates.isEmpty()) {
+            this.nestedTemplates = Collections.emptyMap();
+        } else {
+            ImmutableMap.Builder<String, Template> builder = ImmutableMap
+                    .builder();
+            for (Template template : nestedTemplates) {
+                builder.put(template.getName(), template);
+            }
+            this.nestedTemplates = builder.build();
+        }
+        this.parent = parent;
     }
 
     @Override
@@ -104,7 +147,7 @@ public class Template implements Mustache {
         return rootSegment;
     }
 
-    void setRootSegment(RootSegment rootSegment) {
+    synchronized void setRootSegment(RootSegment rootSegment) {
         if (this.rootSegment != null) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
@@ -112,8 +155,20 @@ public class Template implements Mustache {
         this.rootSegment = rootSegment;
     }
 
+    synchronized void setParent(Template parent) {
+        if (this.parent != null) {
+            throw new MustacheException(
+                    MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
+        }
+        this.parent = parent;
+    }
+
     public MustacheEngine getEngine() {
         return engine;
+    }
+
+    public Template getNestedTemplate(String name) {
+        return parent != null ? parent.getNestedTemplate(name) : nestedTemplates.get(name);
     }
 
     private void renderingStarted(MustacheRenderingEvent event) {

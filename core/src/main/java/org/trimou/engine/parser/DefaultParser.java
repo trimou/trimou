@@ -371,6 +371,7 @@ class DefaultParser implements Parser {
         case EXTEND:
         case EXTEND_SECTION:
         case SECTION_END:
+        case NESTED_TEMPLATE:
         case COMMENT:
             return buffer.substring(1).trim();
         case DELIMITER:
