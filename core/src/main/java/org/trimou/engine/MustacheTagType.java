@@ -30,7 +30,8 @@ public enum MustacheTagType {
     PARTIAL('>'),
     DELIMITER('='),
     EXTEND('<'),
-    EXTEND_SECTION('$');
+    EXTEND_SECTION('$'),
+    NESTED_TEMPLATE('+');
 
     MustacheTagType(Character command) {
         this.command = command;
@@ -47,7 +48,8 @@ public enum MustacheTagType {
         return VARIABLE.equals(type) || UNESCAPE_VARIABLE.equals(type)
                 || SECTION.equals(type) || INVERTED_SECTION.equals(type)
                 || SECTION_END.equals(type) || PARTIAL.equals(type)
-                || EXTEND.equals(type) || EXTEND_SECTION.equals(type);
+                || EXTEND.equals(type) || EXTEND_SECTION.equals(type)
+                || NESTED_TEMPLATE.equals(type);
     }
 
     /**

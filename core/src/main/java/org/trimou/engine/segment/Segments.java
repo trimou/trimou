@@ -61,19 +61,51 @@ final class Segments {
      */
     static Template getTemplate(AtomicReference<Template> cachedReference,
             String templateId, MustacheEngine engine) {
+        return getTemplate(cachedReference, templateId, engine, null);
+    }
+
+    /**
+     *
+     * @param cachedReference
+     * @param templateId
+     * @param engine
+     * @param currentTemplate If set try to lookup nested templates first
+     * @return the template, use the cache if possible
+     */
+    static Template getTemplate(AtomicReference<Template> cachedReference,
+            String templateId, MustacheEngine engine, Template currentTemplate) {
         if (cachedReference != null) {
             Template template = cachedReference.get();
             if (template == null) {
                 synchronized (cachedReference) {
                     if (template == null) {
-                        template = (Template) engine.getMustache(templateId);
+                        template = lookupTemplate(templateId, engine, currentTemplate);
                         cachedReference.set(template);
                     }
                 }
             }
             return template;
         }
-        return (Template) engine.getMustache(templateId);
+        return lookupTemplate(templateId, engine, currentTemplate);
+    }
+
+    /**
+     *
+     * @param templateId
+     * @param engine
+     * @param currentTemplate
+     * @return the template or <code>null</code>
+     */
+    public static Template lookupTemplate(String templateId, MustacheEngine engine,
+            Template currentTemplate) {
+        Template result = null;
+        if (currentTemplate != null) {
+            result = currentTemplate.getNestedTemplate(templateId);
+        }
+        if (result == null) {
+            result = (Template) engine.getMustache(templateId);
+        }
+        return result;
     }
 
     /**

@@ -126,7 +126,13 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      *
      * @see Hint
      */
-    RESOLVER_HINTS_ENABLED(true),;
+    RESOLVER_HINTS_ENABLED(true),
+    /**
+     * If set to <code>true</code> the nested templates are supported. Otherwise
+     * any start tag of a nested template definition is considered to be a
+     * regular variable tag.
+     */
+    NESTED_TEMPLATE_SUPPORT_ENABLED(true),;
 
     private Object defaultValue;
 

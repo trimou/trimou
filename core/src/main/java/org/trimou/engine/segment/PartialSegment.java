@@ -67,7 +67,7 @@ public class PartialSegment extends AbstractSegment {
     public Appendable execute(Appendable appendable, ExecutionContext context) {
 
         Template partialTemplate = Segments.getTemplate(cachedPartialTemplate,
-                getText(), getEngine());
+                getText(), getEngine(), getTemplate());
 
         if (partialTemplate == null) {
             throw new MustacheException(

@@ -497,8 +497,8 @@ class HelperExecutionHandler {
                 ExecutionContext executionContext) {
             Checker.checkArgumentsNotNull(templateId, appendable);
 
-            Template partialTemplate = (Template) engine
-                    .getMustache(templateId);
+            Template partialTemplate = Segments.lookupTemplate(templateId,
+                    engine, segment.getOrigin().getTemplate());
 
             if (partialTemplate == null) {
                 throw new MustacheException(
