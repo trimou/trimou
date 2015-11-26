@@ -22,9 +22,10 @@ The most notable enhancements are:
 
 * Template caching
 * Template inheritance
+* Nested templates
+* Helpers API (inspired by Handlebars.js)
 * Basic i18n support
 * Extended processing of lambdas
-* Helpers API (inspired by Handlebars.js)
 * Extension points (template locators, resolvers, text support, ...)
 
 [[variables]]
@@ -422,6 +423,35 @@ My name is Martin!
 Hello world!
 ----
 
+[[nested_templates]]
+=== Nested templates
+
+Any template may define any number of nested templates - use `+` to identify a nested template.
+A nested template is only available within a defining template through the partial tag (or a special helper, e.g. `IncludeHelper`).
+If there is a regular template with the same name available the nested template has precedence.
+It's not possible to define a nested template within a nested template definition.
+
+.Nested Template Example
+----
+{{! This is the nested template definition }}
+{{+item_detail}}
+  Name: {{name}}
+  Price: {{price}}
+{{/item_detail}}
+
+{{! Inject partial }}
+{{#each activeItems}}
+  {{>item_detail}}
+{{/each}}
+
+{{! Inject partial again }}
+{{#each allItems}}
+  {{>item_detail}}
+{{/each}}
+----
+
+NOTE: The support for nested templates is enabled by default. See also `NESTED_TEMPLATE_SUPPORT_ENABLED` in <<configuration,Configuration properties>>.
+
 [[how_to_use]]
 == How to use
 
@@ -653,6 +683,11 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 *org.trimou.engine.config.resolverHintsEnabled*
 |true
 |If set to +true+ the evaluation of simple variables, e.g. +.+ or +foo+, is optimized.
+
+|NESTED_TEMPLATE_SUPPORT_ENABLED
+*org.trimou.engine.config.nestedTemplateSupportEnabled*
+|true
+|If set to `true` the nested templates are supported. Otherwise any start tag of a nested template definition is considered to be a regular variable tag.
 
 |===
 
