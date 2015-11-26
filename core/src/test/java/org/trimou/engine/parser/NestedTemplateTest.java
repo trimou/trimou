@@ -55,7 +55,8 @@ public class NestedTemplateTest extends AbstractEngineTest {
 
     @Test
     public void testNestedHierarchyNotSupported() {
-        MustacheExceptionAssert.expect(MustacheProblem.COMPILE_INVALID_TEMPLATE)
+        MustacheExceptionAssert
+                .expect(MustacheProblem.COMPILE_NESTED_TEMPLATE_ERROR)
                 .check(new Runnable() {
                     public void run() {
                         engine.compileMustache("nested_hierarchy",
@@ -98,6 +99,18 @@ public class NestedTemplateTest extends AbstractEngineTest {
         assertEquals("Hello world!",
                 engine.compileMustache("nested_disabled", "{{+foo}} world!")
                         .render(null));
+    }
+
+    @Test
+    public void testDuplicitNamesNotAllowed() {
+        MustacheExceptionAssert
+                .expect(MustacheProblem.COMPILE_NESTED_TEMPLATE_ERROR)
+                .check(new Runnable() {
+                    public void run() {
+                        engine.compileMustache("nested_duplicit_names",
+                                "{{+nested}}foo{{/nested}}{{+nested}}bar{{/nested}}!");
+                    }
+                });
     }
 
 }

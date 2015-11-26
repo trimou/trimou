@@ -30,6 +30,7 @@ public enum MustacheProblem implements ProblemCode {
     COMPILE_INVALID_TEMPLATE,
     COMPILE_IO_ERROR,
     COMPILE_HELPER_VALIDATION_FAILURE,
+    COMPILE_NESTED_TEMPLATE_ERROR,
     // Template related problems
     TEMPLATE_NOT_READY,
     TEMPLATE_MODIFICATION_NOT_ALLOWED,

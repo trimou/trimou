@@ -381,11 +381,24 @@ class DefaultParsingHandler implements ParsingHandler {
     private void nestedTemplate(ParsedTag tag) {
         if (engine.getConfiguration().getBooleanPropertyValue(
                 EngineConfigurationKey.NESTED_TEMPLATE_SUPPORT_ENABLED)) {
+            // First check existing nested templates
+            for (Template nested : nestedTemplates) {
+                if (nested.getName().equals(tag.getContent())) {
+                    throw new MustacheException(
+                            MustacheProblem.COMPILE_NESTED_TEMPLATE_ERROR,
+                            "A nested template with the name [%s] is already defined at line %s in the template [%s]",
+                            tag.getContent(),
+                            // The root segment of a nested template references
+                            // the line from the defining template
+                            nested.getRootSegment().getOrigin().getLine(),
+                            templateName);
+                }
+            }
             NestedTemplateBase nestedBase = new NestedTemplateBase(
                     tag.getContent(), line, index);
             if (currentNestedBase != null) {
                 throw new MustacheException(
-                        MustacheProblem.COMPILE_INVALID_TEMPLATE,
+                        MustacheProblem.COMPILE_NESTED_TEMPLATE_ERROR,
                         "Nested templates within nested template definitions are not supported: %s",
                         containerStack.peekFirst().toString());
             } else {
@@ -425,7 +438,8 @@ class DefaultParsingHandler implements ParsingHandler {
 
         @Override
         public RootSegment asSegment(Template template) {
-            return new RootSegment(new Origin(template), getSegments(template));
+            return new RootSegment(new Origin(template, getLine(), getIndex()),
+                    getSegments(template));
         }
 
     }
@@ -584,6 +598,14 @@ class DefaultParsingHandler implements ParsingHandler {
 
         String getContent() {
             return content;
+        }
+
+        int getLine() {
+            return line;
+        }
+
+        int getIndex() {
+            return index;
         }
 
         Segment asSegment(Template template) {
