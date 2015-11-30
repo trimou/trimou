@@ -13,6 +13,7 @@ import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.segment.Segment;
 import org.trimou.engine.segment.SegmentType;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.HelpersBuilder;
 
 /**
  *
@@ -111,6 +112,17 @@ public class NestedTemplateTest extends AbstractEngineTest {
                                 "{{+nested}}foo{{/nested}}{{+nested}}bar{{/nested}}!");
                     }
                 });
+    }
+
+    @Test
+    public void testDependentNestedTemplatesHelper() {
+        engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty().addInclude().build())
+                .build();
+        assertEquals("Hello world!",
+                engine.compileMustache("nested_dependent",
+                        "{{+nested1}}world{{/nested1}}{{+nested2}}{{include 'nested1'}}{{/nested2}}Hello {{include 'nested2'}}!")
+                .render(null));
     }
 
 }
