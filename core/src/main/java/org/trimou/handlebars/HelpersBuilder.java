@@ -21,6 +21,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.handlebars.EmbedHelper.SourceProcessor;
 import org.trimou.handlebars.EvalHelper.Notation;
+import org.trimou.handlebars.NumericExpressionHelper.Operator;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -123,6 +124,16 @@ public final class HelpersBuilder {
      */
     public HelpersBuilder addIf() {
         builder.put(IF, new IfHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link IfHelper} with the {@value #IF} name and the given else delimiters.
+     *
+     * @return self
+     */
+    public HelpersBuilder addIf(String elseStartDelimiter, String elseEndDelimiter) {
+        builder.put(IF, new IfHelper(elseStartDelimiter, elseEndDelimiter));
         return this;
     }
 
@@ -339,6 +350,17 @@ public final class HelpersBuilder {
      */
     public HelpersBuilder addNumExpr() {
         builder.put(NUMERIC_EXPRESSION, new NumericExpressionHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link NumericExpressionHelper}.
+     *
+     * @param defaultOperator
+     * @return self
+     */
+    public HelpersBuilder addNumExpr(Operator defaultOperator) {
+        builder.put(NUMERIC_EXPRESSION, new NumericExpressionHelper(defaultOperator));
         return this;
     }
 

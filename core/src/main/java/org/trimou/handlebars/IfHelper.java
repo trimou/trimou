@@ -49,18 +49,38 @@ import org.trimou.util.Checker;
  *
  * <p>
  * An optional <code>else</code> may be specified. If not a string literal
- * {@link Object#toString()} is used.
+ * {@link Object#toString()} is used. The final string may contain simple value
+ * expressions (evaluated in the same way as helper params). The default
+ * delimiters are <code>{</code> and <code>}</code>. Note that for string
+ * literals it's not possible to use the current template delimiters, i.e.
+ * <code>{{</code> and <code>}}</code>.
  * </p>
  *
  * <pre>
- * {{#if item.active else="The item is not active!"}}
- *   Active!
+ * {{#if item.active else="{item.name} is not active!"}}
+ *   {{item.name}} is active!
  * {{/if}}
  * </pre>
  *
  * @author Martin Kouba
  */
 public class IfHelper extends MatchingSectionHelper {
+
+    /**
+     *
+     */
+    public IfHelper() {
+        super();
+    }
+
+    /**
+     *
+     * @param elseStartDelimiter
+     * @param elseEndDelimiter
+     */
+    public IfHelper(String elseStartDelimiter, String elseEndDelimiter) {
+        super(elseStartDelimiter, elseEndDelimiter);
+    }
 
     @Override
     protected boolean isMatching(Object value) {

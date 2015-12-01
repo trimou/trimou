@@ -18,10 +18,10 @@ package org.trimou.handlebars;
 import static org.trimou.handlebars.OptionsHashKeys.OPERATOR;
 import static org.trimou.handlebars.OptionsHashKeys.OUTPUT;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -29,7 +29,8 @@ import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 
 /**
  * A simple numeric expression helper. During evaluation all the params are
- * converted to {@link BigDecimal}s.
+ * converted to {@link BigDecimal}s. For the list of supported operators see the
+ * {@link Operator} enum values, e.g.:
  *
  * <pre>
  * {{numExpr val op="neg" out='It is a negative number!'}}
@@ -47,9 +48,33 @@ import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
  * {{/numExpr}}
  * </pre>
  *
+ * <p>
+ * It's also possible to specify the default operator ({@link Operator#EQ} by
+ * default) so that the <code>op</code> param may be ommitted:
+ * </p>
+ *
+ * <pre>
+ * {{#gt val1 10}} val1 > 10 {{/gt}}
+ * </pre>
+ *
+ * <p>
+ * Sometimes it also makes sense to register the helper with a name derived from
+ * the default operator.
+ * </p>
+ *
  * @author Martin Kouba
  */
 public class NumericExpressionHelper extends BasicHelper {
+
+    private final Operator defaultOperator;
+
+    public NumericExpressionHelper() {
+        this(Operator.EQ);
+    }
+
+    public NumericExpressionHelper(Operator defaultOperator) {
+        this.defaultOperator = defaultOperator;
+    }
 
     @Override
     public void execute(Options options) {
@@ -61,9 +86,9 @@ public class NumericExpressionHelper extends BasicHelper {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "More parameters required [helper: %s, template: %s, line: %s]",
-                    NumericExpressionHelper.class.getName(), options
-                            .getTagInfo().getTemplateName(), options
-                            .getTagInfo().getLine());
+                    NumericExpressionHelper.class.getName(),
+                    options.getTagInfo().getTemplateName(),
+                    options.getTagInfo().getLine());
         }
 
         boolean result = operator.evaluate(options);
@@ -74,7 +99,7 @@ public class NumericExpressionHelper extends BasicHelper {
             } else {
                 String output;
                 Object outputValue = getHashValue(options, OUTPUT);
-                output = outputValue != null ? outputValue.toString() : "true";
+                output = outputValue != null ? outputValue.toString() : Boolean.TRUE.toString();
                 append(options, output);
             }
         }
@@ -93,14 +118,14 @@ public class NumericExpressionHelper extends BasicHelper {
         } else {
             operator = Operator.from(value.toString());
         }
-        if (operator != null
-                && operator.getMinParams() > definition.getParameters().size()) {
+        if (operator != null && operator.getMinParams() > definition
+                .getParameters().size()) {
             throw new MustacheException(
                     MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
                     "Operator requires more parameters [helper: %s, template: %s, line: %s]",
-                    this.getClass().getName(), definition.getTagInfo()
-                            .getTemplateName(), definition.getTagInfo()
-                            .getLine());
+                    this.getClass().getName(),
+                    definition.getTagInfo().getTemplateName(),
+                    definition.getTagInfo().getLine());
         }
     }
 
@@ -110,12 +135,15 @@ public class NumericExpressionHelper extends BasicHelper {
         if (value != null) {
             operator = Operator.from(value.toString());
         }
-        return operator != null ? operator : Operator.EQ;
+        return operator != null ? operator : defaultOperator;
     }
 
     private static BigDecimal getDecimal(int index, Options options) {
+        return getDecimal(options.getParameters().get(index), options);
+    }
+
+    private static BigDecimal getDecimal(Object value, Options options) {
         BigDecimal decimal;
-        Object value = options.getParameters().get(index);
         if (value instanceof BigDecimal) {
             decimal = (BigDecimal) value;
         } else if (value instanceof BigInteger) {
@@ -132,9 +160,9 @@ public class NumericExpressionHelper extends BasicHelper {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "Parameter is not valid [param: %s, helper: %s, template: %s, line: %s]",
-                    value, NumericExpressionHelper.class.getName(), options
-                            .getTagInfo().getTemplateName(), options
-                            .getTagInfo().getLine());
+                    value, NumericExpressionHelper.class.getName(),
+                    options.getTagInfo().getTemplateName(),
+                    options.getTagInfo().getLine());
         }
         return decimal;
     }
@@ -145,22 +173,26 @@ public class NumericExpressionHelper extends BasicHelper {
      */
     static enum Operator {
 
-        EQ(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val1 = getDecimal(0, options);
-                BigDecimal val2 = getDecimal(1, options);
-                return val1.compareTo(val2) == 0;
-            }
-        }),
-        NEQ(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val1 = getDecimal(0, options);
-                BigDecimal val2 = getDecimal(1, options);
-                return val1.compareTo(val2) != 0;
-            }
-        }),
+        /**
+         * Evaluates to true if the first and the second value are equal in
+         * value.
+         *
+         * @see BigDecimal#compareTo(BigDecimal)
+         */
+        EQ(new EqualsEvaluator()),
+        /**
+         * Evaluates to true if the first and the second value are NOT equal in
+         * value.
+         *
+         * @see BigDecimal#compareTo(BigDecimal)
+         */
+        NEQ(new InverseEvaluator(new EqualsEvaluator())),
+        /**
+         * Evaluates to true if the first value is greater than the second
+         * value.
+         *
+         * @see BigDecimal#compareTo(BigDecimal)
+         */
         GT(new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
@@ -169,6 +201,12 @@ public class NumericExpressionHelper extends BasicHelper {
                 return val1.compareTo(val2) > 0;
             }
         }),
+        /**
+         * Evaluates to true if the first value is greater than or equal to the
+         * second value.
+         *
+         * @see BigDecimal#compareTo(BigDecimal)
+         */
         GE(new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
@@ -177,6 +215,11 @@ public class NumericExpressionHelper extends BasicHelper {
                 return val1.compareTo(val2) >= 0;
             }
         }),
+        /**
+         * Evaluates to true if the first value is less than the second value.
+         *
+         * @see BigDecimal#compareTo(BigDecimal)
+         */
         LT(new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
@@ -185,6 +228,12 @@ public class NumericExpressionHelper extends BasicHelper {
                 return val1.compareTo(val2) < 0;
             }
         }),
+        /**
+         * Evaluates to true if the first value is less than or equal to the
+         * second value.
+         *
+         * @see BigDecimal#compareTo(BigDecimal)
+         */
         LE(new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
@@ -193,36 +242,36 @@ public class NumericExpressionHelper extends BasicHelper {
                 return val1.compareTo(val2) <= 0;
             }
         }),
+        /**
+         * Evaluates to true if the first value is negative.
+         */
         NEG(1, new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
                 return getDecimal(0, options).compareTo(BigDecimal.ZERO) < 0;
             }
         }),
+        /**
+         * Evaluates to true if the first value is positive.
+         */
         POS(1, new Evaluator() {
             @Override
             public boolean evaluate(Options options) {
                 return getDecimal(0, options).compareTo(BigDecimal.ZERO) > 0;
             }
         }),
-        IN(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val = getDecimal(0, options);
-                Set<BigDecimal> decimals = new HashSet<BigDecimal>();
-                for (int i = 1; i < options.getParameters().size(); i++) {
-                    decimals.add(getDecimal(i, options));
-                }
-                for (BigDecimal decimal : decimals) {
-                    if (decimal.compareTo(val) == 0) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }),
-
-        ;
+        /**
+         * Evaluates to true if the first value is found in the set of other
+         * values. Elements of {@link Iterable}s and arrays are treated as
+         * separate objects.
+         */
+        IN(new InEvaluator()),
+        /**
+         * Evaluates to true if the first value is not found in the set of other
+         * values. Elements of {@link Iterable}s and arrays are treated as
+         * separate objects.
+         */
+        NIN(new InverseEvaluator(new InEvaluator())),;
 
         Operator(Evaluator evaluator) {
             this(2, evaluator);
@@ -261,6 +310,72 @@ public class NumericExpressionHelper extends BasicHelper {
     static interface Evaluator {
 
         boolean evaluate(Options options);
+    }
+
+    private static final class InEvaluator implements Evaluator {
+
+        @Override
+        public boolean evaluate(Options options) {
+            BigDecimal val = getDecimal(0, options);
+            for (int i = 1; i < options.getParameters().size(); i++) {
+                Object toTest = options.getParameters().get(i);
+                if (toTest == null) {
+                    continue;
+                }
+                if (toTest instanceof Iterable) {
+                    Iterator<?> iterator = ((Iterable<?>) toTest).iterator();
+                    while (iterator.hasNext()) {
+                        if (test(val, getDecimal(iterator.next(), options))) {
+                            return true;
+                        }
+                    }
+                } else if (toTest.getClass().isArray()) {
+                    int length = Array.getLength(toTest);
+                    for (int j = 0; j < length; j++) {
+                        if (test(val,
+                                getDecimal(Array.get(toTest, j), options))) {
+                            return true;
+                        }
+                    }
+                } else {
+                    if (test(val, getDecimal(toTest, options))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private boolean test(BigDecimal val1, BigDecimal val2) {
+            return val1.compareTo(val2) == 0;
+        }
+
+    }
+
+    private static class EqualsEvaluator implements Evaluator {
+
+        @Override
+        public boolean evaluate(Options options) {
+            BigDecimal val1 = getDecimal(0, options);
+            BigDecimal val2 = getDecimal(1, options);
+            return val1.compareTo(val2) == 0;
+        }
+
+    }
+
+    private static class InverseEvaluator implements Evaluator {
+
+        private final Evaluator evaluator;
+
+        InverseEvaluator(Evaluator evaluator) {
+            this.evaluator = evaluator;
+        }
+
+        @Override
+        public boolean evaluate(Options options) {
+            return !evaluator.evaluate(options);
+        }
+
     }
 
 }

@@ -142,11 +142,28 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("if_helper7",
                         "{{#if this \"\" logic=\"and\" else='false'}}hello{{/if}}")
                         .render(Boolean.TRUE));
+        assertEquals(
+                "Hello me! false",
+                engine.compileMustache("if_helper8",
+                        "{{#if this.0 else='{this.1} me! {this.0}'}}hello{{/if}}")
+                        .render(new Object[] { Boolean.FALSE, "Hello"}));
         assertCompilationFails(engine, "if_helper_fail1",
                 "{{#if}}{{this}}{{/if}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         assertCompilationFails(engine, "if_helper_fail2", "{{if}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
+    }
+
+    @Test
+    public void testIfHelperCustomElseDelimiters() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(
+                        HelpersBuilder.empty().addIf("$$", "$$").build(), true)
+                .build();
+        assertEquals("Length: 5",
+                engine.compileMustache("if_helper_custom_else",
+                        "{{#if this else='Length: $$this.toString.length$$'}}hello{{/if}}")
+                .render(Boolean.FALSE));
     }
 
     @Test
@@ -183,6 +200,11 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("unless_helper6",
                         "{{#unless this}}hello{{/unless}}").render(
                         new BigDecimal("0.000")));
+        assertEquals(
+                "7",
+                engine.compileMustache("unless_helper7",
+                        "{{#unless this else='{this.length}'}}hello{{/unless}}")
+                        .render("matched"));
         assertCompilationFails(engine, "unless_helper_fail1",
                 "{{#unless}}{{this}}{{/unless}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);

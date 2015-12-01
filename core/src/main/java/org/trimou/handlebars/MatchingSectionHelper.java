@@ -21,9 +21,13 @@ import static org.trimou.handlebars.OptionsHashKeys.LOGIC;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.util.Strings;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -38,7 +42,11 @@ import com.google.common.collect.ImmutableSet;
  *
  * <p>
  * An optional <code>else</code> may be specified. If not a string literal
- * {@link Object#toString()} is used.
+ * {@link Object#toString()} is used. The final string may contain simple value
+ * expressions (evaluated in the same way as helper params). The default
+ * delimiters are <code>{</code> and <code>}</code>. Note that for string
+ * literals it's not possible to use the current template delimiters, i.e.
+ * <code>{{</code> and <code>}}</code>.
  * </p>
  *
  * <p>
@@ -57,6 +65,23 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
             .<String> builder().add(LOGIC).add(ELSE).build();
 
+    private final String elseStartDelimiter;
+
+    private final Pattern elsePattern;
+
+    MatchingSectionHelper() {
+        this(EngineConfigurationKey.START_DELIMITER.getDefaultValue().toString()
+                .substring(0, 1),
+                EngineConfigurationKey.END_DELIMITER.getDefaultValue()
+                        .toString().substring(0, 1));
+    }
+
+    MatchingSectionHelper(String elseStartDelimiter, String elseEndDelimiter) {
+        this.elseStartDelimiter = elseStartDelimiter;
+        this.elsePattern = initElsePattern(elseStartDelimiter,
+                elseEndDelimiter);
+    }
+
     @Override
     public void execute(Options options) {
         if ((options.getParameters().isEmpty() && isMatching(options.peek()))
@@ -65,7 +90,12 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
         } else {
             Object elseBlock = getHashValue(options, OptionsHashKeys.ELSE);
             if (elseBlock != null) {
-                append(options, elseBlock.toString());
+                String elseString = elseBlock.toString();
+                if (elseString.contains(elseStartDelimiter)) {
+                    append(options, interpolate(elseString, options));
+                } else {
+                    append(options, elseString);
+                }
             }
         }
     }
@@ -111,8 +141,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
             boolean defaultResult() {
                 return true;
             }
-        },
-        ;
+        },;
 
         /**
          * @param isParamMatching
@@ -162,6 +191,25 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
             logic = getDefaultLogic();
         }
         return logic;
+    }
+
+    private String interpolate(String elseString, Options options) {
+        StringBuffer result = new StringBuffer();
+        Matcher matcher = elsePattern.matcher(elseString);
+        while (matcher.find()) {
+            Object value = options.getValue(matcher.group(2).trim());
+            String replacement = value != null ? value.toString()
+                    : Strings.EMPTY;
+            matcher.appendReplacement(result, replacement);
+        }
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    static Pattern initElsePattern(String elseStartDelimiter,
+            String elseEndDelimiter) {
+        return Pattern.compile("(" + Pattern.quote(elseStartDelimiter)
+                + ")(.*?)(" + Pattern.quote(elseEndDelimiter) + ")");
     }
 
 }

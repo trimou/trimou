@@ -51,6 +51,22 @@ import org.trimou.util.Checker;
  */
 public class UnlessHelper extends MatchingSectionHelper {
 
+    /**
+     *
+     */
+    public UnlessHelper() {
+        super();
+    }
+
+    /**
+     *
+     * @param elseStartDelimiter
+     * @param elseEndDelimiter
+     */
+    public UnlessHelper(String elseStartDelimiter, String elseEndDelimiter) {
+        super(elseStartDelimiter, elseEndDelimiter);
+    }
+
     @Override
     protected boolean isMatching(Object value) {
         return Checker.isFalsy(value);
