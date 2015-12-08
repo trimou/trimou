@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.trimou</groupId>
     <artifactId>trimou-parent</artifactId>
-    <version>1.8.3-SNAPSHOT</version>
+    <version>1.8.4-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -13,7 +13,7 @@
   <description>A really simple example showing some of the key features in action.</description>
 
   <properties>
-    <version.trimou>1.8.2.Final</version.trimou>
+    <version.trimou>1.8.3.Final</version.trimou>
   </properties>
 
   <dependencies>
