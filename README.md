@@ -49,7 +49,7 @@ Mustache mustache = engine.getMustache("foo");
 
 Moreover, if the template cache is enabled (default) the compiled template is automatically put in the cache and no compilation happens the next time the template is requested.
 
-[TemplateLocator](http://trimou.org/doc/latest.html#template_locator) | [Configuration properties](http://trimou.org/doc/latest.html#configuration)
+See also [TemplateLocator](http://trimou.org/doc/latest.html#template_locator) and [Configuration properties](http://trimou.org/doc/latest.html#configuration).
 
 ### Helpers
 
@@ -59,7 +59,7 @@ Helpers are de-facto *tags which are able to consume multiple parameters and opt
 
 Five built-in helpers are registered automatically: 'if', 'unless', 'each', 'with' and 'is'. Some of them have extended functionality, e.g. for `if` helper multiple params may be evaluated and an optional `else` text may be also specified:
 ```
-{{#if item.active item.valid logic="or" else="The item is not active or valid!"}}
+{{#if item.active item.valid logic="or" else="{item.id} is inactive or invalid!"}}
   {{item.name}}
 {{/if}}
 ```
