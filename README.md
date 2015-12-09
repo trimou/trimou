@@ -57,7 +57,7 @@ Helpers are de-facto *tags which are able to consume multiple parameters and opt
 
 #### Built-in helpers
 
-Five built-in helpers are registered automatically: 'if', 'unless', 'each', 'with' and 'is'. Some of them have extended functionality, e.g. for `if` helper multiple params may be evaluated and an optional `else` text may be also specified:
+Five built-in helpers are registered automatically: `if`, `unless`, `each`, `with` and `is`. Some of them have extended functionality, e.g. for `if` helper multiple params may be evaluated and an optional `else` (which supports simple value expressions) may be also specified:
 ```
 {{#if item.active item.valid logic="or" else="{item.id} is inactive or invalid!"}}
   {{item.name}}
