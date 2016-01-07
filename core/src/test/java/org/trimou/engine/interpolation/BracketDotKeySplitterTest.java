@@ -36,10 +36,11 @@ public class BracketDotKeySplitterTest {
     public void testInterpolation() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .setKeySplitter(new BracketDotKeySplitter()).build();
-        assertEquals(
-                "10",
-                engine.compileMustache("bracket_dot_key_splitter_01",
-                        "{{this[\"age\"]}}").render(new Hammer()));
+        assertEquals("10", engine.compileMustache("bracket_dot_key_splitter_01",
+                "{{this[\"age\"]}}").render(new Hammer()));
+        assertEquals("foo", engine
+                .compileMustache("bracket_dot_key_splitter_02", "{{this[0]}}")
+                .render(new String[] { "foo" }));
     }
 
     private void assertIterator(Iterator<String> iterator, Object... elements) {
