@@ -59,7 +59,8 @@ import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
  *
  * <p>
  * Sometimes it also makes sense to register the helper with a name derived from
- * the default operator.
+ * the default operator or even register a helper instance for each operator -
+ * see {@link #forEachOperator()}.
  * </p>
  *
  * @author Martin Kouba
@@ -68,10 +69,32 @@ public class NumericExpressionHelper extends BasicHelper {
 
     private final Operator defaultOperator;
 
+    /**
+     * {@link Operator#toString()} is used the helper name.
+     *
+     * @return a builder instance with {@link NumericExpressionHelper} instance
+     *         registered for each {@link Operator}
+     */
+    public static HelpersBuilder forEachOperator() {
+        HelpersBuilder builder = HelpersBuilder.empty();
+        for (Operator operator : Operator.values()) {
+            builder.add(operator.toString().toLowerCase(),
+                    new NumericExpressionHelper(operator));
+        }
+        return builder;
+    }
+
+    /**
+     *
+     */
     public NumericExpressionHelper() {
         this(Operator.EQ);
     }
 
+    /**
+     *
+     * @param defaultOperator
+     */
     public NumericExpressionHelper(Operator defaultOperator) {
         this.defaultOperator = defaultOperator;
     }
@@ -99,7 +122,8 @@ public class NumericExpressionHelper extends BasicHelper {
             } else {
                 String output;
                 Object outputValue = getHashValue(options, OUTPUT);
-                output = outputValue != null ? outputValue.toString() : Boolean.TRUE.toString();
+                output = outputValue != null ? outputValue.toString()
+                        : Boolean.TRUE.toString();
                 append(options, output);
             }
         }
@@ -171,7 +195,7 @@ public class NumericExpressionHelper extends BasicHelper {
      *
      * @author Martin Kouba
      */
-    static enum Operator {
+    public static enum Operator {
 
         /**
          * Evaluates to true if the first and the second value are equal in

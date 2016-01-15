@@ -249,4 +249,29 @@ public class NumberHelpersTest extends AbstractTest {
                         .render(Long.valueOf(10)));
     }
 
+    @Test
+    public void testNumericExpressionHelperInstanceForEachOperator() {
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(
+                        NumericExpressionHelper.forEachOperator().build())
+                .build();
+        assertEquals(
+                "foo", engine
+                        .compileMustache("number_default_op1",
+                                "{{#gt this 10}}foo{{/gt}}")
+                        .render(Long.valueOf(11)));
+        assertEquals(
+                "foo", engine
+                        .compileMustache("number_default_op2",
+                                "{{#eq this 10}}foo{{/eq}}")
+                        .render(Long.valueOf(10)));
+        assertEquals("yes",
+                engine.compileMustache("number_nin1",
+                        "{{#nin val1 '0' '5'}}yes{{/nin}}")
+                .render(ImmutableMap.<String, Object> of("val1",
+                        Integer.valueOf(2), "val2", Integer.valueOf(1), "val3",
+                        Long.valueOf(10), "val4", BigDecimal.ZERO, "val5",
+                        BigInteger.ONE)));
+    }
+
 }
