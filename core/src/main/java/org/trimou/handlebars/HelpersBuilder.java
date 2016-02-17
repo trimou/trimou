@@ -19,6 +19,9 @@ import java.util.Map;
 
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.handlebars.AlternativesHelper.MaxSelector;
+import org.trimou.handlebars.AlternativesHelper.MinSelector;
+import org.trimou.handlebars.AlternativesHelper.Selector;
 import org.trimou.handlebars.EmbedHelper.SourceProcessor;
 import org.trimou.handlebars.EvalHelper.Notation;
 import org.trimou.handlebars.NumericExpressionHelper.Operator;
@@ -90,6 +93,12 @@ public final class HelpersBuilder {
     public static final String ASYNC = "async";
 
     public static final String INVOKE = "invoke";
+
+    public static final String ALT = "alt";
+
+    public static final String MIN = "min";
+
+    public static final String MAX = "max";
 
     private final ImmutableMap.Builder<String, Helper> builder;
 
@@ -385,6 +394,49 @@ public final class HelpersBuilder {
     }
 
     /**
+     * Add an instance of {@link AlternativesHelper}.
+     *
+     * @return self
+     */
+    public HelpersBuilder addAlt() {
+        builder.put(ALT, new AlternativesHelper());
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link AlternativesHelper}.
+     *
+     * @param selector
+     * @return self
+     */
+    public HelpersBuilder addAlt(Selector selector) {
+        builder.put(ALT, new AlternativesHelper(selector));
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link AlternativesHelper}.
+     *
+     * @return self
+     * @see MinSelector
+     */
+    public HelpersBuilder addMin() {
+        builder.put(MIN, new AlternativesHelper(new MinSelector()));
+        return this;
+    }
+
+    /**
+     * Add an instance of {@link AlternativesHelper}.
+     *
+     * @return self
+     * @see MaxSelector
+     */
+    public HelpersBuilder addMax() {
+        builder.put(MAX, new AlternativesHelper(new MaxSelector()));
+        return this;
+    }
+
+    /**
      *
      * @return self
      */
@@ -418,6 +470,9 @@ public final class HelpersBuilder {
         addNumExpr();
         addAsync();
         addInvoke();
+        addAlt();
+        addMin();
+        addMax();
         return this;
     }
 

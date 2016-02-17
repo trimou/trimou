@@ -35,7 +35,7 @@ public class HelpersBuilderTest {
     @Test
     public void testExtra() {
         Map<String, Helper> helpers = HelpersBuilder.extra().build();
-        assertEquals(20, helpers.size());
+        assertEquals(23, helpers.size());
         assertTrue(helpers.containsKey(HelpersBuilder.EMBED));
         assertTrue(helpers.containsKey(HelpersBuilder.INCLUDE));
         assertTrue(helpers.containsKey(HelpersBuilder.IS_EQUAL));
@@ -52,6 +52,9 @@ public class HelpersBuilderTest {
         assertTrue(helpers.containsKey(HelpersBuilder.NUMERIC_EXPRESSION));
         assertTrue(helpers.containsKey(HelpersBuilder.ASYNC));
         assertTrue(helpers.containsKey(HelpersBuilder.INVOKE));
+        assertTrue(helpers.containsKey(HelpersBuilder.ALT));
+        assertTrue(helpers.containsKey(HelpersBuilder.MIN));
+        assertTrue(helpers.containsKey(HelpersBuilder.MAX));
     }
 
 }

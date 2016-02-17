@@ -387,6 +387,11 @@ Trimou provides some useful helpers which are not registered automatically:
 +{{invoke "f" "b" on="foo" m="replace"}}+
 |invoke
 
+|+org.trimou.handlebars.AlternativesHelper+
+|Renders the first non-null/nonempty (default condition) parameter. It's useful to specify default values:
++{{alt username "Joe"}}+
+|alt
+
 |===
 
 ==== Example of ResourceBundleHelper

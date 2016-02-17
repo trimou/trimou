@@ -166,7 +166,7 @@ public class NumericExpressionHelper extends BasicHelper {
         return getDecimal(options.getParameters().get(index), options);
     }
 
-    private static BigDecimal getDecimal(Object value, Options options) {
+    static BigDecimal getDecimal(Object value, Options options) {
         BigDecimal decimal;
         if (value instanceof BigDecimal) {
             decimal = (BigDecimal) value;
