@@ -26,6 +26,8 @@ public class DefaultLiteralSupportTest {
         assertEquals(Long.valueOf(-2010),
                 literalSupport.getLiteral("-2010l", null));
         assertNull(literalSupport.getLiteral("2.0", null));
+        assertEquals(Boolean.TRUE, literalSupport.getLiteral("true", null));
+        assertEquals(Boolean.FALSE, literalSupport.getLiteral("false", null));
     }
 
 }
