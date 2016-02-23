@@ -108,7 +108,7 @@ public class InvokeHelper extends BasicHelper {
     public static final ConfigurationKey METHOD_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
             InvokeHelper.class.getName() + ".methodCacheMaxSize", 500l);
 
-    private ComputingCache<MethodKey, Optional<Method>> methodCache;
+    private volatile ComputingCache<MethodKey, Optional<Method>> methodCache;
 
     private final ClassLoader classLoader;
 
@@ -197,7 +197,7 @@ public class InvokeHelper extends BasicHelper {
 
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
-        return super.getConfigurationKeys();
+        return Collections.singleton(METHOD_CACHE_MAX_SIZE_KEY);
     }
 
     @Override
