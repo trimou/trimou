@@ -66,4 +66,12 @@ public final class OptionsHashKeys {
 
     public static final String CLASS = "class";
 
+    public static final String KEY = "key";
+
+    public static final String GUARD = "guard";
+
+    public static final String EXPIRE = "expire";
+
+    public static final String UNIT = "unit";
+
 }

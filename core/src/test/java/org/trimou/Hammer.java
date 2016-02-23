@@ -2,8 +2,11 @@ package org.trimou;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Hammer {
+
+    private String id;
 
     public String nail = "NAIL";
 
@@ -16,9 +19,14 @@ public class Hammer {
     }
 
     public Hammer(Integer age) {
+        this.id = UUID.randomUUID().toString();
         this.age = age;
         this.map = new HashMap<String, Integer>();
         this.map.put("foo", 10);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -27,6 +35,10 @@ public class Hammer {
 
     public Integer getAge() {
         return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public boolean isPersistent() {

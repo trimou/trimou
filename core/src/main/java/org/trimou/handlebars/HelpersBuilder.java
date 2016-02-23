@@ -100,6 +100,8 @@ public final class HelpersBuilder {
 
     public static final String MAX = "max";
 
+    public static final String CACHE = "cache";
+
     private final ImmutableMap.Builder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -437,6 +439,17 @@ public final class HelpersBuilder {
     }
 
     /**
+     * Add an instance of {@link CacheHelper}.
+     *
+     * @return self
+     * @see MaxSelector
+     */
+    public HelpersBuilder addCache() {
+        builder.put(CACHE, new CacheHelper());
+        return this;
+    }
+
+    /**
      *
      * @return self
      */
@@ -473,6 +486,7 @@ public final class HelpersBuilder {
         addAlt();
         addMin();
         addMax();
+        addCache();
         return this;
     }
 
