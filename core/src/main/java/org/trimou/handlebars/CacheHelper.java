@@ -68,13 +68,13 @@ import com.google.common.collect.ImmutableSet;
  * <code>unit</code> must be a {@link TimeUnit} constant or its
  * {@link Object#toString()} ( {@link TimeUnit#MILLISECONDS} is the default).
  * <code>guard</code> may be any object - every time the helper is executed the
- * current value of the guard is compared to the value referenced during the
- * last update of the fragment by means of {@link Object#equals(Object)}. If
- * they're not equal the fragment is updated.
+ * current value of the {@link Object#toString()} is compared to the
+ * {@link Object#toString()} value of the guard referenced during the last
+ * update of the fragment. If they're not equal the fragment is updated.
  * </p>
  *
  * <code>
- * {{#cache key=username expire=2 unit="HOURS" guard=roles.toString}}
+ * {{#cache key=username expire=2 unit="HOURS" guard=roles}}
  *   All the content will be cached!
  * {{/cache}}
  * </code>
@@ -274,7 +274,7 @@ public class CacheHelper extends BasicSectionHelper {
         if (guard == null) {
             return false;
         }
-        return !guard.equals(fragment.getGuard());
+        return !guard.toString().equals(fragment.getGuard());
     }
 
     private static String getContent(Options options) {
@@ -291,13 +291,13 @@ public class CacheHelper extends BasicSectionHelper {
 
         private final AtomicReference<String> content;
 
-        private final AtomicReference<Object> guard;
+        private final AtomicReference<String> guard;
 
         private Fragment() {
             this.hits = new AtomicLong(0);
             this.lastUsed = new AtomicLong();
             this.content = new AtomicReference<>();
-            this.guard = new AtomicReference<Object>();
+            this.guard = new AtomicReference<String>();
         }
 
         /**
@@ -314,7 +314,9 @@ public class CacheHelper extends BasicSectionHelper {
 
         void update(String content, Object guard) {
             this.content.set(content);
-            this.guard.set(guard);
+            if (guard != null) {
+                this.guard.set(guard.toString());
+            }
         }
 
         /**
@@ -334,7 +336,7 @@ public class CacheHelper extends BasicSectionHelper {
         /**
          * @return the guard
          */
-        Object getGuard() {
+        String getGuard() {
             return guard.get();
         }
 
