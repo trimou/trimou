@@ -392,6 +392,10 @@ Trimou provides some useful helpers which are not registered automatically:
 +{{alt username "Joe"}}+
 |alt
 
+|+org.trimou.handlebars.CacheHelper+
+|Allows to cache template fragments in memory. It's useful for resource-intensive parts of the template that rarely change.
+|cache
+
 |===
 
 ==== Example of ResourceBundleHelper
