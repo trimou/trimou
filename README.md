@@ -18,7 +18,7 @@ All the artifacts are available in the Maven Central Repository:
 <dependency>
   <groupId>org.trimou</groupId>
   <artifactId>trimou-core</artifactId>
-  <version>1.8.3.Final</version>
+  <version>${version.trimou}</version>
 </dependency>
 ```
 And now use the `MustacheEngine` to compile a `Mustache` template and render the output:
