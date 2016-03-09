@@ -36,7 +36,7 @@ System.out.println(mustache.render("world"));
 
 ### Template locators and caching
 
-Let's automatically locate the template contents for the given template id so that it’s not necessary to supply the template contents every time the template is compiled:
+Allow to automatically locate the template contents for the given template id so that it’s not necessary to supply the template contents every time the template is compiled. Moreover, if the template cache is enabled (default) the compiled template is automatically put in the cache and no compilation happens the next time the template is requested:
 
 ```java
 MustacheEngine engine = MustacheEngineBuilder
@@ -46,14 +46,11 @@ MustacheEngine engine = MustacheEngineBuilder
 // Whenever the template is needed, obtain the reference from the engine
 Mustache mustache = engine.getMustache("foo");
 ```
-
-Moreover, if the template cache is enabled (default) the compiled template is automatically put in the cache and no compilation happens the next time the template is requested.
-
 See also [TemplateLocator](http://trimou.org/doc/latest.html#template_locator) and [Configuration properties](http://trimou.org/doc/latest.html#configuration).
 
 ### Helpers
 
-Helpers are de-facto *tags which are able to consume multiple parameters and optional hash map*. Trimou's Helper API is inspired by Handlebars but it’s not 100% compatible. Mainly, it does not define "inverse" section, so for example the built-in if helper doesn’t support else block. On the other hand, any helper is able to validate its tag definition (see `org.trimou.handlebars.Helper.validate()`) and fail fast if there's invalid number of arguments etc.
+Helpers are de-facto *tags which are able to consume multiple parameters and optional hash map*. Trimou's Helper API is inspired by Handlebars but it’s not 100% compatible. Mainly, it does not define the "inverse" section. On the other hand, any helper is able to validate its tag definition (see `org.trimou.handlebars.Helper.validate()`) and fail fast if there's invalid number of arguments etc.
 
 #### Built-in helpers
 
@@ -90,7 +87,7 @@ Template:
 {{msg "helloworld" "Martin"}}
 ```
 
-#### DateTimeFormatHelper
+##### DateTimeFormatHelper
 
 Format dates easily:
 ```java
@@ -145,9 +142,16 @@ foo.price evaluates to a number > 90
 {{/numExpr}}
 ```
 
+It's also possible to specify the default operator so that the `op` param may be ommitted:
+```
+{{#gt val 10}}
+val > 10
+{{/gt}}
+```
+
 ##### InvokeHelper
 
-Invokes public methods with parameters via reflection:
+Invokes public methods with parameters via reflection. In this case `java.util.concurrent.TimeUnit.valueOf("MILLISECONDS").toSeconds(1000l)`:
 
 ```
 {{#invoke 'MILLISECONDS' class='java.util.concurrent.TimeUnit' m='valueOf'}}{{invoke 1000L m='toSeconds'}}{{/invoke}}
