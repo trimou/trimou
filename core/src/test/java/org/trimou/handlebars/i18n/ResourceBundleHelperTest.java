@@ -3,6 +3,7 @@ package org.trimou.handlebars.i18n;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.OptionsHashKeys;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -95,10 +97,13 @@ public class ResourceBundleHelperTest extends AbstractEngineTest {
     @Test
     public void testLocale() {
         String templateContents = "{{msg \"echo_one\" locale='de'}},{{msg \"echo.two\" locale=myLocale}},{{msg key locale='de'}}";
-        Mustache mustache = engine.compileMustache("bundle_helper",
+        Mustache mustache = engine.compileMustache("bundle_helper_locale_01",
                 templateContents);
         assertEquals("Hallo,He,oche", mustache.render(ImmutableMap
                 .<String, Object> of("key", "echo", "myLocale", Locale.GERMAN)));
+        mustache = engine.compileMustache("bundle_helper_locale_02",
+                "{{msg \"echo_one\"}}");
+        assertEquals("Hallo", mustache.render(Collections.singletonMap(OptionsHashKeys.LOCALE, Locale.GERMAN)));
     }
 
 }

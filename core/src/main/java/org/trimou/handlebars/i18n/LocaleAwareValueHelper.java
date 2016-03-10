@@ -51,15 +51,17 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
      *
      * @param options
      * @return the locale set via options hash with
-     *         {@link OptionsHashKeys#LOCALE} key, or the current locale by
-     *         means of {@link LocaleSupport}
+     *         {@link OptionsHashKeys#LOCALE} key, the value from the context
+     *         for the {@link OptionsHashKeys#LOCALE} key or the current locale
+     *         by means of {@link LocaleSupport}
      * @see Locale#forLanguageTag(String)
      */
     protected Locale getLocale(Options options) {
-
         Locale locale;
         Object localeObject = getHashValue(options, LOCALE);
-
+        if (localeObject == null) {
+            localeObject = options.getValue(LOCALE);
+        }
         if (localeObject != null) {
             if (localeObject instanceof Locale) {
                 locale = (Locale) localeObject;
