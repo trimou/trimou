@@ -1,8 +1,6 @@
 language: java
 jdk:
- - oraclejdk7
  - oraclejdk8
- - openjdk7
 install: mvn clean install -DskipTests=true
 script: mvn clean test
 sudo: false
