@@ -17,28 +17,46 @@ package org.trimou.engine.text;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.trimou.engine.config.AbstractConfigurationAware;
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
-import org.trimou.util.StringBuilderWriter;
+import org.trimou.util.Checker;
+import org.trimou.util.Escaper;
 
 /**
  *
  * @author Martin Kouba
  */
-class DefaultTextSupport extends AbstractConfigurationAware implements
-        TextSupport {
+public class DefaultTextSupport extends AbstractConfigurationAware
+        implements TextSupport {
+
+    private final Escaper escaper;
+
+    /**
+     *
+     */
+    public DefaultTextSupport() {
+        this(Escaper.builder().add('"', "&quot;").add('\'', "&#39;")
+                .add('&', "&amp;").add('<', "&lt;").add('>', "&gt;").build());
+    }
+
+    /**
+     *
+     * @param escaper
+     * @see Escaper#builder()
+     */
+    public DefaultTextSupport(Escaper escaper) {
+        Checker.checkArgumentNotNull(escaper);
+        this.escaper = escaper;
+    }
 
     @Override
     public String escapeHtml(String input) {
-        final StringBuilderWriter writer = new StringBuilderWriter(input.length());
-        try {
-            StringEscapeUtils.ESCAPE_HTML3.translate(input, writer);
-        } catch (IOException e) {
-            throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
-        }
-        return writer.toString();
+        return escaper.escape(input);
+    }
+
+    @Override
+    public void appendEscapedHtml(String input, Appendable appendable)
+            throws IOException {
+        escaper.escape(input, appendable);
     }
 
 }

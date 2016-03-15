@@ -15,12 +15,16 @@
  */
 package org.trimou.engine.segment;
 
+import java.io.IOException;
+
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
 import org.trimou.engine.text.TextSupport;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Strings;
 
@@ -121,7 +125,15 @@ public class ValueSegment extends AbstractSegment
     }
 
     private void writeValue(Appendable appendable, String text) {
-        append(appendable, unescape ? text : textSupport.escapeHtml(text));
+        if (unescape) {
+            append(appendable, text);
+        } else {
+            try {
+                textSupport.appendEscapedHtml(text, appendable);
+            } catch (IOException e) {
+                throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
+            }
+        }
     }
 
     private void processLambda(Appendable appendable, ExecutionContext context,

@@ -50,8 +50,8 @@ import org.trimou.engine.locale.LocaleSupportFactory;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
+import org.trimou.engine.text.DefaultTextSupport;
 import org.trimou.engine.text.TextSupport;
-import org.trimou.engine.text.TextSupportFactory;
 import org.trimou.engine.validation.Validateable;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -435,7 +435,7 @@ class DefaultConfiguration implements Configuration {
 
     private TextSupport initTextSupport(MustacheEngineBuilder builder) {
         return builder.getTextSupport() != null ? builder.getTextSupport()
-                : new TextSupportFactory().createTextSupport();
+                : new DefaultTextSupport();
     }
 
     private LocaleSupport initLocaleSupport(MustacheEngineBuilder builder) {

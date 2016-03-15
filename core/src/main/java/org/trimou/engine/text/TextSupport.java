@@ -15,7 +15,10 @@
  */
 package org.trimou.engine.text;
 
+import java.io.IOException;
+
 import org.trimou.engine.config.ConfigurationAware;
+import org.trimou.util.Checker;
 
 /**
  * Text support. Implementation must be thread-safe.
@@ -25,11 +28,31 @@ import org.trimou.engine.config.ConfigurationAware;
 public interface TextSupport extends ConfigurationAware {
 
     /**
-     * Interpolated values should be HTML escaped, if appropriate.
+     * Interpolated values should be HTML-escaped, if appropriate.
+     * <p>
+     * Clients are encouraged to use
+     * {@link #appendEscapedHtml(String, Appendable)} instead (this method
+     * might be optimized to consume less resources).
      *
      * @param input
-     * @return escaped text
+     * @return the escaped text
+     * @see #appendEscapedHtml(String, Appendable)
      */
-    public String escapeHtml(String input);
+    String escapeHtml(String input);
+
+    /**
+     * Escape the input and append the result to the given appendable.
+     * Interpolated values should be HTML-escaped, if appropriate.
+     *
+     * @param input
+     * @param appendable
+     * @throws IOException
+     * @since 2.0
+     */
+    default void appendEscapedHtml(String input, Appendable appendable)
+            throws IOException {
+        Checker.checkArgumentNotNull(appendable);
+        appendable.append(escapeHtml(input));
+    }
 
 }

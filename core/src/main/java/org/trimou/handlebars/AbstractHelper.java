@@ -15,10 +15,14 @@
  */
 package org.trimou.handlebars;
 
+import java.io.IOException;
+
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.text.TextSupport;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
 
 /**
  *
@@ -72,7 +76,12 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
         if (textSupport == null || isUnescapeVariable(options)) {
             options.append(sequence);
         } else {
-            options.append(textSupport.escapeHtml(sequence.toString()));
+            try {
+                textSupport.appendEscapedHtml(sequence.toString(),
+                        options.getAppendable());
+            } catch (IOException e) {
+                throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
+            }
         }
     }
 
