@@ -27,7 +27,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
@@ -48,6 +47,7 @@ import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
 import org.trimou.handlebars.HelpersBuilder;
 import org.trimou.util.Checker;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -165,7 +165,7 @@ public final class MustacheEngineBuilder implements
             version = pack.getSpecificationVersion();
             timestamp = pack.getImplementationVersion();
         }
-        if (StringUtils.isEmpty(version)) {
+        if (Strings.isEmpty(version)) {
             version = "SNAPSHOT";
             timestamp = "n/a";
         }

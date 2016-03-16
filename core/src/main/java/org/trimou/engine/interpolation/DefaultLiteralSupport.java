@@ -17,7 +17,6 @@ package org.trimou.engine.interpolation;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheTagInfo;
@@ -46,7 +45,7 @@ public class DefaultLiteralSupport extends AbstractConfigurationAware
 
     @Override
     public Object getLiteral(String value, MustacheTagInfo tagInfo) {
-        if (StringUtils.isEmpty(value)) {
+        if (Strings.isEmpty(value)) {
             return null;
         }
         Object literal = null;

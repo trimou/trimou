@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -18,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.tests.cdi.MustacheEngineProducer;
+import org.trimou.util.Strings;
 
 /**
  *
@@ -51,9 +51,9 @@ public class RenderingContextTest {
     }
 
     private void assertResult(Mustache mustache) {
-        String[] parts = StringUtils.split(mustache.render(null), "|");
-        assertEquals(2, parts.length);
-        assertEquals(parts[0], parts[1]);
+        List<String> parts = Strings.split(mustache.render(null), "|");
+        assertEquals(2, parts.size());
+        assertEquals(parts.get(0), parts.get(1));
     }
 
 }

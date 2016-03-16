@@ -16,9 +16,10 @@
 package org.trimou.engine.locator;
 
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.ConfigurationKey;
@@ -78,8 +79,8 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     public void init() {
         this.virtualPathSeparator = configuration
                 .getStringPropertyValue(VIRTUAL_PATH_SEPARATOR_KEY);
-        this.defaultFileEncoding = configuration
-                .getStringPropertyValue(EngineConfigurationKey.DEFAULT_FILE_ENCODING);
+        this.defaultFileEncoding = configuration.getStringPropertyValue(
+                EngineConfigurationKey.DEFAULT_FILE_ENCODING);
         logger.info(
                 "{} initialized [virtualPathSeparator: {}, defaultFileEncoding: {}]",
                 getClass().getSimpleName(), getVirtualPathSeparator(),
@@ -100,7 +101,7 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     }
 
     protected String stripSuffix(String filename) {
-        return suffix != null ? StringUtils.removeEnd(filename, "." + suffix)
+        return suffix != null ? Strings.removeSuffix(filename, "." + suffix)
                 : filename;
     }
 
@@ -132,14 +133,12 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
      * @return the real path
      */
     protected String toRealPath(String virtualPath) {
-
-        String[] parts = StringUtils.split(virtualPath,
+        List<String> parts = Strings.split(virtualPath,
                 getVirtualPathSeparator());
-
         StringBuilder realPath = new StringBuilder();
-        for (int i = 0; i < parts.length; i++) {
-            realPath.append(parts[i]);
-            if (i + 1 < parts.length) {
+        for (Iterator<String> iterator = parts.iterator(); iterator.hasNext();) {
+            realPath.append(iterator.next());
+            if (iterator.hasNext()) {
                 realPath.append(getRealPathSeparator());
             }
         }
@@ -147,7 +146,7 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
     }
 
     private String initRootPath(String rootPath) {
-        if(StringUtils.isEmpty(rootPath)) {
+        if (Strings.isEmpty(rootPath)) {
             return null;
         }
         return rootPath.endsWith(getRealPathSeparator()) ? rootPath
@@ -156,10 +155,9 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
     @Override
     public String toString() {
-        return String
-                .format("%s [priority: %s, suffix: %s, rootPath: %s]",
-                        getClass().getName(), getPriority(), getSuffix(),
-                        getRootPath());
+        return String.format("%s [priority: %s, suffix: %s, rootPath: %s]",
+                getClass().getName(), getPriority(), getSuffix(),
+                getRootPath());
     }
 
 }

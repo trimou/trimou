@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.Mustache;
@@ -53,6 +52,7 @@ import org.trimou.engine.segment.ValueSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Patterns;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableList;
 
@@ -207,7 +207,7 @@ class DefaultParsingHandler implements ParsingHandler {
 
     private void validateTag(ParsedTag tag) {
 
-        if (StringUtils.isEmpty(tag.getContent())) {
+        if (Strings.isEmpty(tag.getContent())) {
             throw new MustacheException(COMPILE_INVALID_TAG,
                     "Tag has no content [type: %s, line: %s]", tag.getType(),
                     line);
@@ -224,13 +224,13 @@ class DefaultParsingHandler implements ParsingHandler {
             // associated
             if (MustacheTagType.contentMustBeValidated(tag.getType())
                     && !MustacheTagType.supportsHelpers(tag.getType())
-                    && StringUtils.containsWhitespace(tag.getContent())) {
+                    && Strings.containsWhitespace(tag.getContent())) {
                 contentMustBeNonWhitespaceSequenceException(tag.getType());
             }
         } else {
             if (MustacheTagType
                     .contentMustBeNonWhitespaceCharacterSequence(tag.getType())
-                    && StringUtils.containsWhitespace(tag.getContent())) {
+                    && Strings.containsWhitespace(tag.getContent())) {
                 contentMustBeNonWhitespaceSequenceException(tag.getType());
             }
         }

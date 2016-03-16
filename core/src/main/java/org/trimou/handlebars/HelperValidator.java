@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.annotations.Internal;
@@ -28,6 +27,7 @@ import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.segment.Segment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Arrays;
 import org.trimou.util.Checker;
 import org.trimou.util.Strings;
 
@@ -89,7 +89,7 @@ public final class HelperValidator {
     public static void checkType(Class<? extends Helper> helperClazz,
             HelperDefinition definition, MustacheTagType... allowedTypes) {
         Checker.checkArgumentsNotNull(definition, allowedTypes);
-        if (!ArrayUtils.contains(allowedTypes,
+        if (!Arrays.contains(allowedTypes,
                 definition.getTagInfo().getType())) {
             throw newValidationException("Unsupported tag type", helperClazz,
                     definition);

@@ -15,9 +15,9 @@
  */
 package org.trimou.engine.resolver;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.util.Strings;
 
 /**
  * Abstract index-based resolver.
@@ -50,7 +50,7 @@ public abstract class IndexResolver extends AbstractResolver {
      *         contain digits)
      */
     protected boolean isAnIndex(String name) {
-        return NumberUtils.isDigits(name);
+        return Strings.containsOnlyDigits(name);
     }
 
     /**

@@ -21,12 +21,13 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.locator.PathTemplateLocator;
@@ -153,7 +154,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
                 if (resourcePath.endsWith(Strings.SLASH)) {
                     // Subdirectory
                     String subdirectory = getRootPath()
-                            + StringUtils.substringAfter(resourcePath,
+                            + Strings.substringAfter(resourcePath,
                                     getRootPath());
                     resources.addAll(listResources(subdirectory, ctx));
                 } else {
@@ -195,14 +196,14 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
     @Override
     protected String constructVirtualPath(String source) {
 
-        String[] parts = StringUtils.split(
-                StringUtils.substringAfter(source, getRootPath()),
+        List<String> parts = Strings.split(
+                Strings.substringAfter(source, getRootPath()),
                 Strings.SLASH);
 
         StringBuilder name = new StringBuilder();
-        for (int i = 0; i < parts.length; i++) {
-            name.append(parts[i]);
-            if (i + 1 < parts.length) {
+        for (Iterator<String> iterator = parts.iterator(); iterator.hasNext();) {
+            name.append(iterator.next());
+            if(iterator.hasNext()) {
                 name.append(getVirtualPathSeparator());
             }
         }

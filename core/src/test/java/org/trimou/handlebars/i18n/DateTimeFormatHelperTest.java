@@ -6,12 +6,12 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.FixedLocaleSupport;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -51,19 +51,19 @@ public class DateTimeFormatHelperTest extends AbstractEngineTest {
                 day, "date", day.getTime(), "milis", milis);
 
         assertEquals(
-                StringUtils.repeat(expectedMedium, "|", 3),
+                Strings.repeat(expectedMedium, 3, "|"),
                 engine.compileMustache(
                         "date_time_helper_medium",
                         "{{formatTime calendar style=\"medium\"}}|{{formatTime date style=\"medium\"}}|{{formatTime milis style=\"medium\"}}")
                         .render(data));
         assertEquals(
-                StringUtils.repeat(expectedShort, "|", 3),
+                Strings.repeat(expectedShort, 3, "|"),
                 engine.compileMustache(
                         "date_time_helper_short",
                         "{{formatTime calendar style=\"short\"}}|{{formatTime date style=\"short\"}}|{{formatTime milis style=\"short\"}}")
                         .render(data));
         assertEquals(
-                StringUtils.repeat(expectedCustom, "|", 3),
+                Strings.repeat(expectedCustom, 3, "|"),
                 engine.compileMustache(
                         "date_time_helper_custom",
                         "{{formatTime calendar pattern=\"DD-MM-yyyy HH:mm\"}}|{{formatTime date pattern=\"DD-MM-yyyy HH:mm\"}}|{{formatTime milis pattern=\"DD-MM-yyyy HH:mm\"}}")

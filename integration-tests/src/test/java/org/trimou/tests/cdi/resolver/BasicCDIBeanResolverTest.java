@@ -6,11 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.trimou.tests.IntegrationTestUtils.createCDITestArchiveBase;
 import static org.trimou.tests.IntegrationTestUtils.resolve;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.tests.cdi.MustacheEngineProducer;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -73,17 +74,17 @@ public class BasicCDIBeanResolverTest {
         String result = mustache.render(null);
 
         assertNotNull(result);
-        String[] parts = StringUtils.split(result, "|");
-        assertEquals(3, parts.length);
-        assertNotEquals(Long.valueOf(parts[0]), Long.valueOf(parts[1]));
-        String[] nestedParts = StringUtils.split(parts[2], ":");
-        assertNotEquals(Long.valueOf(parts[0]), Long.valueOf(nestedParts[0]));
-        assertEquals(nestedParts[0], nestedParts[1]);
+        List<String> parts = Strings.split(result, "|");
+        assertEquals(3, parts.size());
+        assertNotEquals(Long.valueOf(parts.get(0)), Long.valueOf(parts.get(1)));
+        List<String> nestedParts = Strings.split(parts.get(2), ":");
+        assertNotEquals(Long.valueOf(parts.get(0)), Long.valueOf(nestedParts.get(0)));
+        assertEquals(nestedParts.get(0), nestedParts.get(1));
 
         assertEquals(3, Delta.destructions.size());
-        assertEquals(Long.valueOf(parts[0]), Delta.destructions.get(0));
-        assertEquals(Long.valueOf(parts[1]), Delta.destructions.get(1));
-        assertEquals(Long.valueOf(nestedParts[0]), Delta.destructions.get(2));
+        assertEquals(Long.valueOf(parts.get(0)), Delta.destructions.get(0));
+        assertEquals(Long.valueOf(parts.get(1)), Delta.destructions.get(1));
+        assertEquals(Long.valueOf(nestedParts.get(0)), Delta.destructions.get(2));
     }
 
 }

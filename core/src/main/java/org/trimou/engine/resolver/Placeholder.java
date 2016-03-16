@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.resolver;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 /**
  *
  * @author Martin Kouba
@@ -25,8 +23,7 @@ public enum Placeholder {
 
     /**
      * This might be useful to distinguish the case when a value resolver should
-     * return a value which should be interpreted as a <code>null</code>. E.g.
-     * {@link ObjectUtils#NULL}.
+     * return a value which should be interpreted as a <code>null</code>.
      */
     NULL,
 }

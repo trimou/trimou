@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
@@ -18,6 +17,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -73,19 +73,19 @@ public class TimeFormatHelperTest extends AbstractEngineTest {
                         .toZoneId()));
 
         assertEquals(
-                StringUtils.repeat(expectedMedium, "|", 4),
+                Strings.repeat(expectedMedium, 4, "|"),
                 engine.compileMustache(
                         "time_helper_medium",
                         "{{formatTime calendar style=\"medium\"}}|{{formatTime date style=\"medium\"}}|{{formatTime milis style=\"medium\"}}|{{formatTime localDateTime style=\"medium\"}}")
                         .render(data));
         assertEquals(
-                StringUtils.repeat(expectedShort, "|", 4),
+                Strings.repeat(expectedShort, 4, "|"),
                 engine.compileMustache(
                         "time_helper_short",
                         "{{formatTime calendar style=\"short\"}}|{{formatTime date style=\"short\"}}|{{formatTime milis style=\"short\"}}|{{formatTime localDateTime style=\"short\"}}")
                         .render(data));
         assertEquals(
-                StringUtils.repeat(expectedCustom, "|", 4),
+                Strings.repeat(expectedCustom, 4, "|"),
                 engine.compileMustache(
                         "time_helper_custom",
                         "{{formatTime calendar pattern=\"DD-MM-yyyy HH:mm\"}}|{{formatTime date pattern=\"DD-MM-yyyy HH:mm\"}}|{{formatTime milis pattern=\"DD-MM-yyyy HH:mm\"}}|{{formatTime localDateTime pattern=\"DD-MM-yyyy HH:mm\"}}")

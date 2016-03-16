@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.priority.Priorities;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -33,7 +33,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
 
                             @Override
                             protected boolean matches(String name) {
-                                return NumberUtils.isDigits(name);
+                                return Strings.containsOnlyDigits(name);
                             }
 
                             @Override

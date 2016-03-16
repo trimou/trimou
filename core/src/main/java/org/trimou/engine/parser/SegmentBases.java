@@ -24,7 +24,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.parser.DefaultParsingHandler.ContainerSegmentBase;
@@ -32,6 +31,7 @@ import org.trimou.engine.parser.DefaultParsingHandler.PartialSegmentBase;
 import org.trimou.engine.parser.DefaultParsingHandler.RootSegmentBase;
 import org.trimou.engine.parser.DefaultParsingHandler.SegmentBase;
 import org.trimou.engine.segment.SegmentType;
+import org.trimou.util.Strings;
 
 /**
  * {@link SegmentBase} utils.
@@ -187,7 +187,7 @@ final class SegmentBases {
                 // Value segment
                 return false;
             } else if (SegmentType.TEXT.equals(segment.getType())) {
-                if (!StringUtils.isWhitespace(segment.getContent())) {
+                if (!Strings.containsOnlyWhitespace(segment.getContent())) {
                     // Text segment with non-whitespace character
                     return false;
                 }

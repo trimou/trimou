@@ -15,17 +15,13 @@
  */
 package org.trimou.engine.config;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-import org.trimou.annotations.Internal;
 import org.trimou.util.Strings;
 
 /**
  *
  * @author Martin Kouba
  */
-@Internal
-public final class ConfigurationProperties {
+final class ConfigurationProperties {
 
     private ConfigurationProperties() {
     }
@@ -48,8 +44,7 @@ public final class ConfigurationProperties {
      * @param prefixParts
      * @return the key
      */
-    public static String buildPropertyKey(String propertyName,
-            String[] prefixParts) {
+    static String buildPropertyKey(String propertyName, String[] prefixParts) {
         return buildPropertyKey(propertyName, Strings.UNDERSCORE, prefixParts);
     }
 
@@ -63,16 +58,19 @@ public final class ConfigurationProperties {
      * @param prefixParts
      * @return the key
      */
-    public static String buildPropertyKey(String propertyName,
-            String delimiter, String[] prefixParts) {
+    static String buildPropertyKey(String propertyName, String delimiter,
+            String[] prefixParts) {
         StringBuilder key = new StringBuilder();
         for (int i = 0; i < prefixParts.length; i++) {
             key.append(prefixParts[i]);
             key.append(Strings.DOT);
         }
-        key.append(WordUtils.uncapitalize(StringUtils.replace(WordUtils
-                .capitalizeFully(propertyName, delimiter.toCharArray()),
-                delimiter, "")));
+        key.append(
+                Strings.uncapitalize(
+                        Strings.replace(
+                                Strings.capitalizeFully(propertyName,
+                                        delimiter.toCharArray()[0]),
+                                delimiter, "")));
         return key.toString();
     }
 
@@ -82,7 +80,7 @@ public final class ConfigurationProperties {
      * @param value
      * @return the converted value
      */
-    public static Object convertConfigValue(Class<?> defaultValueType, Object value) {
+    static Object convertConfigValue(Class<?> defaultValueType, Object value) {
         if (defaultValueType.equals(String.class)) {
             return value.toString();
         } else if (defaultValueType.equals(Boolean.class)) {
@@ -92,7 +90,8 @@ public final class ConfigurationProperties {
         } else if (defaultValueType.equals(Integer.class)) {
             return Integer.valueOf(value.toString());
         }
-        throw new IllegalStateException("Unsupported default value type: " + defaultValueType);
+        throw new IllegalStateException(
+                "Unsupported default value type: " + defaultValueType);
     }
 
 }

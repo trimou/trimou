@@ -25,4 +25,24 @@ import org.trimou.annotations.Internal;
 public final class Arrays {
 
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
+    /**
+     *
+     * @param array
+     * @param object
+     * @return <code>true</code> if the given array contains the specified
+     *         object
+     */
+    public static boolean contains(Object[] array, Object object) {
+        if (array == null) {
+            return false;
+        }
+        for (int i = 0; i < array.length; i++) {
+            if ((object != null && object.equals(array[i]))
+                    || (object == null && array[i] == null)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

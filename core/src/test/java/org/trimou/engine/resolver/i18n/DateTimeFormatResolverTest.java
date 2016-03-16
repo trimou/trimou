@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
@@ -19,6 +18,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.util.Strings;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -33,8 +33,7 @@ public class DateTimeFormatResolverTest extends AbstractEngineTest {
     @Before
     public void buildEngine() {
         resolver = new DateTimeFormatResolver();
-        engine = MustacheEngineBuilder
-                .newBuilder()
+        engine = MustacheEngineBuilder.newBuilder()
                 .setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY,
                         "DD-MM-yyyy HH:mm")
                 .setLocaleSupport(new LocaleSupport() {
@@ -59,8 +58,8 @@ public class DateTimeFormatResolverTest extends AbstractEngineTest {
     public void testResolution() {
         assertNull(resolver.resolve(new Date(), "foo", null));
         assertNull(resolver.resolve("5", "foo", null));
-        assertNotNull(resolver.resolve(5, DateTimeFormatResolver.NAME_FORMAT,
-                null));
+        assertNotNull(
+                resolver.resolve(5, DateTimeFormatResolver.NAME_FORMAT, null));
         assertNotNull(resolver.resolve(Calendar.getInstance(),
                 DateTimeFormatResolver.NAME_FORMAT_CUSTOM, null));
         assertNotNull(resolver.resolve(new Date(),
@@ -89,30 +88,26 @@ public class DateTimeFormatResolverTest extends AbstractEngineTest {
         Map<String, Object> data = ImmutableMap.<String, Object> of("calendar",
                 day, "date", day.getTime(), "milis", milis);
 
-        assertEquals(
-                StringUtils.repeat(expectedMedium, "|", 3),
+        assertEquals(Strings.repeat(expectedMedium, 3, "|"),
                 engine.compileMustache("date_time_medium",
                         "{{calendar.format}}|{{date.format}}|{{milis.format}}")
                         .render(data));
-        assertEquals(
-                StringUtils.repeat(expectedShort, "|", 3),
+        assertEquals(Strings.repeat(expectedShort, 3, "|"),
                 engine.compileMustache("date_time_short",
                         "{{calendar.formatShort}}|{{date.formatShort}}|{{milis.formatShort}}")
                         .render(data));
-        assertEquals(
-                StringUtils.repeat(expectedCustom, "|", 3),
+        assertEquals(Strings.repeat(expectedCustom, 3, "|"),
                 engine.compileMustache("date_time_custom",
                         "{{calendar.formatCustom}}|{{date.formatCustom}}|{{milis.formatCustom}}")
                         .render(data));
 
-        assertEquals(
-                StringUtils.repeat(expectedDate, "|", 3),
+        assertEquals(Strings.repeat(expectedDate, 3, "|"),
                 engine.compileMustache("date_only",
                         "{{calendar.formatDate}}|{{date.formatDate}}|{{milis.formatDate}}")
                         .render(data));
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testMultipleInit() {
 
         DateTimeFormatResolver resolver = new DateTimeFormatResolver();

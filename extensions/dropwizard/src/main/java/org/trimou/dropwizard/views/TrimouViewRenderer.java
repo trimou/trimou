@@ -15,9 +15,6 @@
  */
 package org.trimou.dropwizard.views;
 
-import io.dropwizard.views.View;
-import io.dropwizard.views.ViewRenderer;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,13 +24,16 @@ import java.util.Locale;
 
 import javax.ws.rs.WebApplicationException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.ClassPathTemplateLocator;
 import org.trimou.exception.MustacheException;
+import org.trimou.util.Strings;
+
+import io.dropwizard.views.View;
+import io.dropwizard.views.ViewRenderer;
 
 /**
  * A Dropwizard {@link ViewRenderer} backed by Trimou.
@@ -104,7 +104,7 @@ public class TrimouViewRenderer implements ViewRenderer {
     }
 
     private String getLocalizedTemplateName(String templateName, String localePart) {
-        return StringUtils.removeEnd(templateName, suffix) + "_" + localePart + suffix;
+        return Strings.removeSuffix(templateName, suffix) + "_" + localePart + suffix;
     }
 
     public static class Builder {
