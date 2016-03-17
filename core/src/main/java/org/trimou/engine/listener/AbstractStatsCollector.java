@@ -16,10 +16,9 @@
 package org.trimou.engine.listener;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.trimou.lambda.Lambda;
-
-import com.google.common.base.Predicate;
 
 /**
  * It's possible to specify the time unit for measurements. By default
@@ -37,12 +36,7 @@ public class AbstractStatsCollector extends AbstractMustacheListener {
      *
      * @see Lambda#ONEOFF_LAMBDA_TEMPLATE_PREFIX
      */
-    public static final Predicate<String> IS_NOT_ONEOFF_LAMBA_TEMPLATE = new Predicate<String>() {
-        @Override
-        public boolean apply(String input) {
-            return !input.startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
-        }
-    };
+    public static final Predicate<String> IS_NOT_ONEOFF_LAMBA_TEMPLATE = (input) -> !input.startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
 
     private final TimeUnit timeUnit;
 
@@ -69,7 +63,7 @@ public class AbstractStatsCollector extends AbstractMustacheListener {
     }
 
     public boolean isApplied(String mustacheName) {
-        return templatePredicate.apply(mustacheName);
+        return templatePredicate.test(mustacheName);
     }
 
     /**

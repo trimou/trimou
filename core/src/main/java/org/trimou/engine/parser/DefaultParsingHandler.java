@@ -51,10 +51,10 @@ import org.trimou.engine.segment.TextSegment;
 import org.trimou.engine.segment.ValueSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableList.ImmutableListBuilder;
 import org.trimou.util.Patterns;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * The default handler implementation that compiles the template. It's not
@@ -491,7 +491,7 @@ class DefaultParsingHandler implements ParsingHandler {
         }
 
         protected List<Segment> getSegments(Template template) {
-            ImmutableList.Builder<Segment> builder = ImmutableList.builder();
+            ImmutableListBuilder<Segment> builder = ImmutableList.builder();
             for (SegmentBase wrapper : segments) {
                 builder.add(wrapper.asSegment(template));
             }

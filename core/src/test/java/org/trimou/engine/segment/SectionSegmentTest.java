@@ -12,10 +12,9 @@ import org.trimou.engine.parser.Template;
 import org.trimou.lambda.InputProcessingLambda;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableSet;
 
 /**
  *
@@ -57,7 +56,7 @@ public class SectionSegmentTest extends AbstractEngineTest {
         mustache = engine
                 .compileMustache("iterable3", "{{#items}}{{name}}{{/items}}");
         assertEquals("EdgarEdgar", mustache.render(ImmutableMap.<String, Object> of(
-                "items", ImmutableSet.builder().add(new Hammer()).add(new Hammer()).build())));
+                "items", ImmutableSet.of(new Hammer(), new Hammer()))));
     }
 
     @Test

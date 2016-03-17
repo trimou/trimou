@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.jdk8.handlebars.i18n;
+package org.trimou.handlebars.i18n;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

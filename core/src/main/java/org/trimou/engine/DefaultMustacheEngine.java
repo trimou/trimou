@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -39,9 +40,7 @@ import org.trimou.engine.parser.ParsingHandler;
 import org.trimou.engine.parser.ParsingHandlerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.base.Optional;
-import com.google.common.io.CharStreams;
+import org.trimou.util.IOUtils;
 
 /**
  * The default Mustache engine implementation.
@@ -143,7 +142,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 new ComputingCache.Function<String, Optional<Mustache>>() {
                     @Override
                     public Optional<Mustache> compute(String key) {
-                        return Optional.fromNullable(locateAndParse(key));
+                        return Optional.ofNullable(locateAndParse(key));
                     }
                 }, new ComputingCache.Listener<String>() {
                     @Override
@@ -164,7 +163,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 new ComputingCache.Function<String, Optional<String>>() {
                     @Override
                     public Optional<String> compute(String key) {
-                        return Optional.fromNullable(locateAndRead(key));
+                        return Optional.ofNullable(locateAndRead(key));
                     }
                 }, new ComputingCache.Listener<String>() {
                     @Override
@@ -255,7 +254,7 @@ class DefaultMustacheEngine implements MustacheEngine {
             if (reader == null) {
                 return null;
             }
-            return CharStreams.toString(reader);
+            return IOUtils.toString(reader);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -301,7 +300,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     private Mustache getTemplateFromCache(String templateName) {
         try {
-            return templateCache.get(templateName).orNull();
+            return templateCache.get(templateName).orElse(null);
         } catch (Exception e) {
             throw unwrapUncheckedExecutionException(e);
         }
@@ -309,7 +308,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     private String getSourceFromCache(String templateName) {
         try {
-            return sourceCache.get(templateName).orNull();
+            return sourceCache.get(templateName).orElse(null);
         } catch (Exception e) {
             throw unwrapUncheckedExecutionException(e);
         }

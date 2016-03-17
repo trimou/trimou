@@ -8,8 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *
@@ -22,8 +21,7 @@ public class ListIndexResolverTest extends AbstractEngineTest {
         List<String> list = new ArrayList<String>();
         list.add("foo");
         list.add("bar");
-        Map<String, Object> data = ImmutableMap.<String, Object> of("list",
-                list);
+        Map<String, Object> data = ImmutableMap.of("list", list);
         String templateContents = "{{list.0}},{{list.1}},{{list.10}},{{list.a}}!";
         assertEquals("foo,bar,,!",
                 engine.compileMustache("list", templateContents).render(data));

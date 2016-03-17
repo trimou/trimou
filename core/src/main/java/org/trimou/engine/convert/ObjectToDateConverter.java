@@ -17,6 +17,9 @@ package org.trimou.engine.convert;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,8 +28,8 @@ import org.trimou.exception.MustacheProblem;
 
 /**
  * Converts {@link Object} to {@link Date} if possible, i.e. if the object is an
- * instance of {@link Date}, {@link Calendar}, {@link Long} or {@link String}
- * (if the pattern is set).
+ * instance of {@link Date}, {@link Calendar}, {@link LocalDateTime},
+ * {@link LocalDate}, {@link Long} or {@link String} (if the pattern is set).
  *
  * @author Martin Kouba
  */
@@ -44,15 +47,22 @@ public class ObjectToDateConverter implements Converter<Object, Date> {
 
     @Override
     public Date convert(Object value) {
+        Date converted = null;
         if (value instanceof Date) {
-            return (Date) value;
+            converted = (Date) value;
         } else if (value instanceof Calendar) {
-            return ((Calendar) value).getTime();
+            converted = ((Calendar) value).getTime();
+        } else if (value instanceof LocalDateTime) {
+            converted = Date.from(((LocalDateTime) value)
+                    .atZone(ZoneId.systemDefault()).toInstant());
+        } else if (value instanceof LocalDate) {
+            converted = Date.from(((LocalDate) value)
+                    .atStartOfDay(ZoneId.systemDefault()).toInstant());
         } else if (value instanceof Long) {
-            return new Date((Long) value);
+            converted = new Date((Long) value);
         } else if (value instanceof String && pattern != null) {
             try {
-                return new SimpleDateFormat(pattern).parse((String) value);
+                converted = new SimpleDateFormat(pattern).parse((String) value);
             } catch (ParseException e) {
                 throw new MustacheException(
                         MustacheProblem.RENDER_GENERIC_ERROR,
@@ -60,7 +70,7 @@ public class ObjectToDateConverter implements Converter<Object, Date> {
                         value, pattern);
             }
         }
-        return null;
+        return converted;
     }
 
 }

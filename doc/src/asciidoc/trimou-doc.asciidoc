@@ -216,8 +216,6 @@ results in:
 -> the variable is not interpolated
 ----
 
-TIP: If you're using Java 8 and want to create a simple lambda utilizing functional interfaces, try `SimpleLambdas` from <<jdk8>> extension.
-
 Alternatively, you can use predefined abstract classes like `org.trimou.lambda.InputProcessingLambda`:
 
 [source,java]
@@ -248,6 +246,21 @@ results in:
 ----
 
 See +org.trimou.lambda.Lambda+ API javadoc for more info.
+
+
+==== Simple lambdas
+
+`org.trimou.lambda.SimpleLambdas` utility class and its builder allow to create simple lambdas using JDK8 funcional interfaces:
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+        .newBuilder()
+        .addGlobalData("toLowerCase",
+            SimpleLambdas.invoke((t) -> t.toLowerCase())
+        ).build();
+----
+
 
 [[extend]]
 === Extending templates
@@ -376,6 +389,10 @@ Trimou provides some useful helpers which are not registered automatically:
 
 |+org.trimou.handlebars.i18n.DateTimeFormatHelper+
 |Displays localized times.
+|N/A
+
+|+org.trimou.handlebars.i18n.TimeFormatHelper+
+|An alternative to +DateTimeFormatHelper+  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
 |N/A
 
 |+org.trimou.handlebars.AsyncHelper+
@@ -848,6 +865,21 @@ The main advantage of helpers is the ability to consume multiple parameters and 
 
 TIP: If you're using Java 8 and want to register a simple helper utilizing functional interfaces, try `SimpleHelpers` from <<jdk8>> extension.
 
+==== Simple helpers
+
+`org.trimou.handlebars.SimpleHelpers` utility class and its builder allow to create simple helpers using JDK8 funcional interfaces. It's even possible to validate the helper definition and provide configuration keys.
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder
+        .newBuilder()
+        .registerHelper("toLowerCase", SimpleHelpers.execute(
+            (o, c) -> {
+                o.append(o.getParameters().get(0).toString().toLowerCase());
+            })
+        ).build();
+----
+
 [[missingvaluehandler]]
 === MissingValueHandler
 
@@ -861,7 +893,7 @@ TIP: If you're using Java 8 and want to register a simple helper utilizing funct
 [[computingcache]]
 === ComputingCacheFactory
 
-+org.trimou.engine.cache.ComputingCache+ is a simple abstraction for thread-safe computing (lazy loading) cache. It's used in some internal components (e.g. +ReflectionResolver+) and may also be used in custom components too. +org.trimou.engine.cache.ComputingCacheFactory+ component is responsible for creating new instances of +ComputingCache+. The default computing cache implementation is backed by +com.google.common.cache.LoadingCache+.
++org.trimou.engine.cache.ComputingCache+ is a simple abstraction for thread-safe computing (lazy loading) cache. It's used in some internal components (e.g. +ReflectionResolver+) and may also be used in custom components too. +org.trimou.engine.cache.ComputingCacheFactory+ component is responsible for creating new instances of +ComputingCache+. The default computing cache implementation is backed by +java.util.concurrent.ConcurrentHashMap+.
 
 [[identifiergenerator]]
 === IdentifierGenerator
@@ -1156,49 +1188,6 @@ This extension provides a basic https://dropwizard.github.io/dropwizard/[Dropwiz
 ==== TrimouViewRenderer
 
 +org.trimou.dropwizard.views.TrimouViewRenderer+ is a +io.dropwizard.views.ViewRenderer+ implementation backed by Trimou. There's a simple builder for convenience: +org.trimou.dropwizard.views.TrimouViewRenderer.Builder+.
-
-
-[[jdk8]]
-=== JDK 8
-
-Trimou requires Java 7. However, there is a lot of interesting stuff in JDK8. Therefore we have a special extension for JDK8 users.
-
-==== MapBackedComputingCacheFactory
-
-A computing cache factory producing computing cache implementations backed by +java.util.concurrent.ConcurrentHashMap+. This implementation is a bit faster than the default one using +com.google.common.cache.LoadingCache+. On the other hand it does not support automatic timeout eviction and listeners. Moreover its size-based eviction is not so effective.
-
-==== TimeFormatHelper
-
-An alternative to +DateTimeFormatHelper+  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
-
-
-==== Simple helpers
-
-`org.trimou.jdk8.handlebars.SimpleHelpers` utility class and its builder allow to create simple helpers using JDK8 funcional interfaces. It's even possible to validate the helper definition and provide configuration keys.
-
-[source,java]
-----
-MustacheEngine engine = MustacheEngineBuilder
-        .newBuilder()
-        .registerHelper("toLowerCase", SimpleHelpers.execute(
-            (o, c) -> {
-                o.append(o.getParameters().get(0).toString().toLowerCase());
-            })
-        ).build();
-----
-
-==== Simple lambdas
-
-`org.trimou.jdk8.lambda.SimpleLambdas` utility class and its builder allow to create simple lambdas using JDK8 funcional interfaces:
-
-[source,java]
-----
-MustacheEngine engine = MustacheEngineBuilder
-        .newBuilder()
-        .addGlobalData("toLowerCase",
-            SimpleLambdas.invoke((t) -> t.toLowerCase())
-        ).build();
-----
 
 
 '''

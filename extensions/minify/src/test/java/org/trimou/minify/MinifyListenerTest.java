@@ -15,8 +15,8 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.InputLiteralLambda;
 import org.trimou.lambda.Lambda;
+import org.trimou.util.ImmutableMap;
 
-import com.google.common.collect.ImmutableMap;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 /**

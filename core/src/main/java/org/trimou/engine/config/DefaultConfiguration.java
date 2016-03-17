@@ -56,10 +56,10 @@ import org.trimou.engine.validation.Validateable;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableMap.ImmutableMapBuilder;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -197,8 +197,7 @@ class DefaultConfiguration implements Configuration {
         removeInvalidComponents(mustacheListeners);
 
         this.resolvers = ImmutableList.copyOf(resolvers);
-        this.mustacheListeners = mustacheListeners.isEmpty() ? null
-                : mustacheListeners;
+        this.mustacheListeners = ImmutableList.copyOf(mustacheListeners);
         this.executorService = builder.getExecutorService();
     }
 
@@ -371,7 +370,7 @@ class DefaultConfiguration implements Configuration {
             MustacheEngineBuilder engineBuilder,
             Set<ConfigurationKey> keysToProcess) {
 
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
+        ImmutableMapBuilder<String, Object> builder = ImmutableMap.builder();
         Map<String, Object> builderProperties = engineBuilder.buildProperties();
         Properties resourceProperties = new Properties();
 

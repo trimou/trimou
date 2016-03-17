@@ -8,8 +8,7 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.handlebars.EmbedHelper.SourceProcessor;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  * @author Minkyu Cho

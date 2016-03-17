@@ -15,8 +15,6 @@
  */
 package org.trimou.util;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -47,6 +45,12 @@ public final class Checker {
     private Checker() {
     }
 
+    public static void checkArgument(boolean condition, String errorMessage) {
+        if (!condition) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
     public static void checkArgumentsNotNull(Object... arguments) {
         for (Object argument : arguments) {
             checkArgumentNotNull(argument);
@@ -58,7 +62,8 @@ public final class Checker {
     }
 
     public static void checkArgumentNotEmpty(String argument) {
-        checkArgument(!com.google.common.base.Strings.isNullOrEmpty(argument));
+        checkArgument(!Strings.isEmpty(argument),
+                "String argument must not be null or empty");
     }
 
     public static boolean isNullOrEmpty(Collection<?> collection) {

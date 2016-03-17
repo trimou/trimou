@@ -21,6 +21,7 @@ package org.trimou.handlebars;
  *
  * @see EachHelper
  */
+@FunctionalInterface
 public interface Function {
 
     /**

@@ -15,7 +15,9 @@
  */
 package org.trimou.spring.web.view;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
@@ -26,8 +28,6 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.handlebars.Helper;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
-
-import java.util.Map;
 
 /**
  * @author Minkyu Cho
@@ -41,7 +41,7 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver
     private boolean debug = false;
     private boolean preCompile = false;
     private long cacheExpiration = 0l;
-    private Map<String, Helper> helpers = Maps.newHashMap();
+    private Map<String, Helper> helpers = new HashMap<>();
     private MustacheEngine engine;
 
     public TrimouViewResolver() {

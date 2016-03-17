@@ -20,16 +20,16 @@ import java.util.List;
 
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
-
-import com.google.common.collect.ImmutableList;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableList.ImmutableListBuilder;
 
 /**
  * Abstract container segment.
  *
  * @author Martin Kouba
  */
-abstract class AbstractContainerSegment extends AbstractSegment implements
-        ContainerSegment {
+abstract class AbstractContainerSegment extends AbstractSegment
+        implements ContainerSegment {
 
     private final List<Segment> segments;
 
@@ -39,7 +39,8 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
      * @param origin
      * @param segments
      */
-    protected AbstractContainerSegment(String text, Origin origin, List<Segment> segments) {
+    protected AbstractContainerSegment(String text, Origin origin,
+            List<Segment> segments) {
         super(text, origin);
         this.segments = segments;
     }
@@ -61,7 +62,7 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
     }
 
     public int getSegmentsSize(boolean recursive) {
-        if(recursive) {
+        if (recursive) {
             int count = 0;
             for (Segment segment : this) {
                 count++;
@@ -89,8 +90,7 @@ abstract class AbstractContainerSegment extends AbstractSegment implements
 
     @Override
     protected List<MustacheTagInfo> getDirectChildTags() {
-        ImmutableList.Builder<MustacheTagInfo> builder = ImmutableList
-                .builder();
+        ImmutableListBuilder<MustacheTagInfo> builder = ImmutableList.builder();
         for (Segment segment : segments) {
             if (segment.getType().getTagType() != null) {
                 builder.add(segment.getTagInfo());

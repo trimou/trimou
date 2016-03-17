@@ -15,11 +15,10 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.util.Checker;
-
-import com.google.common.base.Optional;
 
 /**
  * Renders the second param if the first param is not falsy, or (optionally,

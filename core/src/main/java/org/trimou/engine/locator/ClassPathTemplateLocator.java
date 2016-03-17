@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Files;
+import org.trimou.util.ImmutableSet;
+import org.trimou.util.ImmutableSet.ImmutableSetBuilder;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Classpath template locator. There is a special {@link Builder} for
@@ -139,7 +139,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
             return Collections.emptySet();
         }
 
-        ImmutableSet.Builder<String> builder = ImmutableSet.builder();
+        ImmutableSetBuilder<String> builder = ImmutableSet.builder();
 
         try {
             // Find all roots

@@ -22,6 +22,7 @@ import static org.trimou.handlebars.OptionsHashKeys.UNIT;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -35,9 +36,8 @@ import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
+import org.trimou.util.ImmutableSet;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Allows to cache template fragments in memory. This might be useful for
@@ -230,8 +230,7 @@ public class CacheHelper extends BasicSectionHelper {
 
     @Override
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional
-                .<Set<String>> of(ImmutableSet.of(KEY, GUARD, EXPIRE, UNIT));
+        return Optional.of(ImmutableSet.of(KEY, GUARD, EXPIRE, UNIT));
     }
 
     private boolean isExpired(Fragment fragment, Object expire, Object unit) {

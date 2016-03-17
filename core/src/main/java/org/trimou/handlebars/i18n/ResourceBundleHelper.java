@@ -24,6 +24,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -35,9 +36,7 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
 import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.util.Arrays;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableSet;
 
 /**
  * <p>
@@ -103,7 +102,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
             .getLogger(ResourceBundleHelper.class);
 
     private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
-            .<String> builder().add(FORMAT).add(BASE_NAME).add(LOCALE).build();
+            .of(FORMAT, BASE_NAME, LOCALE);
 
     private final String defaultBaseName;
 
@@ -144,18 +143,19 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
             if (Format.NO_FORMAT.equals(format)) {
                 append(options, stringValue);
             } else {
-                Object[] formatParams = getFormatParams(options.getParameters());
+                Object[] formatParams = getFormatParams(
+                        options.getParameters());
                 try {
                     if (Format.PRINTF.equals(format)) {
                         append(options, String.format(bundle.getString(key),
                                 formatParams));
                     } else if (Format.MESSAGE.equals(format)) {
-                        append(options, MessageFormat.format(
-                                bundle.getString(key), formatParams));
+                        append(options, MessageFormat
+                                .format(bundle.getString(key), formatParams));
                     }
                 } catch (Exception e) {
-                    throw new MustacheException(
-                            MustacheProblem.RENDER_IO_ERROR, e);
+                    throw new MustacheException(MustacheProblem.RENDER_IO_ERROR,
+                            e);
                 }
             }
         }
@@ -205,7 +205,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
         /**
          * No formatting.
          */
-        NO_FORMAT("none"), ;
+        NO_FORMAT("none"),;
 
         Format(String value) {
             this.value = value;

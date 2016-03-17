@@ -9,8 +9,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
 import org.trimou.Mustache;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

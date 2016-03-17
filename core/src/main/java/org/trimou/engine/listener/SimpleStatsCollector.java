@@ -21,15 +21,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.cache.ComputingCache.Function;
 import org.trimou.engine.resource.ReleaseCallback;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableMap.ImmutableMapBuilder;
+import org.trimou.util.ImmutableSet;
+import org.trimou.util.ImmutableSet.ImmutableSetBuilder;
 
 /**
  * A simple {@link MustacheListener} collecting template rendering statistics.
@@ -134,7 +135,7 @@ public class SimpleStatsCollector extends AbstractStatsCollector {
         if (data.size() == 0) {
             return Collections.emptyMap();
         }
-        ImmutableMap.Builder<String, Map<Long, Long>> builder = ImmutableMap
+        ImmutableMapBuilder<String, Map<Long, Long>> builder = ImmutableMap
                 .builder();
         for (Entry<String, ComputingCache<Long, AtomicLong>> entry : data
                 .getAllPresent().entrySet()) {
@@ -165,7 +166,7 @@ public class SimpleStatsCollector extends AbstractStatsCollector {
         if (data.size() == 0) {
             return Collections.emptySet();
         }
-        ImmutableSet.Builder<SimpleStats> buidler = ImmutableSet.builder();
+        ImmutableSetBuilder<SimpleStats> buidler = ImmutableSet.builder();
         for (Entry<String, ComputingCache<Long, AtomicLong>> entry : data
                 .getAllPresent().entrySet()) {
             buidler.add(new SimpleStats(entry.getKey(), entry.getValue()
@@ -176,7 +177,7 @@ public class SimpleStatsCollector extends AbstractStatsCollector {
 
     private Map<Long, Long> getImmutableTemplateData(
             ComputingCache<Long, AtomicLong> templateData) {
-        ImmutableMap.Builder<Long, Long> builder = ImmutableMap.builder();
+        ImmutableMapBuilder<Long, Long> builder = ImmutableMap.builder();
         for (Entry<Long, AtomicLong> entry : templateData.getAllPresent()
                 .entrySet()) {
             builder.put(entry.getKey(), entry.getValue().get());

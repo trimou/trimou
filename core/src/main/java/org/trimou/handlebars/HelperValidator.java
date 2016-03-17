@@ -18,6 +18,7 @@ package org.trimou.handlebars;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -30,9 +31,6 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Arrays;
 import org.trimou.util.Checker;
 import org.trimou.util.Strings;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  *
@@ -58,7 +56,7 @@ public final class HelperValidator {
     public static void checkParams(Class<? extends Helper> helperClazz,
             HelperDefinition definition, int paramSize) {
         Checker.checkArgumentNotNull(definition);
-        Preconditions.checkArgument(paramSize >= 0,
+        Checker.checkArgument(paramSize >= 0,
                 "Helper may only require zero or more params");
 
         int size = definition.getParameters().size();
@@ -89,8 +87,7 @@ public final class HelperValidator {
     public static void checkType(Class<? extends Helper> helperClazz,
             HelperDefinition definition, MustacheTagType... allowedTypes) {
         Checker.checkArgumentsNotNull(definition, allowedTypes);
-        if (!Arrays.contains(allowedTypes,
-                definition.getTagInfo().getType())) {
+        if (!Arrays.contains(allowedTypes, definition.getTagInfo().getType())) {
             throw newValidationException("Unsupported tag type", helperClazz,
                     definition);
         }
@@ -107,7 +104,7 @@ public final class HelperValidator {
     public static void checkHash(Class<? extends Helper> helperClazz,
             HelperDefinition definition, int hashSize) {
         Checker.checkArgumentNotNull(definition);
-        Preconditions.checkArgument(hashSize >= 0,
+        Checker.checkArgument(hashSize >= 0,
                 "Helper may only require zero or more hash entries");
 
         int size = definition.getHash().size();

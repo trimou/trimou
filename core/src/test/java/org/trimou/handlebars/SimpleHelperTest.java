@@ -1,4 +1,4 @@
-package org.trimou.jdk8.handlebars;
+package org.trimou.handlebars;
 
 import static org.junit.Assert.assertEquals;
 

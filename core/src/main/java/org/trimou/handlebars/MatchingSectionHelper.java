@@ -20,6 +20,7 @@ import static org.trimou.handlebars.OptionsHashKeys.LOGIC;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,10 +28,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.util.ImmutableSet;
 import org.trimou.util.Strings;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * An abstract helper which renders a block if:
@@ -63,7 +62,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
             .getLogger(MatchingSectionHelper.class);
 
     private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
-            .<String> builder().add(LOGIC).add(ELSE).build();
+            .of(LOGIC, ELSE);
 
     private final String elseStartDelimiter;
 

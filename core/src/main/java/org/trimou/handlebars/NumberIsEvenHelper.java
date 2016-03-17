@@ -15,10 +15,8 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Optional;
 import java.util.Set;
-
-import com.google.common.base.Optional;
-
 
 /**
  * <code>

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.engine.cache.ComputingCache;
@@ -33,10 +34,8 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.primitives.Primitives;
+import org.trimou.util.ImmutableSet;
+import org.trimou.util.Primitives;
 
 /**
  * Invokes public methods with parameters via reflection.
@@ -152,7 +151,7 @@ public class InvokeHelper extends BasicHelper {
         }
 
         Method method = methodCache.get(new MethodKey(clazz,
-                methodName.toString(), getParamTypes(options))).orNull();
+                methodName.toString(), getParamTypes(options))).orElse(null);
         if (method == null) {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
@@ -346,7 +345,7 @@ public class InvokeHelper extends BasicHelper {
         public Optional<Method> compute(MethodKey key) {
             List<Method> found = findMethods(key.getClazz(), key.getName());
             if (found.isEmpty()) {
-                return Optional.absent();
+                return Optional.empty();
             }
             for (Iterator<Method> iterator = found.iterator(); iterator
                     .hasNext();) {
@@ -364,7 +363,7 @@ public class InvokeHelper extends BasicHelper {
                 }
                 return Optional.of(method);
             }
-            return Optional.absent();
+            return Optional.empty();
         }
 
     }

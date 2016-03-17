@@ -18,8 +18,6 @@ import org.trimou.engine.listener.SimpleStatsCollector.SimpleStats;
 import org.trimou.lambda.InputLiteralLambda;
 import org.trimou.lambda.Lambda;
 
-import com.google.common.base.Predicates;
-
 /**
  *
  * @author Martin Kouba
@@ -95,7 +93,8 @@ public class SimpleStatsCollectorTest extends AbstractEngineTest {
 
     @Test
     public void testCustomPredicate() {
-        SimpleStatsCollector collector = new SimpleStatsCollector(Predicates.<String>alwaysFalse(), TimeUnit.DAYS);
+        SimpleStatsCollector collector = new SimpleStatsCollector((t) -> false,
+                TimeUnit.DAYS);
         Mustache mustache = MustacheEngineBuilder.newBuilder()
                 .addMustacheListener(collector).build()
                 .compileMustache("qux", "Oops");

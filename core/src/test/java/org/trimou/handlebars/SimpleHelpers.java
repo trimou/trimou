@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.jdk8.handlebars;
+package org.trimou.handlebars;
 
 import java.util.Collections;
 import java.util.HashSet;

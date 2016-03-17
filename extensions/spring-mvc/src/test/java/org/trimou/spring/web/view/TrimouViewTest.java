@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +17,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author Minkyu Cho
@@ -36,7 +35,7 @@ public class TrimouViewTest {
     @Test
     public void rendersAModelUsingItsTemplate() throws Exception {
         //given
-        final Map<String, Object> model = Maps.newHashMap();
+        final Map<String, Object> model = new HashMap<>();
         final String viewName = "foo.mustache";
 
         HttpServletRequest UNUSED_REQUEST = null;

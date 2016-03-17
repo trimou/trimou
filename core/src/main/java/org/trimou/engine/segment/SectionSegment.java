@@ -27,8 +27,7 @@ import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
 import org.trimou.handlebars.HelperValidator;
 import org.trimou.lambda.Lambda;
-
-import com.google.common.collect.Iterables;
+import org.trimou.util.Iterables;
 
 /**
  * Section segment.

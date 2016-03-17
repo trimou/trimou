@@ -11,9 +11,8 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.FixedLocaleSupport;
+import org.trimou.util.ImmutableMap;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Martin Kouba

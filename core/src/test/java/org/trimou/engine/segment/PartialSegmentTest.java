@@ -16,8 +16,7 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

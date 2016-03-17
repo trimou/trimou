@@ -39,8 +39,7 @@ import org.trimou.prettytime.DefaultPrettyTimeFactory;
 import org.trimou.prettytime.PrettyTimeFactory;
 import org.trimou.prettytime.PrettyTimeHelper;
 import org.trimou.util.Checker;
-
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableSet;
 
 /**
  * <p>

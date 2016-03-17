@@ -20,6 +20,7 @@ import static org.trimou.handlebars.OptionsHashKeys.STYLE;
 import static org.trimou.handlebars.OptionsHashKeys.TIME_ZONE;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -27,9 +28,7 @@ import org.trimou.engine.MustacheTagInfo;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Options;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableSet;
 
 /**
  * An abstract time formatting helper.
@@ -41,11 +40,10 @@ import com.google.common.collect.ImmutableSet;
  * @param <S>
  *            The style type
  */
-public abstract class AbstractTimeFormatHelper<F, S> extends
-        LocaleAwareValueHelper {
+public abstract class AbstractTimeFormatHelper<F, S>
+        extends LocaleAwareValueHelper {
 
-    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
-            .<String> builder().add(PATTERN).add(STYLE).add(TIME_ZONE).build();
+    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet.of(PATTERN, STYLE, TIME_ZONE);
 
     private final TimeZone defaultTimeZone = TimeZone.getDefault();
 
@@ -64,8 +62,7 @@ public abstract class AbstractTimeFormatHelper<F, S> extends
         if ((styleOrPattern = getHashValue(options, PATTERN)) != null) {
             text = format(value, styleOrPattern.toString(), locale, timeZone);
         } else if ((styleOrPattern = getHashValue(options, STYLE)) != null) {
-            text = format(
-                    value,
+            text = format(value,
                     parseStyle(styleOrPattern.toString(), options.getTagInfo()),
                     locale, timeZone);
         } else {

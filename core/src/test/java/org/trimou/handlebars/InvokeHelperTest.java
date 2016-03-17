@@ -16,9 +16,8 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.interpolation.NoOpMissingValueHandler;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

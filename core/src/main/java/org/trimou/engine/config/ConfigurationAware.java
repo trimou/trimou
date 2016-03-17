@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.config;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -43,6 +44,8 @@ public interface ConfigurationAware {
      *
      * @return the set of configuration keys to discover
      */
-    public Set<ConfigurationKey> getConfigurationKeys();
+    default Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.emptySet();
+    }
 
 }

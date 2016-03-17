@@ -10,8 +10,7 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

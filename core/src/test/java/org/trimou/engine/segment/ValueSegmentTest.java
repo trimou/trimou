@@ -15,8 +15,7 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.lambda.InputProcessingLambda;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

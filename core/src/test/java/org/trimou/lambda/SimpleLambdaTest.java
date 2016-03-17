@@ -1,4 +1,4 @@
-package org.trimou.jdk8.lambda;
+package org.trimou.lambda;
 
 import static org.junit.Assert.assertEquals;
 

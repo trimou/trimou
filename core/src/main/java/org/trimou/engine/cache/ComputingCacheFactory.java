@@ -32,15 +32,20 @@ public interface ComputingCacheFactory extends ConfigurationAware {
 
     /**
      * The {@link ComputingCache} implementations are not required to implement
-     * eviction operations (expiration timeout, maximum size, listener). However, a
-     * {@link ComputingCacheFactory} must either log a warning message or throw a
-     * runtime exception in such cases.
+     * eviction operations (expiration timeout, maximum size, listener).
+     * However, a {@link ComputingCacheFactory} must either log a warning
+     * message or throw a runtime exception in such cases.
+     * <p>
+     * Clients who require maximum performance should not make use of eviction
+     * operations.
      *
      * @param consumerId
      *            Allow the factory to identify the cache consumer
      * @param computingFunction
      * @param expirationTimeout
-     *            Expiration timeout in milliseconds
+     *            Expiration timeout in milliseconds - a cache entry may be
+     *            automatically removed from the cache when the specified amount
+     *            of time elapses after its creation
      * @param maxSize
      *            Maximum size of the cache, subsequent eviction operation is
      *            implementation-specific

@@ -16,6 +16,7 @@
 package org.trimou.handlebars;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.engine.interpolation.BracketDotKeySplitter;
@@ -23,8 +24,6 @@ import org.trimou.engine.interpolation.DotKeySplitter;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.util.Strings;
-
-import com.google.common.base.Optional;
 
 /**
  * Allows to build the key dynamically and evaluate it afterwards.

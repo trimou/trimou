@@ -17,11 +17,9 @@ package org.trimou.util;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
+import java.nio.CharBuffer;
 
 import org.trimou.annotations.Internal;
-
-import com.google.common.io.CharStreams;
 
 /**
  *
@@ -29,6 +27,8 @@ import com.google.common.io.CharStreams;
  */
 @Internal
 public final class IOUtils {
+
+    private static final int DEFAULT_BUFFER_SIZE = 2048;
 
     private IOUtils() {
     }
@@ -40,47 +40,61 @@ public final class IOUtils {
      * @return the contents of a reader as a string
      * @throws IOException
      */
-    public static String toString(final Reader input) throws IOException {
-        Checker.checkArgumentNotNull(input);
-        try {
-            return CharStreams.toString(input);
-        } finally {
-            // Input cannot be null
-            input.close();
-        }
+    public static String toString(Reader input) throws IOException {
+        return toString(input, DEFAULT_BUFFER_SIZE);
     }
 
     /**
-     * Does not close the {@code Reader}.
+     * The reader is closed right after the input is read.
      *
      * @param input
      * @param bufferSize
      * @return the contents of a reader as a string
      * @throws IOException
      */
-    public static String toString(final Reader input, final int bufferSize)
+    public static String toString(Reader input, int bufferSize)
             throws IOException {
-        final StringBuilderWriter writer = new StringBuilderWriter();
-        copy(input, writer, bufferSize);
-        return writer.toString();
+        return toString(input, bufferSize, true);
     }
 
     /**
      * Does not close the {@code Reader}.
      *
      * @param input
-     * @param output
+     * @param bufferSize
+     * @param close
+     * @return the contents of a reader as a string
+     * @throws IOException
+     */
+    public static String toString(Reader input, int bufferSize, boolean close)
+            throws IOException {
+        Checker.checkArgumentNotNull(input);
+        StringBuilder builder = new StringBuilder();
+        try {
+            copy(input, builder, bufferSize);
+        } finally {
+            if (close) {
+                input.close();
+            }
+        }
+        return builder.toString();
+    }
+
+    /**
+     *
+     * @param in
+     * @param out
      * @param bufferSize
      * @throws IOException
      */
-    public static void copy(final Reader input, final Writer output,
-            final int bufferSize) throws IOException {
-        final char[] buffer = new char[bufferSize];
-        int n = 0;
-        while (-1 != (n = input.read(buffer))) {
-            output.write(buffer, 0, n);
+    public static void copy(Readable in, Appendable out, int bufferSize)
+            throws IOException {
+        CharBuffer buffer = CharBuffer.allocate(bufferSize);
+        while (in.read(buffer) != -1) {
+            buffer.flip();
+            out.append(buffer);
+            buffer.clear();
         }
-        output.flush();
     }
 
 }

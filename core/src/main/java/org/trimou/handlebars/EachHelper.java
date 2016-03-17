@@ -20,16 +20,15 @@ import static org.trimou.handlebars.OptionsHashKeys.AS;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.segment.ImmutableIterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
+import org.trimou.util.ImmutableSet;
+import org.trimou.util.Iterables;
 
 /**
  * <code>
@@ -103,7 +102,7 @@ public class EachHelper extends BasicSectionHelper {
 
     @Override
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.<Set<String>> of(ImmutableSet.of(APPLY, AS));
+        return Optional.of(ImmutableSet.of(APPLY, AS));
     }
 
     @SuppressWarnings("rawtypes")
