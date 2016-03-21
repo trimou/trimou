@@ -15,40 +15,55 @@
  */
 package org.trimou.engine.interpolation;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.trimou.engine.config.AbstractConfigurationAware;
+import org.trimou.util.Iterables;
 import org.trimou.util.Strings;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterators;
-
 /**
- * The default {@link KeySplitter} implementation which follows the dot notation.
+ * The default {@link KeySplitter} implementation which follows the dot
+ * notation.
  *
  * @author Martin Kouba
  */
-public class DotKeySplitter extends AbstractConfigurationAware implements
-        KeySplitter {
-
-    private final Splitter splitter;
-
-    public DotKeySplitter() {
-        splitter = Splitter.on(Strings.DOT).omitEmptyStrings();
-    }
+public class DotKeySplitter extends AbstractConfigurationAware
+        implements KeySplitter {
 
     @Override
-    public Iterator<String> split(final String key) {
-        if (key.equals(Strings.DOT)) {
-            return Iterators.singletonIterator(Strings.DOT);
+    public Iterator<String> split(String key) {
+        if (key.equals(Strings.DOT) || key.equals(Strings.THIS)
+                || !key.contains(Strings.DOT)) {
+            return Iterables.singletonIterator(key);
         }
-        if (key.equals(Strings.THIS)) {
-            return Iterators.singletonIterator(Strings.THIS);
+        boolean separator = false;
+        List<String> parts = new ArrayList<String>();
+        StringBuilder buffer = new StringBuilder();
+        for (int i = 0; i < key.length(); i++) {
+            if (isSeparator(key.charAt(i))) {
+                // Adjacent separators are ignored
+                if (!separator) {
+                    if (buffer.length() > 0) {
+                        parts.add(buffer.toString());
+                        buffer = new StringBuilder();
+                    }
+                    separator = true;
+                }
+            } else {
+                buffer.append(key.charAt(i));
+                separator = false;
+            }
         }
-        if (!key.contains(Strings.DOT)) {
-            return Iterators.singletonIterator(key);
+        if (buffer.length() > 0) {
+            parts.add(buffer.toString());
         }
-        return splitter.split(key).iterator();
+        return parts.iterator();
+    }
+
+    protected boolean isSeparator(char candidate) {
+        return candidate == '.';
     }
 
 }

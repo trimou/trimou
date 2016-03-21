@@ -8,8 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  * The very first passing test! :-)
@@ -20,8 +19,8 @@ public class SimpleTest extends AbstractEngineTest {
     public void testInterpolation() {
 
         StringWriter writer = new StringWriter();
-        Map<String, Object> data = ImmutableMap.<String, Object> of("foo",
-                "me", "bar", new Hammer());
+        Map<String, Object> data = ImmutableMap.of("foo", "me", "bar",
+                new Hammer());
         String templateContents = "Hello {{foo}} and {{bar.name}}!";
 
         engine.compileMustache("foo", templateContents).render(writer, data);

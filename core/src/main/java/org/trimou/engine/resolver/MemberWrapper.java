@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Martin Kouba
  */
+@FunctionalInterface
 interface MemberWrapper {
 
     /**

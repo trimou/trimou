@@ -17,6 +17,7 @@ package org.trimou.handlebars;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -25,8 +26,6 @@ import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.util.Checker;
 import org.trimou.util.Nested;
-
-import com.google.common.base.Optional;
 
 /**
  * This helper works similarly as the JSP c:choose tag. It renders the content

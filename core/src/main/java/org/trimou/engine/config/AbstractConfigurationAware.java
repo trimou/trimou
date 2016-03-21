@@ -15,9 +15,6 @@
  */
 package org.trimou.engine.config;
 
-import java.util.Collections;
-import java.util.Set;
-
 /**
  * Abstract configuration aware component.
  *
@@ -39,12 +36,6 @@ public abstract class AbstractConfigurationAware implements ConfigurationAware {
      * <code>super.init(Configuration)</code>.
      */
     protected void init() {
-    }
-
-    @Override
-    public Set<ConfigurationKey> getConfigurationKeys() {
-        // No config keys by default
-        return Collections.emptySet();
     }
 
     /**

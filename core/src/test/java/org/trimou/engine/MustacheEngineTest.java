@@ -30,10 +30,9 @@ import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.exception.MustacheException;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableSet;
 
 /**
  *
@@ -215,7 +214,6 @@ public class MustacheEngineTest extends AbstractEngineTest {
         final AtomicBoolean isCloseInvoked = new AtomicBoolean(false);
 
         TemplateLocator locator = new AbstractTemplateLocator(1) {
-            @SuppressWarnings("resource")
             @Override
             public Reader locate(String templateId) {
                 return "foo".equals(templateId) ? new MyStringReader(template,

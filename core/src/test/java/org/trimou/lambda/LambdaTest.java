@@ -6,8 +6,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.segment.SectionSegmentTest;
 import org.trimou.engine.segment.ValueSegmentTest;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

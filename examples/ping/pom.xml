@@ -14,7 +14,6 @@
   <packaging>war</packaging>
 
   <properties>
-    <version.trimou>1.8.4.Final</version.trimou>
     <version.rewrite>2.0.11.Final</version.rewrite>
   </properties>
 
@@ -22,32 +21,26 @@
 
     <dependency>
       <groupId>org.trimou</groupId>
-      <artifactId>trimou-core</artifactId>
-      <version>${version.trimou}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.trimou</groupId>
       <artifactId>trimou-extension-servlet</artifactId>
-      <version>${version.trimou}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.trimou</groupId>
       <artifactId>trimou-extension-cdi</artifactId>
-      <version>${version.trimou}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.trimou</groupId>
       <artifactId>trimou-extension-prettytime</artifactId>
-      <version>${version.trimou}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.trimou</groupId>
       <artifactId>trimou-extension-minify</artifactId>
-      <version>${version.trimou}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

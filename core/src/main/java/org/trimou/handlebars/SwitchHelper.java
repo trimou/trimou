@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -28,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.util.Nested;
-
-import com.google.common.base.Optional;
 
 /**
  * This helper works similarly as the Java switch statement.

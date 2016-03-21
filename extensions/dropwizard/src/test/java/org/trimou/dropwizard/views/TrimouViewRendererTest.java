@@ -1,9 +1,6 @@
 package org.trimou.dropwizard.views;
 
 import static org.junit.Assert.assertEquals;
-import io.dropwizard.logging.LoggingFactory;
-import io.dropwizard.views.ViewMessageBodyWriter;
-import io.dropwizard.views.ViewRenderer;
 
 import java.util.Locale;
 
@@ -13,13 +10,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
+import org.trimou.util.ImmutableList;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableList;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.AppDescriptor;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
+
+import io.dropwizard.logging.LoggingFactory;
+import io.dropwizard.views.ViewMessageBodyWriter;
+import io.dropwizard.views.ViewRenderer;
 
 /**
  *

@@ -9,8 +9,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *
@@ -22,9 +21,10 @@ public class MapResolverTest extends AbstractEngineTest {
     public void testResolution() {
         MapResolver resolver = new MapResolver();
         assertNull(resolver.resolve(null, "foo", null));
-        assertNotNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "bar",
-                null));
-        assertNull(resolver.resolve(ImmutableMap.of("bar", "baz"), "qux", null));
+        assertNotNull(
+                resolver.resolve(ImmutableMap.of("bar", "baz"), "bar", null));
+        assertNull(
+                resolver.resolve(ImmutableMap.of("bar", "baz"), "qux", null));
     }
 
     @Test
@@ -38,7 +38,8 @@ public class MapResolverTest extends AbstractEngineTest {
                 return "foo".equals(key) ? Integer.valueOf(10) : null;
             }
         };
-        Map<String, Object> data = ImmutableMap.<String, Object> of("map", map, "mapper", mapper);
+        Map<String, Object> data = ImmutableMap.<String, Object> of("map", map,
+                "mapper", mapper);
         String templateContents = "Hello {{map.foo}} or {{map.bar}}!|{{map.nonExisting}} {{mapper.foo}}";
         assertEquals("Hello 1 or 2!| 10",
                 engine.compileMustache("map", templateContents).render(data));

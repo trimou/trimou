@@ -14,8 +14,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ResolutionContext;
-
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableSet;
 
 /**
  *
@@ -52,8 +51,7 @@ public class InitPropertiesTest extends AbstractEngineTest {
 
                     @Override
                     public Set<ConfigurationKey> getConfigurationKeys() {
-                        return ImmutableSet.<ConfigurationKey> of(
-                                testResolverKeyAlpha, testResolverKeyBravo);
+                        return ImmutableSet.of(testResolverKeyAlpha, testResolverKeyBravo);
                     }
                 }).build();
 

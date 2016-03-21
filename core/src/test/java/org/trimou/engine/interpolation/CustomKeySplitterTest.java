@@ -12,9 +12,8 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterators;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.Iterables;
 
 /**
  *
@@ -37,7 +36,7 @@ public class CustomKeySplitterTest extends AbstractTest {
 
                     @Override
                     public Iterator<String> split(String key) {
-                        return Iterators.singletonIterator(key);
+                        return Iterables.singletonIterator(key);
                     }
                 }).build();
 

@@ -13,9 +13,7 @@ import org.trimou.ArchiveType;
 import org.trimou.Hammer;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *
@@ -92,12 +90,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
 
         assertNotNull(resolver.resolve(hammer, "age", null));
         assertNotNull(resolver.resolve(ArchiveType.class, "JAR", null));
-        resolver.invalidateMemberCache(new Predicate<Class<?>>() {
-            @Override
-            public boolean apply(Class<?> input) {
-                return input.getName().equals(ArchiveType.class.getName());
-            }
-        });
+        resolver.invalidateMemberCache((input) -> input.getName().equals(ArchiveType.class.getName()));
         assertEquals(1, resolver.getMemberCacheSize());
     }
 

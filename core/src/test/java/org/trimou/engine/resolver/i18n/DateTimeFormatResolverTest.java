@@ -18,9 +18,8 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.util.ImmutableMap;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Martin Kouba

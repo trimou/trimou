@@ -15,11 +15,10 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.handlebars.Options.HelperExecutable;
-
-import com.google.common.base.Optional;
 
 /**
  * A simple helper whose content is rendered asynchronously.

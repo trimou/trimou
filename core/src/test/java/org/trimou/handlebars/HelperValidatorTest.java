@@ -3,13 +3,13 @@ package org.trimou.handlebars;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Test;
 import org.trimou.MustacheExceptionAssert;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.collect.Iterators;
 
 /**
  *
@@ -64,37 +64,34 @@ public class HelperValidatorTest {
 
     @Test
     public void testGetFirstDeterminingEqualsCharPosition() {
-        assertEquals(3,
-                HelperValidator
-                        .getFirstDeterminingEqualsCharPosition("foo=bar"));
-        assertEquals(3,
-                HelperValidator
-                        .getFirstDeterminingEqualsCharPosition("foo='bar='"));
-        assertEquals(1,
-                HelperValidator
-                        .getFirstDeterminingEqualsCharPosition("1='bar='"));
+        assertEquals(3, HelperValidator
+                .getFirstDeterminingEqualsCharPosition("foo=bar"));
+        assertEquals(3, HelperValidator
+                .getFirstDeterminingEqualsCharPosition("foo='bar='"));
+        assertEquals(1, HelperValidator
+                .getFirstDeterminingEqualsCharPosition("1='bar='"));
         assertEquals(-1,
                 HelperValidator.getFirstDeterminingEqualsCharPosition("'m=n'"));
-        assertEquals(-1,
-                HelperValidator
-                        .getFirstDeterminingEqualsCharPosition(" ' m=n'"));
+        assertEquals(-1, HelperValidator
+                .getFirstDeterminingEqualsCharPosition(" ' m=n'"));
         assertEquals(-1,
                 HelperValidator.getFirstDeterminingEqualsCharPosition("'1'"));
-        assertEquals(-1,
-                HelperValidator
-                        .getFirstDeterminingEqualsCharPosition("\"foo\""));
+        assertEquals(-1, HelperValidator
+                .getFirstDeterminingEqualsCharPosition("\"foo\""));
     }
 
     private void assertHelperNameParts(String name, String... parts) {
-        assertTrue(
-                "Parts: "
-                        + Arrays.toString(parts)
-                        + " != "
-                        + Iterators.toString(HelperValidator.splitHelperName(
-                                name, null)),
-                Iterators.elementsEqual(
-                        HelperValidator.splitHelperName(name, null),
-                        Iterators.forArray(parts)));
+        List<String> result = new ArrayList<>();
+        Iterator<String> iterator = HelperValidator.splitHelperName(name, null);
+        while (iterator.hasNext()) {
+            result.add(iterator.next());
+        }
+        List<String> expected = new ArrayList<>();
+        for (String part : parts) {
+            expected.add(part);
+        }
+        assertTrue("Parts: " + expected + " != " + result,
+                expected.containsAll(result) && result.containsAll(expected));
     }
 
 }

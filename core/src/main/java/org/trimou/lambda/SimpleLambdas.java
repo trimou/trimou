@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.jdk8.lambda;
+package org.trimou.lambda;
 
 import java.util.function.Function;
 
@@ -23,7 +23,7 @@ import org.trimou.lambda.SpecCompliantLambda;
 import org.trimou.util.Checker;
 
 /**
- * Allows to create simple {@link Lambda}s using JDK8 funcional interfaces.
+ * Allows to create simple {@link Lambda}s using JDK8 functional interfaces.
  *
  * @author Martin Kouba
  */

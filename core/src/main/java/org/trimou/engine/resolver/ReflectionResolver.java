@@ -20,12 +20,13 @@ import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +38,6 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Reflections;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-
 /**
  * Reflection-based resolver attempts to find a matching member on the context
  * object class and its superclasses. Methods have higher priority than fields.
@@ -50,8 +46,7 @@ import com.google.common.cache.RemovalNotification;
  * @see Reflections#findField(Class, String)
  * @see Reflections#findMethod(Class, String)
  */
-public class ReflectionResolver extends AbstractResolver
-        implements RemovalListener<MemberKey, Optional<MemberWrapper>> {
+public class ReflectionResolver extends AbstractResolver {
 
     public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(
             WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
@@ -76,14 +71,7 @@ public class ReflectionResolver extends AbstractResolver
     private static final Logger logger = LoggerFactory
             .getLogger(ReflectionResolver.class);
 
-    private static final MemberWrapper ARRAY_GET_LENGTH = new MemberWrapper() {
-
-        @Override
-        public Object getValue(Object instance) throws IllegalAccessException,
-                IllegalArgumentException, InvocationTargetException {
-            return Array.getLength(instance);
-        }
-    };
+    private static final MemberWrapper ARRAY_GET_LENGTH = (instance) -> Array.getLength(instance);
 
     public static final String GET_PREFIX = "get";
     public static final String IS_PREFIX = "is";
@@ -114,9 +102,9 @@ public class ReflectionResolver extends AbstractResolver
         MemberWrapper wrapper;
         MemberKey key = MemberKey.newInstance(contextObject, name);
         if (memberCache != null) {
-            wrapper = memberCache.get(key).orNull();
+            wrapper = memberCache.get(key).orElse(null);
         } else {
-            wrapper = findWrapper(key).orNull();
+            wrapper = findWrapper(key).orElse(null);
         }
 
         if (wrapper == null) {
@@ -140,7 +128,7 @@ public class ReflectionResolver extends AbstractResolver
             Optional<MemberWrapper> found = memberCache.getIfPresent(key);
             wrapper = found != null ? found.get() : null;
         } else {
-            wrapper = findWrapper(key).orNull();
+            wrapper = findWrapper(key).orElse(null);
         }
         if (wrapper != null) {
             return new ReflectionHint(key, wrapper);
@@ -157,7 +145,7 @@ public class ReflectionResolver extends AbstractResolver
                 memberCacheMaxSize);
         if (memberCacheMaxSize > 0) {
             memberCache = configuration.getComputingCacheFactory().create(
-                    COMPUTING_CACHE_CONSUMER_ID, new MemberComputingFunction(),
+                    COMPUTING_CACHE_CONSUMER_ID, (key) -> findWrapper(key),
                     null, memberCacheMaxSize, null);
         }
         hintFallbackEnabled = configuration
@@ -168,13 +156,6 @@ public class ReflectionResolver extends AbstractResolver
     public Set<ConfigurationKey> getConfigurationKeys() {
         return Collections
                 .<ConfigurationKey> singleton(MEMBER_CACHE_MAX_SIZE_KEY);
-    }
-
-    @Override
-    public void onRemoval(
-            RemovalNotification<MemberKey, Optional<MemberWrapper>> notification) {
-        // This is not used anymore, should be removed in the next major version
-        // (together with RemovalListener)
     }
 
     /**
@@ -188,20 +169,14 @@ public class ReflectionResolver extends AbstractResolver
      *            is only discarded if the given predicate returns
      *            <code>true</code> for the {@link MemberKey#getClass()}
      */
-    public void invalidateMemberCache(final Predicate<Class<?>> predicate) {
+    public void invalidateMemberCache(Predicate<Class<?>> predicate) {
         if (memberCache == null) {
             return;
         }
         if (predicate == null) {
             memberCache.clear();
         } else {
-            memberCache
-                    .invalidate(new ComputingCache.KeyPredicate<MemberKey>() {
-                        @Override
-                        public boolean apply(MemberKey key) {
-                            return predicate.apply(key.getClazz());
-                        }
-                    });
+            memberCache.invalidate((key) -> predicate.test(key.getClazz()));
         }
     }
 
@@ -215,7 +190,7 @@ public class ReflectionResolver extends AbstractResolver
             if (key.getName().equals("length")) {
                 return Optional.of(ARRAY_GET_LENGTH);
             } else {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
 
@@ -240,17 +215,7 @@ public class ReflectionResolver extends AbstractResolver
             return Optional.<MemberWrapper> of(new FieldWrapper(foundField));
         }
         // Member not found
-        return Optional.absent();
-    }
-
-    private static class MemberComputingFunction implements
-            ComputingCache.Function<MemberKey, Optional<MemberWrapper>> {
-
-        @Override
-        public Optional<MemberWrapper> compute(MemberKey key) {
-            return findWrapper(key);
-        }
-
+        return Optional.empty();
     }
 
     private class ReflectionHint implements Hint {

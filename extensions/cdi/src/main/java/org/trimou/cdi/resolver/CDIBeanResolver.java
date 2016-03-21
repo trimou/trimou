@@ -18,6 +18,7 @@ package org.trimou.cdi.resolver;
 import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
@@ -38,8 +39,6 @@ import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.Hints;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.ReleaseCallback;
-
-import com.google.common.base.Optional;
 
 /**
  * CDI beans resolver. Note that only beans with a name (i.e. annotated with
@@ -143,7 +142,7 @@ public class CDIBeanResolver extends AbstractResolver {
 
                         // Check required for CDI 1.0
                         if (beans == null || beans.isEmpty()) {
-                            return Optional.absent();
+                            return Optional.empty();
                         }
 
                         try {
@@ -153,7 +152,7 @@ public class CDIBeanResolver extends AbstractResolver {
                             logger.warn(
                                     "An ambiguous EL name exists [name: {}]",
                                     key);
-                            return Optional.absent();
+                            return Optional.empty();
                         }
 
                     }

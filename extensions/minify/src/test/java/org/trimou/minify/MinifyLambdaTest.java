@@ -5,8 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

@@ -25,8 +25,8 @@ import org.trimou.handlebars.AlternativesHelper.Selector;
 import org.trimou.handlebars.EmbedHelper.SourceProcessor;
 import org.trimou.handlebars.EvalHelper.Notation;
 import org.trimou.handlebars.NumericExpressionHelper.Operator;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableMap.ImmutableMapBuilder;
 
 /**
  * A simple builder for helpers map. It's useful when registering built-in/basic
@@ -102,7 +102,7 @@ public final class HelpersBuilder {
 
     public static final String CACHE = "cache";
 
-    private final ImmutableMap.Builder<String, Helper> builder;
+    private final ImmutableMapBuilder<String, Helper> builder;
 
     private HelpersBuilder() {
         this.builder = ImmutableMap.builder();

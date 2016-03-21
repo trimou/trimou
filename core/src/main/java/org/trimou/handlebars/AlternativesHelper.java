@@ -17,14 +17,13 @@ package org.trimou.handlebars;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.interpolation.MissingValueHandler;
-
-import com.google.common.base.Optional;
 
 /**
  * Selects one object from the set of alternatives (usually helper parameters)

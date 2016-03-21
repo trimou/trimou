@@ -21,9 +21,8 @@ import java.util.List;
 
 import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.segment.ValueSegment;
+import org.trimou.util.Iterables;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.Iterators;
 
 /**
  * Enables to use bracket notation and literals in {@link ValueSegment} keys.
@@ -31,28 +30,21 @@ import com.google.common.collect.Iterators;
  *
  * @author Martin Kouba
  */
-public class BracketDotKeySplitter extends AbstractConfigurationAware implements
-        KeySplitter {
+public class BracketDotKeySplitter extends AbstractConfigurationAware
+        implements KeySplitter {
 
     @Override
-    public Iterator<String> split(final String key) {
-
-        if (key.equals(Strings.DOT)) {
-            return Iterators.singletonIterator(Strings.DOT);
+    public Iterator<String> split(String key) {
+        if (key.equals(Strings.DOT) || key.equals(Strings.THIS)) {
+            return Iterables.singletonIterator(key);
         }
-        if (key.equals(Strings.THIS)) {
-            return Iterators.singletonIterator(Strings.THIS);
-        }
-
         boolean stringLiteral = false;
         boolean separator = false;
         List<String> parts = new ArrayList<String>();
         StringBuilder buffer = new StringBuilder();
-
         for (int i = 0; i < key.length(); i++) {
             if (isSeparator(key.charAt(i))) {
-                // Only process the first separator - adjacent separators are
-                // ignored
+                // Adjacent separators are ignored
                 if (!separator) {
                     if (!stringLiteral) {
                         if (buffer.length() > 0) {
@@ -74,14 +66,13 @@ public class BracketDotKeySplitter extends AbstractConfigurationAware implements
                 separator = false;
             }
         }
-
         if (buffer.length() > 0) {
             parts.add(buffer.toString());
         }
         return parts.iterator();
     }
 
-    private boolean isSeparator(char candidate) {
+    protected boolean isSeparator(char candidate) {
         return candidate == '.' || candidate == '[' || candidate == ']';
     }
 

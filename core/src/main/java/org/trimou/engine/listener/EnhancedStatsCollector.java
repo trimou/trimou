@@ -21,14 +21,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.trimou.Mustache;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.util.Checker;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableSet;
+import org.trimou.util.ImmutableSet.ImmutableSetBuilder;
 
 /**
  * Unlike {@link SimpleStatsCollector} this listener is able to detect rendering
@@ -106,7 +106,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
      * @return the statistics
      */
     public Set<Stats> getStats() {
-        ImmutableSet.Builder<Stats> builder = ImmutableSet.builder();
+        ImmutableSetBuilder<Stats> builder = ImmutableSet.builder();
         for (Entry<Long, ConcurrentMap<Long, ExecutionData>> entry : data
                 .getAllPresent().entrySet()) {
             builder.add(parseData(idsToNames.get(entry.getKey()),

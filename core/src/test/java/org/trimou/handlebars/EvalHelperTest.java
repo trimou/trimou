@@ -17,9 +17,8 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.interpolation.BracketDotKeySplitter;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.handlebars.EvalHelper.BracketDotNotation;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

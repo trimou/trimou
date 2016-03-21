@@ -17,6 +17,7 @@ package org.trimou.engine.parser;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.trimou.Mustache;
@@ -30,9 +31,8 @@ import org.trimou.engine.resource.AbstractReleaseCallbackContainer;
 import org.trimou.engine.segment.RootSegment;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableMap.ImmutableMapBuilder;
 
 /**
  * A Mustache template.
@@ -96,7 +96,7 @@ public class Template implements Mustache {
         if (nestedTemplates == null || nestedTemplates.isEmpty()) {
             this.nestedTemplates = Collections.emptyMap();
         } else {
-            ImmutableMap.Builder<String, Template> builder = ImmutableMap
+            ImmutableMapBuilder<String, Template> builder = ImmutableMap
                     .builder();
             for (Template template : nestedTemplates) {
                 builder.put(template.getName(), template);
@@ -174,20 +174,23 @@ public class Template implements Mustache {
     private void renderingStarted(MustacheRenderingEvent event) {
         List<MustacheListener> listeners = engine.getConfiguration()
                 .getMustacheListeners();
-        if (listeners != null) {
-            for (MustacheListener listener : listeners) {
-                listener.renderingStarted(event);
-            }
+        if (listeners.isEmpty()) {
+            return;
+        }
+        for (MustacheListener listener : listeners) {
+            listener.renderingStarted(event);
         }
     }
 
     private void renderingFinished(MustacheRenderingEvent event) {
         List<MustacheListener> listeners = engine.getConfiguration()
                 .getMustacheListeners();
-        if (listeners != null) {
-            for (MustacheListener listener : Lists.reverse(listeners)) {
-                listener.renderingFinished(event);
-            }
+        if (listeners.isEmpty()) {
+            return;
+        }
+        for (ListIterator<MustacheListener> iterator = listeners
+                .listIterator(listeners.size()); iterator.hasPrevious();) {
+            iterator.previous().renderingFinished(event);
         }
     }
 

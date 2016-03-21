@@ -5,21 +5,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.locale.LocaleSupport;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.engine.locale.FixedLocaleSupport;
+import org.trimou.util.ImmutableMap;
 
 /**
  *
@@ -34,22 +29,9 @@ public class NumberFormatResolverTest extends AbstractEngineTest {
     public void buildEngine() {
         resolver = new NumberFormatResolver();
         engine = MustacheEngineBuilder.newBuilder()
-                .setLocaleSupport(new LocaleSupport() {
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return new Locale("cs", "CZ");
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(resolver).build();
-
+                .setLocaleSupport(
+                        FixedLocaleSupport.from(new Locale("cs", "CZ")))
+                .addResolver(resolver).build();
     }
 
     @Test

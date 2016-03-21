@@ -23,8 +23,7 @@ import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.prettytime.PrettyTimeFactory;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

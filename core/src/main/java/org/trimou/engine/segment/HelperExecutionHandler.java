@@ -42,10 +42,11 @@ import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 import org.trimou.handlebars.HelperValidator;
 import org.trimou.handlebars.Options;
 import org.trimou.util.Checker;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableList.ImmutableListBuilder;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableMap.ImmutableMapBuilder;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Wraps {@link Helper} instance and handles its execution (e.g. builds
@@ -92,8 +93,8 @@ class HelperExecutionHandler {
             return null;
         }
 
-        ImmutableList.Builder<Object> params = ImmutableList.builder();
-        ImmutableMap.Builder<String, Object> hash = ImmutableMap.builder();
+        ImmutableListBuilder<Object> params = ImmutableList.builder();
+        ImmutableMapBuilder<String, Object> hash = ImmutableMap.builder();
 
         while (parts.hasNext()) {
             String part = parts.next();

@@ -15,9 +15,8 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.NumericExpressionHelper.Operator;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableSet;
 
 /**
  *

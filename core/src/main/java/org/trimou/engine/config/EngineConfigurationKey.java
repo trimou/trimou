@@ -91,9 +91,6 @@ public enum EngineConfigurationKey implements ConfigurationKey {
     /**
      * The template cache expiration timeout in seconds. Zero and negative
      * values mean no timeout.
-     *
-     * @see com.google.common.cache.CacheBuilder#expireAfterWrite(long,
-     *      java.util.concurrent.TimeUnit)
      */
     TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0l),
     /**

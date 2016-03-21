@@ -15,9 +15,8 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Optional;
 import java.util.Set;
-
-import com.google.common.base.Optional;
 
 /**
  * Renders a block if the first param does/doesn't equal to the

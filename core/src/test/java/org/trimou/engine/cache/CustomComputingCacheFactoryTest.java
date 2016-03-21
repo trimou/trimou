@@ -2,6 +2,7 @@ package org.trimou.engine.cache;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,10 +20,7 @@ import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.Resolver;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ListMultimap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *
@@ -75,15 +73,21 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
             implements ComputingCacheFactory {
 
         @SuppressWarnings("rawtypes")
-        final ListMultimap<String, CustomComputingCache> caches = ArrayListMultimap.create();
+        final Map<String, List<CustomComputingCache>> caches = new HashMap<>();
 
+        @SuppressWarnings("rawtypes")
         @Override
         public <K, V> ComputingCache<K, V> create(String consumerId,
                 Function<K, V> computingFunction, Long expirationTimeout,
                 Long maxSize, Listener<K> listener) {
             CustomComputingCache<K, V> cache = new CustomComputingCache<K, V>(new HashMap<K, V>(),
                     computingFunction);
-            caches.put(consumerId, cache);
+            List<CustomComputingCache> list = caches.get(consumerId);
+            if(list == null) {
+                list = new ArrayList<>();
+                caches.put(consumerId, list);
+            }
+            list.add(cache);
             return cache;
         }
 

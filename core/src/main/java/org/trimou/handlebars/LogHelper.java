@@ -17,17 +17,16 @@ package org.trimou.handlebars;
 
 import static org.trimou.handlebars.OptionsHashKeys.LEVEL;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.util.Arrays;
 import org.trimou.util.Checker;
-
-import com.google.common.base.Optional;
+import org.trimou.util.ImmutableSet;
 
 /**
  * <p>
@@ -122,7 +121,7 @@ public class LogHelper extends BasicValueHelper {
 
     @Override
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(Collections.singleton(LEVEL));
+        return Optional.of(ImmutableSet.of(LEVEL));
     }
 
     private Level getLevel(Map<String, Object> hash) {
@@ -198,8 +197,9 @@ public class LogHelper extends BasicValueHelper {
         }
 
         public LogHelper build() {
-            return new LogHelper(adapter != null ? adapter
-                    : new Slf4jLoggerAdapter(LogHelper.class.getName()),
+            return new LogHelper(
+                    adapter != null ? adapter
+                            : new Slf4jLoggerAdapter(LogHelper.class.getName()),
                     level != null ? level : Level.INFO, appendTemplateInfo);
         }
 

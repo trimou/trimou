@@ -36,9 +36,8 @@ import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.ImmutableSet;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The default parser. It's not thread-safe and may not be reused.

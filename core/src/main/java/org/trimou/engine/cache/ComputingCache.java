@@ -51,6 +51,8 @@ public interface ComputingCache<K, V> {
     void clear();
 
     /**
+     * The expired entries may be also counted, but will never be visible to
+     * other read/write operations.
      *
      * @return the number of cached entries
      */
@@ -76,6 +78,7 @@ public interface ComputingCache<K, V> {
      * @param <V>
      *            The value
      */
+    @FunctionalInterface
     interface Function<K, V> {
 
         /**
@@ -93,6 +96,7 @@ public interface ComputingCache<K, V> {
      * @param <K>
      *            The key
      */
+    @FunctionalInterface
     interface KeyPredicate<K> {
 
         /**
@@ -111,6 +115,7 @@ public interface ComputingCache<K, V> {
      * @param <K>
      *            The key
      */
+    @FunctionalInterface
     interface Listener<K> {
 
         void entryInvalidated(K key, String cause);

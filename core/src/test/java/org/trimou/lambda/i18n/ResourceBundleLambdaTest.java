@@ -10,8 +10,7 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.FixedLocaleSupport;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *

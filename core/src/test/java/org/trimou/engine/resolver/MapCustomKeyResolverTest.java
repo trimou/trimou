@@ -12,9 +12,8 @@ import org.trimou.AbstractTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.priority.Priorities;
+import org.trimou.util.ImmutableMap;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -48,7 +47,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
                 "Hello there!",
                 engine.compileMustache("map_custom_key_resolver",
                         "{{#data}}{{1}}{{3}} {{2}}{{/data}}!").render(
-                        ImmutableMap.<String, Object> of("data", dataMap)));
+                        ImmutableMap.of("data", dataMap)));
     }
 
     @Test
@@ -62,7 +61,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
                 "Hello there!",
                 engine.compileMustache("map_enum_key_resolver",
                         "{{#data}}{{ONE}} {{TWO}}{{/data}}!").render(
-                        ImmutableMap.<String, Object> of("data", dataMap)));
+                        ImmutableMap.of("data", dataMap)));
     }
 
     private static enum EnumKey {

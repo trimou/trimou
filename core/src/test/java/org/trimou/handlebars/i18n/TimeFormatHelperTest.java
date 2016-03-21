@@ -1,25 +1,20 @@
-package org.trimou.jdk8.handlebars.i18n;
+package org.trimou.handlebars.i18n;
 
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.engine.locale.LocaleSupport;
+import org.trimou.engine.locale.FixedLocaleSupport;
+import org.trimou.util.ImmutableMap;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Martin Kouba
@@ -31,22 +26,8 @@ public class TimeFormatHelperTest extends AbstractEngineTest {
     public void buildEngine() {
         engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("formatTime", new TimeFormatHelper())
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).build();
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .build();
     }
 
     @Test

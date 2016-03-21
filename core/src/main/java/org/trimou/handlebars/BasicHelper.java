@@ -16,11 +16,10 @@
 package org.trimou.handlebars;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.engine.MustacheTagType;
-
-import com.google.common.base.Optional;
 
 /**
  * Basic validating helper.
@@ -62,7 +61,7 @@ public abstract class BasicHelper extends AbstractHelper {
      * @return the supported hash keys
      */
     protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.absent();
+        return Optional.empty();
     }
 
 }

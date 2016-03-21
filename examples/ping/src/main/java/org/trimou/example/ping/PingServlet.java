@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.trimou.engine.MustacheEngine;
-
-import com.google.common.collect.ImmutableMap;
+import org.trimou.util.ImmutableMap;
 
 /**
  *
@@ -41,7 +40,7 @@ public class PingServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         // Note that we use the provided Writer instance
         engine.getMustache("pingLogServlet").render(resp.getWriter(),
-                ImmutableMap.<String, Object> of("pings", service.getPings()));
+                ImmutableMap.of("pings", service.getPings()));
     }
 
 }

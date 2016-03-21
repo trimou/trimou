@@ -30,13 +30,8 @@ public final class Functions {
      * @return a function adapter
      */
     public static Function from(
-            final com.google.common.base.Function<Object, Object> function) {
-        return new Function() {
-            @Override
-            public Object apply(Object value) {
-                return function.apply(value);
-            }
-        };
+            final java.util.function.Function<Object, Object> function) {
+        return (input) -> function.apply(input);
     }
 
 }

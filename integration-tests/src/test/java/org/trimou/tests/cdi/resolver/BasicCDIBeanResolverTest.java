@@ -19,9 +19,8 @@ import org.junit.runner.RunWith;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.tests.cdi.MustacheEngineProducer;
+import org.trimou.util.ImmutableMap;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  *
@@ -56,8 +55,7 @@ public class BasicCDIBeanResolverTest {
 
         String result = String.format("Hello: %s 78 %s %s", alpha.getId(),
                 bravo.getId(), charlie.getId());
-        Map<String, Object> data = ImmutableMap.<String, Object> of("hello",
-                "Hello");
+        Map<String, Object> data = ImmutableMap.of("hello", "Hello");
 
         assertEquals(result, mustache.render(data));
         assertEquals(result, mustache.render(data));

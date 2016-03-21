@@ -47,11 +47,10 @@ import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
 import org.trimou.handlebars.HelpersBuilder;
 import org.trimou.util.Checker;
+import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
+import org.trimou.util.ImmutableSet;
 import org.trimou.util.Strings;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * A builder for {@link MustacheEngine}. It's not thread-safe. The builder is
