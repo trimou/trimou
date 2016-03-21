@@ -14,7 +14,7 @@ import org.trimou.lambda.Lambda.InputType;
 public class SimpleLambdaTest {
 
     @Test
-    public void testSimpleHelper() {
+    public void testSimpleLambda() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addGlobalData("lc",
                         SimpleLambdas.invoke((t) -> t.toLowerCase()))

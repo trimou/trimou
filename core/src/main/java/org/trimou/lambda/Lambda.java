@@ -17,9 +17,14 @@ package org.trimou.lambda;
 
 /**
  * Lambda represents a special type of data - a callable object.
+ * <p>
+ * By default, a lambda is spec compliant. I.e. the input type is
+ * {@link InputType#LITERAL} and {@link #isReturnValueInterpolated()} returns
+ * <code>true</code>.
  *
  * @author Martin Kouba
  */
+@FunctionalInterface
 public interface Lambda {
 
     /**
@@ -37,23 +42,27 @@ public interface Lambda {
      * @see InputType
      * @see #isReturnValueInterpolated()
      */
-    public String invoke(String text);
+    String invoke(String text);
 
     /**
      * @return the text input type
      */
-    public InputType getInputType();
+    default InputType getInputType() {
+        return InputType.LITERAL;
+    }
 
     /**
      * @return <code>true</code> if the return value should be parsed and
      *         interpolated, <code>false</code> otherwise
      */
-    public boolean isReturnValueInterpolated();
+    default boolean isReturnValueInterpolated() {
+        return true;
+    }
 
     /**
-     *
+     * Text input type.
      */
-    public enum InputType {
+    enum InputType {
 
         /**
          * The text passed is (almost) the original literal block - complies

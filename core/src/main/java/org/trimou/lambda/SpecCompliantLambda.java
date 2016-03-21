@@ -16,7 +16,7 @@
 package org.trimou.lambda;
 
 /**
- * Spec compliant callable object.
+ * A spec compliant {@link Lambda}. Since 2.0 this abstract class is not needed anymore.
  *
  * @author Martin Kouba
  * @see Lambda

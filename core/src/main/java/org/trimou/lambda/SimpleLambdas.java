@@ -17,9 +17,7 @@ package org.trimou.lambda;
 
 import java.util.function.Function;
 
-import org.trimou.lambda.Lambda;
 import org.trimou.lambda.Lambda.InputType;
-import org.trimou.lambda.SpecCompliantLambda;
 import org.trimou.util.Checker;
 
 /**
@@ -60,6 +58,12 @@ public final class SimpleLambdas {
         private Function<String, String> invokeCallback;
 
         private boolean isReturnValueInterpolated;
+
+        private Builder() {
+            // Note that this is not spec compliant
+            this.inputType = InputType.LITERAL;
+            this.isReturnValueInterpolated = false;
+        }
 
         public Builder interpolateReturnValue() {
             this.isReturnValueInterpolated = true;

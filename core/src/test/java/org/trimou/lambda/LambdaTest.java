@@ -34,6 +34,12 @@ public class LambdaTest extends AbstractEngineTest {
                 engine.compileMustache("lambda_return_interpolated",
                         "{{#lambda}}Hello{{/lambda}}").render(
                         ImmutableMap.of("foo", "true", "lambda", lambda)));
+        lambda = (input) -> "{{foo}}|{{foo}}";
+        assertEquals(
+                "true|true",
+                engine.compileMustache("lambda_return_interpolated2",
+                        "{{#lambda}}Hello{{/lambda}}").render(
+                        ImmutableMap.of("foo", "true", "lambda", lambda)));
     }
 
 }
