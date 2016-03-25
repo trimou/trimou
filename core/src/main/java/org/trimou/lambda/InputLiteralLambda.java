@@ -16,6 +16,8 @@
 package org.trimou.lambda;
 
 /**
+ * Since 2.0 this abstract class is not needed anymore -
+ * {@link InputType#LITERAL} is the default.
  *
  * @author Martin Kouba
  * @see Lambda

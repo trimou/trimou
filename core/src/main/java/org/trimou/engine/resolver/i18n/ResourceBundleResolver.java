@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.DummyTransformResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.handlebars.i18n.ResourceBundleHelper;
 import org.trimou.lambda.i18n.ResourceBundleLambda;
 
 /**
@@ -32,6 +33,7 @@ import org.trimou.lambda.i18n.ResourceBundleLambda;
  * @author Martin Kouba
  * @see ResourceBundle
  * @see ResourceBundleLambda
+ * @see ResourceBundleHelper
  */
 public class ResourceBundleResolver extends DummyTransformResolver {
 

@@ -16,7 +16,11 @@
 package org.trimou.lambda;
 
 /**
- * A spec compliant {@link Lambda}. Since 2.0 this abstract class is not needed anymore.
+ * A spec compliant {@link Lambda}.
+ * <p>
+ * Since 2.0 this abstract class is not needed anymore -
+ * {@link InputType#LITERAL} is the default and the return value is
+ * interpolated.
  *
  * @author Martin Kouba
  * @see Lambda

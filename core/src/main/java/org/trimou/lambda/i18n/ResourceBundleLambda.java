@@ -7,6 +7,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.MustacheEngineBuilder.EngineBuiltCallback;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.i18n.ResourceBundleResolver;
+import org.trimou.handlebars.i18n.ResourceBundleHelper;
 import org.trimou.lambda.InputProcessingLambda;
 import org.trimou.util.Strings;
 
@@ -20,10 +21,11 @@ import org.trimou.util.Strings;
  *
  * @author Martin Kouba
  * @see ResourceBundle
+ * @see ResourceBundleHelper
  * @see ResourceBundleResolver
  */
-public class ResourceBundleLambda extends InputProcessingLambda implements
-        EngineBuiltCallback {
+public class ResourceBundleLambda extends InputProcessingLambda
+        implements EngineBuiltCallback {
 
     private String baseName;
 
