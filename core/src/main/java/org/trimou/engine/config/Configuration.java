@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import org.trimou.Mustache;
-import org.trimou.annotations.Internal;
 import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
@@ -39,7 +38,6 @@ import org.trimou.handlebars.Options;
  *
  * @author Martin Kouba
  */
-@Internal
 public interface Configuration {
 
     /**
