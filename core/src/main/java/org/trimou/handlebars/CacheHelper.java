@@ -38,7 +38,6 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 import org.trimou.util.ImmutableSet;
 
-
 /**
  * Allows to cache template fragments in memory. This might be useful for
  * resource-intensive parts of the template that rarely change (e.g. a user menu
@@ -115,11 +114,8 @@ public class CacheHelper extends BasicSectionHelper {
         Object unit = expire != null ? hash.get(UNIT) : null;
 
         StringBuilder fragmentKey = new StringBuilder();
-        // We only use the template name and line - it is unlikely that there
-        // will be multiple cache helpers on the same line (and with the same
-        // explicit key)
-        fragmentKey.append(options.getTagInfo().getTemplateName());
-        fragmentKey.append(options.getTagInfo().getLine());
+        fragmentKey.append(options.getTagInfo().getTemplateGeneratedId());
+        fragmentKey.append(options.getTagInfo().getId());
         if (key != null) {
             fragmentKey.append(key.toString());
         }

@@ -48,7 +48,8 @@ public interface Segment {
 
     /**
      *
-     * @return the info about original tag
+     * @return the info about the original tag or <code>null</code> if the
+     *         segment does not represent a tag (e.g. {@link SegmentType#TEXT})
      */
     public MustacheTagInfo getTagInfo();
 

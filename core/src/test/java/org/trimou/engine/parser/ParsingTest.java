@@ -1,11 +1,16 @@
 package org.trimou.engine.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
+import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.segment.ExtendSectionSegment;
 import org.trimou.engine.segment.ExtendSegment;
 import org.trimou.engine.segment.InvertedSectionSegment;
@@ -32,6 +37,19 @@ public class ParsingTest extends AbstractEngineTest {
         validateSegment(segments, 2, SegmentType.TEXT, " and ");
         validateSegment(segments, 3, SegmentType.VALUE, "me");
         validateSegment(segments, 4, SegmentType.TEXT, "!");
+
+        MustacheTagInfo helloTag = segments.get(0).getTagInfo();
+        assertNull(helloTag);
+        MustacheTagInfo fooTag = segments.get(1).getTagInfo();
+        assertNotNull(fooTag);
+        assertEquals(MustacheTagType.VARIABLE, fooTag.getType());
+        assertEquals("foo", fooTag.getText());
+        assertEquals(1, fooTag.getLine());
+        assertEquals("parse_variable", fooTag.getTemplateName());
+        assertNotNull(fooTag.getChildTags());
+        assertTrue(fooTag.getChildTags().isEmpty());
+        assertNotNull(fooTag.getId());
+        assertEquals(template.getGeneratedId(), fooTag.getTemplateGeneratedId());
     }
 
     @Test

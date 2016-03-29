@@ -55,7 +55,11 @@ abstract class AbstractSegment implements Segment {
         Checker.checkArgumentsNotNull(text, origin);
         this.text = text;
         this.origin = origin;
-        this.info = new DefaultSegmentInfo();
+        if (getType().getTagType() == null) {
+            this.info = null;
+        } else {
+            this.info = new DefaultTagInfo();
+        }
     }
 
     public String getText() {
@@ -136,7 +140,7 @@ abstract class AbstractSegment implements Segment {
         return Collections.emptyList();
     }
 
-    class DefaultSegmentInfo implements MustacheTagInfo {
+    class DefaultTagInfo implements MustacheTagInfo {
 
         @Override
         public MustacheTagType getType() {
@@ -159,14 +163,24 @@ abstract class AbstractSegment implements Segment {
         }
 
         @Override
+        public Long getTemplateGeneratedId() {
+            return origin.getTemplate().getGeneratedId();
+        }
+
+        @Override
+        public String getId() {
+            return origin.getIndex() != null ? origin.getIndex().toString()
+                    : "" + origin.hashCode();
+        }
+
+        @Override
         public List<MustacheTagInfo> getChildTags() {
             return getDirectChildTags();
         }
 
         @Override
         public String toString() {
-            return String.format("%s:%s %s", getType(), getText(),
-                    getOrigin());
+            return String.format("%s:%s %s", getType(), getText(), getOrigin());
         }
 
     }

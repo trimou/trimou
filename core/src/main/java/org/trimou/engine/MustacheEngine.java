@@ -50,6 +50,7 @@ public interface MustacheEngine {
      *            The template identifier
      * @return the compiled template with the given name or <code>null</code> if
      *         no such template exists
+     * @see Mustache#getName()
      * @see TemplateLocator
      * @see EngineConfigurationKey#TEMPLATE_CACHE_ENABLED
      * @see EngineConfigurationKey#TEMPLATE_CACHE_EXPIRATION_TIMEOUT
@@ -59,6 +60,7 @@ public interface MustacheEngine {
     /**
      * @param templateId
      * @return uncompiled mustache template source.
+     * @see Mustache#getName()
      */
     public String getMustacheSource(String templateId);
 

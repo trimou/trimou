@@ -36,6 +36,7 @@ public interface Mustache extends Identified {
      * {@link org.trimou.engine.MustacheEngine#compileMustache(String, String)}.
      *
      * @return the template name
+     * @see #getGeneratedId()
      */
     public String getName();
 
