@@ -100,14 +100,16 @@ public class PartialSegment extends AbstractSegment {
         List<List<Segment>> partialLines;
 
         if (cachedPartialTemplate != null) {
-            if (cachedPartialLines == null) {
+            partialLines = cachedPartialLines;
+            if (partialLines == null) {
                 synchronized (this) {
-                    if (cachedPartialLines == null) {
-                        cachedPartialLines = getPartialLines(partialTemplate);
+                    partialLines = cachedPartialLines;
+                    if (partialLines == null) {
+                        partialLines = getPartialLines(partialTemplate);
+                        cachedPartialLines = partialLines;
                     }
                 }
             }
-            partialLines = cachedPartialLines;
         } else {
             partialLines = getPartialLines(partialTemplate);
         }
