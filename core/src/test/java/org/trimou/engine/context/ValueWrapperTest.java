@@ -120,25 +120,11 @@ public class ValueWrapperTest extends AbstractTest {
                 .addResolver(
                         new AbstractResolver(
                                 WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
-
                             @Override
                             public Object resolve(Object contextObject,
                                     String name, ResolutionContext context) {
-
-                                context.registerReleaseCallback(new ReleaseCallback() {
-
-                                    @Override
-                                    public void release() {
-                                        throw new NullPointerException();
-                                    }
-                                });
-                                context.registerReleaseCallback(new ReleaseCallback() {
-
-                                    @Override
-                                    public void release() {
-                                        callbackInvoked.set(true);
-                                    }
-                                });
+                                context.registerReleaseCallback(() -> { throw new NullPointerException(); });
+                                context.registerReleaseCallback(() -> callbackInvoked.set(true));
                                 return null;
                             }
                         }).build();

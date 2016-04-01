@@ -20,6 +20,7 @@ package org.trimou.engine.resource;
  *
  * @author Martin Kouba
  */
+@FunctionalInterface
 public interface ReleaseCallback {
 
     /**

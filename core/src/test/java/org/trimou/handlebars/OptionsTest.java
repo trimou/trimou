@@ -23,7 +23,6 @@ import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
-import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.ImmutableMap;
 
@@ -237,13 +236,7 @@ public class OptionsTest extends AbstractTest {
                     @Override
                     public Object resolve(Object contextObject, String name,
                             ResolutionContext context) {
-                        context.registerReleaseCallback(new ReleaseCallback() {
-
-                            @Override
-                            public void release() {
-                                released.set(true);
-                            }
-                        });
+                        context.registerReleaseCallback(() -> released.set(true));
                         return "foo";
                     }
                 }).registerHelper("test", new AbstractHelper() {

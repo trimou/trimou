@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Internal component - annotated element may be subject of incompatible changes
- * in future releases - actually it's not supposed to be a part of a public
- * client API.
+ * An internal component - annotated element may be subject of incompatible changes
+ * in future releases - actually, it's not supposed to be a part of the public
+ * API. API clients are encouraged not to use such components.
  *
  * @author Martin Kouba
  */
