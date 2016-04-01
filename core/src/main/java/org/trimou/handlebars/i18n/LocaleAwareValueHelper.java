@@ -58,7 +58,7 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
      */
     protected Locale getLocale(Options options) {
         Locale locale;
-        Object localeObject = getHashValue(options, LOCALE);
+        Object localeObject = options.getHash().get(LOCALE);
         if (localeObject == null) {
             localeObject = options.getValue(LOCALE);
         }

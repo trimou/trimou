@@ -158,7 +158,7 @@ public class EachHelper extends BasicSectionHelper {
     }
 
     private Function initFunction(Options options) {
-        Object function = getHashValue(options, APPLY);
+        Object function = options.getHash().get(APPLY);
         if (function == null) {
             return null;
         }
@@ -172,7 +172,7 @@ public class EachHelper extends BasicSectionHelper {
     }
 
     private String initValueAlias(Options options) {
-        Object as = getHashValue(options, AS);
+        Object as = options.getHash().get(AS);
         if (as == null) {
             return null;
         }

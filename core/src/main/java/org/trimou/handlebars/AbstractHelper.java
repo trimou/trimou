@@ -17,7 +17,6 @@ package org.trimou.handlebars;
 
 import java.io.IOException;
 
-import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.text.TextSupport;
@@ -34,35 +33,24 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
     private volatile TextSupport textSupport;
 
     @Override
-    public void validate(HelperDefinition definition) {
-        // No-op by default
-    }
-
-    @Override
     protected void init() {
-        if (!configuration
-                .getBooleanPropertyValue(EngineConfigurationKey.SKIP_VALUE_ESCAPING)) {
-            textSupport = configuration.getTextSupport();
+        if (configuration.getBooleanPropertyValue(
+                EngineConfigurationKey.SKIP_VALUE_ESCAPING)) {
+            return;
         }
-    }
-
-    protected Object getHashValue(Options options, String key) {
-        return options.getHash().isEmpty() ? null : options.getHash().get(key);
+        textSupport = configuration.getTextSupport();
     }
 
     protected boolean isSection(Options options) {
-        return options.getTagInfo().getType().equals(MustacheTagType.SECTION);
+        return Helpers.isSection(options);
     }
 
     protected boolean isVariable(Options options) {
-        return options.getTagInfo().getType().equals(MustacheTagType.VARIABLE)
-                || options.getTagInfo().getType()
-                        .equals(MustacheTagType.UNESCAPE_VARIABLE);
+        return Helpers.isVariable(options);
     }
 
     protected boolean isUnescapeVariable(Options options) {
-        return options.getTagInfo().getType()
-                .equals(MustacheTagType.UNESCAPE_VARIABLE);
+        return Helpers.isUnescapeVariable(options);
     }
 
     /**
@@ -73,6 +61,7 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
      * @see TextSupport
      */
     protected void append(Options options, CharSequence sequence) {
+        TextSupport textSupport = this.textSupport;
         if (textSupport == null || isUnescapeVariable(options)) {
             options.append(sequence);
         } else {

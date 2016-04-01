@@ -20,6 +20,7 @@ package org.trimou.handlebars;
  * result.
  *
  * @see EachHelper
+ * @see Functions#from(java.util.function.Function)
  */
 @FunctionalInterface
 public interface Function {

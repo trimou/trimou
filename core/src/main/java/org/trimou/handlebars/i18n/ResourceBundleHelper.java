@@ -130,7 +130,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     public void execute(Options options) {
 
         String key = options.getParameters().get(0).toString();
-        Object baseName = getHashValue(options, BASE_NAME);
+        Object baseName = options.getHash().get(BASE_NAME);
         ResourceBundle bundle = ResourceBundle.getBundle(
                 baseName != null ? baseName.toString() : defaultBaseName,
                 getLocale(options));

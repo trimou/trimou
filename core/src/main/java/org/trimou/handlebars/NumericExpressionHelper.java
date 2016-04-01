@@ -121,7 +121,7 @@ public class NumericExpressionHelper extends BasicHelper {
                 options.fn();
             } else {
                 String output;
-                Object outputValue = getHashValue(options, OUTPUT);
+                Object outputValue = options.getHash().get(OUTPUT);
                 output = outputValue != null ? outputValue.toString()
                         : Boolean.TRUE.toString();
                 append(options, output);
@@ -155,7 +155,7 @@ public class NumericExpressionHelper extends BasicHelper {
 
     private Operator initOperator(Options options) {
         Operator operator = null;
-        Object value = getHashValue(options, OPERATOR);
+        Object value = options.getHash().get(OPERATOR);
         if (value != null) {
             operator = Operator.from(value.toString());
         }

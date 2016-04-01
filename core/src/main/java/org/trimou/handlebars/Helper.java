@@ -41,7 +41,7 @@ public interface Helper extends ConfigurationAware {
      * @param options
      * @throws IOException
      */
-    public void execute(Options options);
+    void execute(Options options);
 
     /**
      * Helper should validate the tag definition (e.g. number of parameters)
@@ -53,6 +53,8 @@ public interface Helper extends ConfigurationAware {
      *
      * @param definition
      */
-    public void validate(HelperDefinition definition);
+    default void validate(HelperDefinition definition) {
+        // No-op by default
+    }
 
 }

@@ -59,9 +59,9 @@ public abstract class AbstractTimeFormatHelper<F, S>
         String text;
         Object styleOrPattern;
 
-        if ((styleOrPattern = getHashValue(options, PATTERN)) != null) {
+        if ((styleOrPattern = options.getHash().get(PATTERN)) != null) {
             text = format(value, styleOrPattern.toString(), locale, timeZone);
-        } else if ((styleOrPattern = getHashValue(options, STYLE)) != null) {
+        } else if ((styleOrPattern = options.getHash().get(STYLE)) != null) {
             text = format(value,
                     parseStyle(styleOrPattern.toString(), options.getTagInfo()),
                     locale, timeZone);
@@ -129,7 +129,7 @@ public abstract class AbstractTimeFormatHelper<F, S>
     protected TimeZone getTimeZone(Options options) {
 
         TimeZone timeZone;
-        Object timeZoneObject = getHashValue(options, TIME_ZONE);
+        Object timeZoneObject = options.getHash().get(TIME_ZONE);
 
         if (timeZoneObject != null) {
             if (timeZoneObject instanceof TimeZone) {

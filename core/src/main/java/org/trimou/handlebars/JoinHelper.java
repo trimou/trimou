@@ -76,7 +76,7 @@ public class JoinHelper extends BasicValueHelper {
     @Override
     public void execute(Options options) {
 
-        final Object delimiter = getHashValue(options, DELIMITER);
+        final Object delimiter = options.getHash().get(DELIMITER);
         final Lambda lambda = initLambda(options);
 
         if (options.getParameters().size() == 1) {
@@ -148,7 +148,7 @@ public class JoinHelper extends BasicValueHelper {
     }
 
     private Lambda initLambda(Options options) {
-        final Object lambdaReference = getHashValue(options, LAMBDA);
+        final Object lambdaReference = options.getHash().get(LAMBDA);
         if (lambdaReference == null) {
             return null;
         }

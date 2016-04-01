@@ -87,7 +87,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
                 || matches(options.getHash(), options.getParameters())) {
             options.fn();
         } else {
-            Object elseBlock = getHashValue(options, OptionsHashKeys.ELSE);
+            Object elseBlock = options.getHash().get(ELSE);
             if (elseBlock != null) {
                 String elseString = elseBlock.toString();
                 if (elseString.contains(elseStartDelimiter)) {

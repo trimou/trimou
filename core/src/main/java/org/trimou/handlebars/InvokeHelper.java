@@ -135,11 +135,11 @@ public class InvokeHelper extends BasicHelper {
     public void execute(Options options) {
 
         Class<?> clazz = null;
-        Object methodName = getHashValue(options, M);
+        Object methodName = options.getHash().get(M);
         if (methodName == null) {
-            methodName = getHashValue(options, METHOD);
+            methodName = options.getHash().get(METHOD);
         }
-        Object instance = getHashValue(options, ON);
+        Object instance = options.getHash().get(ON);
         if (instance == null) {
             clazz = loadClassIfNeeded(options);
             if (clazz == null) {
@@ -249,7 +249,7 @@ public class InvokeHelper extends BasicHelper {
     private Class<?> loadClassIfNeeded(Options options) {
         Class<?> clazz = null;
         try {
-            Object clazzValue = getHashValue(options, CLASS);
+            Object clazzValue = options.getHash().get(CLASS);
             if (clazzValue != null) {
                 if (clazzValue instanceof Class<?>) {
                     clazz = (Class<?>) clazzValue;
