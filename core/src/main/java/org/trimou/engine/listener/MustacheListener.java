@@ -60,7 +60,9 @@ public interface MustacheListener extends ConfigurationAware {
      *
      * @param event
      */
-    void compilationFinished(MustacheCompilationEvent event);
+    default void compilationFinished(MustacheCompilationEvent event) {
+        // No-op by default
+    }
 
     /**
      * Rendering of a {@link Mustache} is about to start. Always use
@@ -69,7 +71,9 @@ public interface MustacheListener extends ConfigurationAware {
      *
      * @param event
      */
-    void renderingStarted(MustacheRenderingEvent event);
+    default void renderingStarted(MustacheRenderingEvent event) {
+        // No-op by default
+    }
 
     /**
      * Rendering of a {@link Mustache} is about to finish. Always use
@@ -78,7 +82,9 @@ public interface MustacheListener extends ConfigurationAware {
      *
      * @param event
      */
-    void renderingFinished(MustacheRenderingEvent event);
+    default void renderingFinished(MustacheRenderingEvent event) {
+        // No-op by default
+    }
 
     /**
      * Parsing of a {@link Mustache} is about to start. Listeners are allowed to
@@ -87,6 +93,8 @@ public interface MustacheListener extends ConfigurationAware {
      *
      * @param event
      */
-    void parsingStarted(MustacheParsingEvent event);
+    default void parsingStarted(MustacheParsingEvent event) {
+        // No-op by default
+    }
 
 }
