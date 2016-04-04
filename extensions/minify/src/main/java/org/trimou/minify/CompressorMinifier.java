@@ -39,7 +39,7 @@ public abstract class CompressorMinifier<T extends Compressor> extends
     private static final Logger logger = LoggerFactory
             .getLogger(CompressorMinifier.class);
 
-    T compressor;
+    protected final T compressor;
 
     /**
      *
