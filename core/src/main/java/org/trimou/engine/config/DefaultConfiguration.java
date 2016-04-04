@@ -45,8 +45,8 @@ import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.interpolation.NoOpMissingValueHandler;
 import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.listener.MustacheListener;
+import org.trimou.engine.locale.DefaultLocaleSupport;
 import org.trimou.engine.locale.LocaleSupport;
-import org.trimou.engine.locale.LocaleSupportFactory;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.priority.HighPriorityComparator;
 import org.trimou.engine.resolver.Resolver;
@@ -439,7 +439,7 @@ class DefaultConfiguration implements Configuration {
 
     private LocaleSupport initLocaleSupport(MustacheEngineBuilder builder) {
         return builder.getLocaleSupport() != null ? builder.getLocaleSupport()
-                : new LocaleSupportFactory().createLocateSupport();
+                : new DefaultLocaleSupport();
     }
 
     private KeySplitter initKeySplitter(MustacheEngineBuilder builder) {

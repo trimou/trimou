@@ -24,7 +24,7 @@ import org.trimou.engine.config.AbstractConfigurationAware;
  *
  * @author Martin Kouba
  */
-class DefaultLocaleSupport extends AbstractConfigurationAware implements
+public class DefaultLocaleSupport extends AbstractConfigurationAware implements
         LocaleSupport {
 
     @Override

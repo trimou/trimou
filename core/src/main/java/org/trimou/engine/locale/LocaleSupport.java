@@ -29,6 +29,6 @@ public interface LocaleSupport extends ConfigurationAware {
     /**
      * @return the current locale
      */
-    public Locale getCurrentLocale();
+    Locale getCurrentLocale();
 
 }
