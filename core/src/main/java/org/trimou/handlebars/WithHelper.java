@@ -15,9 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import java.util.Optional;
-import java.util.Set;
-
 /**
  * Nested context.
  *
@@ -33,11 +30,6 @@ public class WithHelper extends BasicSectionHelper {
             options.fn();
             options.pop();
         }
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
 }

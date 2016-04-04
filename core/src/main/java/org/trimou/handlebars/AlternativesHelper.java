@@ -17,8 +17,6 @@ package org.trimou.handlebars;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,12 +118,6 @@ public class AlternativesHelper extends BasicHelper {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.trimou.handlebars.BasicHelper#validate(org.trimou.handlebars.
-     * HelperDefinition)
-     */
     @Override
     public void validate(HelperDefinition definition) {
         super.validate(definition);
@@ -136,11 +128,6 @@ public class AlternativesHelper extends BasicHelper {
                     definition.getTagInfo().getTemplateName(),
                     definition.getTagInfo().getLine());
         }
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
     /**

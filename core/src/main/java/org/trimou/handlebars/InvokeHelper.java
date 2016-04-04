@@ -216,8 +216,8 @@ public class InvokeHelper extends BasicHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.<Set<String>> of(ImmutableSet.of(ON, M, METHOD, CLASS));
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(ON, M, METHOD, CLASS);
     }
 
     private static boolean matches(Method method, List<Class<?>> paramTypes) {

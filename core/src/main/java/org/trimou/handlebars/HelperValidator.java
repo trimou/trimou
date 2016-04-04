@@ -18,7 +18,6 @@ package org.trimou.handlebars;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -134,17 +133,30 @@ public final class HelperValidator {
         // Number of required hash entries
         checkHash(helper.getClass(), definition,
                 helper.numberOfRequiredHashEntries());
-        // Log a warning message if an unsupported hash key is found
-        Optional<Set<String>> supportedHashKeys = helper.getSupportedHashKeys();
-        if (supportedHashKeys.isPresent()) {
-            for (String key : definition.getHash().keySet()) {
-                if (!supportedHashKeys.get().contains(key)) {
-                    logger.info(
-                            "Unsupported hash key detected [key: {}, helper: {}, template: {}, line: {}]",
-                            key, helper.getClass().getName(),
-                            definition.getTagInfo().getTemplateName(),
-                            definition.getTagInfo().getLine());
+        if (!helper.getRequiredHashKeys().isEmpty()) {
+            // Check required hash keys
+            for (String key : helper.getRequiredHashKeys()) {
+                if (!definition.getHash().containsKey(key)) {
+                    throw newValidationException(String
+                            .format("Required hash key %s not found", key),
+                            helper.getClass(), definition);
                 }
+            }
+        }
+        if (definition.getHash().isEmpty()
+                || BasicHelper.ANY_HASH_KEY_SUPPORTED
+                        .equals(helper.getSupportedHashKeys())) {
+            return;
+        }
+        // Log a warning message if an unsupported hash key is found
+        Set<String> supportedHashKeys = helper.getSupportedHashKeys();
+        for (String key : definition.getHash().keySet()) {
+            if (!supportedHashKeys.contains(key)) {
+                logger.info(
+                        "Unsupported hash key detected [key: {}, helper: {}, template: {}, line: {}]",
+                        key, helper.getClass().getName(),
+                        definition.getTagInfo().getTemplateName(),
+                        definition.getTagInfo().getLine());
             }
         }
     }

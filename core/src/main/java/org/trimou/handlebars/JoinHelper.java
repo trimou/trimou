@@ -20,7 +20,6 @@ import static org.trimou.handlebars.OptionsHashKeys.LAMBDA;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -96,8 +95,8 @@ public class JoinHelper extends BasicValueHelper {
 
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(ImmutableSet.of(DELIMITER, LAMBDA));
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(DELIMITER, LAMBDA);
     }
 
     private void processValue(Options options, Object value, Object delimiter,

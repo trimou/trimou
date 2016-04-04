@@ -16,8 +16,6 @@
 package org.trimou.handlebars;
 
 import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
 
 import org.trimou.engine.interpolation.BracketDotKeySplitter;
 import org.trimou.engine.interpolation.DotKeySplitter;
@@ -31,12 +29,12 @@ import org.trimou.util.Strings;
  * <p>
  * First a key is built from the params, or rather their
  * {@link Object#toString()} representations, by default dot notation is used.
- * Then we attempt to find the value from the context. If the helper represents
- * a section and the value is not null the value is pushed on the context stack
- * and the section is rendered. If the helper represents a variable and the
- * value is null, the current {@link MissingValueHandler} is used. If the helper
- * represents a variable and the final value is not null the the value's
- * {@link Object#toString()} is rendered.
+ * Then the helper attempts to find the value from the context. If the helper
+ * represents a section and the value is not null the value is pushed on the
+ * context stack and the section is rendered. If the helper represents a
+ * variable and the value is null, the current {@link MissingValueHandler} is
+ * used. If the helper represents a variable and the final value is not null the
+ * the value's {@link Object#toString()} is rendered.
  * </p>
  *
  * <pre>
@@ -73,10 +71,18 @@ public class EvalHelper extends BasicHelper {
 
     private final Notation notation;
 
+    /**
+     *
+     * @see DotNotation
+     */
     public EvalHelper() {
         this(new DotNotation());
     }
 
+    /**
+     *
+     * @param notation The notation to be used when constructing keys
+     */
     public EvalHelper(Notation notation) {
         this.notation = notation;
     }
@@ -104,11 +110,6 @@ public class EvalHelper extends BasicHelper {
                 append(options, value.toString());
             }
         }
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
     public interface Notation {

@@ -20,7 +20,6 @@ import static org.trimou.handlebars.OptionsHashKeys.AS;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -101,8 +100,8 @@ public class EachHelper extends BasicSectionHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(ImmutableSet.of(APPLY, AS));
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(APPLY, AS);
     }
 
     @SuppressWarnings("rawtypes")

@@ -20,7 +20,6 @@ import static org.trimou.handlebars.OptionsHashKeys.LOGIC;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,9 +60,6 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     private static final Logger logger = LoggerFactory
             .getLogger(MatchingSectionHelper.class);
 
-    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
-            .of(LOGIC, ELSE);
-
     private final String elseStartDelimiter;
 
     private final Pattern elsePattern;
@@ -100,8 +96,8 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(SUPPORTED_HASH_KEYS);
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(LOGIC, ELSE);
     }
 
     protected EvaluationLogic getDefaultLogic() {

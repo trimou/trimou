@@ -15,9 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import java.util.Optional;
-import java.util.Set;
-
 import org.trimou.handlebars.Options.HelperExecutable;
 
 /**
@@ -48,11 +45,6 @@ public class AsyncHelper extends BasicSectionHelper {
     @Override
     protected int numberOfRequiredParameters() {
         return 0;
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
 }

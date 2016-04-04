@@ -20,7 +20,6 @@ import static org.trimou.handlebars.OptionsHashKeys.STYLE;
 import static org.trimou.handlebars.OptionsHashKeys.TIME_ZONE;
 
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -42,8 +41,6 @@ import org.trimou.util.ImmutableSet;
  */
 public abstract class AbstractTimeFormatHelper<F, S>
         extends LocaleAwareValueHelper {
-
-    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet.of(PATTERN, STYLE, TIME_ZONE);
 
     private final TimeZone defaultTimeZone = TimeZone.getDefault();
 
@@ -73,8 +70,8 @@ public abstract class AbstractTimeFormatHelper<F, S>
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(SUPPORTED_HASH_KEYS);
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(PATTERN, STYLE, TIME_ZONE);
     }
 
     /**

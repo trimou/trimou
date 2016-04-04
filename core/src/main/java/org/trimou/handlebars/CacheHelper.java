@@ -22,7 +22,6 @@ import static org.trimou.handlebars.OptionsHashKeys.UNIT;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -225,8 +224,8 @@ public class CacheHelper extends BasicSectionHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(ImmutableSet.of(KEY, GUARD, EXPIRE, UNIT));
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(KEY, GUARD, EXPIRE, UNIT);
     }
 
     private boolean isExpired(Fragment fragment, Object expire, Object unit) {

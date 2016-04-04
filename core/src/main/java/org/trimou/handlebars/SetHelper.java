@@ -15,6 +15,7 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Set;
 
 /**
  * Works similarly as {@link WithHelper} except the current
@@ -51,6 +52,11 @@ public class SetHelper extends BasicSectionHelper {
     @Override
     protected int numberOfRequiredHashEntries() {
         return 1;
+    }
+
+    @Override
+    protected Set<String> getSupportedHashKeys() {
+        return ANY_HASH_KEY_SUPPORTED;
     }
 
 }

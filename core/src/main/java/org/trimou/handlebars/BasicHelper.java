@@ -16,7 +16,6 @@
 package org.trimou.handlebars;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 import org.trimou.engine.MustacheTagType;
@@ -28,8 +27,7 @@ import org.trimou.engine.MustacheTagType;
  */
 public abstract class BasicHelper extends AbstractHelper {
 
-    protected static final Optional<Set<String>> NO_SUPPORTED_HASH_KEYS = Optional
-            .of(Collections.<String> emptySet());
+    static final Set<String> ANY_HASH_KEY_SUPPORTED = Collections.singleton("*");
 
     protected static final MustacheTagType[] HELPER_TAG_TYPES = new MustacheTagType[] {
             MustacheTagType.SECTION, MustacheTagType.VARIABLE,
@@ -53,15 +51,20 @@ public abstract class BasicHelper extends AbstractHelper {
     }
 
     protected int numberOfRequiredHashEntries() {
-        return 0;
+        return getRequiredHashKeys().size();
+    }
+
+    protected Set<String> getRequiredHashKeys() {
+        return Collections.emptySet();
     }
 
     /**
      *
-     * @return the supported hash keys
+     * @return a set of supported hash keys or singleton of value {@code *} to
+     *         allow any hash keys
      */
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.empty();
+    protected Set<String> getSupportedHashKeys() {
+        return getRequiredHashKeys();
     }
 
 }

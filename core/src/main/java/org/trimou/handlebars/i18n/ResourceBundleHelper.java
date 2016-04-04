@@ -24,7 +24,6 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -101,9 +100,6 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     private static final Logger logger = LoggerFactory
             .getLogger(ResourceBundleHelper.class);
 
-    private static final Set<String> SUPPORTED_HASH_KEYS = ImmutableSet
-            .of(FORMAT, BASE_NAME, LOCALE);
-
     private final String defaultBaseName;
 
     private final Format defaultFormat;
@@ -162,8 +158,8 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(SUPPORTED_HASH_KEYS);
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(FORMAT, BASE_NAME, LOCALE);
     }
 
     private Format getFormat(Map<String, Object> hash) {

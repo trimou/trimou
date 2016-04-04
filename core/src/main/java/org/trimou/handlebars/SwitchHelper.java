@@ -17,17 +17,16 @@ package org.trimou.handlebars;
 
 import static org.trimou.handlebars.OptionsHashKeys.BREAK;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.MustacheTagType;
+import org.trimou.util.ImmutableSet;
 import org.trimou.util.Nested;
 
 /**
@@ -104,11 +103,6 @@ public class SwitchHelper extends BasicSectionHelper {
         options.push(new Flow(value));
         options.fn();
         options.pop();
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
     @Override
@@ -191,8 +185,8 @@ public class SwitchHelper extends BasicSectionHelper {
         }
 
         @Override
-        protected Optional<Set<String>> getSupportedHashKeys() {
-            return Optional.of(Collections.singleton(BREAK));
+        protected Set<String> getSupportedHashKeys() {
+            return ImmutableSet.of(BREAK);
         }
 
         private boolean isBreak(Map<String, Object> hash) {
@@ -224,11 +218,6 @@ public class SwitchHelper extends BasicSectionHelper {
             } else {
                 throw Flow.newInvalidFlowException(options.getTagInfo());
             }
-        }
-
-        @Override
-        protected Optional<Set<String>> getSupportedHashKeys() {
-            return NO_SUPPORTED_HASH_KEYS;
         }
 
     }

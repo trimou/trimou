@@ -17,7 +17,6 @@ package org.trimou.handlebars;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -83,11 +82,6 @@ public class ChooseHelper extends BasicSectionHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
-    }
-
-    @Override
     public void validate(HelperDefinition definition) {
         super.validate(definition);
         Set<String> validNames = new HashSet<String>(4);
@@ -141,12 +135,6 @@ public class ChooseHelper extends BasicSectionHelper {
             }
         }
 
-        @Override
-        protected Optional<Set<String>> getSupportedHashKeys() {
-            return NO_SUPPORTED_HASH_KEYS;
-        }
-
-
     }
 
     public static class OtherwiseHelper extends BasicSectionHelper {
@@ -168,11 +156,6 @@ public class ChooseHelper extends BasicSectionHelper {
             } else {
                 throw Flow.newInvalidFlowException(options.getTagInfo());
             }
-        }
-
-        @Override
-        protected Optional<Set<String>> getSupportedHashKeys() {
-            return NO_SUPPORTED_HASH_KEYS;
         }
 
     }

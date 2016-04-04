@@ -66,11 +66,7 @@ import org.trimou.util.Checker;
  */
 public class IfHelper extends MatchingSectionHelper {
 
-    /**
-     *
-     */
     public IfHelper() {
-        super();
     }
 
     /**

@@ -15,9 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import java.util.Optional;
-import java.util.Set;
-
 /**
  * <code>
  * {{isEven iterIndex "evenRow"}}
@@ -40,11 +37,6 @@ public class NumberIsEvenHelper extends NumberMatchingHelper {
     @Override
     protected boolean isMatching(Number value) {
         return value.intValue() % 2 == 0;
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
 }

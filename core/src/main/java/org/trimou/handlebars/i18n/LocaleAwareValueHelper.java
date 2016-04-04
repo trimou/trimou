@@ -18,11 +18,13 @@ package org.trimou.handlebars.i18n;
 import static org.trimou.handlebars.OptionsHashKeys.LOCALE;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.handlebars.BasicValueHelper;
 import org.trimou.handlebars.Options;
 import org.trimou.handlebars.OptionsHashKeys;
+import org.trimou.util.ImmutableSet;
 
 /**
  * An abstract {@link Locale}-aware helper.
@@ -37,6 +39,11 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
     protected void init() {
         super.init();
         localeSupport = configuration.getLocaleSupport();
+    }
+
+    @Override
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(LOCALE);
     }
 
     /**

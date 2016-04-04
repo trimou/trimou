@@ -19,7 +19,6 @@ import static org.trimou.handlebars.OptionsHashKeys.LEVEL;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -120,8 +119,8 @@ public class LogHelper extends BasicValueHelper {
     }
 
     @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return Optional.of(ImmutableSet.of(LEVEL));
+    protected Set<String> getSupportedHashKeys() {
+        return ImmutableSet.of(LEVEL);
     }
 
     private Level getLevel(Map<String, Object> hash) {

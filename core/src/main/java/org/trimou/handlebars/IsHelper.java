@@ -15,9 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import java.util.Optional;
-import java.util.Set;
-
 import org.trimou.util.Checker;
 
 /**
@@ -52,11 +49,6 @@ public class IsHelper extends BasicValueHelper {
                 append(options, options.getParameters().get(2).toString());
             }
         }
-    }
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
     }
 
 }

@@ -15,9 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import java.util.Optional;
-import java.util.Set;
-
 /**
  * Renders a block if the first param does/doesn't equal to the
  * second param (by means of {@link Object#equals(Object)}).
@@ -82,12 +79,5 @@ public class EqualsHelper extends BasicSectionHelper {
             options.fn();
         }
     }
-
-
-    @Override
-    protected Optional<Set<String>> getSupportedHashKeys() {
-        return NO_SUPPORTED_HASH_KEYS;
-    }
-
 
 }
