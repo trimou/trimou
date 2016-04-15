@@ -171,9 +171,6 @@ public class AlternativesHelper extends BasicHelper {
             return null;
         }
 
-        /**
-         * TODO
-         */
         public interface Condition {
 
             boolean matches(Object param);
