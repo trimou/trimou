@@ -62,6 +62,17 @@ import org.trimou.util.Iterables;
  * {{/each}}
  * </code>
  *
+ * <p>
+ * This helper could be used to iterate over multiple objects:
+ * <p>
+ *
+ * <code>
+ * {{! First iterate over list1 and then iterate over list2}}
+ * {{#each list1 list2}}
+ *  {{name}}
+ * {{/each}}
+ * </code>
+ *
  * @see Function
  * @author Martin Kouba
  */
@@ -74,28 +85,18 @@ public class EachHelper extends BasicSectionHelper {
     @Override
     public void init() {
         super.init();
-        this.iterationMetadataAlias = configuration
-                .getStringPropertyValue(EngineConfigurationKey.ITERATION_METADATA_ALIAS);
+        this.iterationMetadataAlias = configuration.getStringPropertyValue(
+                EngineConfigurationKey.ITERATION_METADATA_ALIAS);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void execute(Options options) {
-
-        Object value = options.getParameters().get(0);
-
-        if (value == null) {
-            // Treat null values as empty objects
-            return;
-        } else if (value instanceof Iterable) {
-            processIterable((Iterable) value, options);
-        } else if (value.getClass().isArray()) {
-            processArray(value, options);
+        if (options.getParameters().size() == 1) {
+            processParameter(options.getParameters().get(0), options);
         } else {
-            throw new MustacheException(
-                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "%s is nor an Iterable nor an array [%s]", value,
-                    options.getTagInfo());
+            for (Object param : options.getParameters()) {
+                processParameter(param, options);
+            }
         }
     }
 
@@ -104,19 +105,33 @@ public class EachHelper extends BasicSectionHelper {
         return ImmutableSet.of(APPLY, AS);
     }
 
-    @SuppressWarnings("rawtypes")
-    private void processIterable(Iterable iterable, Options options) {
+    private void processParameter(Object param, Options options) {
+        if (param == null) {
+            // Treat null values as empty objects
+            return;
+        } else if (param instanceof Iterable) {
+            processIterable((Iterable<?>) param, options);
+        } else if (param.getClass().isArray()) {
+            processArray(param, options);
+        } else {
+            throw new MustacheException(
+                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
+                    "%s is nor an Iterable nor an array [%s]", param,
+                    options.getTagInfo());
+        }
+    }
+
+    private void processIterable(Iterable<?> iterable, Options options) {
         int size = Iterables.size(iterable);
         if (size < 1) {
             return;
         }
-        final Iterator iterator = iterable.iterator();
+        final Iterator<?> iterator = iterable.iterator();
         final Function function = initFunction(options);
         final String alias = initValueAlias(options);
         int i = 1;
         while (iterator.hasNext()) {
-            nextElement(options, iterator.next(), size, i++,
-                    function, alias);
+            nextElement(options, iterator.next(), size, i++, function, alias);
         }
     }
 
@@ -128,13 +143,13 @@ public class EachHelper extends BasicSectionHelper {
         final Function function = initFunction(options);
         final String alias = initValueAlias(options);
         for (int i = 0; i < length; i++) {
-            nextElement(options, Array.get(array, i), length, i + 1,
-                    function, alias);
+            nextElement(options, Array.get(array, i), length, i + 1, function,
+                    alias);
         }
     }
 
-    private void nextElement(Options options, Object value, int size,
-            int index, Function function, String valueAlias) {
+    private void nextElement(Options options, Object value, int size, int index,
+            Function function, String valueAlias) {
         if (function != null) {
             value = function.apply(value);
             if (SKIP_RESULT.equals(value)) {
