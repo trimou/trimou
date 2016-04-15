@@ -21,7 +21,7 @@ import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.util.Checker;
 
 /**
- * Simple with implementation with the fixed {@link Locale} instance.
+ * Simple implementation with the fixed {@link Locale} instance.
  *
  * @author Martin Kouba
  */

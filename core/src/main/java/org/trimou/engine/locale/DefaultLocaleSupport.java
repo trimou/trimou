@@ -18,18 +18,32 @@ package org.trimou.engine.locale;
 import java.util.Locale;
 
 import org.trimou.engine.config.AbstractConfigurationAware;
+import org.trimou.engine.resolver.Mapper;
+import org.trimou.util.Locales;
 
 /**
- * Always returns the default locale for this JVM.
+ * A default {@link LocaleSupport} implementation.
  *
  * @author Martin Kouba
  */
-public class DefaultLocaleSupport extends AbstractConfigurationAware implements
-        LocaleSupport {
+public class DefaultLocaleSupport extends AbstractConfigurationAware
+        implements LocaleSupport {
+
+    public static final String DEFAULT_LOCALE_KEY = "locale";
 
     @Override
     public Locale getCurrentLocale() {
+        // Return the default locale for this JVM
         return Locale.getDefault();
+    }
+
+    @Override
+    public Locale getCurrentLocale(Mapper mapper) {
+        Locale locale = Locales.getLocale(mapper.get(DEFAULT_LOCALE_KEY));
+        if (locale == null) {
+            locale = getCurrentLocale();
+        }
+        return locale;
     }
 
 }

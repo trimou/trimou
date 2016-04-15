@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2016 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.locale;
+package org.trimou.util;
 
 import java.util.Locale;
 
-import org.trimou.engine.config.ConfigurationAware;
-import org.trimou.engine.resolver.Mapper;
+import org.trimou.annotations.Internal;
 
 /**
- * Locale support. Implementation must be thread-safe.
  *
  * @author Martin Kouba
  */
-public interface LocaleSupport extends ConfigurationAware {
+@Internal
+public final class Locales {
+
+    private Locales() {
+    }
 
     /**
-     * @return the current locale
-     */
-    Locale getCurrentLocale();
-
-    /**
-     * The caller may supply a {@link Mapper} instance which could be used to
-     * lookup the current locale.
      *
-     * @param mapper
-     * @return the locale
-     * @since 2.0
+     * @param localeObject
+     * @return the {@link Locale} derived from the given locale object or
+     *         <code>null</code>
      */
-    default Locale getCurrentLocale(Mapper mapper) {
-        return getCurrentLocale();
+    public static Locale getLocale(Object localeObject) {
+        if (localeObject != null) {
+            if (localeObject instanceof Locale) {
+                return (Locale) localeObject;
+            } else {
+                return Locale.forLanguageTag(localeObject.toString());
+            }
+        }
+        return null;
     }
 
 }

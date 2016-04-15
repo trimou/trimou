@@ -25,15 +25,17 @@ import org.trimou.handlebars.BasicValueHelper;
 import org.trimou.handlebars.Options;
 import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.util.ImmutableSet;
+import org.trimou.util.Locales;
 
 /**
- * An abstract {@link Locale}-aware helper.
+ * An abstract {@link Locale}-aware helper. Subclasses are encouraged to use
+ * {@link #getLocale(Options)} to obtain the {@link Locale}.
  *
  * @author Martin Kouba
  */
 public abstract class LocaleAwareValueHelper extends BasicValueHelper {
 
-    private LocaleSupport localeSupport;
+    private volatile LocaleSupport localeSupport;
 
     @Override
     protected void init() {
@@ -51,6 +53,18 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
      * @return the current locale by means of {@link LocaleSupport}
      */
     protected Locale getCurrentLocale() {
+        return getCurrentLocale(null);
+    }
+
+    /**
+     *
+     * @param options
+     * @return the current locale by means of {@link LocaleSupport}
+     */
+    protected Locale getCurrentLocale(Options options) {
+        if (options != null) {
+            return localeSupport.getCurrentLocale((k) -> options.getValue(k));
+        }
         return localeSupport.getCurrentLocale();
     }
 
@@ -67,16 +81,14 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
         Locale locale;
         Object localeObject = options.getHash().get(LOCALE);
         if (localeObject == null) {
+            // Keep this for backward compatibility - not all LocaleSupport
+            // impls use LocaleSupport.getCurrentLocale(Mapper)
             localeObject = options.getValue(LOCALE);
         }
         if (localeObject != null) {
-            if (localeObject instanceof Locale) {
-                locale = (Locale) localeObject;
-            } else {
-                locale = Locale.forLanguageTag(localeObject.toString());
-            }
+            locale = Locales.getLocale(localeObject);
         } else {
-            locale = getCurrentLocale();
+            locale = getCurrentLocale(options);
         }
         return locale;
     }

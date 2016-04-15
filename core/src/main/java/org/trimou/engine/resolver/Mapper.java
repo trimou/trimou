@@ -16,6 +16,8 @@
 package org.trimou.engine.resolver;
 
 /**
+ * Maps keys to values.
+ * <p>
  * {@link MapResolver} handles a mapper in a similar way to
  * {@link java.util.Map}. The difference is that a mapper is not a member of
  * Java Collections Framework and does not have to contain anything. In other
@@ -25,6 +27,7 @@ package org.trimou.engine.resolver;
  * @see MapResolver
  * @since 1.6
  */
+@FunctionalInterface
 public interface Mapper {
 
     /**

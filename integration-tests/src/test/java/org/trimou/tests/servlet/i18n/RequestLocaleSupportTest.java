@@ -48,7 +48,7 @@ public class RequestLocaleSupportTest {
         WebRequest request = new WebRequest(new URL(contextPath, "test"));
         request.setAdditionalHeader("Accept-Language", "cs");
         TextPage page = webClient.getPage(request);
-        assertEquals("cs", page.getContent());
+        assertEquals("cs:::fr", page.getContent());
     }
 
 }

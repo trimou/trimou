@@ -20,7 +20,9 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.trimou.engine.locale.DefaultLocaleSupport;
+import org.trimou.engine.resolver.Mapper;
 import org.trimou.servlet.RequestHolder;
+import org.trimou.util.Locales;
 
 /**
  *
@@ -32,6 +34,15 @@ public class RequestLocaleSupport extends DefaultLocaleSupport {
     public Locale getCurrentLocale() {
         HttpServletRequest request = RequestHolder.getCurrentRequest();
         return request != null ? request.getLocale() : super.getCurrentLocale();
+    }
+
+    @Override
+    public Locale getCurrentLocale(Mapper mapper) {
+        Locale locale = Locales.getLocale(mapper.get(DEFAULT_LOCALE_KEY));
+        if (locale == null) {
+            locale = getCurrentLocale();
+        }
+        return locale;
     }
 
 }
