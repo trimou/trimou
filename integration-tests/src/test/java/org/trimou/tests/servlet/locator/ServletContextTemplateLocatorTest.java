@@ -48,30 +48,28 @@ public class ServletContextTemplateLocatorTest {
                 .addAsWebResource(new StringAsset("<html/>"),
                         "templates/html.html")
                 .addAsWebResource(
-                        new FileAsset(
-                                new File(
-                                        "src/test/resources/locator/file/encoding.html")),
+                        new FileAsset(new File(
+                                "src/test/resources/locator/file/encoding.html")),
                         "templates/encoding.html")
-                .addAsLibraries(
-                        resolve(
-                                "org.trimou:trimou-extension-servlet")
-                                );
+                .addAsLibraries(resolve("org.trimou:trimou-extension-servlet"));
     }
 
     @Test
     public void testAllIdentifiers() {
 
-        TemplateLocator locator1 = new ServletContextTemplateLocator(10,
-                "/WEB-INF/templates", "html");
-        TemplateLocator locator2 = new ServletContextTemplateLocator(9,
-                "/templates", "html");
-        TemplateLocator locator3 = new ServletContextTemplateLocator(8,
-                "/WEB-INF/templates");
+        TemplateLocator locator1 = ServletContextTemplateLocator.builder()
+                .setPriority(10).setRootPath("/WEB-INF/templates")
+                .setSuffix("html").build();
+        TemplateLocator locator2 = ServletContextTemplateLocator.builder()
+                .setPriority(9).setRootPath("/templates").setSuffix("html")
+                .build();
+        TemplateLocator locator3 = ServletContextTemplateLocator.builder()
+                .setPriority(8).setRootPath("/WEB-INF/templates").build();
 
         // Just to init the locators
         MustacheEngineBuilder.newBuilder().addTemplateLocator(locator1)
                 .addTemplateLocator(locator2).addTemplateLocator(locator3)
-                .build();
+               .build();
 
         Set<String> locator1Ids = locator1.getAllIdentifiers();
         assertEquals(3, locator1Ids.size());
@@ -96,16 +94,20 @@ public class ServletContextTemplateLocatorTest {
     @Test
     public void testLocate() {
 
-        TemplateLocator locator1 = new ServletContextTemplateLocator(10,
-                "/WEB-INF/templates", "html");
-        TemplateLocator locator2 = new ServletContextTemplateLocator(9,
-                "/templates", "html");
-        TemplateLocator locator3 = new ServletContextTemplateLocator(8,
-                "/WEB-INF/templates");
+        TemplateLocator locator1 = ServletContextTemplateLocator.builder()
+                .setPriority(10).setRootPath("/WEB-INF/templates")
+                .setSuffix("html").build();
+        TemplateLocator locator2 = ServletContextTemplateLocator.builder()
+                .setPriority(9).setRootPath("/templates").setSuffix("html")
+                .build();
+        TemplateLocator locator3 = ServletContextTemplateLocator.builder()
+                .setPriority(8).setRootPath("/WEB-INF/templates").build();
+        TemplateLocator locator4 = ServletContextTemplateLocator.builder()
+                .setPriority(7).setRootPath("/").build();
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(locator1).addTemplateLocator(locator2)
-                .addTemplateLocator(locator3).build();
+                .addTemplateLocator(locator3).addTemplateLocator(locator4).build();
 
         Mustache foo = engine.getMustache("foo");
         assertNotNull(foo);
@@ -122,6 +124,10 @@ public class ServletContextTemplateLocatorTest {
         Mustache charlie = engine.getMustache("cool/charlie");
         assertNotNull(charlie);
         assertEquals("<html/>", charlie.render(null));
+
+        charlie = engine.getMustache("templates/bart.html");
+        assertNotNull(charlie);
+        assertEquals("<html/>", charlie.render(null));
     }
 
     @Test
@@ -130,11 +136,11 @@ public class ServletContextTemplateLocatorTest {
         TemplateLocator locator = new ServletContextTemplateLocator(10,
                 "/templates", "html");
 
-        MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(locator)
                 .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING,
-                        "windows-1250").build();
+                        "windows-1250")
+                .build();
 
         Mustache encoding = engine.getMustache("encoding");
         assertNotNull(encoding);

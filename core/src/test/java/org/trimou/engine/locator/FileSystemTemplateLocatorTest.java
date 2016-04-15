@@ -46,8 +46,8 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
     @Test
     public void testLocatorNoSuffix() throws IOException {
 
-        TemplateLocator locator = new FileSystemTemplateLocator(1,
-                "src/test/resources/locator/file");
+        TemplateLocator locator = FileSystemTemplateLocator.builder()
+                .setRootPath("src/test/resources/locator/file").build();
 
         // Just to init the locator
         MustacheEngineBuilder.newBuilder().addTemplateLocator(locator).build();
@@ -72,16 +72,15 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
 
     @Test
     public void testInvalidRootDir() {
-        MustacheExceptionAssert.expect(
-                MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION).check(
-                new Runnable() {
+        MustacheExceptionAssert
+                .expect(MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION)
+                .check(new Runnable() {
                     public void run() {
                         new FileSystemTemplateLocator(1, "_?dsss");
                     }
                 });
-        ExceptionAssert.expect(
-                IllegalArgumentException.class).check(
-                new Runnable() {
+        ExceptionAssert.expect(IllegalArgumentException.class)
+                .check(new Runnable() {
                     public void run() {
                         new FileSystemTemplateLocator(1, null);
                     }
@@ -91,15 +90,15 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
     @Test
     public void testCustomVirtualPathSeparator() throws IOException {
 
-        TemplateLocator locator = new FileSystemTemplateLocator(1,
-                "src/test/resources/locator/file", "foo");
+        TemplateLocator locator = FileSystemTemplateLocator.builder()
+                .setPriority(1).setRootPath("src/test/resources/locator/file")
+                .setSuffix("foo").build();
 
         // Just to init the locator
-        MustacheEngineBuilder
-                .newBuilder()
-                .addTemplateLocator(locator)
+        MustacheEngineBuilder.newBuilder().addTemplateLocator(locator)
                 .setProperty(PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY,
-                        "*").build();
+                        "*")
+                .build();
 
         Set<String> names = locator.getAllIdentifiers();
         assertEquals(5, names.size());
@@ -120,10 +119,10 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
         TemplateLocator locator = new FileSystemTemplateLocator(1,
                 "src/test/resources/locator/file", "html");
         // Just to init the locator
-        MustacheEngineBuilder
-                .newBuilder()
+        MustacheEngineBuilder.newBuilder()
                 .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING,
-                        "windows-1250").addTemplateLocator(locator).build();
+                        "windows-1250")
+                .addTemplateLocator(locator).build();
         assertEquals("Hurá ěščřřžžýá!", read(locator.locate("encoding")));
     }
 

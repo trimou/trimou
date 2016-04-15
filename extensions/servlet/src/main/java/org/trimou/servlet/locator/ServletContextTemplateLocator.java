@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.locator.PathTemplateLocator;
+import org.trimou.engine.priority.WithPriority;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.servlet.RequestHolder;
@@ -46,12 +47,13 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
     private static final Logger logger = LoggerFactory
             .getLogger(ServletContextTemplateLocator.class);
 
-    private ServletContext servletContext;
+    private final ServletContext servletContext;
 
     /**
      *
      * @param priority
      * @param rootPath
+     * @see Builder
      */
     public ServletContextTemplateLocator(int priority, String rootPath) {
         this(priority, rootPath, null, null);
@@ -62,6 +64,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
      * @param priority
      * @param rootPath
      * @param servletContext
+     * @see Builder
      */
     public ServletContextTemplateLocator(int priority, String rootPath,
             ServletContext servletContext) {
@@ -73,6 +76,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
      * @param priority
      * @param suffix
      * @param rootPath
+     * @see Builder
      */
     public ServletContextTemplateLocator(int priority, String rootPath,
             String suffix) {
@@ -85,6 +89,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
      * @param suffix
      * @param rootPath
      * @param servletContext
+     * @see Builder
      */
     public ServletContextTemplateLocator(int priority, String rootPath,
             String suffix, ServletContext servletContext) {
@@ -95,18 +100,17 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
     @Override
     public Reader locate(String templatePath) {
-
         ServletContext ctx = getServletContext();
-
         if (ctx == null) {
             throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
                     "Servlet context not available");
         }
 
-        InputStream in = ctx.getResourceAsStream(getRootPath()
-                + addSuffix(toRealPath(templatePath)));
+        String path = getRootPath() + addSuffix(toRealPath(templatePath));
+        InputStream in = ctx.getResourceAsStream(path);
 
         if (in == null) {
+            logger.debug("Template not found: {}", path);
             return null;
         }
         logger.debug("Template located: {}", templatePath);
@@ -125,7 +129,8 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         ServletContext ctx = getServletContext();
 
         if (ctx == null) {
-            logger.warn("Servlet context not available - cannot get all available identifiers");
+            logger.warn(
+                    "Servlet context not available - cannot get all available identifiers");
             return Collections.emptySet();
         }
 
@@ -153,9 +158,8 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
             for (String resourcePath : resourcePaths) {
                 if (resourcePath.endsWith(Strings.SLASH)) {
                     // Subdirectory
-                    String subdirectory = getRootPath()
-                            + Strings.substringAfter(resourcePath,
-                                    getRootPath());
+                    String subdirectory = getRootPath() + Strings
+                            .substringAfter(resourcePath, getRootPath());
                     resources.addAll(listResources(subdirectory, ctx));
                 } else {
                     if (getSuffix() != null
@@ -197,17 +201,97 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
     protected String constructVirtualPath(String source) {
 
         List<String> parts = Strings.split(
-                Strings.substringAfter(source, getRootPath()),
-                Strings.SLASH);
+                Strings.substringAfter(source, getRootPath()), Strings.SLASH);
 
         StringBuilder name = new StringBuilder();
-        for (Iterator<String> iterator = parts.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = parts.iterator(); iterator
+                .hasNext();) {
             name.append(iterator.next());
-            if(iterator.hasNext()) {
+            if (iterator.hasNext()) {
                 name.append(getVirtualPathSeparator());
             }
         }
         return name.toString();
+    }
+
+    /**
+     *
+     * @param priority
+     * @return a new instance of builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     *
+     * @author Martin Kouba
+     */
+    public static class Builder {
+
+        private ServletContext servletContext;
+
+        private int priority;
+
+        private String rootPath;
+
+        private String suffix;
+
+        private Builder() {
+            this.rootPath = Strings.SLASH;
+            this.priority = WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
+        }
+
+        /**
+         * @param servletContext
+         *            the servletContext to set
+         * @return self
+         */
+        public Builder setServletContext(ServletContext servletContext) {
+            this.servletContext = servletContext;
+            return this;
+        }
+
+        /**
+         * @param priority
+         *            the priority to set
+         * @return self
+         */
+        public Builder setPriority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        /**
+         *
+         * @param rootPath
+         * @return self
+         */
+        public Builder setRootPath(String rootPath) {
+            this.rootPath = rootPath;
+            return this;
+        }
+
+        /**
+         * If not set, a full template name must be used.
+         *
+         * @param suffix
+         * @return self
+         */
+        public Builder setSuffix(String suffix) {
+            this.suffix = suffix;
+            return this;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public ServletContextTemplateLocator build() {
+            return new ServletContextTemplateLocator(priority, rootPath, suffix,
+                    servletContext);
+        }
+
     }
 
 }

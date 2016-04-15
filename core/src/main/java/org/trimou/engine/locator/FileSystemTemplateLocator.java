@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.engine.priority.WithPriority;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
@@ -44,6 +45,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
      *
      * @param priority
      * @param rootPath
+     * @see Builder
      */
     public FileSystemTemplateLocator(int priority, String rootPath) {
         this(priority, rootPath, null);
@@ -54,6 +56,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
      * @param priority
      * @param rootPath
      * @param suffix
+     * @see Builder
      */
     public FileSystemTemplateLocator(int priority, String rootPath,
             String suffix) {
@@ -65,20 +68,19 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
     @Override
     public Reader locateRealPath(String realPath) {
         try {
-
             File template = new File(new File(getRootPath()),
                     addSuffix(realPath));
-
             if (!Files.isFileUsable(template)) {
                 return null;
             }
             logger.debug("Template located: {}", template.getAbsolutePath());
-            return new InputStreamReader(new FileInputStream(template), getDefaultFileEncoding());
-
+            return new InputStreamReader(new FileInputStream(template),
+                    getDefaultFileEncoding());
         } catch (FileNotFoundException e) {
             return null;
         } catch (UnsupportedEncodingException e) {
-            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR, e);
+            throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                    e);
         }
     }
 
@@ -90,6 +92,72 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
     @Override
     protected File getRootDir() {
         return new File(getRootPath());
+    }
+
+    /**
+     *
+     * @param priority
+     * @return a new instance of builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     *
+     * @author Martin Kouba
+     */
+    public static class Builder {
+
+        private int priority;
+
+        private String rootPath;
+
+        private String suffix;
+
+        private Builder() {
+            this.priority = WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
+        }
+
+        /**
+         * @param priority
+         *            the priority to set
+         */
+        public Builder setPriority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        /**
+         *
+         * @param rootPath
+         * @return self
+         */
+        public Builder setRootPath(String rootPath) {
+
+            this.rootPath = rootPath;
+            return this;
+        }
+
+        /**
+         * If not set, a full template name must be used.
+         *
+         * @param suffix
+         * @return self
+         */
+        public Builder setSuffix(String suffix) {
+            this.suffix = suffix;
+            return this;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public FileSystemTemplateLocator build() {
+            return new FileSystemTemplateLocator(priority, rootPath, suffix);
+        }
+
     }
 
 }
