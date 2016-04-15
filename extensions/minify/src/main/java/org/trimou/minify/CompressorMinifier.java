@@ -36,7 +36,7 @@ import com.googlecode.htmlcompressor.compressor.Compressor;
 public abstract class CompressorMinifier<T extends Compressor> extends
         AbstractMinifier {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(CompressorMinifier.class);
 
     protected final T compressor;
@@ -62,7 +62,7 @@ public abstract class CompressorMinifier<T extends Compressor> extends
         try {
             String source = IOUtils.toString(mustacheContents);
             String compressed = compressor.compress(source);
-            logger.debug("Compression finished [saving: {} bytes]",
+            LOGGER.debug("Compression finished [saving: {} bytes]",
                     source.length() - compressed.length());
             return new StringReader(compressed);
         } catch (Exception e) {
@@ -74,7 +74,7 @@ public abstract class CompressorMinifier<T extends Compressor> extends
     @Override
     public String minify(String text) {
         String compressed = compressor.compress(text);
-        logger.debug("Compression finished [saving: {} bytes]", text.length()
+        LOGGER.debug("Compression finished [saving: {} bytes]", text.length()
                 - compressed.length());
         return compressed;
     }

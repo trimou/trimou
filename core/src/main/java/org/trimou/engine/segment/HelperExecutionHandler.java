@@ -312,7 +312,7 @@ class HelperExecutionHandler {
 
     private static class DefaultOptions implements Options {
 
-        private static final Logger logger = LoggerFactory
+        private static final Logger LOGGER = LoggerFactory
                 .getLogger(DefaultOptions.class);
 
         protected List<ValueWrapper> valueWrappers;
@@ -524,7 +524,7 @@ class HelperExecutionHandler {
                 }
             }
             if (pushed > 0) {
-                logger.info(
+                LOGGER.info(
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
                         new Object[] { pushed,
                                 HelperValidator.splitHelperName(

@@ -47,7 +47,7 @@ import org.trimou.engine.resolver.TransformResolver;
  */
 public class DateTimeFormatResolver extends TransformResolver {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DateTimeFormatResolver.class);
 
     public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
@@ -110,7 +110,7 @@ public class DateTimeFormatResolver extends TransformResolver {
         super.init();
         customPattern = configuration
                 .getStringPropertyValue(CUSTOM_PATTERN_KEY);
-        logger.info("Initialized [customPattern: {}]", customPattern);
+        LOGGER.info("Initialized [customPattern: {}]", customPattern);
     }
 
     @Override

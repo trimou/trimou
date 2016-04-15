@@ -34,7 +34,7 @@ import org.trimou.util.Strings;
 public class DefaultLiteralSupport extends AbstractConfigurationAware
         implements LiteralSupport {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultLiteralSupport.class);
 
     private final Pattern integerLiteralPattern = Patterns
@@ -59,14 +59,14 @@ public class DefaultLiteralSupport extends AbstractConfigurationAware
             try {
                 literal = Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                logger.warn("Unable to parse integer literal: " + value, e);
+                LOGGER.warn("Unable to parse integer literal: " + value, e);
             }
         } else if (longLiteralPattern.matcher(value).matches()) {
             try {
                 literal = Long
                         .parseLong(value.substring(0, value.length() - 1));
             } catch (NumberFormatException e) {
-                logger.warn("Unable to parse long literal: " + value, e);
+                LOGGER.warn("Unable to parse long literal: " + value, e);
             }
         }
         return literal;

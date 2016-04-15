@@ -37,7 +37,7 @@ import org.trimou.util.Files;
  */
 public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePathTemplateLocator.class);
 
     /**
@@ -78,7 +78,7 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
             if (Files.isFileUsable(file)) {
                 String id = stripSuffix(constructVirtualPath(file));
                 identifiers.add(id);
-                logger.debug("Template available: {}", id);
+                LOGGER.debug("Template available: {}", id);
             }
         }
         return identifiers;

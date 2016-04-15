@@ -31,7 +31,7 @@ import org.trimou.util.Checker;
  */
 public class MinifyListener extends AbstractMustacheListener {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(MinifyListener.class);
 
     private final Minifier minifier;
@@ -48,7 +48,7 @@ public class MinifyListener extends AbstractMustacheListener {
                     "MinifyListener not configured properly");
         }
         minifier.init(configuration);
-        logger.info("Minify listener initialized [minifier: {}]",
+        LOGGER.info("Minify listener initialized [minifier: {}]",
                 minifier.toString());
     }
 

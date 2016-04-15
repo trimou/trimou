@@ -58,7 +58,7 @@ import org.trimou.util.Strings;
  */
 public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ClassPathTemplateLocator.class);
 
     private final ClassLoader classLoader;
@@ -162,16 +162,16 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
                                     String id = stripSuffix(constructVirtualPath(
                                             root, file));
                                     builder.add(id);
-                                    logger.debug("Template available: {}", id);
+                                    LOGGER.debug("Template available: {}", id);
                                 }
                             }
                         }
                     } catch (URISyntaxException e) {
-                        logger.warn("Unable to process root path: {}",
+                        LOGGER.warn("Unable to process root path: {}",
                                 resource, e);
                     }
                 } else {
-                    logger.debug(
+                    LOGGER.debug(
                             "Protocol not supported - root resource is ignored: {}",
                             resource);
                 }
@@ -200,12 +200,12 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
             while (resources.hasMoreElements()) {
                 URL resource = resources.nextElement();
                 if (reader != null) {
-                    logger.warn("Another/duplicit template for {} ignored: {}",
+                    LOGGER.warn("Another/duplicit template for {} ignored: {}",
                             name, resource);
                 } else {
                     reader = new InputStreamReader(resource.openStream(),
                             getDefaultFileEncoding());
-                    logger.debug("Template {} located: {}", name, resource);
+                    LOGGER.debug("Template {} located: {}", name, resource);
                 }
             }
         } catch (IOException e) {

@@ -27,7 +27,7 @@ import com.google.gson.JsonPrimitive;
 
 public final class SpecUtils {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(SpecUtils.class);
 
     /**
@@ -83,17 +83,17 @@ public final class SpecUtils {
 
                 } catch (Exception e) {
                     failures++;
-                    logger.error("{} {}: {} - {}", idx, definition.getName(),
+                    LOGGER.error("{} {}: {} - {}", idx, definition.getName(),
                             e.getClass(), e.getMessage());
                 } catch (Error e) {
                     failures++;
-                    logger.error("{} {}: {} - {}", idx, definition.getName(),
+                    LOGGER.error("{} {}: {} - {}", idx, definition.getName(),
                             e.getClass(), e.getMessage());
                 }
             }
             // Use warn log level so that this message is visible during
             // ordinary build (warn is the default log level)
-            logger.warn(
+            LOGGER.warn(
                     "Spec tests finished [filename: {}, tests: {}, failures: {}]",
                     new Object[] { filename, definitions.size(), failures });
             if (failures > 0) {

@@ -83,7 +83,7 @@ import org.trimou.util.Nested;
  */
 public class SwitchHelper extends BasicSectionHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(SwitchHelper.class);
 
     @Override
@@ -118,7 +118,7 @@ public class SwitchHelper extends BasicSectionHelper {
         }
         for (MustacheTagInfo info : definition.getTagInfo().getChildTags()) {
             if (!isValid(info, validNames)) {
-                logger.warn(
+                LOGGER.warn(
                         "Invalid content detected {}. This helper should only contain case and default sections. Other types of segments are always rendered!",
                         info);
             }

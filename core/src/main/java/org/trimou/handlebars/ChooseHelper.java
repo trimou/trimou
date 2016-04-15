@@ -66,7 +66,7 @@ import org.trimou.util.Nested;
  */
 public class ChooseHelper extends BasicSectionHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ChooseHelper.class);
 
     @Override
@@ -94,7 +94,7 @@ public class ChooseHelper extends BasicSectionHelper {
         }
         for (MustacheTagInfo info : definition.getTagInfo().getChildTags()) {
             if (!isValid(info, validNames)) {
-                logger.warn(
+                LOGGER.warn(
                         "Invalid content detected {}. This helper should only contain when and otherwise sections. Other types of segments are always rendered!",
                         info);
             }

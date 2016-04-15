@@ -77,7 +77,7 @@ import org.trimou.engine.interpolation.MissingValueHandler;
  */
 public class AlternativesHelper extends BasicHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(AlternativesHelper.class);
 
     private final Selector selector;
@@ -122,7 +122,7 @@ public class AlternativesHelper extends BasicHelper {
     public void validate(HelperDefinition definition) {
         super.validate(definition);
         if (definition.getParameters().size() == 1) {
-            logger.warn(
+            LOGGER.warn(
                     "{} is not really useful for single parameter [template: {}, line: {}]",
                     getClass().getSimpleName(),
                     definition.getTagInfo().getTemplateName(),

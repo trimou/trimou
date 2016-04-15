@@ -60,7 +60,7 @@ public class HttpServletRequestResolver extends AbstractResolver implements
 
     private static final String NAME_REQUEST = "request";
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(HttpServletRequestResolver.class);
 
     private static final ThreadLocal<HttpServletRequestWrapper> REQUEST_WRAPPER = new ThreadLocal<HttpServletRequestWrapper>();
@@ -94,7 +94,7 @@ public class HttpServletRequestResolver extends AbstractResolver implements
                     wrapper = new HttpServletRequestWrapper(request);
                     REQUEST_WRAPPER.set(wrapper);
                 } else {
-                    logger.warn("Unable to get the current HTTP request");
+                    LOGGER.warn("Unable to get the current HTTP request");
                 }
             }
             return wrapper;

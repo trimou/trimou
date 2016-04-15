@@ -35,7 +35,7 @@ import org.trimou.engine.listener.MustacheRenderingEvent;
  */
 public final class RenderingContext implements Context {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(RenderingContext.class);
 
     private final ThreadLocal<ContextualInstanceStore> contextualInstanceStore = new ThreadLocal<ContextualInstanceStore>();
@@ -77,7 +77,7 @@ public final class RenderingContext implements Context {
     }
 
     void initialize(MustacheRenderingEvent event) {
-        logger.debug("Rendering started - init context [template: {}]",
+        LOGGER.debug("Rendering started - init context [template: {}]",
                 event.getMustacheName());
         contextualInstanceStore.set(new ContextualInstanceStore());
     }
@@ -85,10 +85,10 @@ public final class RenderingContext implements Context {
     void destroy(MustacheRenderingEvent event) {
         ContextualInstanceStore store = contextualInstanceStore.get();
         if (store == null) {
-            logger.warn("Cannot destroy context - contextual instance store is null");
+            LOGGER.warn("Cannot destroy context - contextual instance store is null");
             return;
         }
-        logger.debug("Rendering finished - destroy context [template: {}]",
+        LOGGER.debug("Rendering finished - destroy context [template: {}]",
                 event.getMustacheName());
         try {
             store.destroy();

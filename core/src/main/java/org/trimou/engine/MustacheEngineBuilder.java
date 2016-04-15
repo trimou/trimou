@@ -68,7 +68,7 @@ import org.trimou.util.Strings;
 public final class MustacheEngineBuilder implements
         ConfigurationExtensionBuilder {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(MustacheEngineBuilder.class);
 
     private static final String BUILD_PROPERTIES_FILE = "/trimou-build.properties";
@@ -174,8 +174,8 @@ public final class MustacheEngineBuilder implements
             timestamp = timestamp.substring(0, idx);
         }
 
-        logger.info("Engine built {} ({})", version, timestamp);
-        logger.debug("Engine configuration: "
+        LOGGER.info("Engine built {} ({})", version, timestamp);
+        LOGGER.debug("Engine configuration: "
                 + engine.getConfiguration().getInfo());
         isBuilt = true;
         return engine;

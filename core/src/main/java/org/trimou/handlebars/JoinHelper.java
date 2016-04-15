@@ -69,7 +69,7 @@ import org.trimou.util.ImmutableSet;
  */
 public class JoinHelper extends BasicValueHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(JoinHelper.class);
 
     @Override
@@ -155,7 +155,7 @@ public class JoinHelper extends BasicValueHelper {
             Lambda lambda = (Lambda) lambdaReference;
             if (lambda.isReturnValueInterpolated()
                     || lambda.getInputType().equals(InputType.PROCESSED)) {
-                logger.warn(
+                LOGGER.warn(
                         "The lambda is processed as with InputType#LITERAL and Lambda#isReturnValueInterpolated() set to false [{}]",
                         options.getTagInfo());
             }

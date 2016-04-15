@@ -46,7 +46,7 @@ import org.trimou.util.Strings;
  */
 class DefaultParser implements Parser {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultParser.class);
 
     private MustacheEngine engine;
@@ -232,7 +232,7 @@ class DefaultParser implements Parser {
             }
         } else {
             // False alarm - not an end delimiter
-            logger.warn(
+            LOGGER.warn(
                     "Tag contains part of the end delimiter - most probably an invalid key [part: {}, line: {}]",
                     delimiters.getStartPart(delimiterIdx), line);
             state = State.TAG;

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 final class ContextualInstanceStore {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ContextualInstanceStore.class);
 
     private final Map<Contextual<?>, ContextualInstance<?>> contextualInstancesMap;
@@ -60,7 +60,7 @@ final class ContextualInstanceStore {
     void destroy() {
         for (ContextualInstance<?> contextualInstance : contextualInstancesMap
                 .values()) {
-            logger.trace("Destroying contextual instance [contextual: {}]",
+            LOGGER.trace("Destroying contextual instance [contextual: {}]",
                     contextualInstance.getContextual());
             contextualInstance.destroy();
         }

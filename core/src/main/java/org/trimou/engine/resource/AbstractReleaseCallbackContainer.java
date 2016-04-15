@@ -31,7 +31,7 @@ import org.trimou.annotations.Internal;
 public abstract class AbstractReleaseCallbackContainer implements
         ReleaseCallbackContainer {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(AbstractReleaseCallbackContainer.class);
 
     private List<ReleaseCallback> releaseCallbacks = null;
@@ -48,7 +48,7 @@ public abstract class AbstractReleaseCallbackContainer implements
                 try {
                     callback.release();
                 } catch (Exception e) {
-                    logger.warn(
+                    LOGGER.warn(
                             "Exception occured during release callback invocation:",
                             e);
                 }

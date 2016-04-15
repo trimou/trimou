@@ -76,7 +76,7 @@ public class PrettyTimeResolver extends TransformResolver implements
     public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
             PrettyTimeResolver.class.getName() + ".enabled", true);
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(PrettyTimeResolver.class);
 
     private final PrettyTimeFactory factory;
@@ -148,7 +148,7 @@ public class PrettyTimeResolver extends TransformResolver implements
                         return factory.createPrettyTime(key);
                     }
                 }, null, 10l, null);
-        logger.info("Initialized [matchingName: {}]", matchingName(0));
+        LOGGER.info("Initialized [matchingName: {}]", matchingName(0));
     }
 
     @Override

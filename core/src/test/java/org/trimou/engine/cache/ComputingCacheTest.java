@@ -25,7 +25,7 @@ import org.trimou.AbstractEngineTest;
  */
 public class ComputingCacheTest extends AbstractEngineTest {
 
-    protected static final Logger logger = LoggerFactory
+    protected static final Logger LOGGER = LoggerFactory
             .getLogger(ComputingCacheTest.class);
 
     @Test

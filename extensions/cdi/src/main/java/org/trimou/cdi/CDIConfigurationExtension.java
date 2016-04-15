@@ -34,7 +34,7 @@ import org.trimou.engine.config.ConfigurationExtension;
  */
 public class CDIConfigurationExtension implements ConfigurationExtension {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(CDIConfigurationExtension.class);
 
     @Override
@@ -43,7 +43,7 @@ public class CDIConfigurationExtension implements ConfigurationExtension {
         BeanManager beanManager = BeanManagerLocator.locate();
 
         if (beanManager == null) {
-            logger.warn("CDI extension not operational - unable to locate BeanManager");
+            LOGGER.warn("CDI extension not operational - unable to locate BeanManager");
             return;
         }
         builder.addResolver(new CDIBeanResolver(beanManager));

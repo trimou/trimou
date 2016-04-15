@@ -38,7 +38,7 @@ import org.trimou.util.Strings;
  */
 public class FileSystemTemplateLocator extends FilePathTemplateLocator {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(FileSystemTemplateLocator.class);
 
     /**
@@ -73,7 +73,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
             if (!Files.isFileUsable(template)) {
                 return null;
             }
-            logger.debug("Template located: {}", template.getAbsolutePath());
+            LOGGER.debug("Template located: {}", template.getAbsolutePath());
             return new InputStreamReader(new FileInputStream(template),
                     getDefaultFileEncoding());
         } catch (FileNotFoundException e) {

@@ -34,7 +34,7 @@ import java.util.Map;
  * @author Minkyu Cho
  */
 public class TrimouView extends AbstractTemplateView {
-    private static final Logger logger = LoggerFactory.getLogger(TrimouView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrimouView.class);
 
     private String viewName;
 

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BeanManagerLocator {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(BeanManagerLocator.class);
 
     private static final String CDI_CLASS_NAME = "javax.enterprise.inject.spi.CDI";
@@ -61,7 +61,7 @@ public class BeanManagerLocator {
         if (beanManager != null) {
             return beanManager;
         } else if (extensionProvidedBeanManager != null) {
-            logger.info("Finally using extension provided BeanManager instance");
+            LOGGER.info("Finally using extension provided BeanManager instance");
             return extensionProvidedBeanManager;
         }
         return null;
@@ -76,7 +76,7 @@ public class BeanManagerLocator {
 
         try {
             cdiClass = classLoader.loadClass(CDI_CLASS_NAME);
-            logger.info("CDI 1.1 - using javax.enterprise.inject.spi.CDI to obtain BeanManager instance");
+            LOGGER.info("CDI 1.1 - using javax.enterprise.inject.spi.CDI to obtain BeanManager instance");
         } catch (ClassNotFoundException e) {
             // CDI 1.0
         } catch (NoClassDefFoundError e) {
@@ -91,7 +91,7 @@ public class BeanManagerLocator {
                 beanManager = (BeanManager) getBeanManagerMethod.invoke(cdi);
             } catch (Exception e) {
                 // Reflection invocation failed
-                logger.warn("Unable to invoke CDI.current().getBeanManager()",
+                LOGGER.warn("Unable to invoke CDI.current().getBeanManager()",
                         e);
             }
         }
@@ -102,7 +102,7 @@ public class BeanManagerLocator {
 
         BeanManager beanManager = null;
 
-        logger.info("CDI 1.0 - using JNDI to obtain BeanManager instance");
+        LOGGER.info("CDI 1.0 - using JNDI to obtain BeanManager instance");
 
         try {
 
@@ -113,16 +113,16 @@ public class BeanManagerLocator {
                     beanManager = (BeanManager) ctx.lookup(name);
                 } catch (NamingException e) {
                     // Not found
-                    logger.info("Unable to find BeanManager at: {}", name);
+                    LOGGER.info("Unable to find BeanManager at: {}", name);
                 }
                 if (beanManager != null) {
-                    logger.info("BeanManager found at: {}", name);
+                    LOGGER.info("BeanManager found at: {}", name);
                     break;
                 }
             }
 
         } catch (NamingException e) {
-            logger.warn("JNDI lookup failed - unable to create initial context");
+            LOGGER.warn("JNDI lookup failed - unable to create initial context");
         }
         return beanManager;
     }

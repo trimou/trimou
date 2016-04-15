@@ -26,7 +26,7 @@ import org.trimou.servlet.i18n.RequestLocaleSupport;
 @WebServlet("/test")
 public class LocaleServlet extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(LocaleServlet.class);
 
     private static final long serialVersionUID = 1L;
@@ -62,7 +62,7 @@ public class LocaleServlet extends HttpServlet {
 
         String locale = engine.compileMustache("request_locale_support_test", "{{resolverLocale}}:::{{getLocale}}")
                 .render(null);
-        logger.info("Trimou current locale: {}", locale);
+        LOGGER.info("Trimou current locale: {}", locale);
         resp.setContentType("text/plain");
         resp.getWriter().append(locale);
     }

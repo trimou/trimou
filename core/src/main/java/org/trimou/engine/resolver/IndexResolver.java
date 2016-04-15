@@ -28,7 +28,7 @@ import org.trimou.util.Strings;
  */
 public abstract class IndexResolver extends AbstractResolver {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(IndexResolver.class);
 
     public IndexResolver(int priority) {
@@ -78,14 +78,14 @@ public abstract class IndexResolver extends AbstractResolver {
             index = Integer.valueOf(name);
         } catch (NumberFormatException e) {
             // Index is not an integer
-            logger.warn("Index '{}' is not a valid integer value, key: '{}'",
+            LOGGER.warn("Index '{}' is not a valid integer value, key: '{}'",
                     name, maxSize, key != null ? key : "n/a");
             return null;
         }
 
         if (index < 0 || index >= maxSize) {
             // Index out of bound
-            logger.warn(
+            LOGGER.warn(
                     "Trying to access index {} but the list/array has only {} elements, key: '{}'",
                     index, maxSize, key != null ? key : "n/a");
             return null;

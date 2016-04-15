@@ -33,7 +33,7 @@ public class TrimouExtension implements Extension {
 
     private RenderingContext renderingContext;
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(TrimouExtension.class);
 
     /**
@@ -43,7 +43,7 @@ public class TrimouExtension implements Extension {
      */
     public void observeAfterBeanDiscovery(@Observes AfterBeanDiscovery event,
             BeanManager beanManager) {
-        logger.info("Register context for @RenderingScoped");
+        LOGGER.info("Register context for @RenderingScoped");
         renderingContext = new RenderingContext();
         event.addContext(renderingContext);
         // Workaround to support CDI 1.0 and SE

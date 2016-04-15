@@ -44,7 +44,7 @@ import org.trimou.util.Strings;
  */
 public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ServletContextTemplateLocator.class);
 
     private final ServletContext servletContext;
@@ -110,10 +110,10 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         InputStream in = ctx.getResourceAsStream(path);
 
         if (in == null) {
-            logger.debug("Template not found: {}", path);
+            LOGGER.debug("Template not found: {}", path);
             return null;
         }
-        logger.debug("Template located: {}", templatePath);
+        LOGGER.debug("Template located: {}", templatePath);
 
         try {
             return new InputStreamReader(in, getDefaultFileEncoding());
@@ -129,7 +129,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         ServletContext ctx = getServletContext();
 
         if (ctx == null) {
-            logger.warn(
+            LOGGER.warn(
                     "Servlet context not available - cannot get all available identifiers");
             return Collections.emptySet();
         }
@@ -144,7 +144,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
         for (String resource : resources) {
             String id = stripSuffix(constructVirtualPath(resource));
             identifiers.add(id);
-            logger.debug("Template available: {}", id);
+            LOGGER.debug("Template available: {}", id);
         }
         return identifiers;
     }

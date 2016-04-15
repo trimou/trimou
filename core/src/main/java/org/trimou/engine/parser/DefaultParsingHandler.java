@@ -64,7 +64,7 @@ import org.trimou.util.Strings;
  */
 class DefaultParsingHandler implements ParsingHandler {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultParsingHandler.class);
 
     private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
@@ -108,7 +108,7 @@ class DefaultParsingHandler implements ParsingHandler {
                         EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED);
 
         start = System.currentTimeMillis();
-        logger.debug("Start compilation of {}", new Object[] { name });
+        LOGGER.debug("Start compilation of {}", new Object[] { name });
     }
 
     @Override
@@ -138,7 +138,7 @@ class DefaultParsingHandler implements ParsingHandler {
             nested.setParent(template);
         }
 
-        logger.debug("Compilation of {} finished [time: {} ms, segments: {}]",
+        LOGGER.debug("Compilation of {} finished [time: {} ms, segments: {}]",
                 new Object[] { templateName, System.currentTimeMillis() - start,
                         template.getRootSegment().getSegmentsSize(true) });
 
@@ -328,7 +328,7 @@ class DefaultParsingHandler implements ParsingHandler {
      */
     private void push(ContainerSegmentBase container) {
         containerStack.addFirst(container);
-        logger.trace("Push {} [name: {}]", container.getType(),
+        LOGGER.trace("Push {} [name: {}]", container.getType(),
                 container.getContent());
     }
 
@@ -338,7 +338,7 @@ class DefaultParsingHandler implements ParsingHandler {
      */
     private ContainerSegmentBase pop() {
         ContainerSegmentBase container = containerStack.removeFirst();
-        logger.trace("Pop {} [name: {}]", container.getType(),
+        LOGGER.trace("Pop {} [name: {}]", container.getType(),
                 container.getContent());
         return container;
     }
@@ -350,7 +350,7 @@ class DefaultParsingHandler implements ParsingHandler {
      */
     private void addSegment(SegmentBase segment) {
         containerStack.peekFirst().addSegment(segment);
-        logger.trace("Add {}", segment);
+        LOGGER.trace("Add {}", segment);
     }
 
     /**

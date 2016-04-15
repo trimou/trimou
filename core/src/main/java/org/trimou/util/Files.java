@@ -30,7 +30,7 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class Files {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(Files.class);
 
     private Files() {
@@ -63,15 +63,15 @@ public final class Files {
 
     public static boolean isDirectoryUsable(File dir) {
         if (!dir.exists()) {
-            logger.warn("Dir not usable - does not exist: {}", dir);
+            LOGGER.warn("Dir not usable - does not exist: {}", dir);
             return false;
         }
         if (!dir.canRead()) {
-            logger.warn("Dir not usable - cannot read: {}", dir);
+            LOGGER.warn("Dir not usable - cannot read: {}", dir);
             return false;
         }
         if (!dir.isDirectory()) {
-            logger.warn("Dir not usable - not a directory: {}", dir);
+            LOGGER.warn("Dir not usable - not a directory: {}", dir);
             return false;
         }
         return true;
@@ -79,15 +79,15 @@ public final class Files {
 
     public static boolean isFileUsable(File file) {
         if (!file.exists()) {
-            logger.warn("File not usable - does not exist: {}", file);
+            LOGGER.warn("File not usable - does not exist: {}", file);
             return false;
         }
         if (!file.canRead()) {
-            logger.warn("File not usable - cannot read: {}", file);
+            LOGGER.warn("File not usable - cannot read: {}", file);
             return false;
         }
         if (!file.isFile()) {
-            logger.warn("File not usable - not a normal file: {}", file);
+            LOGGER.warn("File not usable - not a normal file: {}", file);
             return false;
         }
         return true;

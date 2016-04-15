@@ -57,7 +57,7 @@ import org.trimou.util.Strings;
  */
 abstract class MatchingSectionHelper extends BasicSectionHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(MatchingSectionHelper.class);
 
     private final String elseStartDelimiter;
@@ -180,7 +180,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
         String customLogic = hash.get(LOGIC).toString();
         EvaluationLogic logic = EvaluationLogic.parse(customLogic);
         if (logic == null) {
-            logger.warn(
+            LOGGER.warn(
                     "Unsupported evaluation logic specified: {}, using the default one: {}",
                     customLogic, getDefaultLogic());
             logic = getDefaultLogic();

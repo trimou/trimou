@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class PingService {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(PingService.class);
 
     private AtomicLong generator = new AtomicLong(System.currentTimeMillis());
@@ -47,7 +47,7 @@ public class PingService {
         Ping ping = new Ping(generator.incrementAndGet(), remoteAddr,
                 new Date());
         pings.put(ping.getId(), ping);
-        logger.info("{}", ping);
+        LOGGER.info("{}", ping);
     }
 
     /**

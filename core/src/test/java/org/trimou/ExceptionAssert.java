@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExceptionAssert<T extends Exception> {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ExceptionAssert.class);
 
     private final Class<T> exceptionClazz;
@@ -39,7 +39,7 @@ public class ExceptionAssert<T extends Exception> {
                     fail("Unexpected exception thrown: " + e);
                 }
                 checkException((T) e);
-                logger.info("{} check successful, message: {}", exceptionClazz,
+                LOGGER.info("{} check successful, message: {}", exceptionClazz,
                         e.getMessage());
             }
         }

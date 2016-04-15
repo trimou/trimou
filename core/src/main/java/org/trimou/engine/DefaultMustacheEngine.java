@@ -49,7 +49,7 @@ import org.trimou.util.IOUtils;
  */
 class DefaultMustacheEngine implements MustacheEngine {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultMustacheEngine.class);
 
     private final ComputingCache<String, Optional<Mustache>> templateCache;
@@ -88,7 +88,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
             templateCache = null;
             sourceCache = null;
-            logger.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
+            LOGGER.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
         } else {
             if (configuration
                     .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
@@ -101,7 +101,7 @@ class DefaultMustacheEngine implements MustacheEngine {
             } else {
                 templateCache = null;
                 sourceCache = null;
-                logger.info("Template cache explicitly disabled!");
+                LOGGER.info("Template cache explicitly disabled!");
             }
         }
     }
@@ -130,7 +130,7 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     public void invalidateTemplateCache() {
         if (templateCache == null) {
-            logger.warn("Unable to invalidate the template cache - it's disabled!");
+            LOGGER.warn("Unable to invalidate the template cache - it's disabled!");
             return;
         }
         templateCache.clear();
@@ -147,7 +147,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 }, new ComputingCache.Listener<String>() {
                     @Override
                     public void entryInvalidated(String key, String cause) {
-                        logger.debug(
+                        LOGGER.debug(
                                 "Removed template from cache [templateId: {}, cause: {}]",
                                 key, cause);
                     }
@@ -168,7 +168,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 }, new ComputingCache.Listener<String>() {
                     @Override
                     public void entryInvalidated(String key, String cause) {
-                        logger.debug(
+                        LOGGER.debug(
                                 "Removed template source from cache [templateId: {}, cause: {}]",
                                 key, cause);
                     }
@@ -183,7 +183,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
 
         if (expirationTimeout > 0) {
-            logger.info("{} cache expiration timeout set: {} seconds", name,
+            LOGGER.info("{} cache expiration timeout set: {} seconds", name,
                     expirationTimeout);
             expirationTimeout = expirationTimeout * 1000l;
         } else {
@@ -256,7 +256,7 @@ class DefaultMustacheEngine implements MustacheEngine {
             }
             return IOUtils.toString(reader);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
             return null;
         } finally {
             closeReader(reader, templateId);
@@ -268,7 +268,7 @@ class DefaultMustacheEngine implements MustacheEngine {
             try {
                 reader.close();
             } catch (IOException e) {
-                logger.warn("Unable to close the reader for " + templateId, e);
+                LOGGER.warn("Unable to close the reader for " + templateId, e);
             }
         }
     }

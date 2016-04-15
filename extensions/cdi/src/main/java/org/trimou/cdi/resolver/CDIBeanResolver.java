@@ -51,7 +51,7 @@ import org.trimou.engine.resource.ReleaseCallback;
  */
 public class CDIBeanResolver extends AbstractResolver {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(CDIBeanResolver.class);
 
     public static final String COMPUTING_CACHE_CONSUMER_ID = CDIBeanResolver.class
@@ -149,7 +149,7 @@ public class CDIBeanResolver extends AbstractResolver {
                             return Optional.<Bean<?>> of((Bean<?>) beanManager
                                     .resolve(beans));
                         } catch (AmbiguousResolutionException e) {
-                            logger.warn(
+                            LOGGER.warn(
                                     "An ambiguous EL name exists [name: {}]",
                                     key);
                             return Optional.empty();
@@ -157,7 +157,7 @@ public class CDIBeanResolver extends AbstractResolver {
 
                     }
                 }, null, beanCacheMaxSize, null);
-        logger.debug("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
+        LOGGER.debug("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
     }
 
     @Override

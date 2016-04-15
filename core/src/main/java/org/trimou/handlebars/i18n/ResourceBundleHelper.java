@@ -97,7 +97,7 @@ import org.trimou.util.ImmutableSet;
  */
 public class ResourceBundleHelper extends LocaleAwareValueHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ResourceBundleHelper.class);
 
     private final String defaultBaseName;
@@ -169,7 +169,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
         String customFormat = hash.get(FORMAT).toString();
         Format format = Format.parse(customFormat);
         if (format == null) {
-            logger.warn(
+            LOGGER.warn(
                     "Unsupported format specified: {}, using the default one: {}",
                     customFormat, defaultFormat.getValue());
             format = defaultFormat;

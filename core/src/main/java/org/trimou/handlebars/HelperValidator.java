@@ -38,7 +38,7 @@ import org.trimou.util.Strings;
  */
 public final class HelperValidator {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(HelperValidator.class);
 
     private HelperValidator() {
@@ -66,7 +66,7 @@ public final class HelperValidator {
                     paramSize, size), helperClazz, definition);
         }
         if (size > paramSize) {
-            logger.trace(
+            LOGGER.trace(
                     "{} superfluous parameters detected [helper: {}, template: {}, line: {}]",
                     size - paramSize, helperClazz.getName(),
                     definition.getTagInfo().getTemplateName(),
@@ -114,7 +114,7 @@ public final class HelperValidator {
                     hashSize, size), helperClazz, definition);
         }
         if (size > hashSize) {
-            logger.trace(
+            LOGGER.trace(
                     "{} superfluous hash entries detected [helper: {}, template: {}, line: {}]",
                     size - hashSize, helperClazz.getName(),
                     definition.getTagInfo().getTemplateName(),
@@ -152,7 +152,7 @@ public final class HelperValidator {
         Set<String> supportedHashKeys = helper.getSupportedHashKeys();
         for (String key : definition.getHash().keySet()) {
             if (!supportedHashKeys.contains(key)) {
-                logger.info(
+                LOGGER.info(
                         "Unsupported hash key detected [key: {}, helper: {}, template: {}, line: {}]",
                         key, helper.getClass().getName(),
                         definition.getTagInfo().getTemplateName(),

@@ -36,7 +36,7 @@ import org.trimou.util.Strings;
  */
 public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(PathTemplateLocator.class);
 
     /**
@@ -81,7 +81,7 @@ public abstract class PathTemplateLocator<T> extends AbstractTemplateLocator {
                 .getStringPropertyValue(VIRTUAL_PATH_SEPARATOR_KEY);
         this.defaultFileEncoding = configuration.getStringPropertyValue(
                 EngineConfigurationKey.DEFAULT_FILE_ENCODING);
-        logger.info(
+        LOGGER.info(
                 "{} initialized [virtualPathSeparator: {}, defaultFileEncoding: {}]",
                 getClass().getSimpleName(), getVirtualPathSeparator(),
                 getDefaultFileEncoding());

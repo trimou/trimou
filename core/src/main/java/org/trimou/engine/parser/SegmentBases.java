@@ -40,7 +40,7 @@ import org.trimou.util.Strings;
  */
 final class SegmentBases {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(SegmentBases.class);
 
     private SegmentBases() {
@@ -67,14 +67,14 @@ final class SegmentBases {
                     }
                     segmentsToRemove.add(segment);
                 }
-                logger.trace("Segment line {} is standalone", idx);
+                LOGGER.trace("Segment line {} is standalone", idx);
             }
         }
 
         // Then remove segments
         if (!segmentsToRemove.isEmpty()) {
             removeSegments(segmentsToRemove, rootSegment);
-            logger.debug("{} segments removed", segmentsToRemove.size());
+            LOGGER.debug("{} segments removed", segmentsToRemove.size());
         }
 
     }

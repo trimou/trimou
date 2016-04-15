@@ -77,7 +77,7 @@ import org.trimou.util.ImmutableSet;
  */
 public class LogHelper extends BasicValueHelper {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(LogHelper.class);
 
     private final LoggerAdapter adapter;
@@ -130,7 +130,7 @@ public class LogHelper extends BasicValueHelper {
         String customLevel = hash.get(LEVEL).toString();
         Level level = Level.parse(customLevel);
         if (level == null) {
-            logger.warn(
+            LOGGER.warn(
                     "Unsupported level specified: {}, using the default one: {}",
                     customLevel, defaultLevel);
             level = defaultLevel;

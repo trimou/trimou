@@ -82,7 +82,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
     private static class ConcurrentHashMapAdapter<K, V>
             implements ComputingCache<K, V> {
 
-        private static final Logger logger = LoggerFactory
+        private static final Logger LOGGER = LoggerFactory
                 .getLogger(ConcurrentHashMapAdapter.class);
 
         private final MaxSizeStrategy maxSizeStrategy;
@@ -213,7 +213,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
                 // Clearing the whole map is not quite elegant, but exceeding
                 // the
                 // limit should be an exteme situation
-                logger.debug(
+                LOGGER.debug(
                         "Max size limit of {} exceeded - removing all entries from the cache",
                         maxSize);
                 if (listener != null) {
@@ -227,7 +227,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
                 }
                 break;
             default:
-                logger.warn(
+                LOGGER.warn(
                         "Max size limit of {} exceeded but the eviction strategy {} is not implemented!",
                         maxSize, maxSizeStrategy);
                 break;

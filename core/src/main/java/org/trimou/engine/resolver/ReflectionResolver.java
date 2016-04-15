@@ -68,7 +68,7 @@ public class ReflectionResolver extends AbstractResolver {
     public static final ConfigurationKey HINT_FALLBACK_ENABLED_KEY = new SimpleConfigurationKey(
             ReflectionResolver.class.getName() + ".hintFallbackEnabled", true);
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(ReflectionResolver.class);
 
     private static final MemberWrapper ARRAY_GET_LENGTH = (instance) -> Array.getLength(instance);
@@ -141,7 +141,7 @@ public class ReflectionResolver extends AbstractResolver {
     public void init() {
         long memberCacheMaxSize = configuration
                 .getLongPropertyValue(MEMBER_CACHE_MAX_SIZE_KEY);
-        logger.debug("Initialized [memberCacheMaxSize: {}]",
+        LOGGER.debug("Initialized [memberCacheMaxSize: {}]",
                 memberCacheMaxSize);
         if (memberCacheMaxSize > 0) {
             memberCache = configuration.getComputingCacheFactory().create(
@@ -281,7 +281,7 @@ public class ReflectionResolver extends AbstractResolver {
             }
 
             if (method.isBridge()) {
-                logger.debug("Skipping bridge method {}", method);
+                LOGGER.debug("Skipping bridge method {}", method);
                 continue;
             }
 
@@ -300,7 +300,7 @@ public class ReflectionResolver extends AbstractResolver {
             foundMatch = (foundGetMatch != null ? foundGetMatch : foundIsMatch);
         }
 
-        logger.debug("{} method {}found [type: {}]", new Object[] { name,
+        LOGGER.debug("{} method {}found [type: {}]", new Object[] { name,
                 foundMatch != null ? "" : "not ", clazz.getName() });
         return foundMatch;
     }
@@ -324,7 +324,7 @@ public class ReflectionResolver extends AbstractResolver {
                 found = field;
             }
         }
-        logger.debug("{} field {}found [type: {}]", new Object[] { name,
+        LOGGER.debug("{} field {}found [type: {}]", new Object[] { name,
                 found != null ? "" : "not ", clazz.getName() });
         return found;
     }

@@ -67,7 +67,7 @@ import org.trimou.util.Strings;
  */
 class DefaultConfiguration implements Configuration {
 
-    private static final Logger logger = LoggerFactory
+    private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultConfiguration.class);
 
     private static final String RESOURCE_FILE = "/trimou.properties";
@@ -174,7 +174,7 @@ class DefaultConfiguration implements Configuration {
                 getConfigurationKeysToProcess(components));
 
         if (getBooleanPropertyValue(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
-            logger.warn(
+            LOGGER.warn(
                     "{}.{} is deprecated, use appropriate MissingValueHandler instance instead",
                     EngineConfigurationKey.class.getSimpleName(),
                     EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM);
