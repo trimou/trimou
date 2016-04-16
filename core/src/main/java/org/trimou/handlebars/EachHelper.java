@@ -19,7 +19,9 @@ import static org.trimou.handlebars.OptionsHashKeys.APPLY;
 import static org.trimou.handlebars.OptionsHashKeys.AS;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.trimou.engine.config.EngineConfigurationKey;
@@ -92,10 +94,35 @@ public class EachHelper extends BasicSectionHelper {
     @Override
     public void execute(Options options) {
         if (options.getParameters().size() == 1) {
-            processParameter(options.getParameters().get(0), options);
+            Object param = options.getParameters().get(0);
+            if (param == null) {
+                // Treat null values as empty objects
+                return;
+            }
+            processParameter(param, options, 1, getSize(param));
         } else {
-            for (Object param : options.getParameters()) {
-                processParameter(param, options);
+            int size = 0;
+            int index = 1;
+            List<Object> params = new ArrayList<>(options.getParameters());
+            for (Iterator<Object> iterator = params.iterator(); iterator
+                    .hasNext();) {
+                Object param = iterator.next();
+                int paramSize = 0;
+                if (param != null) {
+                    paramSize = getSize(param);
+                }
+                if (paramSize > 0) {
+                    size += paramSize;
+                } else {
+                    // Treat null values as empty objects
+                    iterator.remove();
+                }
+            }
+            if (size == 0) {
+                return;
+            }
+            for (Object param : params) {
+                index = processParameter(param, options, index, size);
             }
         }
     }
@@ -105,14 +132,12 @@ public class EachHelper extends BasicSectionHelper {
         return ImmutableSet.of(APPLY, AS);
     }
 
-    private void processParameter(Object param, Options options) {
-        if (param == null) {
-            // Treat null values as empty objects
-            return;
-        } else if (param instanceof Iterable) {
-            processIterable((Iterable<?>) param, options);
+    private int processParameter(Object param, Options options, int index,
+            int size) {
+        if (param instanceof Iterable) {
+            return processIterable((Iterable<?>) param, options, index, size);
         } else if (param.getClass().isArray()) {
-            processArray(param, options);
+            return processArray(param, options, index, size);
         } else {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
@@ -121,31 +146,37 @@ public class EachHelper extends BasicSectionHelper {
         }
     }
 
-    private void processIterable(Iterable<?> iterable, Options options) {
-        int size = Iterables.size(iterable);
-        if (size < 1) {
-            return;
-        }
-        final Iterator<?> iterator = iterable.iterator();
-        final Function function = initFunction(options);
-        final String alias = initValueAlias(options);
-        int i = 1;
+    private int processIterable(Iterable<?> iterable, Options options,
+            int index, int size) {
+        Iterator<?> iterator = iterable.iterator();
+        Function function = initFunction(options);
+        String alias = initValueAlias(options);
         while (iterator.hasNext()) {
-            nextElement(options, iterator.next(), size, i++, function, alias);
-        }
-    }
-
-    private void processArray(Object array, Options options) {
-        int length = Array.getLength(array);
-        if (length < 1) {
-            return;
-        }
-        final Function function = initFunction(options);
-        final String alias = initValueAlias(options);
-        for (int i = 0; i < length; i++) {
-            nextElement(options, Array.get(array, i), length, i + 1, function,
+            nextElement(options, iterator.next(), size, index++, function,
                     alias);
         }
+        return index;
+    }
+
+    private int processArray(Object array, Options options, int index,
+            int size) {
+        int length = Array.getLength(array);
+        Function function = initFunction(options);
+        String alias = initValueAlias(options);
+        for (int i = 0; i < length; i++) {
+            nextElement(options, Array.get(array, i), size, index++, function,
+                    alias);
+        }
+        return index;
+    }
+
+    private int getSize(Object param) {
+        if (param instanceof Iterable) {
+            return Iterables.size((Iterable<?>) param);
+        } else if (param.getClass().isArray()) {
+            return Array.getLength(param);
+        }
+        return 0;
     }
 
     private void nextElement(Options options, Object value, int size, int index,

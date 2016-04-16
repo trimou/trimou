@@ -55,7 +55,6 @@ public final class ImmutableIterationMeta implements Mapper {
      */
     public ImmutableIterationMeta(String alias, int size, int index,
             String valueAlias, Object value) {
-        super();
         this.alias = alias;
         this.size = size;
         this.index = index;
