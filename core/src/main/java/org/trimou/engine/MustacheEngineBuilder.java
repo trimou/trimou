@@ -107,6 +107,8 @@ public final class MustacheEngineBuilder implements
 
     private LiteralSupport literalSupport;
 
+    private ClassLoader configurationExtensionClassLoader;
+
     /**
      * Don't create a new instance.
      *
@@ -475,6 +477,19 @@ public final class MustacheEngineBuilder implements
     }
 
     /**
+     * Set the {@link ClassLoader} used to load {@link ConfigurationExtension}s.
+     *
+     * @param configurationExtensionClassLoader
+     * @return self
+     */
+    public MustacheEngineBuilder setConfigurationExtensionClassLoader(ClassLoader configurationExtensionClassLoader) {
+        Checker.checkArgumentNotNull(configurationExtensionClassLoader);
+        checkNotBuilt();
+        this.configurationExtensionClassLoader = configurationExtensionClassLoader;
+        return this;
+    }
+
+    /**
      *
      * @return new instance of builder
      */
@@ -487,6 +502,7 @@ public final class MustacheEngineBuilder implements
      * @author Martin Kouba
      * @see MustacheEngineBuilder#registerCallback(EngineBuiltCallback)
      */
+    @FunctionalInterface
     public interface EngineBuiltCallback {
 
         public void engineBuilt(MustacheEngine engine);
@@ -551,6 +567,10 @@ public final class MustacheEngineBuilder implements
 
     public LiteralSupport getLiteralSupport() {
         return literalSupport;
+    }
+
+    public ClassLoader getConfigurationExtensionClassLoader() {
+        return configurationExtensionClassLoader;
     }
 
     private void checkNotBuilt() {
