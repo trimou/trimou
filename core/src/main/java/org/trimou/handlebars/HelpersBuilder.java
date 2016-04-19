@@ -102,6 +102,8 @@ public final class HelpersBuilder {
 
     public static final String CACHE = "cache";
 
+    public static final String REPEAT = "repeat";
+
     private final ImmutableMapBuilder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -450,6 +452,16 @@ public final class HelpersBuilder {
     }
 
     /**
+     * Add an instance of {@link RepeatHelper}.
+     *
+     * @return self
+     */
+    public HelpersBuilder addRepeat() {
+        builder.put(REPEAT, new RepeatHelper());
+        return this;
+    }
+
+    /**
      *
      * @return self
      */
@@ -487,6 +499,7 @@ public final class HelpersBuilder {
         addMin();
         addMax();
         addCache();
+        addRepeat();
         return this;
     }
 

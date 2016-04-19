@@ -74,4 +74,10 @@ public final class OptionsHashKeys {
 
     public static final String UNIT = "unit";
 
+    public static final String TIMES = "times";
+
+    public static final String WHILE = "while";
+
+    public static final String LIMIT = "limit";
+
 }

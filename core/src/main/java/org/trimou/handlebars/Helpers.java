@@ -16,6 +16,7 @@
 package org.trimou.handlebars;
 
 import org.trimou.engine.MustacheTagType;
+import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 
 /**
  *
@@ -57,6 +58,47 @@ public class Helpers {
     public static boolean isUnescapeVariable(Options options) {
         return options.getTagInfo().getType()
                 .equals(MustacheTagType.UNESCAPE_VARIABLE);
+    }
+
+    /**
+     *
+     * @param options
+     * @param key
+     * @return the {@link Integer} value for the given key or null if not
+     *         specified
+     */
+    public static Integer initIntHashEntry(Options options, String key) {
+        Object value = options.getHash().get(key);
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Integer) {
+            return (Integer) value;
+        } else {
+            return Integer.valueOf(value.toString());
+        }
+    }
+
+    /**
+     *
+     * @param options
+     * @param key
+     * @param defaultValue
+     * @return the {@link Integer} value for the given key or default value if not
+     *         specified
+     */
+    public static Integer initIntHashEntry(Options options, String key, Integer defaultValue) {
+        Integer value = initIntHashEntry(options, key);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     *
+     * @param value
+     * @return <code>true</code> if the given value represents a {@link ValuePlaceholder}, <code>false</code> otherwise
+     */
+    public static boolean isValuePlaceholder(Object value) {
+        return value instanceof ValuePlaceholder;
     }
 
 }
