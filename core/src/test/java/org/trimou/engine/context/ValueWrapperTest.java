@@ -36,7 +36,7 @@ public class ValueWrapperTest extends AbstractTest {
                 .newBuilder()
                 .addResolver(
                         new AbstractResolver(
-                                WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
+                                WithPriority.RESOLVER_DEFAULT_PRIORITY + 100) {
 
                             @Override
                             public Object resolve(Object contextObject,
@@ -81,7 +81,7 @@ public class ValueWrapperTest extends AbstractTest {
                         new ThrowingExceptionMissingValueHandler())
                 .addResolver(
                         new AbstractResolver(
-                                WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
+                                WithPriority.RESOLVER_DEFAULT_PRIORITY + 100) {
 
                             @Override
                             public Object resolve(Object contextObject,
@@ -119,7 +119,7 @@ public class ValueWrapperTest extends AbstractTest {
                 .newBuilder()
                 .addResolver(
                         new AbstractResolver(
-                                WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY + 100) {
+                                WithPriority.RESOLVER_DEFAULT_PRIORITY + 100) {
                             @Override
                             public Object resolve(Object contextObject,
                                     String name, ResolutionContext context) {

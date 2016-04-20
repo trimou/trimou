@@ -25,11 +25,11 @@ import org.trimou.annotations.Internal;
 public final class Priorities {
 
     public static int rightAfter(int priority) {
-        return priority - 1;
+        return after(priority, 1);
     }
 
     public static int rightBefore(int priority) {
-        return priority + 1;
+        return before(priority, 1);
     }
 
     public static int after(int priority, int gap) {

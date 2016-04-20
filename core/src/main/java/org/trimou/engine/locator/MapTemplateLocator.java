@@ -50,7 +50,7 @@ public class MapTemplateLocator extends AbstractTemplateLocator {
      * @param templates
      */
     public MapTemplateLocator(Map<String, String> templates) {
-        super(WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY);
+        super(WithPriority.TEMPLATE_LOCATOR_DEFAULT_PRIORITY);
         this.templates = templates;
     }
 

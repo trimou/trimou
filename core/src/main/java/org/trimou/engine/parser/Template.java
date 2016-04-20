@@ -125,16 +125,14 @@ public class Template implements Mustache {
 
     @Override
     public void render(Appendable appendable, Object data) {
-        final DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
-                name, generatedId, engine.getConfiguration()
-                        .getIdentifierGenerator()
+        DefaultMustacheRenderingEvent event = new DefaultMustacheRenderingEvent(
+                engine.getConfiguration().getIdentifierGenerator()
                         .generate(MustacheRenderingEvent.class));
         try {
             renderingStarted(event);
-            appendable = rootSegment.execute(
-                    appendable,
-                    data != null ? globalExecutionContext
-                            .setContextObject(data) : globalExecutionContext);
+            appendable = rootSegment.execute(appendable,
+                    data != null ? globalExecutionContext.setContextObject(data)
+                            : globalExecutionContext);
             // We need for flush the async appendable if needed
             RootSegment.flushAsyncAppendable(appendable);
             renderingFinished(event);
@@ -198,40 +196,32 @@ public class Template implements Mustache {
      *
      * @author Martin Kouba
      */
-    private static final class DefaultMustacheRenderingEvent extends
+    private class DefaultMustacheRenderingEvent extends
             AbstractReleaseCallbackContainer implements MustacheRenderingEvent {
 
-        private final String mustacheName;
-
-        private final long mustacheId;
-
-        private final long generatedId;
+        private final long sequenceValue;
 
         /**
          *
-         * @param mustacheName
          * @param sequenceValue
          */
-        public DefaultMustacheRenderingEvent(String mustacheName,
-                long mustacheId, long sequenceValue) {
-            this.mustacheName = mustacheName;
-            this.mustacheId = mustacheId;
-            this.generatedId = sequenceValue;
+        public DefaultMustacheRenderingEvent(long sequenceValue) {
+            this.sequenceValue = sequenceValue;
         }
 
         @Override
         public String getMustacheName() {
-            return mustacheName;
+            return name;
         }
 
         @Override
         public long getMustacheGeneratedId() {
-            return mustacheId;
+            return generatedId;
         }
 
         @Override
         public Long getGeneratedId() {
-            return generatedId;
+            return sequenceValue;
         }
 
     }

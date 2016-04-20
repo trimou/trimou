@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resource;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -28,8 +28,8 @@ import org.trimou.annotations.Internal;
  * @author Martin Kouba
  */
 @Internal
-public abstract class AbstractReleaseCallbackContainer implements
-        ReleaseCallbackContainer {
+public abstract class AbstractReleaseCallbackContainer
+        implements ReleaseCallbackContainer {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(AbstractReleaseCallbackContainer.class);
@@ -43,15 +43,16 @@ public abstract class AbstractReleaseCallbackContainer implements
      * in the order in which they were registered.
      */
     public void release() {
-        if (releaseCallbacks != null) {
-            for (ReleaseCallback callback : releaseCallbacks) {
-                try {
-                    callback.release();
-                } catch (Exception e) {
-                    LOGGER.warn(
-                            "Exception occured during release callback invocation:",
-                            e);
-                }
+        if (releaseCallbacks == null) {
+            return;
+        }
+        for (ReleaseCallback callback : releaseCallbacks) {
+            try {
+                callback.release();
+            } catch (Exception e) {
+                LOGGER.warn(
+                        "Exception occured during release callback invocation:",
+                        e);
             }
         }
     }
@@ -59,7 +60,7 @@ public abstract class AbstractReleaseCallbackContainer implements
     @Override
     public void registerReleaseCallback(ReleaseCallback callback) {
         if (releaseCallbacks == null) {
-            releaseCallbacks = new ArrayList<ReleaseCallback>(5);
+            releaseCallbacks = new LinkedList<ReleaseCallback>();
         }
         releaseCallbacks.add(callback);
     }

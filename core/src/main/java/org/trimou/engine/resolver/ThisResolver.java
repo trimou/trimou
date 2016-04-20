@@ -15,8 +15,6 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.rightAfter;
-
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.util.Strings;
 
@@ -25,7 +23,7 @@ import org.trimou.util.Strings;
  */
 public class ThisResolver extends AbstractResolver {
 
-    public static final int THIS_RESOLVER_PRIORITY = rightAfter(WithPriority.BUILTIN_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int THIS_RESOLVER_PRIORITY = WithPriority.RESOLVER_DEFAULT_PRIORITY;
 
     public static final String NAME_THIS = Strings.THIS;
 

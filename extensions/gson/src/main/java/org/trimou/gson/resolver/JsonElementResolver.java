@@ -15,15 +15,15 @@
  */
 package org.trimou.gson.resolver;
 
-import static org.trimou.engine.priority.Priorities.rightAfter;
+import static org.trimou.engine.priority.Priorities.rightBefore;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
-import org.trimou.engine.resolver.ArrayIndexResolver;
 import org.trimou.engine.resolver.IndexResolver;
+import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.Placeholder;
 import org.trimou.engine.resolver.ResolutionContext;
 
@@ -41,8 +41,8 @@ import com.google.gson.JsonPrimitive;
  */
 public class JsonElementResolver extends IndexResolver {
 
-    public static final int JSON_ELEMENT_RESOLVER_PRIORITY = rightAfter(
-            ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int JSON_ELEMENT_RESOLVER_PRIORITY = rightBefore(
+            MapResolver.MAP_RESOLVER_PRIORITY);
 
     /**
      * Use this name if you want to unwrap the current context object (note that

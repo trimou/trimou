@@ -239,7 +239,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
         private Builder() {
             this.rootPath = Strings.SLASH;
-            this.priority = WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
+            this.priority = WithPriority.TEMPLATE_LOCATOR_DEFAULT_PRIORITY;
         }
 
         /**

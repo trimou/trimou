@@ -116,7 +116,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
         private String suffix;
 
         private Builder() {
-            this.priority = WithPriority.BUILTIN_TEMPLATE_LOCATORS_DEFAULT_PRIORITY;
+            this.priority = WithPriority.TEMPLATE_LOCATOR_DEFAULT_PRIORITY;
         }
 
         /**

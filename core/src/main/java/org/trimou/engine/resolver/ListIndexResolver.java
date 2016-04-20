@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.rightAfter;
+import static org.trimou.engine.priority.Priorities.after;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class ListIndexResolver extends IndexResolver {
 
-    public static final int LIST_RESOLVER_PRIORITY = rightAfter(MapResolver.MAP_RESOLVER_PRIORITY);
+    public static final int LIST_RESOLVER_PRIORITY = after(MapResolver.MAP_RESOLVER_PRIORITY, 3);
 
     public ListIndexResolver() {
         this(LIST_RESOLVER_PRIORITY);

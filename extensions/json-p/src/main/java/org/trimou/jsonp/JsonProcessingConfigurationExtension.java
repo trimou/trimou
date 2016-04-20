@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Martin Kouba
+ * Copyright 2016 Martin Kouba
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.engine.priority;
+package org.trimou.jsonp;
+
+import org.trimou.engine.config.ConfigurationExtension;
+import org.trimou.jsonp.resolver.JsonValueResolver;
 
 /**
- * A component with priority.
  *
  * @author Martin Kouba
  */
-public interface WithPriority {
+public class JsonProcessingConfigurationExtension
+        implements ConfigurationExtension {
 
-    public static final int TEMPLATE_LOCATOR_DEFAULT_PRIORITY = 10;
-
-    public static final int RESOLVER_DEFAULT_PRIORITY = 20;
-
-    /**
-     * @return the priority value
-     */
-    public int getPriority();
+    @Override
+    public void register(ConfigurationExtensionBuilder builder) {
+        builder.addResolver(new JsonValueResolver());
+    }
 
 }

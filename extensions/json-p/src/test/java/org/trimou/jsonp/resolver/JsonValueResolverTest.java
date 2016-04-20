@@ -1,4 +1,4 @@
-package org.trimou.gson.resolver;
+package org.trimou.jsonp.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -6,6 +6,14 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.StringReader;
+import java.math.BigDecimal;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonStructure;
+import javax.json.JsonValue;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
@@ -21,24 +29,15 @@ import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.ThisResolver;
 import org.trimou.exception.MustacheProblem;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-
 /**
  *
  * @author Martin Kouba
  */
-public class JsonElementResolverTest extends AbstractTest {
+public class JsonValueResolverTest extends AbstractTest {
 
     @Test
     public void testResolution() {
-        JsonElementResolver resolver = new JsonElementResolver();
+        JsonValueResolver resolver = new JsonValueResolver();
         ResolutionContext ctx = new DummyResolutionContext();
         // Init the resolver
         MustacheEngineBuilder.newBuilder()
@@ -47,87 +46,68 @@ public class JsonElementResolverTest extends AbstractTest {
         assertNull(resolver.resolve(null, "foo", ctx));
         assertNull(resolver.resolve("bar", "foo", ctx));
         assertEquals(Boolean.TRUE,
-                resolver.resolve(new JsonPrimitive(true), "unwrapThis", ctx));
-        assertNull(resolver.resolve(new JsonPrimitive(true), "whatever", ctx));
+                resolver.resolve(JsonValue.TRUE, "unwrapThis", ctx));
+        assertNull(resolver.resolve(JsonValue.TRUE, "whatever", ctx));
         assertEquals(Placeholder.NULL,
-                resolver.resolve(JsonNull.INSTANCE, "unwrapThis", ctx));
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("foo", "bar");
-        jsonObject.addProperty("baz", true);
+                resolver.resolve(JsonValue.NULL, "unwrapThis", ctx));
+        JsonObject jsonObject = Json.createObjectBuilder().add("foo", "bar")
+                .add("baz", true).build();
         assertEquals("bar", resolver.resolve(jsonObject, "foo", ctx));
         assertEquals(Boolean.TRUE, resolver.resolve(jsonObject, "baz", ctx));
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(new JsonPrimitive(true));
-        jsonArray.add(new JsonPrimitive(Integer.valueOf(1)));
+        JsonArray jsonArray = Json.createArrayBuilder().add(true).add(1)
+                .build();
         assertEquals(true, resolver.resolve(jsonArray, "0", ctx));
-        assertEquals(Integer.valueOf(1), resolver.resolve(jsonArray, "1", ctx));
+        assertEquals(BigDecimal.ONE, resolver.resolve(jsonArray, "1", ctx));
     }
 
     @Test
-    public void testInterpolation()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-        Mustache mustache = getEngine().compileMustache("json_element_test",
+    public void testInterpolation() throws FileNotFoundException {
+        Mustache mustache = getEngine().compileMustache("json_value_test",
                 "{{lastName}}|{{address.street}}|{{#phoneNumbers}}{{type}}{{#iterHasNext}},{{/iterHasNext}}{{/phoneNumbers}}|{{phoneNumbers.0.type}}");
         assertEquals("Novy|Nova|home,mobile|home",
                 mustache.render(loadJsonData()));
     }
 
     @Test
-    public void testUnwrapJsonPrimitiveSetToFalse()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .addResolver(new JsonElementResolver())
-                .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
-                        false)
-                .build();
-        Mustache mustache = engine.compileMustache(
-                "json_element_unwrap_primitive_disabled_test",
-                "{{firstName.asString.length}}|{{phoneNumbers.1.type.asString.toUpperCase}}");
-        assertEquals("3|MOBILE", mustache.render(loadJsonData()));
-    }
-
-    @Test
     public void testUnwrapJsonArrayElementAtIndex()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+            throws FileNotFoundException {
         // https://github.com/trimou/trimou/issues/26
         String json = "{\"users\": [\"izeye\", \"always19\"]}";
         String template = "One of users is {{users.0}}.";
-        JsonElement jsonElement = new JsonParser().parse(json);
+        JsonStructure jsonStructure = Json.createReader(new StringReader(json))
+                .read();
         MustacheEngine engine = getEngine();
         Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
-        assertEquals("One of users is izeye.", mustache.render(jsonElement));
+        assertEquals("One of users is izeye.", mustache.render(jsonStructure));
     }
 
     @Test
-    public void testOutOfBoundIndexException()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+    public void testOutOfBoundIndexException() throws FileNotFoundException {
         // https://github.com/trimou/trimou/issues/73
         String json = "{\"numbers\": [1,2]}";
         String template = "One of users is {{numbers.2}}.";
-        final JsonElement jsonElement = new JsonParser().parse(json);
+        JsonStructure jsonStructure = Json.createReader(new StringReader(json))
+                .read();
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .setMissingValueHandler(
                         new ThrowingExceptionMissingValueHandler())
                 .omitServiceLoaderConfigurationExtensions()
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
-                .addResolver(new JsonElementResolver()).build();
+                .addResolver(new JsonValueResolver()).build();
         final Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
         MustacheExceptionAssert.expect(MustacheProblem.RENDER_NO_VALUE)
                 .check(new Runnable() {
                     @Override
                     public void run() {
-                        mustache.render(jsonElement);
+                        mustache.render(jsonStructure);
                     }
                 });
     }
 
     @Test
-    public void testUnwrapJsonArray()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-
+    public void testUnwrapJsonArray() throws FileNotFoundException {
         MustacheEngine engine = getEngine();
         assertEquals("Jim,true,5",
                 engine.compileMustache("json_unwrap_array_element_test",
@@ -140,8 +120,7 @@ public class JsonElementResolverTest extends AbstractTest {
     }
 
     @Test
-    public void testUnwrapJsonNull()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+    public void testUnwrapJsonNull() throws FileNotFoundException {
         MustacheEngine engine = getEngine();
         assertEquals("Jimtrue",
                 engine.compileMustache("json_unwrap_null_test1",
@@ -157,18 +136,18 @@ public class JsonElementResolverTest extends AbstractTest {
         return MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
-                .addResolver(new JsonElementResolver()).build();
+                .addResolver(new JsonValueResolver()).build();
     }
 
-    private JsonElement loadJsonData()
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
+    private JsonStructure loadJsonData() throws FileNotFoundException {
         return loadJsonData("data.json");
     }
 
-    private JsonElement loadJsonData(String fileName)
-            throws JsonIOException, JsonSyntaxException, FileNotFoundException {
-        return new JsonParser().parse(
-                new FileReader(new File("src/test/resources/" + fileName)));
+    private JsonStructure loadJsonData(String fileName)
+            throws FileNotFoundException {
+        return Json.createReader(
+                new FileReader(new File("src/test/resources/" + fileName)))
+                .read();
     }
 
 }

@@ -30,8 +30,8 @@ import org.trimou.engine.listener.MustacheCompilationEvent;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.listener.MustacheParsingEvent;
 import org.trimou.engine.listener.MustacheRenderingEvent;
-import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
+import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.resource.ReleaseCallback;
@@ -53,7 +53,7 @@ import org.trimou.servlet.RequestHolder;
 public class HttpServletRequestResolver extends AbstractResolver implements
         MustacheListener, Validateable {
 
-    public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
             HttpServletRequestResolver.class.getName() + ".enabled", true);

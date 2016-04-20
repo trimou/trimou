@@ -15,7 +15,7 @@
  */
 package org.trimou.engine.resolver;
 
-import static org.trimou.engine.priority.Priorities.rightBefore;
+import static org.trimou.engine.priority.Priorities.after;
 import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.lang.reflect.Array;
@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
-import org.trimou.engine.priority.WithPriority;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Reflections;
@@ -48,8 +47,7 @@ import org.trimou.util.Reflections;
  */
 public class ReflectionResolver extends AbstractResolver {
 
-    public static final int REFLECTION_RESOLVER_PRIORITY = rightBefore(
-            WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int REFLECTION_RESOLVER_PRIORITY = after(ListIndexResolver.LIST_RESOLVER_PRIORITY, 3);
 
     public static final String COMPUTING_CACHE_CONSUMER_ID = ReflectionResolver.class
             .getName();

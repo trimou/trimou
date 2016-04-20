@@ -34,9 +34,9 @@ import org.trimou.cdi.BeanManagerLocator;
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
-import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.Hints;
+import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resource.ReleaseCallback;
 
@@ -57,7 +57,7 @@ public class CDIBeanResolver extends AbstractResolver {
     public static final String COMPUTING_CACHE_CONSUMER_ID = CDIBeanResolver.class
             .getName();
 
-    public static final int CDI_BEAN_RESOLVER_PRIORITY = rightAfter(WithPriority.EXTENSION_RESOLVERS_DEFAULT_PRIORITY);
+    public static final int CDI_BEAN_RESOLVER_PRIORITY = rightAfter(ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
             CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
