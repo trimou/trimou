@@ -22,12 +22,12 @@ import java.util.List;
 import org.trimou.annotations.Internal;
 
 /**
+ * Immutable lists.
  *
  * @author Martin Kouba
- *
  */
 @Internal
-public class ImmutableList {
+public final class ImmutableList {
 
     /**
      *
@@ -41,7 +41,7 @@ public class ImmutableList {
         if (list.size() == 1) {
             return Collections.singletonList(list.get(0));
         }
-        return Collections.unmodifiableList(new ArrayList<T>(list));
+        return new ImmutableArrayList<>(list.toArray());
     }
 
     /**
@@ -57,11 +57,7 @@ public class ImmutableList {
         if (elements.length == 1) {
             return Collections.singletonList(elements[0]);
         }
-        List<T> list = new ArrayList<>(elements.length);
-        for (T element : elements) {
-            list.add(element);
-        }
-        return Collections.unmodifiableList(list);
+        return new ImmutableArrayList<>(elements);
     }
 
     /**

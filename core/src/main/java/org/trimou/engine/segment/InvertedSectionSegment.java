@@ -17,7 +17,6 @@ package org.trimou.engine.segment;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.trimou.annotations.Internal;
@@ -30,7 +29,7 @@ import org.trimou.engine.context.ValueWrapper;
  * <p>
  * The content is rendered if there is no object found in the context, or is a
  * {@link Boolean} of value <code>false</code>, or is an empty
- * {@link Collections}, or is an {@link Iterable} with no elements, or is an
+ * {@link Collection}, or is an {@link Iterable} with no elements, or is an
  * empty array.
  * </p>
  *

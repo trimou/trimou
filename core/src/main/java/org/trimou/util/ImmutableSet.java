@@ -22,12 +22,12 @@ import java.util.Set;
 import org.trimou.annotations.Internal;
 
 /**
+ * Immutable sets.
  *
  * @author Martin Kouba
- *
  */
 @Internal
-public class ImmutableSet {
+public final class ImmutableSet {
 
     /**
      *

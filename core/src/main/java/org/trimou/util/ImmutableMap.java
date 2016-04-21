@@ -23,11 +23,12 @@ import java.util.Map.Entry;
 import org.trimou.annotations.Internal;
 
 /**
+ * Immutable maps.
  *
  * @author Martin Kouba
  */
 @Internal
-public class ImmutableMap {
+public final class ImmutableMap {
 
     /**
      *
