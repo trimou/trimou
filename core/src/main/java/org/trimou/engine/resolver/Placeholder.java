@@ -24,6 +24,8 @@ public enum Placeholder {
     /**
      * This might be useful to distinguish the case when a value resolver should
      * return a value which should be interpreted as a <code>null</code>.
+     * Normally, if a resolver returns <code>null</code> in case it's not
+     * capable of resolving the value.
      */
     NULL,
 }

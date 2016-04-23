@@ -39,7 +39,7 @@ public interface Resolver extends WithPriority, ConfigurationAware {
      * should return as fast as possible. The best practice is to verify params
      * first and return <code>null</code> in case of the resolver is not capable
      * of resolving it.
-     *
+     * <p>
      * {@link ResolutionContext} allows to register a callback to release all
      * the relevant resources after the resolved value is used.
      *
@@ -51,6 +51,7 @@ public interface Resolver extends WithPriority, ConfigurationAware {
      * @param context
      *            The current resolution context
      * @return the resolved object or <code>null</code>
+     * @see Placeholder#NULL
      */
     public Object resolve(Object contextObject, String name,
             ResolutionContext context);

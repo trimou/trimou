@@ -413,6 +413,10 @@ Trimou provides some useful helpers which are not registered automatically:
 |Allows to cache template fragments in memory. It's useful for resource-intensive parts of the template that rarely change.
 |cache
 
+|+org.trimou.handlebars.RepeatHelper+
+|Allows to repeat a section multiple times or until the `while` expression evaluates to a "falsy" value.
+|repeat
+
 |===
 
 ==== Example of ResourceBundleHelper
@@ -952,7 +956,7 @@ Locates the template anywhere in the web app. The root path must begin with a +/
 ----
 MustacheEngineBuilder
   .newBuilder()
-  .addTemplateLocator(new ServletContextTemplateLocator(10, "/WEB-INF/templates"))
+  .addTemplateLocator(ServletContextTemplateLocator.builder().setRootPath("/WEB-INF/templates").build())
   .build();
 ----
 
@@ -1084,14 +1088,17 @@ Gson extension brings some basic support for http://www.json.org/[JSON format] b
 
 +org.trimou.gson.resolver.JsonElementResolver+ makes it easier to work with +com.google.gson.JsonElement+ instances. It is automatically loaded if you place the extension jar on the classpath.
 
-* It allows you to access +JsonObject+ properties via dot notation
+* allows to access +JsonObject+ properties via dot notation
 ** e.g. if foo is an instance of +JsonObject+ then +foo.bar+ is translated to +foo.get("bar")+
 * +JsonArray+ elements can be accessed via index
 ** e.g. if foo is an instance of +JsonArray+ then +foo.1+ is translated to +foo.get(1)+
 
-+JsonNull+ is resolved as a +null+ and +JsonPrimitive+ is automatically unwrapped. E.g. +foo.bar+ in +JsonObject+ example is translated to +foo.get("bar").getAsNumber()+ if bar is an instance of a +java.lang.Number+. This can be disabled - see +JsonElementResolver+ javadoc.
+`JsonNull` is resolved as a `Placeholder#NULL` and `JsonPrimitive` is automatically unwrapped.
+E.g. +foo.bar+ in +JsonObject+ example is translated to +foo.get("bar").getAsNumber()+ if bar is an instance of a +java.lang.Number+.
+This automatic unwrapping can be also disabled - see +JsonElementResolver+ javadoc.
 
-However unwrapping only works if +JsonElementResolver+ is involved! So for example if you iterate over +["Jim", true, 5]+, a special keyword +unwrapThis+ must be used so that the primitives are unwrapped:
+However, unwrapping only works if +JsonElementResolver+ is involved!
+So for example if you iterate over +["Jim", true, 5]+, a special keyword +unwrapThis+ must be used so that the primitives are unwrapped:
 ----
 {{#jsonArray}}{{unwrapThis}}{{/jsonArray}}
 ----
@@ -1139,6 +1146,94 @@ Type of the second phone number: {{phoneNumbers.1.type}}
 // Load the test data
 JsonElement jsonElement = new JsonParser().parse(...);
 // JsonElementResolver is loaded automatically
+MustacheEngine engine = MustacheEngineBuilder
+                             .newBuilder()
+                             .build();
+Mustache mustache = engine.getMustache("json_test.mustache");
+String output = mustache.render(jsonElement);
+----
+
+.Expected output
+----
+Last name: Novy
+Street: Nova
+Phone numbers: +42002012345, +420728000111
+Type of the first phone number: home
+Type of the second phone number: mobile
+----
+
+[[json-p]]
+=== JSON Processing (JSR 353)
+
+This extension simplifies the usage of Object Model API along with Trimou templates.
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-json-p</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+==== JsonValueResolver
+
+`org.trimou.jsonp.resolver.JsonValueResolver` makes it easier to work with `javax.json.JsonValue` instances. It is automatically loaded if you place the extension jar on the classpath.
+Since `JsonObject` implements `Map` and `JsonArray` implements `List` this resolver is only useful if automatic unwrapping is required.
+Automatic unwrapping means resolving `JsonString#getString()` for a `JsonString`, `JsonNumber#bigDecimalValue()` for a `JsonNumber`, `Boolean#TRUE` for a `JsonValue#TRUE`, `Boolean#FALSE` for `JsonValue#FALSE` and `Placeholder#NULL` for a `JsonValue#NULL`.
+However, unwrapping only works if `JsonValueResolver` is involved!
+So for example if you iterate over `["Jim", true, 5]`, a special keyword `unwrapThis` must be used so that the primitives are unwrapped:
+
+----
+{{#jsonArray}}{{unwrapThis}}{{/jsonArray}}
+----
+
+NOTE: This resolver should always have higher priority than `MapResolver` to be able to process instances of `JsonObject`.
+
+===== Example code
+
+.Example data
+[source,json]
+----
+{
+    "firstName": "Jan",
+    "lastName": "Novy",
+    "age": 30,
+    "address": {
+        "street": "Nova",
+        "city": "Prague",
+        "state": "CZ",
+        "postalCode": "11000"
+    },
+    "phoneNumbers": [
+        {
+            "type": "home",
+            "number": "+42002012345"
+        },
+        {
+            "type": "mobile",
+            "number": "+420728000111"
+        }
+    ]
+}
+----
+
+.Example template
+----
+Last name: {{lastName}}
+Street: {{address.street}}
+Phone numbers: {{#phoneNumbers}}{{number}}{{#iterHasNext}}, {{/iterHasNext}}{{/phoneNumbers}}
+Type of the first phone number: {{phoneNumbers.0.type}}
+Type of the second phone number: {{phoneNumbers.1.type}}
+----
+
+.Java code
+[source,java]
+----
+// Load the test data
+JsonStructure jsonStructure = Json.createReader(...).read();
+// JsonValueResolver is loaded automatically
 MustacheEngine engine = MustacheEngineBuilder
                              .newBuilder()
                              .build();

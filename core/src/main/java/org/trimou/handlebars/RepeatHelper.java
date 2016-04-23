@@ -96,7 +96,7 @@ public class RepeatHelper extends BasicSectionHelper {
                     whileExpr = whileValue.toString();
                     value = options.getValue(whileExpr);
                 }
-                int limit = Helpers.initIntHashEntry(options, LIMIT,
+                int limit = initIntHashEntry(options, LIMIT,
                         Integer.MAX_VALUE);
                 int i = 0;
                 while (!Checker.isFalsy(value)) {
