@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.segment.ValueSegment;
+import org.trimou.handlebars.Options;
 
 /**
  * This component is responsible for splitting a variable key. Implementations
@@ -26,6 +27,7 @@ import org.trimou.engine.segment.ValueSegment;
  *
  * @author Martin Kouba
  * @see ValueSegment
+ * @see Options#getValue(String)
  * @since 1.5
  */
 public interface KeySplitter extends ConfigurationAware {

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +40,6 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.handlebars.Helper;
 import org.trimou.handlebars.HelperDefinition;
 import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
-import org.trimou.handlebars.HelperValidator;
 import org.trimou.handlebars.Options;
 import org.trimou.util.Checker;
 import org.trimou.util.ImmutableList;
@@ -83,13 +83,14 @@ class HelperExecutionHandler {
     static HelperExecutionHandler from(String name, MustacheEngine engine,
             HelperAwareSegment segment) {
 
-        // First detect unterminated literals
-        Iterator<String> parts = HelperValidator.splitHelperName(name, segment);
+        // Split the name and detect unterminated literals
+        Iterator<String> parts = splitHelperName(name, segment);
 
         Helper helper = engine.getConfiguration().getHelpers()
                 .get(parts.next());
 
         if (helper == null) {
+            // No helper with the given name found
             return null;
         }
 
@@ -97,16 +98,13 @@ class HelperExecutionHandler {
         ImmutableMapBuilder<String, Object> hash = ImmutableMap.builder();
 
         while (parts.hasNext()) {
+            // Next part is a param or a hash entry
             String part = parts.next();
-            // TODO KeySplitter should be responsible for key validation
-            // https://github.com/trimou/trimou/issues/56
-            // String literal may contain anything
-            int position = HelperValidator
-                    .getFirstDeterminingEqualsCharPosition(part);
-            if (position != -1) {
-                hash.put(part.substring(0, position),
-                        getLiteralOrPlaceholder(
-                                part.substring(position + 1, part.length()),
+            int equalsPosition = getFirstDeterminingEqualsCharPosition(part);
+            if (equalsPosition != -1) {
+                hash.put(part.substring(0, equalsPosition),
+                        getLiteralOrPlaceholder(part
+                                .substring(equalsPosition + 1, part.length()),
                                 engine, segment));
             } else {
                 params.add(getLiteralOrPlaceholder(part, engine, segment));
@@ -137,6 +135,81 @@ class HelperExecutionHandler {
         } finally {
             options.release();
         }
+    }
+
+    /**
+     * Extracts parts from an input string. This implementation is quite naive
+     * and should be possibly rewritten. Note that we can't use a simple
+     * splitter because of string literals may contain whitespace chars.
+     *
+     * @param name
+     * @param segment
+     * @return the parts of the helper name
+     * @throws MustacheException
+     *             If a compilation problem occurs
+     */
+    static Iterator<String> splitHelperName(String name, Segment segment) {
+
+        boolean stringLiteral = false;
+        boolean space = false;
+        List<String> parts = new ArrayList<String>();
+        StringBuilder buffer = new StringBuilder();
+
+        for (int i = 0; i < name.length(); i++) {
+            if (name.charAt(i) == ' ') {
+                if (!space) {
+                    if (!stringLiteral) {
+                        if (buffer.length() > 0) {
+                            parts.add(buffer.toString());
+                            buffer = new StringBuilder();
+                        }
+                        space = true;
+                    } else {
+                        buffer.append(name.charAt(i));
+                    }
+                }
+            } else {
+                if (Strings.isStringLiteralSeparator(name.charAt(i))) {
+                    stringLiteral = !stringLiteral;
+                }
+                space = false;
+                buffer.append(name.charAt(i));
+            }
+        }
+
+        if (buffer.length() > 0) {
+            if (stringLiteral) {
+                throw new MustacheException(
+                        MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                        "Unterminated string literal detected: %s", segment);
+            }
+            parts.add(buffer.toString());
+        }
+        return parts.iterator();
+    }
+
+    /**
+     *
+     * @param part
+     * @return the index of an equals char outside of any string literal,
+     *         <code>-1</code> if no such char is found
+     */
+    static int getFirstDeterminingEqualsCharPosition(String part) {
+        boolean stringLiteral = false;
+        for (int i = 0; i < part.length(); i++) {
+            if (Strings.isStringLiteralSeparator(part.charAt(i))) {
+                if (i == 0) {
+                    // The first char is a string literal separator
+                    return -1;
+                }
+                stringLiteral = !stringLiteral;
+            } else {
+                if (!stringLiteral && part.charAt(i) == '=') {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     private static Object getLiteralOrPlaceholder(String value,
@@ -204,7 +277,7 @@ class HelperExecutionHandler {
                 ExecutionContext executionContext) {
             List<ValueWrapper> valueWrappers = isParamValuePlaceholderFound
                     || isHashValuePlaceholderFound
-                            ? new ArrayList<ValueWrapper>(5) : null;
+                            ? new LinkedList<>() : null;
             return new DefaultOptions(appendable, executionContext, segment,
                     getFinalParameters(executionContext, valueWrappers),
                     getFinalHash(executionContext, valueWrappers),
@@ -527,9 +600,8 @@ class HelperExecutionHandler {
                 LOGGER.info(
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
                         new Object[] { pushed,
-                                HelperValidator.splitHelperName(
-                                        segment.getTagInfo().getText(), segment)
-                                .next(),
+                                splitHelperName(segment.getTagInfo().getText(),
+                                        segment).next(),
                                 segment.getTagInfo().getTemplateName() });
             }
         }

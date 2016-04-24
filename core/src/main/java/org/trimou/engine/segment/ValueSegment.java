@@ -56,7 +56,6 @@ public class ValueSegment extends AbstractSegment
         this.unescape = unescape;
         this.helperHandler = isHandlebarsSupportEnabled()
                 ? HelperExecutionHandler.from(text, getEngine(), this) : null;
-
         if (helperHandler == null) {
             this.textSupport = getEngineConfiguration().getTextSupport();
             this.provider = new ValueProvider(text, getEngineConfiguration());

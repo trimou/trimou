@@ -1,4 +1,4 @@
-package org.trimou.handlebars;
+package org.trimou.engine.segment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +15,7 @@ import org.trimou.exception.MustacheProblem;
  *
  * @author Martin Kouba
  */
-public class HelperValidatorTest {
+public class HelperExecutionHandlerTest {
 
     @Test
     public void testSplitHelperName() {
@@ -64,25 +64,25 @@ public class HelperValidatorTest {
 
     @Test
     public void testGetFirstDeterminingEqualsCharPosition() {
-        assertEquals(3, HelperValidator
+        assertEquals(3, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition("foo=bar"));
-        assertEquals(3, HelperValidator
+        assertEquals(3, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition("foo='bar='"));
-        assertEquals(1, HelperValidator
+        assertEquals(1, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition("1='bar='"));
         assertEquals(-1,
-                HelperValidator.getFirstDeterminingEqualsCharPosition("'m=n'"));
-        assertEquals(-1, HelperValidator
+                HelperExecutionHandler.getFirstDeterminingEqualsCharPosition("'m=n'"));
+        assertEquals(-1, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition(" ' m=n'"));
         assertEquals(-1,
-                HelperValidator.getFirstDeterminingEqualsCharPosition("'1'"));
-        assertEquals(-1, HelperValidator
+                HelperExecutionHandler.getFirstDeterminingEqualsCharPosition("'1'"));
+        assertEquals(-1, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition("\"foo\""));
     }
 
     private void assertHelperNameParts(String name, String... parts) {
         List<String> result = new ArrayList<>();
-        Iterator<String> iterator = HelperValidator.splitHelperName(name, null);
+        Iterator<String> iterator = HelperExecutionHandler.splitHelperName(name, null);
         while (iterator.hasNext()) {
             result.add(iterator.next());
         }

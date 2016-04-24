@@ -25,7 +25,6 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.parser.Template;
-import org.trimou.handlebars.HelperValidator;
 import org.trimou.lambda.Lambda;
 import org.trimou.util.Iterables;
 
@@ -125,9 +124,10 @@ public class SectionSegment extends AbstractSectionSegment
                 getTagLiteral(getType().getTagType().getCommand() + getText()));
         literal.append(getContentLiteralBlock());
         if (helperHandler != null) {
-            literal.append(getTagLiteral(
-                    MustacheTagType.SECTION_END.getCommand() + HelperValidator
-                            .splitHelperName(getText(), this).next()));
+            literal.append(
+                    getTagLiteral(MustacheTagType.SECTION_END.getCommand()
+                            + HelperExecutionHandler
+                                    .splitHelperName(getText(), this).next()));
         } else {
             literal.append(getTagLiteral(
                     MustacheTagType.SECTION_END.getCommand() + getText()));
