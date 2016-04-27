@@ -25,11 +25,8 @@ public final class IntegrationTestUtils {
             "<jboss xmlns=\"urn:jboss:1.0\"><weld xmlns=\"urn:jboss:weld:1.0\" require-bean-descriptor=\"true\"/></jboss>");
 
     public static WebArchive createCDITestArchiveBase() {
-
         WebArchive testArchive = createTestArchiveBase();
-
         testArchive.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
         return testArchive;
     }
 
@@ -39,13 +36,11 @@ public final class IntegrationTestUtils {
     }
 
     public static WebArchive createTestArchiveBase() {
-
         WebArchive testArchive = ShrinkWrap.create(WebArchive.class);
-
+        // Suppressing implicit bean archives without beans.xml
         testArchive.addAsManifestResource(CDI11_JBOSSALL_WORKAROUND_ASSET,
                 "jboss-all.xml");
-
-        // Workaround for embedded containers
+        // Add Weld servlet for embedded containers
         if (isServletContainer()) {
             testArchive.addAsLibraries(resolve("org.jboss.weld.servlet:weld-servlet"));
             testArchive.setWebXML(new StringAsset(Descriptors
@@ -56,7 +51,6 @@ public final class IntegrationTestUtils {
                             "org.jboss.weld.environment.servlet.Listener").up()
                     .exportAsString()));
         }
-
         return testArchive;
     }
 
