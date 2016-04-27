@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.servlet.resolver.HttpServletRequestResolver;
 
 /**
  *
@@ -30,6 +31,7 @@ public class BasicServletRequestResolverTest {
 
         Mustache mustache = MustacheEngineBuilder
                 .newBuilder()
+                .setProperty(HttpServletRequestResolver.ENABLED_KEY, true)
                 .build()
                 .compileMustache("servlet_request_resolver_test",
                         "{{request.method}}");
