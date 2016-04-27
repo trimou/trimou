@@ -26,37 +26,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
-import org.trimou.engine.listener.MustacheCompilationEvent;
 import org.trimou.engine.listener.MustacheListener;
-import org.trimou.engine.listener.MustacheParsingEvent;
 import org.trimou.engine.listener.MustacheRenderingEvent;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
-import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.engine.validation.Validateable;
 import org.trimou.servlet.RequestHolder;
 
 /**
  * This resolver must be also registered as a {@link MustacheListener} in order
  * to work correctly.
- *
  * <p>
  * If the configuration property with key {@link #ENABLED_KEY} resolves to
  * false, the resolver is marked as invalid.
- * </p>
+ * <p>
+ * Note that applications are encouraged to use {@link HttpServletRequest}
+ * direcly, i.e. as a context object.
  *
  * @author Martin Kouba
  * @see Resolver
  */
-public class HttpServletRequestResolver extends AbstractResolver implements
-        MustacheListener, Validateable {
+public class HttpServletRequestResolver extends AbstractResolver
+        implements MustacheListener, Validateable {
 
-    public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
+    public static final int SERVLET_REQUEST_RESOLVER_PRIORITY = rightAfter(
+            ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
 
+    // Since 2.0 this resolver is disabled by default
     public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
-            HttpServletRequestResolver.class.getName() + ".enabled", true);
+            HttpServletRequestResolver.class.getName() + ".enabled", false);
 
     private static final String NAME_REQUEST = "request";
 
@@ -114,28 +114,7 @@ public class HttpServletRequestResolver extends AbstractResolver implements
 
     @Override
     public void renderingStarted(MustacheRenderingEvent event) {
-        event.registerReleaseCallback(new ReleaseCallback() {
-            @Override
-            public void release() {
-                REQUEST_WRAPPER.remove();
-            }
-        });
-
-    }
-
-    @Override
-    public void renderingFinished(MustacheRenderingEvent event) {
-        // No-op
-    }
-
-    @Override
-    public void compilationFinished(MustacheCompilationEvent event) {
-        // No-op
-    }
-
-    @Override
-    public void parsingStarted(MustacheParsingEvent event) {
-        // No-op
+        event.registerReleaseCallback(() -> REQUEST_WRAPPER.remove());
     }
 
     @Override
