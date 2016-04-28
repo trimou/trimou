@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.priority;
 
+import java.util.Comparator;
+
 import org.trimou.annotations.Internal;
 
 /**
@@ -38,5 +40,13 @@ public final class Priorities {
 
     public static int before(int priority, int gap) {
         return priority + gap;
+    }
+
+    public static <T extends WithPriority> Comparator<T> higherFirst() {
+        return Comparator.<T> comparingInt((e) -> e.getPriority()).reversed();
+    }
+
+    public static <T extends WithPriority> Comparator<T> lowerFirst() {
+        return Comparator.<T> comparingInt((e) -> e.getPriority());
     }
 }

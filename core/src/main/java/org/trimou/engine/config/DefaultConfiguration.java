@@ -48,7 +48,7 @@ import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.locale.DefaultLocaleSupport;
 import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.locator.TemplateLocator;
-import org.trimou.engine.priority.HighPriorityComparator;
+import org.trimou.engine.priority.Priorities;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.DefaultTextSupport;
 import org.trimou.engine.text.TextSupport;
@@ -113,12 +113,19 @@ class DefaultConfiguration implements Configuration {
             if (cl == null) {
                 cl = SecurityActions.getContextClassLoader();
                 if (cl == null) {
-                    cl = SecurityActions.getClassLoader(DefaultConfiguration.class);
+                    cl = SecurityActions
+                            .getClassLoader(DefaultConfiguration.class);
                 }
             }
-            for (Iterator<ConfigurationExtension> iterator = ServiceLoader.load(ConfigurationExtension.class, cl)
-                    .iterator(); iterator.hasNext();) {
-                iterator.next().register(builder);
+            List<ConfigurationExtension> configurationExtensions = new ArrayList<>();
+            for (Iterator<ConfigurationExtension> iterator = ServiceLoader
+                    .load(ConfigurationExtension.class, cl).iterator(); iterator
+                            .hasNext();) {
+                configurationExtensions.add(iterator.next());
+            }
+            Collections.sort(configurationExtensions, Priorities.higherFirst());
+            for (ConfigurationExtension configurationExtension : configurationExtensions) {
+                configurationExtension.register(builder);
             }
         }
 
@@ -126,7 +133,8 @@ class DefaultConfiguration implements Configuration {
         List<Resolver> resolvers = initResolvers(builder);
         List<MustacheListener> mustacheListeners = new ArrayList<MustacheListener>(
                 builder.buildMustacheListeners());
-        MissingValueHandler missingValueHandler = initMissingValueHandler(builder);
+        MissingValueHandler missingValueHandler = initMissingValueHandler(
+                builder);
         Map<String, Helper> helpers = builder.buildHelpers();
 
         this.textSupport = initTextSupport(builder);
@@ -175,7 +183,8 @@ class DefaultConfiguration implements Configuration {
         this.properties = initializeProperties(builder,
                 getConfigurationKeysToProcess(components));
 
-        if (getBooleanPropertyValue(EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
+        if (getBooleanPropertyValue(
+                EngineConfigurationKey.NO_VALUE_INDICATES_PROBLEM)) {
             LOGGER.warn(
                     "{}.{} is deprecated, use appropriate MissingValueHandler instance instead",
                     EngineConfigurationKey.class.getSimpleName(),
@@ -186,7 +195,8 @@ class DefaultConfiguration implements Configuration {
             this.missingValueHandler = missingValueHandler;
         }
 
-        if (!getBooleanPropertyValue(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED)) {
+        if (!getBooleanPropertyValue(
+                EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED)) {
             this.helpers = Collections.emptyMap();
         } else {
             this.helpers = helpers;
@@ -363,7 +373,7 @@ class DefaultConfiguration implements Configuration {
         List<Resolver> resolvers = new ArrayList<Resolver>();
         if (!builderResolvers.isEmpty()) {
             resolvers.addAll(builderResolvers);
-            Collections.sort(resolvers, new HighPriorityComparator());
+            Collections.sort(resolvers, Priorities.higherFirst());
         }
         return resolvers;
     }
@@ -452,8 +462,9 @@ class DefaultConfiguration implements Configuration {
 
     private MissingValueHandler initMissingValueHandler(
             MustacheEngineBuilder builder) {
-        return builder.getMissingValueHandler() != null ? builder
-                .getMissingValueHandler() : new NoOpMissingValueHandler();
+        return builder.getMissingValueHandler() != null
+                ? builder.getMissingValueHandler()
+                : new NoOpMissingValueHandler();
     }
 
     private List<TemplateLocator> initTemplateLocators(
@@ -463,7 +474,7 @@ class DefaultConfiguration implements Configuration {
         if (!builderTemplateLocators.isEmpty()) {
             List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
                     builder.buildTemplateLocators());
-            Collections.sort(locators, new HighPriorityComparator());
+            Collections.sort(locators, Priorities.higherFirst());
             return ImmutableList.copyOf(locators);
         } else {
             return null;

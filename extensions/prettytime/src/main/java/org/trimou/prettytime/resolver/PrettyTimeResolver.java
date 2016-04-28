@@ -25,7 +25,6 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.cache.ComputingCache;
-import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.convert.Converter;
@@ -74,7 +73,7 @@ public class PrettyTimeResolver extends TransformResolver implements
             PrettyTimeResolver.class.getName() + ".matchName", "prettyTime");
 
     public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
-            PrettyTimeResolver.class.getName() + ".enabled", true);
+            PrettyTimeResolver.class.getName() + ".enabled", false);
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(PrettyTimeResolver.class);
@@ -134,11 +133,11 @@ public class PrettyTimeResolver extends TransformResolver implements
     }
 
     @Override
-    public void init(Configuration configuration) {
+    public void init() {
         if (!configuration.getBooleanPropertyValue(ENABLED_KEY)) {
             return;
         }
-        super.init(configuration);
+        super.init();
         setMatchingNames(configuration.getStringPropertyValue(MATCH_NAME_KEY));
         prettyTimeCache = configuration.getComputingCacheFactory().create(
                 COMPUTING_CACHE_CONSUMER_ID,

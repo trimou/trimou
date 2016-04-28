@@ -45,7 +45,6 @@ import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
-import org.trimou.handlebars.HelpersBuilder;
 import org.trimou.util.Checker;
 import org.trimou.util.ImmutableList;
 import org.trimou.util.ImmutableMap;
@@ -57,16 +56,14 @@ import org.trimou.util.Strings;
  * considered immutable once the {@link #build()} method is called. Subsequent
  * invocations of any modifying method or {@link #build()} result in an
  * {@link IllegalStateException}.
- *
  * <p>
  * Note that most {@link ConfigurationAware} components are tied to the specific
  * engine instance and cannot be reused as well.
- * </p>
  *
  * @author Martin Kouba
  */
-public final class MustacheEngineBuilder implements
-        ConfigurationExtensionBuilder {
+public final class MustacheEngineBuilder
+        implements ConfigurationExtensionBuilder {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MustacheEngineBuilder.class);
@@ -132,8 +129,6 @@ public final class MustacheEngineBuilder implements
      */
     public MustacheEngine build() {
 
-        registerBuiltinHelpersIfNecessary();
-
         MustacheEngine engine = new DefaultMustacheEngine(this);
         for (EngineBuiltCallback callback : engineReadyCallbacks) {
             callback.engineBuilt(engine);
@@ -177,8 +172,8 @@ public final class MustacheEngineBuilder implements
         }
 
         LOGGER.info("Engine built {} ({})", version, timestamp);
-        LOGGER.debug("Engine configuration: "
-                + engine.getConfiguration().getInfo());
+        LOGGER.debug(
+                "Engine configuration: " + engine.getConfiguration().getInfo());
         isBuilt = true;
         return engine;
     }
@@ -290,7 +285,8 @@ public final class MustacheEngineBuilder implements
      * @param callback
      * @return self
      */
-    public MustacheEngineBuilder registerCallback(EngineBuiltCallback callback) {
+    public MustacheEngineBuilder registerCallback(
+            EngineBuiltCallback callback) {
         Checker.checkArgumentNotNull(callback);
         checkNotBuilt();
         this.engineReadyCallbacks.add(callback);
@@ -304,7 +300,8 @@ public final class MustacheEngineBuilder implements
      * @param listener
      * @return self
      */
-    public MustacheEngineBuilder addMustacheListener(MustacheListener listener) {
+    public MustacheEngineBuilder addMustacheListener(
+            MustacheListener listener) {
         Checker.checkArgumentNotNull(listener);
         checkNotBuilt();
         this.mustacheListeners.add(listener);
@@ -365,12 +362,11 @@ public final class MustacheEngineBuilder implements
             boolean overwrite) {
         Checker.checkArgumentsNotNull(name, helper);
         checkNotBuilt();
-        registerBuiltinHelpersIfNecessary();
-        Object prev = this.helpers.put(name, helper);
-        if (!overwrite && prev != null) {
+        if (!overwrite && helpers.containsKey(name)) {
             throw new IllegalArgumentException(
                     "A helper with this name is already registered: " + name);
         }
+        helpers.put(name, helper);
         return this;
     }
 
@@ -469,7 +465,8 @@ public final class MustacheEngineBuilder implements
      * @param literalSupport
      * @return self
      */
-    public MustacheEngineBuilder setLiteralSupport(LiteralSupport literalSupport) {
+    public MustacheEngineBuilder setLiteralSupport(
+            LiteralSupport literalSupport) {
         Checker.checkArgumentNotNull(literalSupport);
         checkNotBuilt();
         this.literalSupport = literalSupport;
@@ -482,7 +479,8 @@ public final class MustacheEngineBuilder implements
      * @param configurationExtensionClassLoader
      * @return self
      */
-    public MustacheEngineBuilder setConfigurationExtensionClassLoader(ClassLoader configurationExtensionClassLoader) {
+    public MustacheEngineBuilder setConfigurationExtensionClassLoader(
+            ClassLoader configurationExtensionClassLoader) {
         Checker.checkArgumentNotNull(configurationExtensionClassLoader);
         checkNotBuilt();
         this.configurationExtensionClassLoader = configurationExtensionClassLoader;
@@ -577,13 +575,6 @@ public final class MustacheEngineBuilder implements
         if (isBuilt) {
             throw new IllegalStateException(
                     "Invalid method invocation - builder already built!");
-        }
-    }
-
-    private void registerBuiltinHelpersIfNecessary() {
-        if (!omitServiceLoaderConfigurationExtensions && helpers.isEmpty()) {
-            // Register the built-in helpers lazily
-            helpers.putAll(HelpersBuilder.builtin().build());
         }
     }
 

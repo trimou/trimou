@@ -15,6 +15,8 @@
  */
 package org.trimou.prettytime;
 
+import static org.trimou.engine.config.ConfigurationExtensions.registerHelper;
+
 import org.trimou.engine.config.ConfigurationExtension;
 import org.trimou.prettytime.resolver.PrettyTimeResolver;
 
@@ -22,11 +24,14 @@ import org.trimou.prettytime.resolver.PrettyTimeResolver;
  *
  * @author Martin Kouba
  */
-public class PrettyTimeConfigurationExtension implements ConfigurationExtension {
+public class PrettyTimeConfigurationExtension
+        implements ConfigurationExtension {
 
     @Override
     public void register(ConfigurationExtensionBuilder builder) {
         builder.addResolver(new PrettyTimeResolver());
+        registerHelper(builder, PrettyTimeHelper.DEFAULT_NAME,
+                new PrettyTimeHelper());
     }
 
 }

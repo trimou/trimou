@@ -64,6 +64,8 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
     public static final String COMPUTING_CACHE_CONSUMER_ID = PrettyTimeHelper.class
             .getName();
 
+    public static final String DEFAULT_NAME = "pretty";
+
     private final PrettyTimeFactory factory;
 
     private final Converter<Object, Date> converter;

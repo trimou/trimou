@@ -14,9 +14,9 @@ import org.trimou.AbstractTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
-import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -36,7 +36,7 @@ public class ValueWrapperTest extends AbstractTest {
                 .newBuilder()
                 .addResolver(
                         new AbstractResolver(
-                                WithPriority.RESOLVER_DEFAULT_PRIORITY + 100) {
+                                Resolver.DEFAULT_PRIORITY + 100) {
 
                             @Override
                             public Object resolve(Object contextObject,
@@ -81,7 +81,7 @@ public class ValueWrapperTest extends AbstractTest {
                         new ThrowingExceptionMissingValueHandler())
                 .addResolver(
                         new AbstractResolver(
-                                WithPriority.RESOLVER_DEFAULT_PRIORITY + 100) {
+                                Resolver.DEFAULT_PRIORITY + 100) {
 
                             @Override
                             public Object resolve(Object contextObject,
@@ -119,7 +119,7 @@ public class ValueWrapperTest extends AbstractTest {
                 .newBuilder()
                 .addResolver(
                         new AbstractResolver(
-                                WithPriority.RESOLVER_DEFAULT_PRIORITY + 100) {
+                                Resolver.DEFAULT_PRIORITY + 100) {
                             @Override
                             public Object resolve(Object contextObject,
                                     String name, ResolutionContext context) {

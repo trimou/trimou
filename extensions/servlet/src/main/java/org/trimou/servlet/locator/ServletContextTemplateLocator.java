@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.locator.PathTemplateLocator;
-import org.trimou.engine.priority.WithPriority;
+import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.servlet.RequestHolder;
@@ -239,7 +239,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
         private Builder() {
             this.rootPath = Strings.SLASH;
-            this.priority = WithPriority.TEMPLATE_LOCATOR_DEFAULT_PRIORITY;
+            this.priority = TemplateLocator.DEFAULT_PRIORITY;
         }
 
         /**

@@ -79,7 +79,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
-        if ((options.getParameters().isEmpty() && isMatching(options.peek()))
+        if ((options.getParameters().isEmpty() && isMatching(options.peek(), options))
                 || matches(options.getHash(), options.getParameters())) {
             options.fn();
         } else {
@@ -105,6 +105,10 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     }
 
     protected abstract boolean isMatching(Object value);
+
+    protected boolean isMatching(Object value, Options options) {
+        return isMatching(value);
+    }
 
     protected boolean hasEmptyParamsSupport() {
         return false;

@@ -22,13 +22,13 @@ package org.trimou.engine.priority;
  */
 public interface WithPriority {
 
-    public static final int TEMPLATE_LOCATOR_DEFAULT_PRIORITY = 10;
-
-    public static final int RESOLVER_DEFAULT_PRIORITY = 20;
+    int DEFAULT_PRIORITY = 1;
 
     /**
      * @return the priority value
      */
-    public int getPriority();
+    default int getPriority() {
+        return DEFAULT_PRIORITY;
+    }
 
 }

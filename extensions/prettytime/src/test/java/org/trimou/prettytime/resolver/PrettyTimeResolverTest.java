@@ -6,10 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Set;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -17,10 +15,7 @@ import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.Configuration;
-import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.locale.FixedLocaleSupport;
-import org.trimou.engine.locale.LocaleSupport;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.prettytime.PrettyTimeFactory;
 import org.trimou.util.ImmutableMap;
@@ -39,6 +34,7 @@ public class PrettyTimeResolverTest {
         // Just to init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(PrettyTimeResolver.ENABLED_KEY, true)
                 .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
                 .addResolver(resolver).build();
 
@@ -46,8 +42,8 @@ public class PrettyTimeResolverTest {
         assertNull(resolver.resolve("foo", "prettyTime", null));
         assertNotNull(resolver.resolve(new Date(), "prettyTime", null));
         assertNotNull(resolver.resolve(10000l, "prettyTime", null));
-        assertNotNull(resolver.resolve(Calendar.getInstance(), "prettyTime",
-                null));
+        assertNotNull(
+                resolver.resolve(Calendar.getInstance(), "prettyTime", null));
     }
 
     @Test
@@ -55,6 +51,7 @@ public class PrettyTimeResolverTest {
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(PrettyTimeResolver.ENABLED_KEY, true)
                 .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
                 .addResolver(new MapResolver())
                 .addResolver(new PrettyTimeResolver()).build();
@@ -68,13 +65,11 @@ public class PrettyTimeResolverTest {
         assertEquals(expected,
                 engine.compileMustache("pretty_cal", "{{now.prettyTime}}")
                         .render(ImmutableMap.<String, Object> of("now", now)));
-        assertEquals(
-                expected,
+        assertEquals(expected,
                 engine.compileMustache("pretty_date", "{{now.prettyTime}}")
                         .render(ImmutableMap.<String, Object> of("now",
                                 now.getTime())));
-        assertEquals(
-                expected,
+        assertEquals(expected,
                 engine.compileMustache("pretty_long", "{{now.prettyTime}}")
                         .render(ImmutableMap.<String, Object> of("now",
                                 now.getTimeInMillis())));
@@ -88,6 +83,7 @@ public class PrettyTimeResolverTest {
         // Just to init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(PrettyTimeResolver.ENABLED_KEY, true)
                 .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
                 .addResolver(resolver)
                 .setProperty(PrettyTimeResolver.MATCH_NAME_KEY, "pretty")
@@ -107,8 +103,8 @@ public class PrettyTimeResolverTest {
                     @Override
                     public PrettyTime createPrettyTime(Locale locale) {
                         PrettyTime prettyTime = new PrettyTime(locale);
-                        prettyTime.getUnit(JustNow.class).setMaxQuantity(
-                                1000L * 2L);
+                        prettyTime.getUnit(JustNow.class)
+                                .setMaxQuantity(1000L * 2L);
                         return prettyTime;
                     }
                 });
@@ -116,26 +112,13 @@ public class PrettyTimeResolverTest {
         // Just to init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(resolver).build();
+                .setProperty(PrettyTimeResolver.ENABLED_KEY, true)
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(resolver).build();
 
         Resources_en bundle = new Resources_en();
-        assertEquals(bundle.getString("JustNowPastPrefix"), resolver.resolve(
-                new Date().getTime() - 1000l, "prettyTime", null));
+        assertEquals(bundle.getString("JustNowPastPrefix"), resolver
+                .resolve(new Date().getTime() - 1000l, "prettyTime", null));
         assertEquals(
                 "4 " + bundle.getString("SecondPluralName")
                         + bundle.getString("SecondPastSuffix"),
@@ -148,29 +131,12 @@ public class PrettyTimeResolverTest {
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .setLocaleSupport(new LocaleSupport() {
-
-                    @Override
-                    public Locale getCurrentLocale() {
-                        return Locale.ENGLISH;
-                    }
-
-                    @Override
-                    public void init(Configuration configuration) {
-                    }
-
-                    @Override
-                    public Set<ConfigurationKey> getConfigurationKeys() {
-                        return Collections.emptySet();
-                    }
-                }).addResolver(new PrettyTimeResolver())
-                .setProperty(PrettyTimeResolver.ENABLED_KEY, false).build();
+                .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
+                .addResolver(new PrettyTimeResolver()).build();
 
         assertTrue(engine.getConfiguration().getResolvers().isEmpty());
-        assertEquals(
-                "",
-                engine.compileMustache("disabled_prettytime_resolver",
-                        "{{this.prettyTime}}").render(new Date()));
+        assertEquals("", engine.compileMustache("disabled_prettytime_resolver",
+                "{{this.prettyTime}}").render(new Date()));
     }
 
 }

@@ -24,7 +24,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trimou.engine.priority.WithPriority;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Checker;
@@ -116,7 +115,7 @@ public class FileSystemTemplateLocator extends FilePathTemplateLocator {
         private String suffix;
 
         private Builder() {
-            this.priority = WithPriority.TEMPLATE_LOCATOR_DEFAULT_PRIORITY;
+            this.priority = TemplateLocator.DEFAULT_PRIORITY;
         }
 
         /**

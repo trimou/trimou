@@ -15,24 +15,35 @@
  */
 package org.trimou.engine.config;
 
+import static org.trimou.engine.config.ConfigurationExtensions.registerHelpers;
+
 import org.trimou.engine.resolver.CombinedIndexResolver;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ThisResolver;
+import org.trimou.handlebars.HelpersBuilder;
 
 /**
- * Registers the default resolvers.
+ * Registers the default components.
  *
  * @author Martin Kouba
  */
 public class DefaultConfigurationExtension implements ConfigurationExtension {
 
     @Override
+    public int getPriority() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
     public void register(ConfigurationExtensionBuilder builder) {
         // Add built-in resolvers
-        builder.addResolver(new ReflectionResolver())
-                .addResolver(new ThisResolver()).addResolver(new MapResolver())
-                .addResolver(new CombinedIndexResolver());
+        builder.addResolver(new ReflectionResolver());
+        builder.addResolver(new ThisResolver());
+        builder.addResolver(new MapResolver());
+        builder.addResolver(new CombinedIndexResolver());
+        // Add built-in helpers
+        registerHelpers(builder, HelpersBuilder.builtin().build());
     }
 
 }

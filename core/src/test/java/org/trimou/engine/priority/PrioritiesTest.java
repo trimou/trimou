@@ -1,4 +1,4 @@
-package org.trimou.util;
+package org.trimou.engine.priority;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,14 +8,12 @@ import java.util.List;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
-import org.trimou.engine.priority.HighPriorityComparator;
-import org.trimou.engine.priority.WithPriority;
 
 /**
  *
  * @author Martin Kouba
  */
-public class HighPriorityComparatorTest extends AbstractEngineTest {
+public class PrioritiesTest extends AbstractEngineTest {
 
     @Test
     public void testComparator() {
@@ -49,11 +47,17 @@ public class HighPriorityComparatorTest extends AbstractEngineTest {
                 return 1;
             }
         });
-        Collections.sort(list, new HighPriorityComparator());
+        Collections.sort(list, Priorities.higherFirst());
         assertEquals(10, list.get(0).getPriority());
         assertEquals(1, list.get(1).getPriority());
         assertEquals(0, list.get(2).getPriority());
         assertEquals(-1, list.get(3).getPriority());
+
+        Collections.sort(list, Priorities.lowerFirst());
+        assertEquals(-1, list.get(0).getPriority());
+        assertEquals(0, list.get(1).getPriority());
+        assertEquals(1, list.get(2).getPriority());
+        assertEquals(10, list.get(3).getPriority());
     }
 
 }

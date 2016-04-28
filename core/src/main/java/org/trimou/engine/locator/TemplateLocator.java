@@ -33,6 +33,8 @@ import org.trimou.engine.priority.WithPriority;
  */
 public interface TemplateLocator extends WithPriority, ConfigurationAware {
 
+    int DEFAULT_PRIORITY = 10;
+
     /**
      * The reader is always closed by the engine right after the template source is read.
      *
@@ -52,5 +54,10 @@ public interface TemplateLocator extends WithPriority, ConfigurationAware {
      * @see EngineConfigurationKey#PRECOMPILE_ALL_TEMPLATES
      */
     public Set<String> getAllIdentifiers();
+
+    @Override
+    default int getPriority() {
+        return DEFAULT_PRIORITY;
+    }
 
 }

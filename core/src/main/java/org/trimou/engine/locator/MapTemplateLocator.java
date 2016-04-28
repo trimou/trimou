@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.trimou.engine.priority.WithPriority;
-
 /**
  * Template locator backed by a {@link Map}.
  *
@@ -50,7 +48,7 @@ public class MapTemplateLocator extends AbstractTemplateLocator {
      * @param templates
      */
     public MapTemplateLocator(Map<String, String> templates) {
-        super(WithPriority.TEMPLATE_LOCATOR_DEFAULT_PRIORITY);
+        super(TemplateLocator.DEFAULT_PRIORITY);
         this.templates = templates;
     }
 

@@ -34,6 +34,8 @@ import org.trimou.engine.priority.WithPriority;
  */
 public interface Resolver extends WithPriority, ConfigurationAware {
 
+    int DEFAULT_PRIORITY = 20;
+
     /**
      * Resolve the value from specified context object and name. This method
      * should return as fast as possible. The best practice is to verify params
@@ -53,7 +55,12 @@ public interface Resolver extends WithPriority, ConfigurationAware {
      * @return the resolved object or <code>null</code>
      * @see Placeholder#NULL
      */
-    public Object resolve(Object contextObject, String name,
+    Object resolve(Object contextObject, String name,
             ResolutionContext context);
+
+    @Override
+    default int getPriority() {
+        return DEFAULT_PRIORITY;
+    }
 
 }

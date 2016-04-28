@@ -20,17 +20,20 @@ import java.util.Map;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.listener.MustacheListener;
+import org.trimou.engine.priority.WithPriority;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.handlebars.Helper;
 
 /**
  * Configuration extensions are automatically loaded during the engine
  * initialization, provided the ServiceLoader mechanism is not disabled.
+ * <p>
+ * Extensions with higher priority are registered first.
  *
  * @author Martin Kouba
  * @see MustacheEngineBuilder#omitServiceLoaderConfigurationExtensions()
  */
-public interface ConfigurationExtension {
+public interface ConfigurationExtension extends WithPriority {
 
     /**
      * Allows to register additional configuration components, e.g.
@@ -82,8 +85,13 @@ public interface ConfigurationExtension {
          * @param name
          * @param helper
          * @return self
+         * @throws IllegalArgumentException
+         *             if a helper with the same name is already registered
+         * @see ConfigurationExtensions#registerHelper(ConfigurationExtensionBuilder,
+         *      String, Helper)
          */
-        ConfigurationExtensionBuilder registerHelper(String name, Helper helper);
+        ConfigurationExtensionBuilder registerHelper(String name,
+                Helper helper);
 
         /**
          * Register a helper instance.
@@ -93,7 +101,21 @@ public interface ConfigurationExtension {
          * @param overwrite
          * @return self
          */
-        ConfigurationExtensionBuilder registerHelper(String name, Helper helper, boolean overwrite);
+        ConfigurationExtensionBuilder registerHelper(String name, Helper helper,
+                boolean overwrite);
+
+        /**
+         * Register all the helper instances.
+         *
+         * @param helpers
+         * @return self
+         * @throws IllegalArgumentException
+         *             if a helper with the same name is already registered
+         * @see ConfigurationExtensions#registerHelpers(ConfigurationExtensionBuilder,
+         *      Map)
+         */
+        ConfigurationExtensionBuilder registerHelpers(
+                Map<String, Helper> helpers);
 
         /**
          * Register all the helper instances.
@@ -101,15 +123,8 @@ public interface ConfigurationExtension {
          * @param helpers
          * @return self
          */
-        ConfigurationExtensionBuilder registerHelpers(Map<String, Helper> helpers);
-
-        /**
-         * Register all the helper instances.
-         *
-         * @param helpers
-         * @return self
-         */
-        ConfigurationExtensionBuilder registerHelpers(Map<String, Helper> helpers, boolean overwrite);
+        ConfigurationExtensionBuilder registerHelpers(
+                Map<String, Helper> helpers, boolean overwrite);
 
     }
 }

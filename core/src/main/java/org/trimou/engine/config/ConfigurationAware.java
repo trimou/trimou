@@ -38,7 +38,9 @@ public interface ConfigurationAware {
      *
      * @param configuration
      */
-    public void init(Configuration configuration);
+    default void init(Configuration configuration) {
+        // No-op by default
+    }
 
     /**
      *
