@@ -52,6 +52,7 @@
       <module>extensions/spring-mvc</module>
       <module>extensions/dropwizard</module>
       <module>extensions/json-p</module>
+      <module>extensions/el</module>
    </modules>
 
    <properties>
@@ -62,7 +63,9 @@
       <version.arquillian.jetty>1.0.0.CR3</version.arquillian.jetty>
       <version.cdi-api>1.0-SP4</version.cdi-api>
       <version.dropwizard>0.7.1</version.dropwizard>
+      <version.el-api>3.0.0</version.el-api>
       <version.glassfish-json-p>1.0.4</version.glassfish-json-p>
+      <version.glassfish-el>3.0.0</version.glassfish-el>
       <version.gson>2.2.4</version.gson>
       <version.hamcrest>1.3.RC2</version.hamcrest>
       <version.htmlcompressor>1.5.2</version.htmlcompressor>
@@ -374,6 +377,18 @@
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
             <version>${version.htmlunit}</version>
+            <scope>test</scope>
+         </dependency>
+         <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>${version.el-api}</version>
+            <scope>provided</scope>
+         </dependency>
+         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>${version.glassfish-el}</version>
             <scope>test</scope>
          </dependency>
       </dependencies>
