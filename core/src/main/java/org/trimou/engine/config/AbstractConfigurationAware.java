@@ -16,7 +16,8 @@
 package org.trimou.engine.config;
 
 /**
- * Abstract configuration aware component.
+ * Abstract configuration-aware component that holds a reference to the
+ * {@link Configuration} instance.
  *
  * @author Martin Kouba
  */
@@ -24,6 +25,9 @@ public abstract class AbstractConfigurationAware implements ConfigurationAware {
 
     protected volatile Configuration configuration;
 
+    /**
+     * When overriding this method, always call <code>super.init(config)</code>.
+     */
     @Override
     public void init(Configuration configuration) {
         checkNotInitialized(this.configuration != null);
@@ -44,7 +48,8 @@ public abstract class AbstractConfigurationAware implements ConfigurationAware {
      */
     protected void checkNotInitialized(boolean isInitializedExpression) {
         if (isInitializedExpression) {
-            throw new IllegalStateException("Component is already initialized!");
+            throw new IllegalStateException(
+                    "Component is already initialized!");
         }
     }
 

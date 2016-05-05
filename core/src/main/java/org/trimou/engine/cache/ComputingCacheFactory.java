@@ -21,7 +21,7 @@ import org.trimou.engine.config.ConfigurationAware;
 /**
  * A factory for {@link ComputingCache} instances. An implementation must be
  * thread-safe.
- *
+ * <p>
  * It's always initialized before other {@link ConfigurationAware} components so
  * that other components can make use of computing cache API.
  *

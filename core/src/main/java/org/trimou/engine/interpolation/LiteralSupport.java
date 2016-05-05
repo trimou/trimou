@@ -22,7 +22,7 @@ import org.trimou.handlebars.Helper;
 
 /**
  * Allows to customize the way the helpers extract literals from params and hash
- * values.
+ * values. Must be thread safe.
  *
  * @author Martin Kouba
  * @see Helper

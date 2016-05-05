@@ -28,16 +28,10 @@ public class PingService {
 
     private AtomicLong generator = new AtomicLong(System.currentTimeMillis());
 
-    // Simple in-memory task store
     private ConcurrentMap<Long, Ping> pings = new ConcurrentHashMap<Long, Ping>();
 
-    private Comparator<Ping> pingComparator = new Comparator<Ping>() {
-
-        @Override
-        public int compare(Ping o1, Ping o2) {
-            return o1.getTime().compareTo(o2.getTime());
-        }
-    };
+    private Comparator<Ping> pingComparator = (o1, o2) -> o1.getTime()
+            .compareTo(o2.getTime());
 
     /**
      *

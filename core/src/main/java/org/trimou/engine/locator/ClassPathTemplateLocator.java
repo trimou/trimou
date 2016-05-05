@@ -41,12 +41,12 @@ import org.trimou.util.Strings;
 /**
  * Classpath template locator. There is a special {@link Builder} for
  * convenience.
- *
+ * <p>
  * Note that for a WAR archive, the classpath root is WEB-INF/classes (other
  * parts of the archive are not available). Consider using
  * <code>org.trimou.servlet.locator.ServletContextTemplateLocator</code> from
  * the trimou-extension-servlet.
- *
+ * <p>
  * By default, the locator will attempt to scan the classpath to get all
  * available template identifiers. However, only roots representing a directory
  * on a filesystem will be processed. The scanning of JARs and other sources is
@@ -83,7 +83,8 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
      * @param rootPath
      *            If null, no templates will be available for precompilation
      */
-    public ClassPathTemplateLocator(int priority, String rootPath, String suffix) {
+    public ClassPathTemplateLocator(int priority, String rootPath,
+            String suffix) {
         this(priority, rootPath, suffix, null, true);
     }
 
@@ -159,16 +160,16 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
                         if (!files.isEmpty()) {
                             for (File file : files) {
                                 if (Files.isFileUsable(file)) {
-                                    String id = stripSuffix(constructVirtualPath(
-                                            root, file));
+                                    String id = stripSuffix(
+                                            constructVirtualPath(root, file));
                                     builder.add(id);
                                     LOGGER.debug("Template available: {}", id);
                                 }
                             }
                         }
                     } catch (URISyntaxException e) {
-                        LOGGER.warn("Unable to process root path: {}",
-                                resource, e);
+                        LOGGER.warn("Unable to process root path: {}", resource,
+                                e);
                     }
                 } else {
                     LOGGER.debug(
@@ -191,8 +192,8 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
 
     private Reader locateRealPath(String realPath) {
 
-        final String name = getRootPath() != null ? getRootPath()
-                + addSuffix(realPath) : addSuffix(realPath);
+        final String name = getRootPath() != null
+                ? getRootPath() + addSuffix(realPath) : addSuffix(realPath);
         Reader reader = null;
 
         try {
@@ -232,7 +233,8 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
         }
         Collections.reverse(parts);
         StringBuilder name = new StringBuilder();
-        for (Iterator<String> iterator = parts.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = parts.iterator(); iterator
+                .hasNext();) {
             name.append(iterator.next());
             if (iterator.hasNext()) {
                 name.append(getVirtualPathSeparator());
@@ -246,8 +248,17 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
      * @param priority
      * @return a new instance of builder
      */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     *
+     * @param priority
+     * @return a new instance of builder
+     */
     public static Builder builder(int priority) {
-        return new Builder(priority);
+        return new Builder().setPriority(priority);
     }
 
     /**
@@ -266,8 +277,17 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
 
         private boolean scanClasspath = true;
 
-        private Builder(int priority) {
+        private Builder() {
+            this.priority = TemplateLocator.DEFAULT_PRIORITY;
+        }
+
+        /**
+         * @param priority
+         *            the priority to set
+         */
+        public Builder setPriority(int priority) {
             this.priority = priority;
+            return this;
         }
 
         /**

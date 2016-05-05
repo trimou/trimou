@@ -12,16 +12,12 @@
   <artifactId>trimou-example-simple</artifactId>
   <description>A really simple example showing some of the key features in action.</description>
 
-  <properties>
-    <version.trimou>1.8.4.Final</version.trimou>
-  </properties>
-
   <dependencies>
 
     <dependency>
       <groupId>org.trimou</groupId>
       <artifactId>trimou-core</artifactId>
-      <version>${version.trimou}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

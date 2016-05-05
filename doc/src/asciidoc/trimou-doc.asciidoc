@@ -9,7 +9,10 @@
 [[intro]]
 == What is Trimou?
 
-Trimou is yet another https://github.com/mustache[Mustache] implementation written in Java. *Helpers API* inspired by http://handlebarsjs.com/[Handlebars.js] is also supported. The goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application. There are some ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime],  http://code.google.com/p/htmlcompressor/[HtmlCompressor], http://code.google.com/p/google-gson/[google-gson], http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC] and https://dropwizard.github.io/dropwizard/[Dropwizard] (see <<extensions,Extensions>> section for more info).
+Trimou is yet another Java templating engine.
+It's a https://github.com/mustache[Mustache] implementation but *Helpers API* (inspired by http://handlebarsjs.com/[Handlebars.js]) is also supported.
+The goal is to provide a *simple to use* and *easy to extend* templating engine for any Java SE or Java EE application.
+There are some ready-to-use extensions which provide integration with http://www.cdi-spec.org/[CDI], Servlets, http://ocpsoft.org/prettytime/[PrettyTime],  http://code.google.com/p/htmlcompressor/[HtmlCompressor], http://code.google.com/p/google-gson/[google-gson], https://jsonp.java.net/[JSON Processing Object Model API (JSR 353)], http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC], https://dropwizard.github.io/dropwizard/[Dropwizard] and https://uel.java.net/[EL 3.0] (see <<extensions,Extensions>> section for more info).
 
 NOTE: Trimou is available under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache License 2.0].
 
@@ -91,7 +94,7 @@ NOTE: The set of resolvers may be extended - so in fact the above mentioned appl
 [[escaping_hml]]
 ==== Escaping HTML
 
-The interpolated value is escaped unless +&+ is used. The spec only tests the basic escaping (+&+, +"+, +<+, +>+). Trimou also escapes all ISO-8859-1 characters by default.
+The interpolated value is escaped unless +&+ is used. The spec only tests the basic escaping (+&+, +"+, +<+, +>+).
 
 .Examples:
 
@@ -1283,6 +1286,48 @@ This extension provides a basic https://dropwizard.github.io/dropwizard/[Dropwiz
 ==== TrimouViewRenderer
 
 +org.trimou.dropwizard.views.TrimouViewRenderer+ is a +io.dropwizard.views.ViewRenderer+ implementation backed by Trimou. There's a simple builder for convenience: +org.trimou.dropwizard.views.TrimouViewRenderer.Builder+.
+
+
+[[el]]
+=== EL 3.0
+
+This extension provides a basic https://uel.java.net/[EL 3.0] integration.
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-el</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+==== ELIfHelper
+
+`org.trimou.el.ELIfHelper` extends the built-in `IfHelper` in the sense that a `String` param is evaluated as EL expression:
+
+----
+{{#if "item.price gt 200"}}
+  {{item.name}}
+{{/if}}
+----
+
+NOTE: The `ELIfHelper` is automatically registered if you place the extension on the class path.
+
+
+==== ELHelper
+
+`org.trimou.el.ELHelper` evaluates the `Object#toString()` of the first parameter.
+If the helper represents a section and the value is not `null` the value is pushed on the context stack and the section is rendered.
+If the helper represents a variable and the value is `null`, the current `MissingValueHandler` is used.
+If the helper represents a variable and the final value is not `null` the the value's `Object#toString()` is rendered.
+
+----
+{{el 'item.active ? "active" : "inactive"'}}
+----
+
+NOTE: The `ELHelper` is automatically registered if you place the extension on the class path.
 
 
 '''

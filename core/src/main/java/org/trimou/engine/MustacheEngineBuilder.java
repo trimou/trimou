@@ -15,6 +15,9 @@
  */
 package org.trimou.engine;
 
+import static org.trimou.util.Checker.checkArgumentNotNull;
+import static org.trimou.util.Checker.checkArgumentsNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -45,7 +48,6 @@ import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.handlebars.Helper;
-import org.trimou.util.Checker;
 import org.trimou.util.ImmutableList;
 import org.trimou.util.ImmutableMap;
 import org.trimou.util.ImmutableSet;
@@ -127,7 +129,7 @@ public final class MustacheEngineBuilder
      *
      * @return the built engine
      */
-    public MustacheEngine build() {
+    public synchronized MustacheEngine build() {
 
         MustacheEngine engine = new DefaultMustacheEngine(this);
         for (EngineBuiltCallback callback : engineReadyCallbacks) {
@@ -137,11 +139,10 @@ public final class MustacheEngineBuilder
         String version = null;
         String timestamp = null;
 
-        // First try to get trimou-build.properties file
-        InputStream in = MustacheEngineBuilder.class
-                .getResourceAsStream(BUILD_PROPERTIES_FILE);
-
         try {
+            // First try to get trimou-build.properties file
+            InputStream in = MustacheEngineBuilder.class
+                    .getResourceAsStream(BUILD_PROPERTIES_FILE);
             if (in != null) {
                 try {
                     Properties buildProperties = new Properties();
@@ -172,8 +173,8 @@ public final class MustacheEngineBuilder
         }
 
         LOGGER.info("Engine built {} ({})", version, timestamp);
-        LOGGER.debug(
-                "Engine configuration: " + engine.getConfiguration().getInfo());
+        LOGGER.debug("Engine configuration: {}",
+                engine.getConfiguration().getInfo());
         isBuilt = true;
         return engine;
     }
@@ -189,7 +190,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder addGlobalData(String name, Object value) {
-        Checker.checkArgumentsNotNull(name, value);
+        checkArgumentsNotNull(name, value);
         checkNotBuilt();
         this.globalData.put(name, value);
         return this;
@@ -202,7 +203,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder addTemplateLocator(TemplateLocator locator) {
-        Checker.checkArgumentNotNull(locator);
+        checkArgumentNotNull(locator);
         checkNotBuilt();
         this.templateLocators.add(locator);
         return this;
@@ -215,7 +216,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder addResolver(Resolver resolver) {
-        Checker.checkArgumentNotNull(resolver);
+        checkArgumentNotNull(resolver);
         checkNotBuilt();
         this.resolvers.add(resolver);
         return this;
@@ -229,7 +230,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder setProperty(String key, Object value) {
-        Checker.checkArgumentsNotNull(key, value);
+        checkArgumentsNotNull(key, value);
         checkNotBuilt();
         this.properties.put(key, value);
         return this;
@@ -246,7 +247,7 @@ public final class MustacheEngineBuilder
      */
     public <T extends ConfigurationKey> MustacheEngineBuilder setProperty(
             T configurationKey, Object value) {
-        Checker.checkArgumentsNotNull(configurationKey, value);
+        checkArgumentsNotNull(configurationKey, value);
         checkNotBuilt();
         setProperty(configurationKey.get(), value);
         return this;
@@ -259,7 +260,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder setTextSupport(TextSupport textSupport) {
-        Checker.checkArgumentNotNull(textSupport);
+        checkArgumentNotNull(textSupport);
         checkNotBuilt();
         this.textSupport = textSupport;
         return this;
@@ -272,7 +273,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder setLocaleSupport(LocaleSupport localeSupport) {
-        Checker.checkArgumentNotNull(localeSupport);
+        checkArgumentNotNull(localeSupport);
         checkNotBuilt();
         this.localeSupport = localeSupport;
         return this;
@@ -287,7 +288,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder registerCallback(
             EngineBuiltCallback callback) {
-        Checker.checkArgumentNotNull(callback);
+        checkArgumentNotNull(callback);
         checkNotBuilt();
         this.engineReadyCallbacks.add(callback);
         return this;
@@ -302,7 +303,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder addMustacheListener(
             MustacheListener listener) {
-        Checker.checkArgumentNotNull(listener);
+        checkArgumentNotNull(listener);
         checkNotBuilt();
         this.mustacheListeners.add(listener);
         return this;
@@ -314,7 +315,7 @@ public final class MustacheEngineBuilder
      * @return self
      */
     public MustacheEngineBuilder setKeySplitter(KeySplitter keySplitter) {
-        Checker.checkArgumentNotNull(keySplitter);
+        checkArgumentNotNull(keySplitter);
         checkNotBuilt();
         this.keySplitter = keySplitter;
         return this;
@@ -327,7 +328,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder setMissingValueHandler(
             MissingValueHandler missingValueHandler) {
-        Checker.checkArgumentNotNull(missingValueHandler);
+        checkArgumentNotNull(missingValueHandler);
         checkNotBuilt();
         this.missingValueHandler = missingValueHandler;
         return this;
@@ -360,7 +361,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder registerHelper(String name, Helper helper,
             boolean overwrite) {
-        Checker.checkArgumentsNotNull(name, helper);
+        checkArgumentsNotNull(name, helper);
         checkNotBuilt();
         if (!overwrite && helpers.containsKey(name)) {
             throw new IllegalArgumentException(
@@ -395,9 +396,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder registerHelpers(Map<String, Helper> helpers,
             boolean overwrite) {
-        if (Checker.isNullOrEmpty(helpers)) {
-            return this;
-        }
+        checkArgumentNotNull(helpers);
         checkNotBuilt();
         for (Entry<String, Helper> entry : helpers.entrySet()) {
             registerHelper(entry.getKey(), entry.getValue(), overwrite);
@@ -425,7 +424,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder setComputingCacheFactory(
             ComputingCacheFactory cacheFactory) {
-        Checker.checkArgumentNotNull(cacheFactory);
+        checkArgumentNotNull(cacheFactory);
         checkNotBuilt();
         this.computingCacheFactory = cacheFactory;
         return this;
@@ -439,7 +438,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder setIdentifierGenerator(
             IdentifierGenerator identifierGenerator) {
-        Checker.checkArgumentNotNull(identifierGenerator);
+        checkArgumentNotNull(identifierGenerator);
         checkNotBuilt();
         this.identifierGenerator = identifierGenerator;
         return this;
@@ -453,7 +452,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder setExecutorService(
             ExecutorService executorService) {
-        Checker.checkArgumentNotNull(executorService);
+        checkArgumentNotNull(executorService);
         checkNotBuilt();
         this.executorService = executorService;
         return this;
@@ -467,7 +466,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder setLiteralSupport(
             LiteralSupport literalSupport) {
-        Checker.checkArgumentNotNull(literalSupport);
+        checkArgumentNotNull(literalSupport);
         checkNotBuilt();
         this.literalSupport = literalSupport;
         return this;
@@ -481,7 +480,7 @@ public final class MustacheEngineBuilder
      */
     public MustacheEngineBuilder setConfigurationExtensionClassLoader(
             ClassLoader configurationExtensionClassLoader) {
-        Checker.checkArgumentNotNull(configurationExtensionClassLoader);
+        checkArgumentNotNull(configurationExtensionClassLoader);
         checkNotBuilt();
         this.configurationExtensionClassLoader = configurationExtensionClassLoader;
         return this;
@@ -489,7 +488,7 @@ public final class MustacheEngineBuilder
 
     /**
      *
-     * @return new instance of builder
+     * @return a new instance of builder
      */
     public static MustacheEngineBuilder newBuilder() {
         return new MustacheEngineBuilder();

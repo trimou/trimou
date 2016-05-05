@@ -40,12 +40,11 @@ public class SimpleExample {
 
         // Add a template locator so that the template contents is automatically
         // loaded
-        builder.addTemplateLocator(ClassPathTemplateLocator.builder(1)
-                .setSuffix("trimou").build());
+        builder.addTemplateLocator(
+                ClassPathTemplateLocator.builder().setSuffix("trimou").build());
 
         // Add some extra built-in helpers
-        builder.registerHelpers(HelpersBuilder
-                .extra()
+        builder.registerHelpers(HelpersBuilder.extra()
                 .add("log",
                         LogHelper.builder().setDefaultLevel(Level.WARN).build())
                 .build());
@@ -70,8 +69,8 @@ public class SimpleExample {
         items.add(new Item("Qux", -1l, false));
         items.add(new Item("Baz", 5000l, true));
 
-        System.out.println(String.format("Start rendering of %s...",
-                test.getName()));
+        System.out.println(
+                String.format("Start rendering of %s...", test.getName()));
 
         long start = System.nanoTime();
         // And now render the data

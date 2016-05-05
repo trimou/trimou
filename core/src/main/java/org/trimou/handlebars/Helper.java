@@ -24,7 +24,7 @@ import org.trimou.exception.MustacheProblem;
 
 /**
  * Handlebars-like helper. Must be thread safe.
- *
+ * <p>
  * Class member names in this package sometimes do not make much sense (e.g.
  * {@link Options#fn()}), however we've tried to follow the original
  * handlebars terminology as much as possible.

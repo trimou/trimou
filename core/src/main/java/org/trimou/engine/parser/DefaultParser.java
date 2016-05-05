@@ -232,8 +232,8 @@ class DefaultParser implements Parser {
             }
         } else {
             // False alarm - not an end delimiter
-            LOGGER.warn(
-                    "Tag contains part of the end delimiter - most probably an invalid key [part: {}, line: {}]",
+            LOGGER.info(
+                    "Tag contains a part of the end delimiter - most probably an invalid key [part: {}, line: {}]",
                     delimiters.getStartPart(delimiterIdx), line);
             state = State.TAG;
             buffer.append(delimiters.getEndPart(delimiterIdx));

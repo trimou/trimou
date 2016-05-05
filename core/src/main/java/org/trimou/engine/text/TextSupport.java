@@ -15,10 +15,11 @@
  */
 package org.trimou.engine.text;
 
+import static org.trimou.util.Checker.checkArgumentNotNull;
+
 import java.io.IOException;
 
 import org.trimou.engine.config.ConfigurationAware;
-import org.trimou.util.Checker;
 
 /**
  * Text support. Implementation must be thread-safe.
@@ -51,7 +52,7 @@ public interface TextSupport extends ConfigurationAware {
      */
     default void appendEscapedHtml(String input, Appendable appendable)
             throws IOException {
-        Checker.checkArgumentNotNull(appendable);
+        checkArgumentNotNull(appendable);
         appendable.append(escapeHtml(input));
     }
 

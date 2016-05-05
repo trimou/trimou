@@ -24,6 +24,7 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 
 /**
+ * An abstract helper that holds a reference to the {@link TextSupport}.
  *
  * @author Martin Kouba
  */
@@ -34,11 +35,10 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
 
     @Override
     protected void init() {
-        if (configuration.getBooleanPropertyValue(
+        if (!configuration.getBooleanPropertyValue(
                 EngineConfigurationKey.SKIP_VALUE_ESCAPING)) {
-            return;
+            textSupport = configuration.getTextSupport();
         }
-        textSupport = configuration.getTextSupport();
     }
 
     protected boolean isSection(Options options) {
