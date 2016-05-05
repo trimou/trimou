@@ -35,6 +35,22 @@ import org.trimou.handlebars.Options;
  */
 public class ELIfHelper extends IfHelper {
 
+    /**
+     *
+     */
+    ELIfHelper() {
+        super();
+    }
+
+    /**
+     *
+     * @param elseStartDelimiter
+     * @param elseEndDelimiter
+     */
+    ELIfHelper(String elseStartDelimiter, String elseEndDelimiter) {
+        super(elseStartDelimiter, elseEndDelimiter);
+    }
+
     @Override
     protected boolean isMatching(Object value, Options options) {
         if (value instanceof String) {
