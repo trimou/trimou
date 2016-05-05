@@ -17,12 +17,14 @@ package org.trimou.minify;
 
 import java.io.Reader;
 
+import org.trimou.engine.MustacheEngineBuilder.EngineBuiltCallback;
 import org.trimou.engine.config.ConfigurationAware;
 
 /**
  * Although the minifier is a configuration-aware component, it's allowed to
- * define own configuration keys only if used as a part of a
- * {@link MinifyListener} (in fact it's not a "real" extension point).
+ * define its own configuration keys only if used as a part of a
+ * {@link MinifyListener} or registered as an {@link EngineBuiltCallback} if
+ * used as a part of a {@link MinifyLambda}.
  *
  * @author Martin Kouba
  */
@@ -35,7 +37,7 @@ public interface Minifier extends ConfigurationAware {
      * @param mustacheContents
      * @return the minified template contents
      */
-    public Reader minify(String mustacheName, Reader mustacheContents);
+    Reader minify(String mustacheName, Reader mustacheContents);
 
     /**
      * Minify the specified text (aka part of the template contents).
@@ -43,6 +45,6 @@ public interface Minifier extends ConfigurationAware {
      * @param text
      * @return the minified text
      */
-    public String minify(String text);
+    String minify(String text);
 
 }

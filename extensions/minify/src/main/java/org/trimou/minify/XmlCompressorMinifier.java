@@ -15,6 +15,8 @@
  */
 package org.trimou.minify;
 
+import java.util.function.Predicate;
+
 import com.googlecode.htmlcompressor.compressor.XmlCompressor;
 
 /**
@@ -25,6 +27,10 @@ public class XmlCompressorMinifier extends CompressorMinifier<XmlCompressor> {
 
     public XmlCompressorMinifier() {
         super(new XmlCompressor());
+    }
+
+    public XmlCompressorMinifier(Predicate<String> matchingPredicate) {
+        super(new XmlCompressor(), matchingPredicate);
     }
 
 }

@@ -15,6 +15,8 @@
  */
 package org.trimou.minify;
 
+import static org.trimou.util.Checker.checkArgumentNotNull;
+
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -23,7 +25,6 @@ import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.listener.AbstractMustacheListener;
 import org.trimou.engine.listener.MustacheParsingEvent;
-import org.trimou.util.Checker;
 
 /**
  *
@@ -37,16 +38,12 @@ public class MinifyListener extends AbstractMustacheListener {
     private final Minifier minifier;
 
     MinifyListener(Minifier minifier) {
-        Checker.checkArgumentNotNull(minifier);
+        checkArgumentNotNull(minifier);
         this.minifier = minifier;
     }
 
     @Override
     public void init(Configuration configuration) {
-        if (minifier == null) {
-            throw new IllegalStateException(
-                    "MinifyListener not configured properly");
-        }
         minifier.init(configuration);
         LOGGER.info("Minify listener initialized [minifier: {}]",
                 minifier.toString());
@@ -54,8 +51,7 @@ public class MinifyListener extends AbstractMustacheListener {
 
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
-        return minifier != null ? minifier.getConfigurationKeys() : super
-                .getConfigurationKeys();
+        return minifier.getConfigurationKeys();
     }
 
     @Override

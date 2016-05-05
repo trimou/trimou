@@ -18,6 +18,7 @@ package org.trimou.minify;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.trimou.engine.config.Configuration;
@@ -33,6 +34,10 @@ public class HtmlCompressorMinifier extends CompressorMinifier<HtmlCompressor> {
 
     public HtmlCompressorMinifier() {
         super(new HtmlCompressor());
+    }
+
+    public HtmlCompressorMinifier(Predicate<String> matchingPredicate) {
+        super(new HtmlCompressor(), matchingPredicate);
     }
 
     @Override

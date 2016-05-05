@@ -104,47 +104,38 @@ public class MinifyListenerTest {
                 engine.compileMustache("minify_html_customized", contents)
                         .render(null));
 
-        engine = MustacheEngineBuilder
-                .newBuilder()
+        engine = MustacheEngineBuilder.newBuilder()
                 .addMustacheListener(
-                        Minify.customListener(new HtmlCompressorMinifier() {
-                            @Override
-                            protected boolean match(String mustacheName) {
-                                return mustacheName.endsWith("html");
-                            }
-                        })).build();
+                        Minify.customListener(new HtmlCompressorMinifier(
+                                mustacheName -> mustacheName.endsWith("html"))))
+                .build();
         // Mustache name does not match
         assertEquals(contents,
                 engine.compileMustache("minify_html_customized", contents)
                         .render(null));
 
         // Skip lambdas
-        engine = MustacheEngineBuilder
-                .newBuilder()
+        engine = MustacheEngineBuilder.newBuilder()
                 .addMustacheListener(
-                        Minify.customListener(new HtmlCompressorMinifier() {
-                            @Override
-                            protected boolean match(String mustacheName) {
-                                return !mustacheName
-                                        .startsWith(Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX);
-                            }
-                        })).build();
-        assertEquals(
-                contents,
-                engine.compileMustache("minify_html_customized_skip_lambda",
-                        "<html><body>{{{lambda}}}</body></html>").render(
-                        ImmutableMap.of("lambda", new InputLiteralLambda() {
+                        Minify.customListener(new HtmlCompressorMinifier(
+                                mustacheName -> !mustacheName.startsWith(
+                                        Lambda.ONEOFF_LAMBDA_TEMPLATE_PREFIX))))
+                .build();
+        assertEquals(contents, engine
+                .compileMustache("minify_html_customized_skip_lambda",
+                        "<html><body>{{{lambda}}}</body></html>")
+                .render(ImmutableMap.of("lambda", new InputLiteralLambda() {
 
-                            @Override
-                            public boolean isReturnValueInterpolated() {
-                                return true;
-                            }
+                    @Override
+                    public boolean isReturnValueInterpolated() {
+                        return true;
+                    }
 
-                            @Override
-                            public String invoke(String text) {
-                                return "<!-- My comment -->";
-                            }
-                        })));
+                    @Override
+                    public String invoke(String text) {
+                        return "<!-- My comment -->";
+                    }
+                })));
     }
 
     @Test

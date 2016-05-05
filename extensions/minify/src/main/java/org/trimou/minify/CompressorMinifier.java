@@ -15,8 +15,11 @@
  */
 package org.trimou.minify;
 
+import static org.trimou.util.Checker.checkArgumentsNotNull;
+
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +44,28 @@ public abstract class CompressorMinifier<T extends Compressor> extends
 
     protected final T compressor;
 
+    protected final Predicate<String> matchingPredicate;
+
     /**
      *
      * @param compressor
      */
     public CompressorMinifier(T compressor) {
-        this.compressor = compressor;
+        this(compressor, (mustacheName) -> true);
     }
+
+    /**
+     *
+     * @param compressor
+     * @param matchingPredicate
+     */
+    CompressorMinifier(T compressor, Predicate<String> matchingPredicate) {
+        checkArgumentsNotNull(compressor, matchingPredicate);
+        this.compressor = compressor;
+        this.matchingPredicate = matchingPredicate;
+    }
+
+
 
     @Override
     public void init(Configuration configuration) {
@@ -88,7 +106,7 @@ public abstract class CompressorMinifier<T extends Compressor> extends
      *         mustache name, <code>false</code> otherwise
      */
     protected boolean match(String mustacheName) {
-        return true;
+        return matchingPredicate.test(mustacheName);
     }
 
     /**

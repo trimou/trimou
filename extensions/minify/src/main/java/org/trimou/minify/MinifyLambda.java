@@ -15,16 +15,17 @@
  */
 package org.trimou.minify;
 
+import static org.trimou.util.Checker.checkArgumentNotNull;
+
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder.EngineBuiltCallback;
 import org.trimou.lambda.Lambda;
-import org.trimou.util.Checker;
 
 /**
  * This lambda is useful to minify parts of the template contents. Unlike
  * {@link MinifyListener} the minification brings additional overhead - it's
  * performed everytime the template is rendered.
- *
+ * <p>
  * Note that if the supplied minifier needs to inspect the configuration to work
  * properly, the lambda instance must be registered as an
  * {@link EngineBuiltCallback}.
@@ -45,9 +46,7 @@ public class MinifyLambda implements Lambda, EngineBuiltCallback {
      * @param minifier
      */
     public MinifyLambda(Minifier minifier) {
-        this.minifier = minifier;
-        this.inputType = InputType.PROCESSED;
-        this.isReturnValueInterpolated = false;
+        this(InputType.PROCESSED, false, minifier);
     }
 
     /**
@@ -58,7 +57,7 @@ public class MinifyLambda implements Lambda, EngineBuiltCallback {
      */
     public MinifyLambda(InputType inputType, boolean isReturnValueInterpolated,
             Minifier minifier) {
-        Checker.checkArgumentNotNull(inputType);
+        checkArgumentNotNull(inputType);
         this.inputType = inputType;
         this.isReturnValueInterpolated = isReturnValueInterpolated;
         this.minifier = minifier;
