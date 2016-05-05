@@ -50,7 +50,7 @@ public class TrimouExtension implements Extension {
         BeanManagerLocator.setExtensionProvidedBeanManager(beanManager);
     }
 
-    public RenderingContext getRenderingContext() {
+    RenderingContext getRenderingContext() {
         return renderingContext;
     }
 

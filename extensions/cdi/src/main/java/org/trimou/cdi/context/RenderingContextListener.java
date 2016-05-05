@@ -15,9 +15,8 @@
  */
 package org.trimou.cdi.context;
 
-import org.trimou.engine.listener.AbstractMustacheListener;
+import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.listener.MustacheRenderingEvent;
-import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.util.Checker;
 
 /**
@@ -27,7 +26,7 @@ import org.trimou.util.Checker;
  *
  * @author Martin Kouba
  */
-public final class RenderingContextListener extends AbstractMustacheListener {
+public final class RenderingContextListener implements MustacheListener {
 
     private final RenderingContext renderingContext;
 
@@ -43,12 +42,7 @@ public final class RenderingContextListener extends AbstractMustacheListener {
     @Override
     public void renderingStarted(final MustacheRenderingEvent event) {
         renderingContext.initialize(event);
-        event.registerReleaseCallback(new ReleaseCallback() {
-            @Override
-            public void release() {
-                renderingContext.destroy(event);
-            }
-        });
+        event.registerReleaseCallback(() -> renderingContext.destroy(event));
     }
 
 }

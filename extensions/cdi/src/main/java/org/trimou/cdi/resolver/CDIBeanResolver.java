@@ -43,7 +43,7 @@ import org.trimou.engine.resource.ReleaseCallback;
 /**
  * CDI beans resolver. Note that only beans with a name (i.e. annotated with
  * {@link Named}) are resolvable.
- *
+ * <p>
  * Similarly to the CDI and Unified EL integration, instance of a dependent bean
  * exists to service just a single tag evaluation.
  *
@@ -57,7 +57,8 @@ public class CDIBeanResolver extends AbstractResolver {
     public static final String COMPUTING_CACHE_CONSUMER_ID = CDIBeanResolver.class
             .getName();
 
-    public static final int CDI_BEAN_RESOLVER_PRIORITY = rightAfter(ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
+    public static final int CDI_BEAN_RESOLVER_PRIORITY = rightAfter(
+            ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
             CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
@@ -70,7 +71,7 @@ public class CDIBeanResolver extends AbstractResolver {
      *
      */
     public CDIBeanResolver() {
-        this(CDI_BEAN_RESOLVER_PRIORITY);
+        this(null, CDI_BEAN_RESOLVER_PRIORITY);
     }
 
     /**
@@ -78,7 +79,15 @@ public class CDIBeanResolver extends AbstractResolver {
      * @param priority
      */
     public CDIBeanResolver(int priority) {
-        super(priority);
+        this(null, priority);
+    }
+
+    /**
+     *
+     * @param beanManager
+     */
+    public CDIBeanResolver(BeanManager beanManager) {
+        this(beanManager, CDI_BEAN_RESOLVER_PRIORITY);
     }
 
     /**
@@ -87,16 +96,7 @@ public class CDIBeanResolver extends AbstractResolver {
      * @param priority
      */
     public CDIBeanResolver(BeanManager beanManager, int priority) {
-        this(priority);
-        this.beanManager = beanManager;
-    }
-
-    /**
-     *
-     * @param beanManager
-     */
-    public CDIBeanResolver(BeanManager beanManager) {
-        this(CDI_BEAN_RESOLVER_PRIORITY);
+        super(priority);
         this.beanManager = beanManager;
     }
 
@@ -119,11 +119,9 @@ public class CDIBeanResolver extends AbstractResolver {
 
     @Override
     public void init() {
-
         if (beanManager == null) {
             beanManager = BeanManagerLocator.locate();
         }
-
         if (beanManager == null) {
             throw new IllegalStateException(
                     "BeanManager not set - invalid resolver configuration");
@@ -131,7 +129,6 @@ public class CDIBeanResolver extends AbstractResolver {
         // Init cache max size
         long beanCacheMaxSize = configuration
                 .getLongPropertyValue(BEAN_CACHE_MAX_SIZE_KEY);
-
         beanCache = configuration.getComputingCacheFactory().create(
                 COMPUTING_CACHE_CONSUMER_ID,
                 new ComputingCache.Function<String, Optional<Bean<?>>>() {
@@ -146,8 +143,8 @@ public class CDIBeanResolver extends AbstractResolver {
                         }
 
                         try {
-                            return Optional.<Bean<?>> of((Bean<?>) beanManager
-                                    .resolve(beans));
+                            return Optional.<Bean<?>> of(
+                                    (Bean<?>) beanManager.resolve(beans));
                         } catch (AmbiguousResolutionException e) {
                             LOGGER.warn(
                                     "An ambiguous EL name exists [name: {}]",
@@ -176,7 +173,6 @@ public class CDIBeanResolver extends AbstractResolver {
             context.registerReleaseCallback(new DependentDestroyCallback<T>(
                     bean, creationalContext, reference));
             return reference;
-
         } else {
             return beanManager.getReference(bean, Object.class,
                     creationalContext);

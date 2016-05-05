@@ -15,8 +15,6 @@
  */
 package org.trimou.cdi;
 
-import java.lang.reflect.Method;
-
 import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -51,17 +49,15 @@ public class BeanManagerLocator {
      * @return {@link BeanManager} instance or <code>null</code>
      */
     public static BeanManager locate() {
-
         BeanManager beanManager = locateCDI11();
-
         if (beanManager == null) {
             beanManager = locateJNDI();
         }
-
         if (beanManager != null) {
             return beanManager;
         } else if (extensionProvidedBeanManager != null) {
-            LOGGER.info("Finally using extension provided BeanManager instance");
+            LOGGER.info(
+                    "Finally using extension provided BeanManager instance");
             return extensionProvidedBeanManager;
         }
         return null;
@@ -70,25 +66,22 @@ public class BeanManagerLocator {
     private static BeanManager locateCDI11() {
 
         BeanManager beanManager = null;
-        ClassLoader classLoader = Thread.currentThread()
-                .getContextClassLoader();
+        ClassLoader classLoader = SecurityActions.getContextClassLoader();
         Class<?> cdiClass = null;
 
         try {
             cdiClass = classLoader.loadClass(CDI_CLASS_NAME);
-            LOGGER.info("CDI 1.1 - using javax.enterprise.inject.spi.CDI to obtain BeanManager instance");
-        } catch (ClassNotFoundException e) {
-            // CDI 1.0
-        } catch (NoClassDefFoundError e) {
+            LOGGER.info(
+                    "CDI 1.1 - using javax.enterprise.inject.spi.CDI to obtain BeanManager instance");
+        } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
             // CDI 1.0
         }
-
         if (cdiClass != null) {
             try {
-                Object cdi = cdiClass.getMethod("current").invoke(null);
-                Method getBeanManagerMethod = cdiClass
-                        .getMethod("getBeanManager");
-                beanManager = (BeanManager) getBeanManagerMethod.invoke(cdi);
+                Object cdi = SecurityActions.getMethod(cdiClass, "current")
+                        .invoke(null);
+                beanManager = (BeanManager) SecurityActions
+                        .getMethod(cdiClass, "getBeanManager").invoke(cdi);
             } catch (Exception e) {
                 // Reflection invocation failed
                 LOGGER.warn("Unable to invoke CDI.current().getBeanManager()",
@@ -99,15 +92,10 @@ public class BeanManagerLocator {
     }
 
     private static BeanManager locateJNDI() {
-
-        BeanManager beanManager = null;
-
         LOGGER.info("CDI 1.0 - using JNDI to obtain BeanManager instance");
-
+        BeanManager beanManager = null;
         try {
-
             Context ctx = new InitialContext();
-
             for (String name : JNDI_NAMES) {
                 try {
                     beanManager = (BeanManager) ctx.lookup(name);
@@ -120,9 +108,9 @@ public class BeanManagerLocator {
                     break;
                 }
             }
-
         } catch (NamingException e) {
-            LOGGER.warn("JNDI lookup failed - unable to create initial context");
+            LOGGER.warn(
+                    "JNDI lookup failed - unable to create initial context");
         }
         return beanManager;
     }

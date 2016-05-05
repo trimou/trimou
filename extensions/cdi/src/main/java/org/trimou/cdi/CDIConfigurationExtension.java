@@ -39,22 +39,19 @@ public class CDIConfigurationExtension implements ConfigurationExtension {
 
     @Override
     public void register(ConfigurationExtensionBuilder builder) {
-
         BeanManager beanManager = BeanManagerLocator.locate();
-
         if (beanManager == null) {
-            LOGGER.warn("CDI extension not operational - unable to locate BeanManager");
+            LOGGER.warn(
+                    "CDI extension not operational - unable to locate BeanManager");
             return;
         }
         builder.addResolver(new CDIBeanResolver(beanManager));
-        builder.addMustacheListener(new RenderingContextListener(
-                getRenderingContext(beanManager)));
+        builder.addMustacheListener(
+                new RenderingContextListener(getRenderingContext(beanManager)));
     }
 
     private RenderingContext getRenderingContext(BeanManager beanManager) {
-
         Set<Bean<?>> beans = beanManager.getBeans(TrimouExtension.class);
-
         if (beans.isEmpty()) {
             throw new IllegalStateException(
                     "Unable to get rendering context reference");
