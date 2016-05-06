@@ -15,6 +15,8 @@
  */
 package org.trimou.dropwizard.views;
 
+import static org.trimou.util.Checker.checkArgumentsNotNull;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,7 +39,7 @@ import io.dropwizard.views.ViewRenderer;
 
 /**
  * A Dropwizard {@link ViewRenderer} backed by Trimou.
- *
+ * <p>
  * Localized template files support is enabled by default, but could be disabled to improve performance.
  *
  * @author Martin Kouba
@@ -60,8 +62,9 @@ public class TrimouViewRenderer implements ViewRenderer {
      * @param hasLocalizedTemplates
      */
     private TrimouViewRenderer(MustacheEngine engine, String suffix, boolean hasLocalizedTemplates) {
+    	checkArgumentsNotNull(engine, suffix, hasLocalizedTemplates);
         this.engine = engine;
-        this.suffix = "." + suffix;
+        this.suffix = suffix.startsWith(".") ? suffix : "." + suffix;
         this.hasLocalizedTemplates = hasLocalizedTemplates;
     }
 
