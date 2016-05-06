@@ -82,7 +82,6 @@
       <version.mvc-api>1.0-edr2</version.mvc-api>
       <version.ozark>1.0.0-m02</version.ozark>
       <version.prettytime>3.2.7.Final</version.prettytime>
-      <version.servlet-api>2.4</version.servlet-api>
       <version.slf4j>1.7.4</version.slf4j>
       <version.springframework>3.1.0.RELEASE</version.springframework>
       <version.weld2>2.3.3.Final</version.weld2>

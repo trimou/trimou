@@ -30,12 +30,13 @@ import org.trimou.handlebars.Helper;
 import org.trimou.servlet.locator.ServletContextTemplateLocator;
 
 /**
+ *
  * @author Minkyu Cho
+ * @author Martin Kouba
  */
 public class TrimouViewResolver extends AbstractTemplateViewResolver
-        implements
-        ViewResolver,
-        InitializingBean {
+        implements ViewResolver, InitializingBean {
+
     private String fileEncoding = System.getProperty("file.encoding");
     private boolean handlebarsSupport = true;
     private boolean debug = false;
@@ -54,8 +55,6 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver
         try {
             view.setViewName(viewName);
             view.setEngine(engine);
-            // Validate the template exists
-            engine.getMustache(viewName);
             return view;
         } catch (Exception e) {
             throw new MustacheException(view.getUrl() + " : " + e.getMessage());
@@ -64,21 +63,25 @@ public class TrimouViewResolver extends AbstractTemplateViewResolver
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        final int PRIORITY = 1;
-        engine =
-                MustacheEngineBuilder
-                        .newBuilder()
-                        .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED, isCache())
-                        .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT,
-                                getCacheExpiration())
-                        .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING, getFileEncoding())
-                        .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED, isHandlebarsSupport())
-                        .setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
-                        .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES, isPreCompile())
-                        .registerHelpers(helpers)
-                        .addTemplateLocator(
-                                new ServletContextTemplateLocator(PRIORITY, getPrefix(),
-                                        getSuffixWithoutSeparator(), getServletContext())).build();
+        engine = MustacheEngineBuilder.newBuilder()
+                .setProperty(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED,
+                        isCache())
+                .setProperty(
+                        EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT,
+                        getCacheExpiration())
+                .setProperty(EngineConfigurationKey.DEFAULT_FILE_ENCODING,
+                        getFileEncoding())
+                .setProperty(EngineConfigurationKey.HANDLEBARS_SUPPORT_ENABLED,
+                        isHandlebarsSupport())
+                .setProperty(EngineConfigurationKey.DEBUG_MODE, isDebug())
+                .setProperty(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES,
+                        isPreCompile())
+                .registerHelpers(helpers)
+                .addTemplateLocator(ServletContextTemplateLocator.builder()
+                        .setPriority(1).setRootPath(getPrefix())
+                        .setSuffix(getSuffixWithoutSeparator())
+                        .setServletContext(getServletContext()).build())
+                .build();
     }
 
     @Override

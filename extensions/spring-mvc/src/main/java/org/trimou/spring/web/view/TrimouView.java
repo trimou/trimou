@@ -15,39 +15,46 @@
  */
 package org.trimou.spring.web.view;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.view.AbstractTemplateView;
-import org.trimou.engine.MustacheEngine;
-import org.trimou.exception.MustacheException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
+
 /**
- * This is the spring view use to generate the content based on
- * a Mustache template.
+ * This is the spring view use to generate the content based on a Mustache
+ * template.
  *
  * @author Minkyu Cho
+ * @author Martin Kouba
  */
 public class TrimouView extends AbstractTemplateView {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TrimouView.class);
 
     private String viewName;
 
     private MustacheEngine engine;
 
     @Override
-    protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
-                                             HttpServletResponse response) throws Exception {
+    protected void renderMergedTemplateModel(Map<String, Object> model,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         response.setContentType(getContentType());
         exposeRequestAttributesAsModel(model, request);
         final Writer writer = response.getWriter();
         try {
-            engine.getMustache(viewName).render(writer, model);
+            Mustache template = engine.getMustache(viewName);
+            if (template == null) {
+                new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                        "Template not found: " + viewName);
+            }
+            template.render(writer, model);
         } catch (NullPointerException e) {
             throw new MustacheException(getUrl() + " is not exist.", e);
         } finally {
@@ -55,13 +62,12 @@ public class TrimouView extends AbstractTemplateView {
         }
     }
 
-    private void exposeRequestAttributesAsModel(Map<String, Object> model, HttpServletRequest request) {
+    private void exposeRequestAttributesAsModel(Map<String, Object> model,
+            HttpServletRequest request) {
         if (request == null || request.getAttributeNames() == null) {
             return;
         }
-
-        Enumeration attributeNames = request.getAttributeNames();
-
+        Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             String attributeName = (String) attributeNames.nextElement();
             model.put(attributeName, request.getAttribute(attributeName));
