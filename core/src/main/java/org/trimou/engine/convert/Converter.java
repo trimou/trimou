@@ -24,6 +24,7 @@ package org.trimou.engine.convert;
  * @param <FROM>
  * @param <TO>
  */
+@FunctionalInterface
 public interface Converter<FROM, TO> {
 
     /**

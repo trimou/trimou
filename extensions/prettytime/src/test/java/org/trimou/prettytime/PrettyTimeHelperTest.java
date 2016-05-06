@@ -1,4 +1,4 @@
-package org.trimou.prettytime.resolver;
+package org.trimou.prettytime;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,11 +13,8 @@ import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.convert.Converter;
 import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.engine.resolver.ThisResolver;
-import org.trimou.prettytime.PrettyTimeFactory;
-import org.trimou.prettytime.PrettyTimeHelper;
 
 /**
  *
@@ -40,10 +37,8 @@ public class PrettyTimeHelperTest {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
 
-        assertEquals(
-                expected,
-                engine.compileMustache("pretty_cal", "{{pretty this}}").render(
-                        now));
+        assertEquals(expected, engine
+                .compileMustache("pretty_cal", "{{pretty this}}").render(now));
         assertEquals(expected,
                 engine.compileMustache("pretty_date", "{{pretty this}}")
                         .render(now.getTime()));
@@ -55,14 +50,10 @@ public class PrettyTimeHelperTest {
     @Test
     public void testCustomPrettyTimeFactory() throws InterruptedException {
 
-        PrettyTimeHelper helper = new PrettyTimeHelper(new PrettyTimeFactory() {
-
-            @Override
-            public PrettyTime createPrettyTime(Locale locale) {
-                PrettyTime prettyTime = new PrettyTime(locale);
-                prettyTime.getUnit(JustNow.class).setMaxQuantity(1000L * 2L);
-                return prettyTime;
-            }
+        PrettyTimeHelper helper = new PrettyTimeHelper(locale -> {
+            PrettyTime prettyTime = new PrettyTime(locale);
+            prettyTime.getUnit(JustNow.class).setMaxQuantity(1000L * 2L);
+            return prettyTime;
         });
 
         // Just to init the resolver
@@ -73,15 +64,15 @@ public class PrettyTimeHelperTest {
                 .registerHelper("pretty", helper).build();
 
         Resources_en bundle = new Resources_en();
-        assertEquals(
-                bundle.getString("JustNowPastPrefix"),
+        assertEquals(bundle.getString("JustNowPastPrefix"),
                 engine.compileMustache("pretty_helper_custom_factory_01",
-                        "{{pretty this}}").render(new Date().getTime() - 1000l));
-        assertEquals(
-                "4 " + bundle.getString("SecondPluralName")
-                        + bundle.getString("SecondPastSuffix"),
-                engine.compileMustache("pretty_helper_custom_factory_02",
-                        "{{pretty this}}").render(new Date().getTime() - 4000l));
+                        "{{pretty this}}")
+                        .render(new Date().getTime() - 1000l));
+        assertEquals("4 " + bundle.getString("SecondPluralName")
+                + bundle.getString("SecondPastSuffix"), engine
+                        .compileMustache("pretty_helper_custom_factory_02",
+                                "{{pretty this}}")
+                        .render(new Date().getTime() - 4000l));
     }
 
     @Test
@@ -98,8 +89,7 @@ public class PrettyTimeHelperTest {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
 
-        assertEquals(
-                new Resources_cs().getString("JustNowPastPrefix"),
+        assertEquals(new Resources_cs().getString("JustNowPastPrefix"),
                 engine.compileMustache("pretty_helper_locale",
                         "{{{pretty this locale='cs'}}}").render(now));
     }
@@ -111,21 +101,14 @@ public class PrettyTimeHelperTest {
         day.set(Calendar.YEAR, day.get(Calendar.YEAR) - 1);
         day.set(Calendar.MONTH, day.get(Calendar.MONTH) - 1);
 
-        MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
                 .setLocaleSupport(FixedLocaleSupport.from(Locale.ENGLISH))
                 .addResolver(new ThisResolver())
-                .registerHelper(
-                        "pretty",
+                .registerHelper("pretty",
                         PrettyTimeHelper.builder()
-                                .setConverter(new Converter<Object, Date>() {
-
-                                    @Override
-                                    public Date convert(Object from) {
-                                        return day.getTime();
-                                    }
-                                }).build()).build();
+                                .setConverter(from -> day.getTime()).build())
+                .build();
         assertEquals("1 year ago",
                 engine.compileMustache("pretty_conv", "{{pretty this}}")
                         .render(Calendar.getInstance()));

@@ -26,6 +26,7 @@ import org.ocpsoft.prettytime.PrettyTime;
  *
  * @author Martin Kouba
  */
+@FunctionalInterface
 public interface PrettyTimeFactory {
 
     /**

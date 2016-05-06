@@ -15,6 +15,8 @@
  */
 package org.trimou.prettytime;
 
+import static org.trimou.util.Checker.checkArgumentsNotNull;
+
 import java.util.Date;
 import java.util.Locale;
 
@@ -29,7 +31,6 @@ import org.trimou.handlebars.Options;
 import org.trimou.handlebars.OptionsHashKeys;
 import org.trimou.handlebars.i18n.LocaleAwareValueHelper;
 import org.trimou.prettytime.resolver.PrettyTimeResolver;
-import org.trimou.util.Checker;
 
 /**
  * <p>
@@ -94,7 +95,7 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
      */
     private PrettyTimeHelper(PrettyTimeFactory factory,
             Converter<Object, Date> converter) {
-        Checker.checkArgumentsNotNull(factory, converter);
+        checkArgumentsNotNull(factory, converter);
         this.factory = factory;
         this.converter = converter;
     }
@@ -102,14 +103,10 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
     @Override
     public void init(Configuration configuration) {
         super.init(configuration);
-        prettyTimeCache = configuration.getComputingCacheFactory().create(
-                COMPUTING_CACHE_CONSUMER_ID,
-                new ComputingCache.Function<Locale, PrettyTime>() {
-                    @Override
-                    public PrettyTime compute(Locale key) {
-                        return factory.createPrettyTime(key);
-                    }
-                }, null, 10l, null);
+        prettyTimeCache = configuration.getComputingCacheFactory()
+                .<Locale, PrettyTime> create(COMPUTING_CACHE_CONSUMER_ID,
+                        locale -> factory.createPrettyTime(locale), null, 10l,
+                        null);
     }
 
     @Override
@@ -119,16 +116,16 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "PrettyTimeHelper - no instance to format [template: %s, line: %s, param: %s]",
-                    options.getTagInfo().getTemplateName(), options
-                            .getTagInfo().getLine());
+                    options.getTagInfo().getTemplateName(),
+                    options.getTagInfo().getLine());
         }
         Date value = converter.convert(param);
         if (value == null) {
             throw new MustacheException(
                     MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "Unable to get java.util.Date instance for PrettyTime [template: %s, line: %s, param: %s]",
-                    options.getTagInfo().getTemplateName(), options
-                            .getTagInfo().getLine(), param);
+                    options.getTagInfo().getTemplateName(),
+                    options.getTagInfo().getLine(), param);
         }
         append(options, prettyTimeCache.get(getLocale(options)).format(value));
     }
@@ -152,6 +149,12 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
 
         private Converter<Object, Date> converter;
 
+        /**
+         *
+         * @param factory
+         * @return self
+         * @see PrettyTimeFactory
+         */
         public Builder setFactory(PrettyTimeFactory factory) {
             this.factory = factory;
             return this;
