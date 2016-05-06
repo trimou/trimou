@@ -30,9 +30,11 @@ public interface ConfigurationAware {
     /**
      * Initialize the component. Keep in mind that the configuration itself
      * might not be fully initialized yet. However, it should be safe to inspect
-     * all non-configurable components (e.g. properties and global data) and obtain
-     * references to other {@link ConfigurationAware} components e.g. (
-     * {@link org.trimou.engine.locale.LocaleSupport}).
+     * all non-configurable components (e.g. properties and global data), obtain
+     * references to other {@link ConfigurationAware} components (e.g.
+     * {@link org.trimou.engine.locale.LocaleSupport}) and use
+     * {@link org.trimou.engine.cache.ComputingCacheFactory} (it's always initialized before other
+     * {@link ConfigurationAware} components).
      * <p>
      * This method must not be called directly by the application.
      *
