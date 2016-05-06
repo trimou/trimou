@@ -57,38 +57,6 @@ public class PatternsTest {
     }
 
     @Test
-    public void testHelperNameValidationPattern() {
-        Pattern pattern = Patterns.newHelperNameValidationPattern();
-        assertTrue(pattern.matcher(
-                "name param1 param2 hash1=\"value1\" hash2=value2").matches());
-        assertTrue(pattern.matcher("name").matches());
-        assertTrue(pattern.matcher("name param1.dot.lookup").matches());
-        assertTrue(pattern.matcher("name hash1=\"value1\"").matches());
-        assertTrue(pattern.matcher("name.-1").matches());
-        assertTrue(pattern.matcher("\"foo/bar/path\"").matches());
-        assertTrue(pattern.matcher("kečup").matches());
-        assertTrue(pattern.matcher("foo[\"bar\"]").matches());
-        assertTrue(pattern
-                .matcher(
-                        "name  \"param1\" \"param2\" hash1=\"foo bar\" hash2=value2.foo")
-                .matches());
-        assertTrue(pattern.matcher("name  hash1=\"DD-MM-yyyy HH:mm\"")
-                .matches());
-        assertTrue(pattern.matcher("name  hash1=\"<html>\"").matches());
-        assertTrue(pattern.matcher("name key='value'").matches());
-    }
-
-    @Test
-    public void testHelperStringLiteralPattern() {
-        assertTrue(Patterns.newHelperStringLiteralPattern().matcher("\"foo\"")
-                .matches());
-        assertTrue(Patterns.newHelperStringLiteralPattern()
-                .matcher("\"DD-MM-yyyy HH:mm\"").matches());
-        assertFalse(Patterns.newHelperStringLiteralPattern().matcher("\"foo")
-                .matches());
-    }
-
-    @Test
     public void testHelperIntOrLongLiteralPattern() {
         assertFalse(Patterns.newHelperIntegerLiteralPattern()
                 .matcher("\"foo\"").matches());

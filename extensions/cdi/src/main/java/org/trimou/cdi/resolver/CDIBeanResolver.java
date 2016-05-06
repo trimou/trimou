@@ -191,7 +191,7 @@ public class CDIBeanResolver extends AbstractResolver {
         return Hints.INAPPLICABLE_HINT;
     }
 
-    static class DependentDestroyCallback<T> implements ReleaseCallback {
+    private static class DependentDestroyCallback<T> implements ReleaseCallback {
 
         private final Bean<T> bean;
 

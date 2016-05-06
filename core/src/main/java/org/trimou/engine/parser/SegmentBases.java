@@ -116,18 +116,6 @@ final class SegmentBases {
         }
     }
 
-    static int getNumberOfSegments(ContainerSegmentBase container) {
-        int count = 0;
-        for (SegmentBase segmentBase : container) {
-            if (segmentBase instanceof ContainerSegmentBase) {
-                count += getNumberOfSegments((ContainerSegmentBase) segmentBase);
-            } else {
-                count++;
-            }
-        }
-        return count;
-    }
-
     /**
      *
      * @param standaloneLine
