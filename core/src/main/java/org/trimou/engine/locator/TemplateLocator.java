@@ -38,14 +38,14 @@ public interface TemplateLocator extends WithPriority, ConfigurationAware {
     /**
      * The reader is always closed by the engine right after the template source is read.
      *
-     * @param templateId
+     * @param name
      *            The template identifier
      * @return the reader object for a template with the given name or
      *         <code>null</code> if no available template with the given name
      *         exists
      * @see org.trimou.Mustache#getName()
      */
-    public Reader locate(String templateId);
+    public Reader locate(String name);
 
     /**
      *

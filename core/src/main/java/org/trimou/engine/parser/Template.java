@@ -199,14 +199,14 @@ public class Template implements Mustache {
     private class DefaultMustacheRenderingEvent extends
             AbstractReleaseCallbackContainer implements MustacheRenderingEvent {
 
-        private final long sequenceValue;
+        private final long id;
 
         /**
          *
-         * @param sequenceValue
+         * @param id
          */
-        public DefaultMustacheRenderingEvent(long sequenceValue) {
-            this.sequenceValue = sequenceValue;
+        public DefaultMustacheRenderingEvent(long id) {
+            this.id = id;
         }
 
         @Override
@@ -221,7 +221,7 @@ public class Template implements Mustache {
 
         @Override
         public Long getGeneratedId() {
-            return sequenceValue;
+            return id;
         }
 
     }

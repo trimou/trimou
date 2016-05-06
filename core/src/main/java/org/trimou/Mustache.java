@@ -29,7 +29,7 @@ public interface Mustache extends Identified {
      * {@link org.trimou.engine.locator.TemplateLocator}. It's sometimes
      * referenced as an identifier provided by the user. In most cases the name
      * represents a full (possibly virtual) path of the template.
-     *
+     * <p>
      * Note that it's possible to have more than one template with the same name
      * for a {@link org.trimou.engine.MustacheEngine} instance, due to existence
      * of
@@ -38,7 +38,7 @@ public interface Mustache extends Identified {
      * @return the template name
      * @see #getGeneratedId()
      */
-    public String getName();
+    String getName();
 
     /**
      * Render the template.
@@ -48,16 +48,16 @@ public interface Mustache extends Identified {
      *            <code>null</code>
      * @return the rendered template as string
      */
-    public String render(Object data);
+    String render(Object data);
 
     /**
      * Render the template.
-     *
+     * <p>
      * Watch out! Any appendable-specific operations (e.g. stream flushing and
      * closing) are not performed automatically.
-     *
-     * Note that if an asynchronous helper is used the "append" operations may be
-     * delayed due to the use of an intermediate buffer.
+     * <p>
+     * Note that if an asynchronous helper is used the "append" operations may
+     * be delayed due to the use of an intermediate buffer.
      *
      * @param appendable
      *            The appendable to append the rendered template to
@@ -65,6 +65,6 @@ public interface Mustache extends Identified {
      *            Optional context object (ideally immutable), may be
      *            <code>null</code>
      */
-    public void render(Appendable appendable, Object data);
+    void render(Appendable appendable, Object data);
 
 }

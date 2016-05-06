@@ -22,8 +22,8 @@ import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.TemplateLocator;
 
 /**
- * A Mustache engine is the central point for template management. It has its
- * own {@link Configuration} and template cache. Implementation must be
+ * Mustache engine is the central point for template management. It has a
+ * dedicated {@link Configuration} and template cache. Implementation must be
  * thread-safe.
  *
  * @author Martin Kouba
@@ -38,15 +38,15 @@ public interface MustacheEngine {
 
     /**
      * Get the compiled template with the given id.
-     *
+     * <p>
      * This method involves all template locators to locate the template
      * contents. Locators with higher priority are called first.
-     *
+     * <p>
      * By default the compiled template is automatically put into the template
      * cache so that no compilation happens the next time the template is
      * requested.
      *
-     * @param templateId
+     * @param name
      *            The template identifier
      * @return the compiled template with the given name or <code>null</code> if
      *         no such template exists
@@ -55,34 +55,34 @@ public interface MustacheEngine {
      * @see EngineConfigurationKey#TEMPLATE_CACHE_ENABLED
      * @see EngineConfigurationKey#TEMPLATE_CACHE_EXPIRATION_TIMEOUT
      */
-    public Mustache getMustache(String templateId);
+    Mustache getMustache(String name);
 
     /**
-     * @param templateId
+     * @param name
      * @return uncompiled mustache template source.
      * @see Mustache#getName()
      */
-    public String getMustacheSource(String templateId);
+    String getMustacheSource(String name);
 
     /**
      * Compile the given template. The compiled template is not cached and so
      * it's not available for partials and template inheritance.
      *
-     * @param templateId
+     * @param name
      *            The template identifier
      * @param templateContent
      * @return the compiled template
      */
-    public Mustache compileMustache(String templateId, String templateContent);
+    Mustache compileMustache(String name, String templateContent);
 
     /**
      * @return the engine configuration
      */
-    public Configuration getConfiguration();
+    Configuration getConfiguration();
 
     /**
      * Invalidate the cache for both compiled and uncompiled templates.
      */
-    public void invalidateTemplateCache();
+    void invalidateTemplateCache();
 
 }

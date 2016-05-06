@@ -132,7 +132,7 @@ public interface Configuration {
 
     /**
      *
-     * @return the sequence generator
+     * @return the idenfitier generator
      * @since 1.7
      */
     public IdentifierGenerator getIdentifierGenerator();
