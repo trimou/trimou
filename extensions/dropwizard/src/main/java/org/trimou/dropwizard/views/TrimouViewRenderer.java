@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -62,7 +63,7 @@ public class TrimouViewRenderer implements ViewRenderer {
      * @param hasLocalizedTemplates
      */
     private TrimouViewRenderer(MustacheEngine engine, String suffix, boolean hasLocalizedTemplates) {
-    	checkArgumentsNotNull(engine, suffix, hasLocalizedTemplates);
+        checkArgumentsNotNull(engine, suffix, hasLocalizedTemplates);
         this.engine = engine;
         this.suffix = suffix.startsWith(".") ? suffix : "." + suffix;
         this.hasLocalizedTemplates = hasLocalizedTemplates;
@@ -104,6 +105,16 @@ public class TrimouViewRenderer implements ViewRenderer {
         } finally {
             writer.flush();
         }
+    }
+
+    @Override
+    public void configure(Map<String, String> options) {
+        // No-op
+    }
+
+    @Override
+    public String getSuffix() {
+        return suffix;
     }
 
     private String getLocalizedTemplateName(String templateName, String localePart) {

@@ -18,7 +18,6 @@ import com.sun.jersey.test.framework.AppDescriptor;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 
-import io.dropwizard.logging.LoggingFactory;
 import io.dropwizard.views.ViewMessageBodyWriter;
 import io.dropwizard.views.ViewRenderer;
 
@@ -27,10 +26,6 @@ import io.dropwizard.views.ViewRenderer;
  * @author Martin Kouba
  */
 public class TrimouViewRendererTest extends JerseyTest {
-
-    static {
-        LoggingFactory.bootstrap();
-    }
 
     @Path("/test/")
     @Produces(MediaType.TEXT_HTML)
