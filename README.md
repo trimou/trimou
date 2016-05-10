@@ -4,11 +4,13 @@
 [![Travis CI Build Status](https://travis-ci.org/trimou/trimou.png)](https://travis-ci.org/trimou/trimou)
 [![Maven Central](http://img.shields.io/maven-central/v/org.trimou/trimou-core.svg)](http://search.maven.org/#search|ga|1|trimou-core)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/trimou/trimou)
+[![License](https://img.shields.io/badge/license-Apache%20License%202.0-yellow.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
+Trimou is a templating engine.
+It's a [Mustache](https://github.com/mustache) implementation but **Helpers API** inspired by [Handlebars.js](http://handlebarsjs.com/) is also supported.
+The goal is to provide a simple to use and easy to extend templating engine for any Java SE or Java EE application.
 
-Trimou is a [Mustache](https://github.com/mustache) implementation written in Java. **Helpers API** inspired by [Handlebars.js](http://handlebarsjs.com/) is also supported. The goal is to provide a simple to use and easy to extend templating engine for any Java SE or Java EE application.
-
-There are some ready-to-use extensions which provide integration with [CDI](http://www.cdi-spec.org/), Servlets, [PrettyTime](http://ocpsoft.org/prettytime/),  [HtmlCompressor](http://code.google.com/p/htmlcompressor/), [google-gson](http://code.google.com/p/google-gson/), [Spring MVC](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html) and [Dropwizard](https://dropwizard.github.io/dropwizard/).
+There are some ready-to-use extensions which provide integration with [CDI](http://www.cdi-spec.org/), Servlets, [PrettyTime](http://ocpsoft.org/prettytime/),  [HtmlCompressor](http://code.google.com/p/htmlcompressor/), [google-gson](http://code.google.com/p/google-gson/), [JSON Processing Object Model API (JSR 353)](https://jsonp.java.net/), [Spring MVC](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html), [Dropwizard](https://dropwizard.github.io/dropwizard/) and [EL 3.0](https://uel.java.net/).
 
 ## Get Started
 
@@ -21,7 +23,7 @@ All the artifacts are available in the Maven Central Repository:
   <version>${version.trimou}</version>
 </dependency>
 ```
-And now use the `MustacheEngine` to compile a `Mustache` template and render the output:
+Use the `MustacheEngineBuilder` to build a `MustacheEngine` - a central point for template management.
 
 ```java
 // Don't configure anything - use sensible defaults
@@ -67,7 +69,7 @@ For `each` it's possible to supply an alias to access the value of the current i
 {{/each}}
 ```
 
-Trimou also provides some useful helpers which are not registered automatically - see also [Built-in helpers](http://trimou.org/doc/latest.html#helpers).
+Trimou also provides a lot of useful helpers which are not registered automatically - see also [Built-in helpers](http://trimou.org/doc/latest.html#helpers).
 
 ##### ResourceBundleHelper
 
