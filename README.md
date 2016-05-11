@@ -43,7 +43,7 @@ Allow to automatically locate the template contents for the given template id so
 ```java
 MustacheEngine engine = MustacheEngineBuilder
         .newBuilder()
-        .addTemplateLocator(new FilesystemTemplateLocator(1, "/home/trimou/templates", "html"))
+        .addTemplateLocator(FilesystemTemplateLocator.builder().setRootPath("/home/trimou/templates").setSuffix("html").build())
         .build();
 // Whenever the template is needed, obtain the reference from the engine
 Mustache mustache = engine.getMustache("foo");
