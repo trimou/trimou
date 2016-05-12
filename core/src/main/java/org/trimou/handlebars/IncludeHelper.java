@@ -23,13 +23,32 @@ package org.trimou.handlebars;
  * {{include data.template}}
  * </code>
  *
+ * <p>
+ * If more than one parameters are specified, the final name to be looked up is
+ * made up of concatenated params {@link #toString()} values:
+ * </p>
+ *
+ * <code>
+ * {{include "/going/to/be/here/" now}}
+ * </code>
+ *
  * @author Martin Kouba
  */
 public class IncludeHelper extends BasicValueHelper {
 
     @Override
     public void execute(Options options) {
-        options.partial(options.getParameters().get(0).toString());
+        String partialName;
+        if (options.getParameters().size() == 1) {
+            partialName = options.getParameters().get(0).toString();
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (Object param : options.getParameters()) {
+                builder.append(param.toString());
+            }
+            partialName = builder.toString();
+        }
+        options.partial(partialName);
     }
 
 }

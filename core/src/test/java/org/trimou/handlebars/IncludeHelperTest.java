@@ -19,15 +19,17 @@ public class IncludeHelperTest extends AbstractTest {
 
     @Test
     public void testIncludeHelper() {
-        MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelpers(HelpersBuilder.empty().addInclude().build())
-                .addTemplateLocator(
-                        new MapTemplateLocator(ImmutableMap.of("template",
-                                "Hello!"))).build();
+                .addTemplateLocator(new MapTemplateLocator(
+                        ImmutableMap.of("template", "Hello!")))
+                .build();
         assertEquals("Hello!",
                 engine.compileMustache("include_helper01", "{{include this}}")
                         .render("template"));
+        assertEquals("Hello!", engine
+                .compileMustache("include_helper02", "{{include 'temp' this}}")
+                .render("late"));
     }
 
     @Test

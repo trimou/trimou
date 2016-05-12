@@ -15,6 +15,7 @@
  */
 package org.trimou.handlebars;
 
+import org.trimou.Mustache;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.exception.MustacheException;
 
@@ -45,21 +46,23 @@ public interface Options extends HelperDefinition {
      * Render the template with the current context and append the result to the
      * rendered template.
      *
-     * @param templateId
+     * @param name
      * @throws MustacheException
      *             If there's no such template
+     * @see Mustache#getName()
      */
-    void partial(String templateId);
+    void partial(String name);
 
     /**
      *
-     * @param templateId
+     * @param name
      * @return the source of the mustache template
      * @throws MustacheException
      *             If there's no such template
+     * @see Mustache#getName()
      * @since 1.6
      */
-    String source(String templateId);
+    String source(String name);
 
     /**
      * Push the specified object on the context stack. Helper should pop all

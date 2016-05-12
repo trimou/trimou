@@ -27,7 +27,7 @@ public interface Mustache extends Identified {
     /**
      * A name is used to locate the template contents by means of
      * {@link org.trimou.engine.locator.TemplateLocator}. It's sometimes
-     * referenced as an identifier provided by the user. In most cases the name
+     * referenced as an identifier provided by the user. In most cases, the name
      * represents a full (possibly virtual) path of the template.
      * <p>
      * Note that it's possible to have more than one template with the same name
