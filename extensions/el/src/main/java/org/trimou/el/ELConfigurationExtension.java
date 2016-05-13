@@ -18,6 +18,7 @@ package org.trimou.el;
 import static org.trimou.engine.config.ConfigurationExtensions.registerHelper;
 
 import org.trimou.engine.config.ConfigurationExtension;
+import org.trimou.engine.config.DefaultConfigurationExtension;
 import org.trimou.handlebars.HelpersBuilder;
 
 /**
@@ -30,6 +31,12 @@ public class ELConfigurationExtension implements ConfigurationExtension {
     public void register(ConfigurationExtensionBuilder builder) {
         registerHelper(builder, ELHelper.DEFAULT_NAME, new ELHelper());
         registerHelper(builder, HelpersBuilder.IF, new ELIfHelper());
+    }
+
+    @Override
+    public int getPriority() {
+        // Make sure the ELIfHelper is registered before the default IfHelper
+        return DefaultConfigurationExtension.DEFAULT_EXTENSION_PRIORITY + 1;
     }
 
 }

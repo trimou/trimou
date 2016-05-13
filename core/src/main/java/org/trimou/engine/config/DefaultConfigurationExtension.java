@@ -30,9 +30,11 @@ import org.trimou.handlebars.HelpersBuilder;
  */
 public class DefaultConfigurationExtension implements ConfigurationExtension {
 
+    public static final int DEFAULT_EXTENSION_PRIORITY = DEFAULT_PRIORITY + 10;
+
     @Override
     public int getPriority() {
-        return Integer.MAX_VALUE;
+        return DEFAULT_EXTENSION_PRIORITY;
     }
 
     @Override

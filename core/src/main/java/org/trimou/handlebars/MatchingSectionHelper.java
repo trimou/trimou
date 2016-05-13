@@ -80,7 +80,7 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
     @Override
     public void execute(Options options) {
         if ((options.getParameters().isEmpty() && isMatching(options.peek(), options))
-                || matches(options.getHash(), options.getParameters())) {
+                || matches(options)) {
             options.fn();
         } else {
             Object elseBlock = options.getHash().get(ELSE);
@@ -162,14 +162,15 @@ abstract class MatchingSectionHelper extends BasicSectionHelper {
 
     }
 
-    private boolean matches(Map<String, Object> hash, List<Object> params) {
+    private boolean matches(Options options) {
         // Very often there is only one param
+        List<Object> params = options.getParameters();
         if (params.size() == 1) {
-            return isMatching(params.get(0));
+            return isMatching(params.get(0), options);
         }
-        EvaluationLogic logic = getLogic(hash);
+        EvaluationLogic logic = getLogic(options.getHash());
         for (Object param : params) {
-            Boolean value = logic.test(isMatching(param));
+            Boolean value = logic.test(isMatching(param, options));
             if (value != null) {
                 return value;
             }

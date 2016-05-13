@@ -16,8 +16,11 @@ public class ELIfHelperTest extends AbstractTest {
     @Test
     public void testHelper() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
-        assertEquals("yes", engine.compileMustache("elhelper_02",
-                "{{#if 'this gt 10'}}yes{{/if}}").render(10));
+        assertEquals(
+                "no", engine
+                        .compileMustache("elifhelper_01",
+                                "{{#if 'this gt 10' else='no'}}yes{{/if}}")
+                        .render(1));
     }
 
 }

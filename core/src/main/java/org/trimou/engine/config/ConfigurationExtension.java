@@ -35,6 +35,8 @@ import org.trimou.handlebars.Helper;
  */
 public interface ConfigurationExtension extends WithPriority {
 
+    int DEFAULT_PRIORITY = 10;
+
     /**
      * Allows to register additional configuration components, e.g.
      * {@link Resolver} and {@link MustacheListener} instances.
@@ -42,6 +44,11 @@ public interface ConfigurationExtension extends WithPriority {
      * @param builder
      */
     void register(ConfigurationExtensionBuilder builder);
+
+    @Override
+    default int getPriority() {
+        return DEFAULT_PRIORITY;
+    }
 
     /**
      *
