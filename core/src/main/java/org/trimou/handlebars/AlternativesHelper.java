@@ -64,7 +64,7 @@ import org.trimou.engine.interpolation.MissingValueHandler;
  *
  * <p>
  * A custom {@link Selector} might be used to change the default behavior. See
- * for example {@link MinSelector} and {@link #min()}:
+ * for example {@link MinSelector} and {@link HelpersBuilder#addMin()}:
  * </p>
  *
  * <code>

@@ -27,6 +27,10 @@ public class EmbedHelperTest extends AbstractTest {
                 "<script id=\"template\" type=\"text/template\">\nHello!\n</script>",
                 engine.compileMustache("embed_helper01", "{{embed this}}")
                         .render("template"));
+        assertEquals(
+                "<script id=\"template\" type=\"text/template\">\nHello!\n</script>",
+                engine.compileMustache("embed_helper01", "{{embed 'temp' this}}")
+                        .render("late"));
     }
 
     @Test

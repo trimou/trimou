@@ -22,40 +22,64 @@ package org.trimou.handlebars;
  * {{embed data.template}}
  * </code>
  *
- * <p>By default, the template source is embedded as a JavaScript snippet.</p>
+ * <p>
+ * By default, the template source is embedded as a JavaScript snippet.
+ * </p>
+ *
+ * <p>
+ * If more than one parameters are specified, the final name to be looked up is
+ * made up of concatenated params {@link #toString()} values:
+ * </p>
+ *
+ * <code>
+ * {{embed "/base/path" data.template}}
+ * </code>
  *
  * @author Minkyu Cho
+ * @author Martin Kouba
  */
 public class EmbedHelper extends BasicValueHelper {
 
     private final SourceProcessor processor;
 
     public EmbedHelper() {
-        this(new SourceProcessor() {
-            @Override
-            public String process(String mustacheName, String mustacheSource) {
-                return new StringBuilder().append("<script id=\"")
-                        .append(mustacheName.replace("/", "_"))
-                        .append("\" type=\"text/template\">\n")
-                        .append(mustacheSource).append("\n")
-                        .append("</script>").toString();
-            }
+        this((name, source) -> {
+            return new StringBuilder().append("<script id=\"")
+                    .append(name.replace("/", "_"))
+                    .append("\" type=\"text/template\">\n").append(source)
+                    .append("\n").append("</script>").toString();
         });
     }
 
+    /**
+     *
+     * @param sourceProcessor
+     */
     public EmbedHelper(SourceProcessor sourceProcessor) {
         this.processor = sourceProcessor;
     }
 
     @Override
     public void execute(Options options) {
-        String sourceName = options.getParameters().get(0).toString();
-        options.append(processor.process(sourceName, options.source(sourceName)));
+        String sourceName;
+        if (options.getParameters().size() == 1) {
+            sourceName = options.getParameters().get(0).toString();
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (Object param : options.getParameters()) {
+                builder.append(param.toString());
+            }
+            sourceName = builder.toString();
+        }
+        options.append(
+                processor.process(sourceName, options.source(sourceName)));
     }
 
+    @FunctionalInterface
     public interface SourceProcessor {
 
         String process(String mustacheName, String mustacheSource);
+
     }
 
 }
