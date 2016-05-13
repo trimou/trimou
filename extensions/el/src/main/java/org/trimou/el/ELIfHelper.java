@@ -38,7 +38,7 @@ public class ELIfHelper extends IfHelper {
     /**
      *
      */
-    ELIfHelper() {
+    public ELIfHelper() {
         super();
     }
 
@@ -47,7 +47,7 @@ public class ELIfHelper extends IfHelper {
      * @param elseStartDelimiter
      * @param elseEndDelimiter
      */
-    ELIfHelper(String elseStartDelimiter, String elseEndDelimiter) {
+    public ELIfHelper(String elseStartDelimiter, String elseEndDelimiter) {
         super(elseStartDelimiter, elseEndDelimiter);
     }
 
