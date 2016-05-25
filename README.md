@@ -65,6 +65,8 @@ Five built-in helpers are registered automatically: `if`, `unless`, `each`, `wit
 For `each` it's possible to supply an alias to access the value of the current iteration and it's also possible to apply a function to each element:
 ```
 {{#each items as='item' apply=mySuperFunction}}
+  {{! Show the current iteration index (the first element has index 1)}}
+  {{index}}. 
   {{item.name}}
 {{/each}}
 ```
