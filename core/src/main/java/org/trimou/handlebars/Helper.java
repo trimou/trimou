@@ -33,6 +33,7 @@ import org.trimou.exception.MustacheProblem;
  * @see MustacheEngineBuilder#registerHelper(String, Helper)
  * @since 1.5
  */
+@FunctionalInterface
 public interface Helper extends ConfigurationAware {
 
     /**

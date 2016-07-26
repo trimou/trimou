@@ -75,6 +75,10 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         "{{#each list1 list2 list3}}{{index}}:{{this}}{{#if hasNext}},{{/if}}{{/each}}")
                 .render(ImmutableMap.of("list1", ImmutableList.of("foo", "bar"),
                         "list2", ImmutableList.of("baz"))));
+        assertEquals("1foo2bar",
+                engine.compileMustache("each_helper9",
+                        "{{#each this}}{{index}}{{.}}{{/each}}")
+                        .render(new Object[] { "foo", "bar" }));
         assertEquals(
                 "", engine
                         .compileMustache("each_helper_empty_array",

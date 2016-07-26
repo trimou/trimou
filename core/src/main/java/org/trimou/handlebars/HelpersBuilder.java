@@ -104,6 +104,8 @@ public final class HelpersBuilder {
 
     public static final String REPEAT = "repeat";
 
+    public static final String FMT = "fmt";
+
     private final ImmutableMapBuilder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -461,6 +463,11 @@ public final class HelpersBuilder {
         return this;
     }
 
+    public HelpersBuilder addFmt() {
+        builder.put(FMT, new FormatHelper());
+        return this;
+    }
+
     /**
      *
      * @return self
@@ -500,6 +507,7 @@ public final class HelpersBuilder {
         addMax();
         addCache();
         addRepeat();
+        addFmt();
         return this;
     }
 
