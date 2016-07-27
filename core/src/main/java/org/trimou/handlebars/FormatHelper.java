@@ -50,13 +50,18 @@ public class FormatHelper extends LocaleAwareValueHelper {
     @SuppressWarnings("resource")
     @Override
     public void execute(Options options) {
-        // We intentionally don't close the Formatter
-        new Formatter(options.getAppendable(), getLocale(options))
-                .format(options.getParameters().get(0).toString(),
-                        options.getParameters()
-                                .subList(1, options.getParameters().size())
-                                .toArray());
-
+        // Note that we intentionally don't close the Formatter
+        Formatter formatter = new Formatter(options.getAppendable(),
+                getLocale(options));
+        if (options.getParameters().size() == 2) {
+            formatter.format(options.getParameters().get(0).toString(),
+                    options.getParameters().get(1));
+        } else {
+            formatter.format(options.getParameters().get(0).toString(),
+                    options.getParameters()
+                            .subList(1, options.getParameters().size())
+                            .toArray());
+        }
     }
 
 }
