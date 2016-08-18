@@ -35,31 +35,12 @@ public class HelperExecutionHandlerTest {
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    public void run() {
-                        assertHelperNameParts("name key=''value'");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        assertHelperNameParts("name key=value'");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        assertHelperNameParts("name key='value foo");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        assertHelperNameParts("name key=value' foo");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        assertHelperNameParts("'name key=value");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        assertHelperNameParts("key=\"value \" and\"");
-                    }
-                });
+                .check(() -> assertHelperNameParts("name key=''value'"))
+                .check(() -> assertHelperNameParts("name key=value'"))
+                .check(() -> assertHelperNameParts("name key='value foo"))
+                .check(() -> assertHelperNameParts("name key=value' foo"))
+                .check(() -> assertHelperNameParts("'name key=value"))
+                .check(() -> assertHelperNameParts("key=\"value \" and\""));
     }
 
     @Test
@@ -70,19 +51,20 @@ public class HelperExecutionHandlerTest {
                 .getFirstDeterminingEqualsCharPosition("foo='bar='"));
         assertEquals(1, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition("1='bar='"));
-        assertEquals(-1,
-                HelperExecutionHandler.getFirstDeterminingEqualsCharPosition("'m=n'"));
+        assertEquals(-1, HelperExecutionHandler
+                .getFirstDeterminingEqualsCharPosition("'m=n'"));
         assertEquals(-1, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition(" ' m=n'"));
-        assertEquals(-1,
-                HelperExecutionHandler.getFirstDeterminingEqualsCharPosition("'1'"));
+        assertEquals(-1, HelperExecutionHandler
+                .getFirstDeterminingEqualsCharPosition("'1'"));
         assertEquals(-1, HelperExecutionHandler
                 .getFirstDeterminingEqualsCharPosition("\"foo\""));
     }
 
     private void assertHelperNameParts(String name, String... parts) {
         List<String> result = new ArrayList<>();
-        Iterator<String> iterator = HelperExecutionHandler.splitHelperName(name, null);
+        Iterator<String> iterator = HelperExecutionHandler.splitHelperName(name,
+                null);
         while (iterator.hasNext()) {
             result.add(iterator.next());
         }

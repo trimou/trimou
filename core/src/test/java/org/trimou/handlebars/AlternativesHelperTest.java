@@ -22,7 +22,8 @@ public class AlternativesHelperTest extends AbstractTest {
     @Test
     public void testInterpolation() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .registerHelpers(HelpersBuilder.empty().addAlt().addMin().addMax().build())
+                .registerHelpers(HelpersBuilder.empty().addAlt().addMin()
+                        .addMax().build())
                 .setMissingValueHandler(new NoOpMissingValueHandler() {
                     @Override
                     public Object handle(MustacheTagInfo tagInfo) {
@@ -43,14 +44,16 @@ public class AlternativesHelperTest extends AbstractTest {
         assertEquals("Ed",
                 engine.compileMustache("alt_helper05", "{{alt '' this}}")
                         .render("Ed"));
-        assertEquals("0",
-                engine.compileMustache("min_helper01", "{{min '1' 10 30l this}}")
-                        .render(BigDecimal.ZERO));
+        assertEquals("0", engine
+                .compileMustache("min_helper01", "{{min '1' 10 30l this}}")
+                .render(BigDecimal.ZERO));
         assertEquals("30",
                 engine.compileMustache("max_helper01", "{{max 1 10 30l this}}")
                         .render(BigDecimal.ZERO));
-        assertEquals("Me",
-                engine.compileMustache("alt_helper01", "{{#alt 'Me' 'Joe'}}{{this}}{{/alt}}")
+        assertEquals(
+                "Me", engine
+                        .compileMustache("alt_helper01",
+                                "{{#alt 'Me' 'Joe'}}{{this}}{{/alt}}")
                         .render(null));
     }
 
@@ -63,17 +66,10 @@ public class AlternativesHelperTest extends AbstractTest {
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("alt_helper_validation01",
-                                "{{#alt}}{{/alt}}");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("alt_helper_validation02",
-                                "{{alt}}");
-                    }
-                });
+                .check(() -> engine.compileMustache("alt_helper_validation01",
+                        "{{#alt}}{{/alt}}"))
+                .check(() -> engine.compileMustache("alt_helper_validation02",
+                        "{{alt}}"));
     }
 
 }

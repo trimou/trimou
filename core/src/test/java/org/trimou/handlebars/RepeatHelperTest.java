@@ -33,14 +33,10 @@ public class RepeatHelperTest extends AbstractTest {
                                 "{{#repeat while=this}}me{{/repeat}}")
                         .render(false));
         MustacheExceptionAssert.expect(MustacheProblem.RENDER_GENERIC_ERROR)
-                .check(new Runnable() {
-                    @Override
-                    public void run() {
-                        engine.compileMustache("repeat_03",
+                .check(() -> engine
+                        .compileMustache("repeat_03",
                                 "{{#repeat while='this' limit=3}}me{{/repeat}}")
-                                .render(true);
-                    }
-                });
+                        .render(true));
         assertEquals("foobar",
                 engine.compileMustache("repeat_04",
                         "{{#with this.iterator}}{{#repeat while=hasNext}}{{next}}{{/repeat}}{{/with}}")
@@ -55,34 +51,21 @@ public class RepeatHelperTest extends AbstractTest {
     public void testValidation() {
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    @Override
-                    public void run() {
-                        MustacheEngineBuilder.newBuilder()
-                                .registerHelpers(HelpersBuilder.empty()
-                                        .addRepeat().build())
-                                .build().compileMustache("repeat_validation_01",
-                                        "{{repeat}}");
-                    }
-                }).check(new Runnable() {
-                    @Override
-                    public void run() {
-                        MustacheEngineBuilder.newBuilder()
-                                .registerHelpers(HelpersBuilder.empty()
-                                        .addRepeat().build())
-                                .build().compileMustache("repeat_validation_02",
-                                        "{{#repeat foo='bar'}}{{/repeat}}");
-                    }
-                }).check(new Runnable() {
-                    @Override
-                    public void run() {
-                        MustacheEngineBuilder.newBuilder()
-                                .registerHelpers(HelpersBuilder.empty()
-                                        .addRepeat().build())
-                                .build().compileMustache("repeat_validation_03",
-                                        "{{#repeat times='a'}}{{/repeat}}");
-                    }
-                });
+                .check(() -> MustacheEngineBuilder.newBuilder()
+                        .registerHelpers(
+                                HelpersBuilder.empty().addRepeat().build())
+                        .build()
+                        .compileMustache("repeat_validation_01", "{{repeat}}"))
+                .check(() -> MustacheEngineBuilder.newBuilder()
+                        .registerHelpers(
+                                HelpersBuilder.empty().addRepeat().build())
+                        .build().compileMustache("repeat_validation_02",
+                                "{{#repeat foo='bar'}}{{/repeat}}"))
+                .check(() -> MustacheEngineBuilder.newBuilder()
+                        .registerHelpers(
+                                HelpersBuilder.empty().addRepeat().build())
+                        .build().compileMustache("repeat_validation_03",
+                                "{{#repeat times='a'}}{{/repeat}}"));
     }
 
 }

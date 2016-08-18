@@ -74,17 +74,9 @@ public class FileSystemTemplateLocatorTest extends PathTemplateLocatorTest {
     public void testInvalidRootDir() {
         MustacheExceptionAssert
                 .expect(MustacheProblem.TEMPLATE_LOCATOR_INVALID_CONFIGURATION)
-                .check(new Runnable() {
-                    public void run() {
-                        new FileSystemTemplateLocator(1, "_?dsss");
-                    }
-                });
+                .check(() -> new FileSystemTemplateLocator(1, "_?dsss"));
         ExceptionAssert.expect(IllegalArgumentException.class)
-                .check(new Runnable() {
-                    public void run() {
-                        new FileSystemTemplateLocator(1, null);
-                    }
-                });
+                .check(() -> new FileSystemTemplateLocator(1, null));
     }
 
     @Test

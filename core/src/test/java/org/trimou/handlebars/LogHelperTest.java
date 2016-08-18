@@ -26,16 +26,13 @@ public class LogHelperTest extends AbstractTest {
         String name = "MyLogger";
         TestLoggerAdapter adapter = new TestLoggerAdapter(name);
 
-        MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
-                .registerHelpers(
-                        HelpersBuilder
-                                .empty()
-                                .add("log",
-                                        LogHelper.builder()
-                                                .setDefaultLevel(Level.INFO)
-                                                .setLoggerAdapter(adapter)
-                                                .build()).build()).build();
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty()
+                        .add("log",
+                                LogHelper.builder().setDefaultLevel(Level.INFO)
+                                        .setLoggerAdapter(adapter).build())
+                        .build())
+                .build();
 
         String msg = "Hello me!";
         engine.compileMustache("log_helper1",
@@ -51,17 +48,14 @@ public class LogHelperTest extends AbstractTest {
         assertEquals(msg + " [log_helper2:1]", adapter.getMessages().get(1));
         assertEquals(adapter.getParameters().get(1).length, 1);
 
-        engine = MustacheEngineBuilder
-                .newBuilder()
-                .registerHelpers(
-                        HelpersBuilder
-                                .empty()
-                                .add("log",
-                                        LogHelper.builder()
-                                                .setAppendTemplateInfo(false)
-                                                .setDefaultLevel(Level.INFO)
-                                                .setLoggerAdapter(adapter)
-                                                .build()).build()).build();
+        engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty()
+                        .add("log",
+                                LogHelper.builder().setAppendTemplateInfo(false)
+                                        .setDefaultLevel(Level.INFO)
+                                        .setLoggerAdapter(adapter).build())
+                        .build())
+                .build();
         engine.compileMustache("log_helper3", "{{log \"" + msg + "\"}}")
                 .render(null);
         assertEquals(Level.INFO, adapter.getLevels().get(2));
@@ -72,26 +66,17 @@ public class LogHelperTest extends AbstractTest {
     @Test
     public void testLogHelperValidation() {
 
-        final MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
-                .registerHelpers(
-                        HelpersBuilder.empty()
-                                .add("log", LogHelper.builder().build())
-                                .build()).build();
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty()
+                        .add("log", LogHelper.builder().build()).build())
+                .build();
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("log_helper_validation01",
-                                "{{#log \"Foo\"}}{{/log}}");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("log_helper_validation02",
-                                "{{log}}");
-                    }
-                });
+                .check(() -> engine.compileMustache("log_helper_validation01",
+                        "{{#log \"Foo\"}}{{/log}}"))
+                .check(() -> engine.compileMustache("log_helper_validation02",
+                        "{{log}}"));
     }
 
     private static class TestLoggerAdapter extends Slf4jLoggerAdapter {

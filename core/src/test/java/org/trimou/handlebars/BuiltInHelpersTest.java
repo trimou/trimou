@@ -95,15 +95,11 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         MustacheExceptionAssert
                 .expect(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS)
-                .check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("each_helper_filter_fail1",
+                .check(() -> engine.compileMustache("each_helper_filter_fail1",
                                 "{{#each data apply=foo}}{{/each}}")
                                 .render(ImmutableMap.<String, Object> of("data",
                                         new Object[] { "foo" }, "foo",
-                                        Boolean.FALSE));
-                    }
-                });
+                                        Boolean.FALSE)));
     }
 
     @Test

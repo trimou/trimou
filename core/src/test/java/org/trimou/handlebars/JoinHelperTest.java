@@ -41,38 +41,32 @@ public class JoinHelperTest extends AbstractTest {
         String[] array = { "alpha", "bravo", "charlie" };
         List<String> list = ImmutableList.of("foo", "bar", "baz");
 
-        assertEquals(
-                "alphabravocharliefoo",
+        assertEquals("alphabravocharliefoo",
                 engine.compileMustache("join_helper1",
                         "{{join this 'foo' nullValue}}").render(array));
-        assertEquals(
-                "alpha : bravo : charlie",
+        assertEquals("alpha : bravo : charlie",
                 engine.compileMustache("join_helper2",
                         "{{join this delimiter=' : '}}").render(array));
 
-        assertEquals(
-                "foo,bar,baz,alpha,bravo,charlie",
+        assertEquals("foo,bar,baz,alpha,bravo,charlie",
                 engine.compileMustache("join_helper3",
-                        "{{join list array delimiter=','}}").render(
-                        ImmutableMap.of("array", array, "list", list)));
+                        "{{join list array delimiter=','}}")
+                        .render(ImmutableMap.of("array", array, "list", list)));
 
-        assertEquals(
-                "start,foo,bar,baz,middle,alpha,bravo,charlie,end",
+        assertEquals("start,foo,bar,baz,middle,alpha,bravo,charlie,end",
                 engine.compileMustache("join_helper4",
                         "{{join 'start' list 'middle' array 'end' delimiter=','}}")
                         .render(ImmutableMap.of("array", array, "list", list)));
 
-        assertEquals(
-                "<start><end>",
+        assertEquals("<start><end>",
                 engine.compileMustache("join_helper5",
-                        "{{&join '<start>' '<end>'}}").render(
-                        ImmutableMap.of("array", array, "list", list)));
+                        "{{&join '<start>' '<end>'}}")
+                        .render(ImmutableMap.of("array", array, "list", list)));
 
-        assertEquals(
-                "&lt;start&gt;&lt;end&gt;",
+        assertEquals("&lt;start&gt;&lt;end&gt;",
                 engine.compileMustache("join_helper6",
-                        "{{join '<start>' '<end>'}}").render(
-                        ImmutableMap.of("array", array, "list", list)));
+                        "{{join '<start>' '<end>'}}")
+                        .render(ImmutableMap.of("array", array, "list", list)));
 
         assertEquals(
                 "<li>foo</li>\n<li>bar</li>\n<li>baz</li>\n<li>Me</li>\n<li>alpha</li>\n<li>bravo</li>\n<li>charlie</li>",
@@ -88,22 +82,16 @@ public class JoinHelperTest extends AbstractTest {
                 .registerHelpers(HelpersBuilder.empty().addJoin().build())
                 .build();
 
-        MustacheExceptionAssert.expect(
-                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE).check(
-                new Runnable() {
-                    public void run() {
-                        engine.compileMustache("join_helper_validation01",
-                                "{{join}}");
-                    }
-                });
-        MustacheExceptionAssert.expect(
-                MustacheProblem.RENDER_HELPER_INVALID_OPTIONS).check(
-                new Runnable() {
-                    public void run() {
-                        engine.compileMustache("join_helper_validation02",
-                                "{{join 'Me' lambda='foo'}}").render(null);
-                    }
-                });
+        MustacheExceptionAssert
+                .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
+                .check(() -> engine.compileMustache("join_helper_validation01",
+                        "{{join}}"));
+        MustacheExceptionAssert
+                .expect(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS).check(
+                        () -> engine
+                                .compileMustache("join_helper_validation02",
+                                        "{{join 'Me' lambda='foo'}}")
+                                .render(null));
     }
 
 }

@@ -216,9 +216,9 @@ public class MustacheEngineTest extends AbstractEngineTest {
         TemplateLocator locator = new AbstractTemplateLocator(1) {
             @Override
             public Reader locate(String templateId) {
-                return "foo".equals(templateId) ? new MyStringReader(template,
-                        isCloseInvoked) : new MyStringReader(illegalTemplate,
-                        isCloseInvoked);
+                return "foo".equals(templateId)
+                        ? new MyStringReader(template, isCloseInvoked)
+                        : new MyStringReader(illegalTemplate, isCloseInvoked);
             }
 
             @Override
@@ -243,11 +243,8 @@ public class MustacheEngineTest extends AbstractEngineTest {
         isCloseInvoked.set(false);
         assertFalse(isCloseInvoked.get());
 
-        ExceptionAssert.expect(MustacheException.class).check(new Runnable() {
-            public void run() {
-                engine.getMustache("whatever").render(null);
-            }
-        });
+        ExceptionAssert.expect(MustacheException.class)
+                .check(() -> engine.getMustache("whatever").render(null));
         assertTrue(isCloseInvoked.get());
     }
 

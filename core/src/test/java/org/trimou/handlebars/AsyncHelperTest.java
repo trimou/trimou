@@ -21,18 +21,15 @@ public class AsyncHelperTest extends AbstractTest {
 
     @Test
     public void testAsyncHelper() {
-        MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
-                .setExecutorService(
-                        Executors.newFixedThreadPool(Runtime.getRuntime()
-                                .availableProcessors()))
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .setExecutorService(Executors.newFixedThreadPool(
+                        Runtime.getRuntime().availableProcessors()))
                 .registerHelpers(
                         HelpersBuilder.empty().addAsync().addInclude().build())
-                .addTemplateLocator(
-                        new MapTemplateLocator(ImmutableMap.of("template",
-                                "async"))).build();
-        assertEquals(
-                "Hello async world!!",
+                .addTemplateLocator(new MapTemplateLocator(
+                        ImmutableMap.of("template", "async")))
+                .build();
+        assertEquals("Hello async world!!",
                 engine.compileMustache("async_helper01",
                         "Hello {{#async}}{{include templateName}} {{world}}{{/async}}!")
                         .render(ImmutableMap.of("templateName", "template",
@@ -41,20 +38,16 @@ public class AsyncHelperTest extends AbstractTest {
 
     @Test
     public void testAsyncHelperNested() {
-        MustacheEngine engine = MustacheEngineBuilder
-                .newBuilder()
-                .setExecutorService(
-                        Executors.newFixedThreadPool(Runtime.getRuntime()
-                                .availableProcessors()))
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .setExecutorService(Executors.newFixedThreadPool(
+                        Runtime.getRuntime().availableProcessors()))
                 .registerHelpers(
                         HelpersBuilder.empty().addAsync().addInclude().build())
-                .addTemplateLocator(
-                        new MapTemplateLocator(ImmutableMap.of("template",
-                                "async"))).build();
-        assertEquals(
-                "Hello async world! No!",
-                engine.compileMustache(
-                        "async_helper02",
+                .addTemplateLocator(new MapTemplateLocator(
+                        ImmutableMap.of("template", "async")))
+                .build();
+        assertEquals("Hello async world! No!",
+                engine.compileMustache("async_helper02",
                         "Hello {{#async}}{{include templateName}} {{#async}}{{#async}}{{world}}{{/async}}{{/async}}{{#async}}!{{/async}}{{/async}}{{#async}} No{{/async}}!")
                         .render(ImmutableMap.of("templateName", "template",
                                 "world", "world")));
@@ -65,14 +58,12 @@ public class AsyncHelperTest extends AbstractTest {
         final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelpers(HelpersBuilder.empty().addAsync().build())
                 .build();
-        MustacheExceptionAssert.expect(
-                MustacheProblem.RENDER_ASYNC_PROCESSING_ERROR).check(
-                new Runnable() {
-                    public void run() {
-                        engine.compileMustache("async_helper03",
-                                "{{#async}}foo{{/async}}").render(null);
-                    }
-                });
+        MustacheExceptionAssert
+                .expect(MustacheProblem.RENDER_ASYNC_PROCESSING_ERROR).check(
+                        () -> engine
+                                .compileMustache("async_helper03",
+                                        "{{#async}}foo{{/async}}")
+                                .render(null));
     }
 
 }

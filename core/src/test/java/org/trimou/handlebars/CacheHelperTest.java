@@ -101,7 +101,8 @@ public class CacheHelperTest extends AbstractTest {
 
     @Test
     public void testHelperConfiguration() throws InterruptedException {
-        final MustacheEngine engine = MustacheEngineBuilder.newBuilder().setProperty(CacheHelper.FRAGMENT_CACHE_MAX_SIZE_KEY, 0)
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .setProperty(CacheHelper.FRAGMENT_CACHE_MAX_SIZE_KEY, 0)
                 .registerHelpers(HelpersBuilder.empty().addCache().build())
                 .build();
         Hammer hammer1 = new Hammer(1);
@@ -124,34 +125,21 @@ public class CacheHelperTest extends AbstractTest {
     public void testValidation() {
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    @Override
-                    public void run() {
-                        MustacheEngineBuilder.newBuilder()
-                                .registerHelpers(HelpersBuilder.empty()
-                                        .addCache().build())
-                                .build().compileMustache("cache_validation_01",
-                                        "{{cache}}");
-                    }
-                }).check(new Runnable() {
-                    @Override
-                    public void run() {
-                        MustacheEngineBuilder.newBuilder()
-                                .registerHelpers(HelpersBuilder.empty()
-                                        .addCache().build())
-                                .build().compileMustache("cache_validation_02",
-                                        "{{#cache expire='foo'}}{{/cache}}");
-                    }
-                }).check(new Runnable() {
-                    @Override
-                    public void run() {
-                        MustacheEngineBuilder.newBuilder()
-                                .registerHelpers(HelpersBuilder.empty()
-                                        .addCache().build())
-                                .build().compileMustache("cache_validation_03",
-                                        "{{#cache expire=1 unit='foo'}}{{/cache}}");
-                    }
-                });
+                .check(() -> MustacheEngineBuilder.newBuilder()
+                        .registerHelpers(
+                                HelpersBuilder.empty().addCache().build())
+                        .build()
+                        .compileMustache("cache_validation_01", "{{cache}}"))
+                .check(() -> MustacheEngineBuilder.newBuilder()
+                        .registerHelpers(
+                                HelpersBuilder.empty().addCache().build())
+                        .build().compileMustache("cache_validation_02",
+                                "{{#cache expire='foo'}}{{/cache}}"))
+                .check(() -> MustacheEngineBuilder.newBuilder()
+                        .registerHelpers(
+                                HelpersBuilder.empty().addCache().build())
+                        .build().compileMustache("cache_validation_03",
+                                "{{#cache expire=1 unit='foo'}}{{/cache}}"));
     }
 
 }

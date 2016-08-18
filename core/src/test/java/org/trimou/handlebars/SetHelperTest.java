@@ -23,14 +23,11 @@ public class SetHelperTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelpers(HelpersBuilder.empty().addSet().build())
                 .build();
-        assertEquals(
-                "hellohello",
-                engine.compileMustache(
-                        "set_helper01",
+        assertEquals("hellohello",
+                engine.compileMustache("set_helper01",
                         "{{foo}}{{bar}}{{#set foo=\"hello\"}}{{foo}}{{bar}}{{#set bar=foo}}{{bar}}{{/set}}{{/set}}{{foo}}{{bar}}")
                         .render(null));
-        assertEquals(
-                "helloping1",
+        assertEquals("helloping1",
                 engine.compileMustache("set_helper02",
                         "{{#set foo=\"hello\" bar=\"ping\" qux=one}}{{foo}}{{bar}}{{qux}}{{/set}}")
                         .render(ImmutableMap.of("one", BigDecimal.ONE)));
@@ -45,17 +42,10 @@ public class SetHelperTest extends AbstractTest {
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("set_helper_validation01",
-                                "{{#set}}{{/set}}");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("set_helper_validation02",
-                                "{{#set \"foo\"}}{{/set}}");
-                    }
-                });
+                .check(() -> engine.compileMustache("set_helper_validation01",
+                        "{{#set}}{{/set}}"))
+                .check(() -> engine.compileMustache("set_helper_validation02",
+                        "{{#set \"foo\"}}{{/set}}"));
     }
 
 }

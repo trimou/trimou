@@ -45,17 +45,10 @@ public class FormatHelperTest extends AbstractTest {
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("fmt_helper_validation01",
-                                "{{#fmt}}{{/fmt}}");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("fmt_helper_validation02",
-                                "{{fmt}}");
-                    }
-                });
+                .check(() -> engine.compileMustache("fmt_helper_validation01",
+                        "{{#fmt}}{{/fmt}}"))
+                .check(() -> engine.compileMustache("fmt_helper_validation02",
+                        "{{fmt}}"));
     }
 
 }

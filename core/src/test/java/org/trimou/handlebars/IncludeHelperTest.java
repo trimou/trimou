@@ -41,17 +41,10 @@ public class IncludeHelperTest extends AbstractTest {
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
-                .check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("include_helper_validation01",
-                                "{{include}}");
-                    }
-                }).check(new Runnable() {
-                    public void run() {
-                        engine.compileMustache("set_helper_validation02",
-                                "{{#include \"foo\"}}{{/include}}");
-                    }
-                });
+                .check(() -> engine.compileMustache(
+                        "include_helper_validation01", "{{include}}"))
+                .check(() -> engine.compileMustache("set_helper_validation02",
+                        "{{#include \"foo\"}}{{/include}}"));
     }
 
 }
