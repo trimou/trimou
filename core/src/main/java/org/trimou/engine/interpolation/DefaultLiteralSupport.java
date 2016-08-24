@@ -26,7 +26,9 @@ import org.trimou.util.Strings;
 
 /**
  * The default {@link LiteralSupport} implementation. The supported literals are
- * String, Integer, Long and Boolean.
+ * String (<code>"foo"</code> or <code>'foo'</code>), Integer, Long (
+ * <code>10L</code> or <code>10l</code>) and Boolean (<code>true</code> or
+ * <code>false</code>).
  *
  * @author Martin Kouba
  * @see Strings#isStringLiteralSeparator(char)
@@ -51,9 +53,9 @@ public class DefaultLiteralSupport extends AbstractConfigurationAware
         Object literal = null;
         if (Strings.isStringLiteralSeparator(value.charAt(0))) {
             literal = value.substring(1, value.length() - 1);
-        } else if(value.equals("true")) {
+        } else if (value.equals("true")) {
             literal = Boolean.TRUE;
-        }  else if(value.equals("false")) {
+        } else if (value.equals("false")) {
             literal = Boolean.FALSE;
         } else if (integerLiteralPattern.matcher(value).matches()) {
             try {

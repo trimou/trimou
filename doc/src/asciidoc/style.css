@@ -1,6 +1,10 @@
+html {
+    font-size: small;
+}
+
 body {
-    font-family: sans-serif;
-    font-size: medium;
+    font-family: Helvetica,Arial,sans-serif;
+    font-size: 115%;
     padding: 50px;
     text-rendering: optimizelegibility;
     width: 60em;
@@ -14,16 +18,17 @@ div.listingblock pre .tag .title {
 }
 
 div.listingblock div.content {
-    background-color: #2a2a2b;
-    color: white;
+    // background-color: silver;
+    // background-color: #2a2a2b;
+    // color: white;
     padding: 15px;
     border-radius: 6px;
     font-family: Cousine, ​ "Liberation Mono", ​monospace;
 }
 
 div.listingblock div.content pre {
-    background-color: none;
-    font-size: 1.3em;
+    // background-color: none;
+    font-size: 1.2em;
 }
 
 div.listingblock .title {
@@ -31,9 +36,7 @@ div.listingblock .title {
 }
 
 h1,h2,h3,h4,h5 {
-    /*color: #404040;*/
     color: #6CAE37;
-    font-family: Verdana, Georgia, ​​Helvetica, ​Arial, ​sans-serif;
 }
 
 h2,h3,h4,h5 {
@@ -100,8 +103,8 @@ pre {
 }
 
 #content pre code {
-    background: none repeat scroll 0 0;
-    color: white;
+    // background: none repeat scroll 0 0;
+    // color: white;
     /*background: none repeat scroll 0 0 #F8F8F8;*/
 }
 

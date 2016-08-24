@@ -287,7 +287,18 @@ public final class Strings {
             return EMPTY;
         }
         return text.substring(index + delimiter.length());
+    }
 
+    public static boolean isListLiteralStart(char character) {
+        return character == '[';
+    }
+
+    public static boolean isListLiteralEnd(char character) {
+        return character == ']';
+    }
+
+    public static boolean isListLiteral(String value) {
+        return isListLiteralStart(value.charAt(0)) && isListLiteralEnd(value.charAt(value.length() - 1));
     }
 
 }

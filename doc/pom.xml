@@ -17,7 +17,7 @@
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>0.1.2.1</version>
+                <version>1.5.3</version>
                 <executions>
                     <execution>
                         <id>render-asciidoc</id>
@@ -29,10 +29,15 @@
                 </executions>
                 <configuration>
                     <sourceDirectory>src/asciidoc</sourceDirectory>
+                    <sourceDocumentName>trimou-doc.asciidoc</sourceDocumentName>
                     <outputDirectory>target/html</outputDirectory>
                     <backend>html5</backend>
+                    <compact>true</compact>
+                    <sourceHighlighter>highlight.js</sourceHighlighter>
                     <attributes>
                         <version>${project.version}</version>
+                        <highlightjsdir>highlightjs</highlightjsdir>
+                        <highlightjs-theme>agate</highlightjs-theme>
                     </attributes>
                 </configuration>
             </plugin>
@@ -42,7 +47,7 @@
                 <version>2.6</version>
                 <executions>
                     <execution>
-                        <id>copy-stylesheets</id>
+                        <id>copy-js</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -52,9 +57,9 @@
                 <configuration>
                     <resources>
                         <resource>
-                            <directory>src/asciidoc/stylesheets</directory>
+                            <directory>src/asciidoc/js</directory>
                             <includes>
-                                <include>*.css</include>
+                                <include>*.*</include>
                             </includes>
                         </resource>
                     </resources>

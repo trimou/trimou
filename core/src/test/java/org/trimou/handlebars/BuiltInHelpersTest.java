@@ -1,6 +1,7 @@
 package org.trimou.handlebars;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.trimou.AssertUtil.assertCompilationFails;
 
 import java.math.BigDecimal;
@@ -79,6 +80,17 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("each_helper9",
                         "{{#each this}}{{index}}{{.}}{{/each}}")
                         .render(new Object[] { "foo", "bar" }));
+        String result = engine.compileMustache("each_helper10",
+                "{{#each this.entrySet}}{{key}}:{{value}}{{/each}}")
+                .render(ImmutableMap.of("foo", 1, "bar", 2));
+        assertTrue(result.contains("foo:1"));
+        assertTrue(result.contains("bar:2"));
+        assertEquals("1,20,hello,pixie", engine
+                .compileMustache("each_helper10", "{{#each [1,20,'hello', this]}}{{.}}{{#if hasNext}},{{/if}}{{/each}}")
+                .render("pixie"));
+        assertEquals("1,20,hello,pixie", engine
+                .compileMustache("each_helper11", "{{#each [1,20] ['hello', this]}}{{.}}{{#if hasNext}},{{/if}}{{/each}}")
+                .render("pixie"));
         assertEquals(
                 "", engine
                         .compileMustache("each_helper_empty_array",

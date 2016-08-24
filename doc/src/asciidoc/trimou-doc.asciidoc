@@ -1,9 +1,7 @@
 = Trimou Documentation - {version}
 :toc:
 :toclevels: 5
-//:toc-title:
 :stylesheet: style.css
-:source-highlighter: highlightjs
 :numbered:
 
 [[intro]]
@@ -36,26 +34,26 @@ The most notable enhancements are:
 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/interpolation.yml
 
-NOTE: The interpolation tag's content is called a *key* hereafter. The key consists of one or more dot-separated parts - a *key part* (+"foo"+ -> +["foo"]+, +"foo.bar.name"+ -> +["foo, "bar", "name"]+). The current object the key part is resolved against is called a *context object* hereafter.
+NOTE: The interpolation tag's content is called a *key* hereafter. The key consists of one or more dot-separated parts - a *key part* (`"foo"` -> `["foo"]`, `"foo.bar.name"` -> `["foo, "bar", "name"]`). The current object the key part is resolved against is called a *context object* hereafter.
 
 In general Trimou interpolation works very similar to the spec description - walk the context object stack from top to bottom, and resolve the value for the given part of the key (first part againts the context stack, other parts against the result from the former resolution).
 
 However there are some differences:
 
-* it's possible to use +this+ keyword to reference the object atop the context object stack; the spec only allows +.+,
-* if the context object is an instance of a +java.util.Map+, value of the entry with the given key is resolved,
+* it's possible to use `this` keyword to reference the object atop the context object stack; the spec only allows `.`,
+* if the context object is an instance of a `java.util.Map`, value of the entry with the given key is resolved,
 * for any context object Trimou tries to:
-** find and invoke an accessible public method with no params, non-void return type and name +keypart+, +getKeypart+ or +isKeypart+ defined on the context object's class and its superclasses (except for +java.lang.Object+),
-** find an accessible public field with name +keypart+ and get its value,
-* +java.util.List+ and array elements can be accessed via index (the key must be an unsigned integer),
-* an iteration metada object is available inside an iteration block, the default alias is +iter+:
+** find and invoke an accessible public method with no params, non-void return type and name `keypart`, `getKeypart` or `isKeypart` defined on the context object's class and its superclasses (except for `java.lang.Object`),
+** find an accessible public field with name `keypart` and get its value,
+* `java.util.List` and array elements can be accessed via index (the key must be an unsigned integer),
+* an iteration metada object is available inside an iteration block, the default alias is `iter`:
 ** the alias can be configured, see <<configuration,Configuration>>,
-** this metadata has some useful properties: +iter.index+ (the first element is at index +1+), +iter.position+ (the first element has position +0+), +iter.hasNext+, +iter.isFirst+ and +iter.isLast+,
-** alternatively +iterIndex+, +iterHasNext+, +iterIsFirst+ and +iterIsLast+ keywords can be used,
+** this metadata has some useful properties: `iter.index` (the first element is at index `1`), `iter.position` (the first element has position `0`), `iter.hasNext`, `iter.isFirst` and `iter.isLast`,
+** alternatively `iterIndex`, `iterHasNext`, `iterIsFirst` and `iterIsLast` keywords can be used,
 * Trimou allows you to define a resolver that does not handle the context object stack at all (e.g. looks up a <<cdi,CDI bean>>).
 
 .Examples:
-
+[source,Handlebars]
 ----
 {{foo}} <1>
 
@@ -94,10 +92,10 @@ NOTE: The set of resolvers may be extended - so in fact the above mentioned appl
 [[escaping_hml]]
 ==== Escaping HTML
 
-The interpolated value is escaped unless +&+ is used. The spec only tests the basic escaping (+&+, +"+, +<+, +>+).
+The interpolated value is escaped unless `&` is used. The spec only tests the basic escaping (`&`, `"`, `<`, `>`).
 
 .Examples:
-
+[source,Handlebars]
 ----
 {{foo}} <1>
 
@@ -119,19 +117,19 @@ TIP: You can implement your own escaping logic, e.g. to improve escaping perform
 
 The section content is rendered one or more times if there is an object found for the given key. If the found object is:
 
-* non-empty +Iterable+ or array, the content is rendered for each element,
-* a +Boolean+ of value +true+, the content is rendered once,
-* an instance of +Lambda+, the content is processed according to the <<lambdas,lambda's specification>>,
+* non-empty `Iterable` or array, the content is rendered for each element,
+* a `Boolean` of value `true`, the content is rendered once,
+* an instance of `Lambda`, the content is processed according to the <<lambdas,lambda's specification>>,
 * any other non-null object represents a nested context.
 
 The section content is not rendered if there is no object found, or the found object is:
 
-* a +Boolean+ of value +false+,
-* an +Iterable+ with no elements,
+* a `Boolean` of value `false`,
+* an `Iterable` with no elements,
 * an empty array.
 
 .Examples:
-
+[source,Handlebars]
 ----
 {{#boolean}}
    This line will be rendered only if "boolean" key resolves to java.lang.Boolean#TRUE, or true
@@ -147,10 +145,10 @@ The section content is not rendered if there is no object found, or the found ob
 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/inverted.yml
 
-The content is rendered if there is no object found in the context, or is a +Boolean+ of value +false+, or is an +Iterable+ with no elements, or is an empty array.
+The content is rendered if there is no object found in the context, or is a `Boolean` of value `false`, or is an `Iterable` with no elements, or is an empty array.
 
 .Examples:
-
+[source,Handlebars]
 ----
 {{^iterable}}
   This line will be rendered if the resolved iterable has no elements
@@ -165,7 +163,7 @@ The content is rendered if there is no object found in the context, or is a +Boo
 Partials only work if at least one template locator is in action. Otherwise the template cache is not used and there is no way to locate the required partial (template). See <<configure_engine,Configure the engine>> and <<template_locator,Template locator>> sections for more info.
 
 .Examples:
-
+[source,Handlebars]
 ----
 {{#items}}
   {{>item_detail}} - process the template with name "item_detail" for each iteration element
@@ -178,7 +176,7 @@ Partials only work if at least one template locator is in action. Otherwise the 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/delimiters.yml
 
 .Examples:
-
+[source,Handlebars]
 ----
 {{=%% %%=}} - from now on use custom delimiters
 
@@ -194,26 +192,27 @@ TIP: It's also possible to change the delimiters globally, see <<configuration,C
 
 *Spec description*: https://github.com/mustache/spec/blob/master/specs/lambdas.yml
 
-You can implement +org.trimou.lambda.Lambda+ interface in order to define a lambda/callable object. Predefined abstract +org.trimou.lambda.SpecCompliantLambda+ follows the behaviour defined by the spec:
+You can implement `org.trimou.lambda.Lambda` interface in order to define a lambda/callable object. Predefined abstract `org.trimou.lambda.SpecCompliantLambda` follows the behaviour defined by the spec:
 
 [source,java]
 ----
 Lambda makeMeBold = new SpecCompliantLambda() {
   @Override
   public String invoke(String text) {
-    return "<b>" + text + "</b>";
+    return "<b>" ` text ` "</b>";
   }
 }
 ----
 and template
 
+[source,Handlebars]
 ----
 {{#makeMeBold}}
   Any text...{{name}}
 {{/makeMeBold}}
 ----
 results in:
-
+[source,Bash]
 ----
   <b>Any text...{{name}}</b>
 -> the variable is not interpolated
@@ -236,6 +235,7 @@ Lambda makeMeUppercase = new InputProcessingLambda() {
 ----
 and template
 
+[source,Handlebars]
 ----
 {{#makeMeUppercase}}
   Any text...{{name}}
@@ -243,12 +243,13 @@ and template
 ----
 results in:
 
+[source,Bash]
 ----
   ANY TEXT...EDGAR
 -> the variable is interpolated before the lambda invoke() method is invoked
 ----
 
-See +org.trimou.lambda.Lambda+ API javadoc for more info.
+See `org.trimou.lambda.Lambda` API javadoc for more info.
 
 
 ==== Simple lambdas
@@ -268,10 +269,11 @@ MustacheEngine engine = MustacheEngineBuilder
 [[extend]]
 === Extending templates
 
-This feature is not supported in the spec. Trimou basically follows the way https://github.com/spullara/mustache.java[mustache.java] implements the template inheritance. In the extended template, the sections to extend are defined - use +$+ to identify such sections. In extending templates, the extending sections are defined - again, use +$+ to identify such sections. Sections to extend may define the default content.
+This feature is not supported in the spec. Trimou basically follows the way https://github.com/spullara/mustache.java[mustache.java] implements the template inheritance. In the extended template, the sections to extend are defined - use `$` to identify such sections. In extending templates, the extending sections are defined - again, use `$` to identify such sections. Sections to extend may define the default content.
 
 Following template with name "super":
 
+[source,Handlebars]
 ----
 This a template to extend
 {{$header}} -> section to extend
@@ -286,6 +288,7 @@ In between...
 
 can be extended in this way:
 
+[source,Handlebars]
 ----
 Hello world!
 {{<super}}
@@ -299,6 +302,7 @@ Lalala...
 
 and the result is:
 
+[source,Bash]
 ----
 Hello world!
 This a template to extend <1>
@@ -316,15 +320,15 @@ Lalala...
 [[helpers]]
 === Built-in helpers
 
-Since version 1.5.0  helpers API inspired by http://handlebarsjs.com/[Handlebars.js] is supported. There are five helpers registered automatically: +if+, +unless+, +each+, +with+ (see http://handlebarsjs.com for examples :-) and +is+ (an inline version of if).
+Since version 1.5.0  helpers API inspired by http://handlebarsjs.com/[Handlebars.js] is supported. There are five helpers registered automatically: `if`, `unless`, `each`, `with` (see http://handlebarsjs.com for examples :-) and `is` (an inline version of if).
 
-TIP: +if+ and +unless+ helpers also support multiple params evaluation. See the javadoc for more info.
+TIP: `if` and `unless` helpers also support multiple params evaluation. See the javadoc for more info.
 
-Other helpers may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. +org.trimou.handlebars.HelpersBuilder+ is useful when registering most built-in helpers with sensible default names.
+Other helpers may be registered via `MustacheEngineBuilder.registerHelper()` or `MustacheEngineBuilder.registerHelpers()` methods. `org.trimou.handlebars.HelpersBuilder` is useful when registering most built-in helpers with sensible default names.
 
 See also <<custom_helpers,Helper>> section to know how to create your own custom helpers.
 
-NOTE: Handlebars support is enabled by default. See +HANDLEBARS_SUPPORT_ENABLED+ in <<configuration,Configuration properties>>.
+NOTE: Handlebars support is enabled by default. See `HANDLEBARS_SUPPORT_ENABLED` in <<configuration,Configuration properties>>.
 
 Trimou provides some useful helpers which are not registered automatically:
 
@@ -334,89 +338,89 @@ Trimou provides some useful helpers which are not registered automatically:
 |Description
 |Default name
 
-|+org.trimou.handlebars.ChooseHelper+
-|Works similarly as the JSP c:choose tag - it renders the content of the first +when+ section whose first parameter is not falsy. If no +when+ section is rendered, +otherwise+ section is rendered, if present.
+|`org.trimou.handlebars.ChooseHelper`
+|Works similarly as the JSP c:choose tag - it renders the content of the first `when` section whose first parameter is not falsy. If no `when` section is rendered, `otherwise` section is rendered, if present.
 |choose
 
-|+org.trimou.handlebars.SwitchHelper+
+|`org.trimou.handlebars.SwitchHelper`
 |Works similarly as the Java switch statement.
 |switch
 
-|+org.trimou.handlebars.SetHelper+
+|`org.trimou.handlebars.SetHelper`
 |Works similarly as WithHelper except the current hash is pushed on the context stack.
 |set
 
-|+org.trimou.handlebars.EvalHelper+
+|`org.trimou.handlebars.EvalHelper`
 |Allows to build the key dynamically and evaluate it afterwards.
 |eval
 
-|+org.trimou.handlebars.IncludeHelper+
+|`org.trimou.handlebars.IncludeHelper`
 | Works similarly as the partial tag except the name of the template to include may be obtained dynamically.
 |include
 
-|+org.trimou.handlebars.LogHelper+
+|`org.trimou.handlebars.LogHelper`
 |Logs debug messages.
 |log
 
-|+org.trimou.handlebars.JoinHelper+
-|Takes all the objects specified as the parameters and joins the +Object#toString()+ values together with the specified delimiter (optional). Elements of +Iterable+ and array are treated as separate objects. An optional lambda may be applied to each value.
+|`org.trimou.handlebars.JoinHelper`
+|Takes all the objects specified as the parameters and joins the `Object#toString()` values together with the specified delimiter (optional). Elements of `Iterable` and array are treated as separate objects. An optional lambda may be applied to each value.
 |join
 
-|+org.trimou.handlebars.EmbedHelper+
+|`org.trimou.handlebars.EmbedHelper`
 |Embeds the template source (by default as a JavaScript snippet).
 |embed
 
-|+org.trimou.handlebars.NullCheckHelper+
+|`org.trimou.handlebars.NullCheckHelper`
 |Renders a block if the param is/isn't null.
 |isNull/isNotNull
 
-|+org.trimou.handlebars.EqualsHelper+
+|`org.trimou.handlebars.EqualsHelper`
 |Renders a block if the first param does/doesn't equal to the second param.
 |isEq/isNotEq
 
-|+org.trimou.handlebars.NumericExpressionHelper+
-|A simple numeric expression helper. +{{#numExpr myVal 10 op="gt"}}+
+|`org.trimou.handlebars.NumericExpressionHelper`
+|A simple numeric expression helper. `{{#numExpr myVal 10 op="gt"}}`
 |numExpr
 
-|+org.trimou.handlebars.NumberIsEvenHelper+
+|`org.trimou.handlebars.NumberIsEvenHelper`
 |Renders a block/text if the param is an even number.
 |isEven
 
-|+org.trimou.handlebars.NumberIsOddHelper+
+|`org.trimou.handlebars.NumberIsOddHelper`
 |Renders a block/text if the param is an odd number.
 |isOdd
 
-|+org.trimou.handlebars.i18n.ResourceBundleHelper+
+|`org.trimou.handlebars.i18n.ResourceBundleHelper`
 |Displays localized messages.
 |N/A
 
-|+org.trimou.handlebars.i18n.DateTimeFormatHelper+
+|`org.trimou.handlebars.i18n.DateTimeFormatHelper`
 |Displays localized times.
 |N/A
 
-|+org.trimou.handlebars.i18n.TimeFormatHelper+
-|An alternative to +DateTimeFormatHelper+  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
+|`org.trimou.handlebars.i18n.TimeFormatHelper`
+|An alternative to `DateTimeFormatHelper`  which makes use of java.time package in JDK 8 (JSR-310). It supports new temporal types and should also be less resource-intensive.
 |N/A
 
-|+org.trimou.handlebars.AsyncHelper+
+|`org.trimou.handlebars.AsyncHelper`
 |A helper whose content is rendered asynchronously.
 |async
 
-|+org.trimou.handlebars.InvokeHelper+
+|`org.trimou.handlebars.InvokeHelper`
 |Invokes public methods with parameters via reflection.
-+{{invoke "f" "b" on="foo" m="replace"}}+
+`{{invoke "f" "b" on="foo" m="replace"}}`
 |invoke
 
-|+org.trimou.handlebars.AlternativesHelper+
+|`org.trimou.handlebars.AlternativesHelper`
 |Renders the first non-null/nonempty (default condition) parameter. It's useful to specify default values:
-+{{alt username "Joe"}}+
+`{{alt username "Joe"}}`
 |alt
 
-|+org.trimou.handlebars.CacheHelper+
+|`org.trimou.handlebars.CacheHelper`
 |Allows to cache template fragments in memory. It's useful for resource-intensive parts of the template that rarely change.
 |cache
 
-|+org.trimou.handlebars.RepeatHelper+
+|`org.trimou.handlebars.RepeatHelper`
 |Allows to repeat a section multiple times or until the `while` expression evaluates to a "falsy" value.
 |repeat
 
@@ -432,7 +436,7 @@ my.message.key=My name is %s!
 hello.key.messageformat=Hello {0}!
 ----
 
-We can use a +ResourceBundleHelper+ to render messages:
+We can use a `ResourceBundleHelper` to render messages:
 
 [source,java]
 .Register the helper
@@ -445,12 +449,14 @@ MustacheEngine engine = MustacheEngineBuilder
 ----
 
 .Template
+[source,Handlebars]
 ----
 {{msg "my.message.key" "Martin"}}
 {{msg "hello.key.messageformat" "world" format="message"}}
 ----
 
 .Expected output
+[source,Bash]
 ----
 My name is Martin!
 Hello world!
@@ -459,12 +465,13 @@ Hello world!
 [[nested_templates]]
 === Nested templates
 
-Any template may define any number of nested templates - use `+` to identify a nested template.
+Any template may define any number of nested templates - use a section with `+` to identify a nested template.
 A nested template is only available within a defining template through the partial tag (or a special helper, e.g. `IncludeHelper`).
 If there is a regular template with the same name available the nested template has precedence.
 It's not possible to define a nested template within a nested template definition.
 
 .Nested Template Example
+[source,Handlebars]
 ----
 {{! This is the nested template definition }}
 {{+item_detail}}
@@ -491,7 +498,7 @@ NOTE: The support for nested templates is enabled by default. See also `NESTED_T
 [[get_started]]
 === Get started
 
-First, get the +trimou-core.jar+ and its dependencies (+guava+,+slf4j-api+ and +commons-lang3+ at the moment).
+First, get the `trimou-core.jar` and its dependencies (`guava`,`slf4j-api` and `commons-lang3` at the moment).
 
 [source,xml]
 ----
@@ -528,8 +535,8 @@ String output = MustacheEngineBuilder
 <2> Compile the template
 <3> Render the template
 
-NOTE: Instances of +MustacheEngineBuilder+ are not reusable. The builder is considered immutable once the
- +build()+ method is called - subsequent invocations of any modifying method or +build()+ methods result in +IllegalStateException+.
+NOTE: Instances of `MustacheEngineBuilder` are not reusable. The builder is considered immutable once the
+ `build()` method is called - subsequent invocations of any modifying method or `build()` methods result in `IllegalStateException`.
 
 ==== Provide your own Appendable
 
@@ -555,13 +562,13 @@ You may want to:
 * Add custom resolvers; see also <<resolver>>
 * Add template listeners; see also <<mustache_listener>>
 * Register additional helpers; see also <<custom_helpers>>
-* Set custom +TextSupport+ implementation; see <<text_support>>
-* Set custom +LocaleSupport+ implementation; see <<locale_support>>
-* Set custom +MissingValueHandler+; see <<missingvaluehandler>>
-* Set custom +KeySplitter+; see <<keysplitter>>
+* Set custom `TextSupport` implementation; see <<text_support>>
+* Set custom `LocaleSupport` implementation; see <<locale_support>>
+* Set custom `MissingValueHandler`; see <<missingvaluehandler>>
+* Set custom `KeySplitter`; see <<keysplitter>>
 * Set configuration properties; see <<configuration>>
 
-Simply use appropriate +MustacheEngineBuilder+ methods, e.g.:
+Simply use appropriate `MustacheEngineBuilder` methods, e.g.:
 
 [source,java]
 ----
@@ -592,25 +599,26 @@ String output = mustache.render(null);
 
 There may be more than one template locators registered with the engine. Locators with *higher priority* are called *first*.
 
-TIP: Use +MustacheEngine#invalidateTemplateCache()+ to invalidate all template cache entries and force recompilation.
+TIP: Use `MustacheEngine#invalidateTemplateCache()` to invalidate all template cache entries and force recompilation.
 
 See also <<template_locator, TemplateLocator SPI>>.
 
 ==== Note about file encoding
 
-Trimou does not perform any file encoding detection and conversion. Instead any template locator must provide a +java.io.Reader+ instance which is able to convert between Unicode and a other character encodings. Built-in locators don't detect file encoding but use system file encoding by default. But it's possible (and recommended) to define the default file encoding with configuration property +EngineConfigurationKey.DEFAULT_FILE_ENCODING+ (see also <<configuration,configuration properties>>).
+Trimou does not perform any file encoding detection and conversion.
+Instead, any template locator must provide a `java.io.Reader` instance which is able to convert between Unicode and a other character encodings. Built-in locators don't detect file encoding but use system file encoding by default. But it's possible (and recommended) to define the default file encoding with configuration property `EngineConfigurationKey.DEFAULT_FILE_ENCODING` (see also <<configuration,configuration properties>>).
 
 NOTE: Applications are encouraged to always define a default file encoding per every MustacheEngine instance.
 
 [[configuration]]
 === Configuration properties
 
-Trimou engine properties can be configured through system properties, +trimou.properties+ file or the property can be set manually with +MustacheEngineBuilder.setProperty(String, Object)+ method. Manually set properties have higher priority than system properties which have higher priority than properties from +trimou.properties+ file.
+Trimou engine properties can be configured through system properties, `trimou.properties` file or the property can be set manually with `MustacheEngineBuilder.setProperty(String, Object)` method. Manually set properties have higher priority than system properties which have higher priority than properties from `trimou.properties` file.
 
 NOTE: Trimou logs all configuration properties and values during engine initialization
 
 [cols="2,1,2" options="header"]
-.Engine configuration keys - see also +org.trimou.engine.config.EngineConfigurationKey+ enum
+.Engine configuration keys - see also `org.trimou.engine.config.EngineConfigurationKey` enum
 |===
 |Enum value / property key
 |Default value
@@ -652,7 +660,7 @@ NOTE: Trimou logs all configuration properties and values during engine initiali
 |false
 |*DEPRECATED* - see <<missingvaluehandler, MissingValueHandler SPI>>.
 
-By default a variable miss returns an empty string. If set to +true+ a +org.trimou.exception.MustacheException+ with code +org.trimou.exception.MustacheProblem.RENDER_NO_VALUE+ is thrown.
+By default a variable miss returns an empty string. If set to `true` a `org.trimou.exception.MustacheException` with code `org.trimou.exception.MustacheProblem.RENDER_NO_VALUE` is thrown.
 
 |DEBUG_MODE
 
@@ -676,7 +684,7 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 
 *org.trimou.engine.config.skipValueEscaping*
 |false
-|If +true+ interpolated values are never escaped, i.e. +org.trimou.engine.text.TextSupport.escapeHtml()+ is never called.
+|If `true` interpolated values are never escaped, i.e. `org.trimou.engine.text.TextSupport.escapeHtml()` is never called.
 
 |DEFAULT_FILE_ENCODING
 
@@ -688,7 +696,7 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 
 *org.trimou.engine.config.templateCacheEnabled*
 |true
-|The template cache is enabled by default. If set to false every +MustacheEngine.getMustache()+ invocation results in template lookup.
+|The template cache is enabled by default. If set to false every `MustacheEngine.getMustache()` invocation results in template lookup.
 
 |TEMPLATE_CACHE_EXPIRATION_TIMEOUT
 *org.trimou.engine.config.templateCacheExpirationTimeout*
@@ -705,7 +713,7 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 |REUSE_LINE_SEPARATOR_SEGMENTS
 *org.trimou.engine.config.reuseLineSeparatorSegments*
 |true
-|If set to +true+ the line separators will be reused within template to conserve memory.
+|If set to `true` the line separators will be reused within template to conserve memory.
 
 |ITERATION_METADATA_ALIAS
 *org.trimou.engine.config.iterationMetadataAlias*
@@ -715,7 +723,7 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 |RESOLVER_HINTS_ENABLED
 *org.trimou.engine.config.resolverHintsEnabled*
 |true
-|If set to +true+ the evaluation of simple variables, e.g. +.+ or +foo+, is optimized.
+|If set to `true` the evaluation of simple variables, e.g. `.` or `foo`, is optimized.
 
 |NESTED_TEMPLATE_SUPPORT_ENABLED
 *org.trimou.engine.config.nestedTemplateSupportEnabled*
@@ -727,7 +735,7 @@ By default a variable miss returns an empty string. If set to +true+ a +org.trim
 [[i18n]]
 === Basic i18n support
 
-Trimou has a basic i18n support. There are some optional components provided to handle i18n requirements. All these components rely  on +org.trimou.engine.locale.LocaleSupport+ implementation to get the current +Locale+, see also <<locale_support>>.
+Trimou has a basic i18n support. There are some optional components provided to handle i18n requirements. All these components rely  on `org.trimou.engine.locale.LocaleSupport` implementation to get the current `Locale`, see also <<locale_support>>.
 
 [cols="2,1,2" options="header"]
 .i18n components
@@ -737,28 +745,28 @@ Trimou has a basic i18n support. There are some optional components provided to 
 |Description
 
 |*Resolver*
-|+org.trimou.engine.resolver.i18n.NumberFormatResolver+
+|`org.trimou.engine.resolver.i18n.NumberFormatResolver`
 |Basic number formatting.
 
 |*Resolver*
-|+org.trimou.engine.resolver.i18n.DateTimeFormatResolver+
+|`org.trimou.engine.resolver.i18n.DateTimeFormatResolver`
 |Basic date and time formatting.
 
 |*Resolver*
-|+org.trimou.engine.resolver.i18n.ResourceBundleResolver+
-|Resolves localized messages. Unlike +ResourceBundleLambda+ this resolver is not limited to String-based values. However keep in mind that resource bundle keys may not contain dots.
+|`org.trimou.engine.resolver.i18n.ResourceBundleResolver`
+|Resolves localized messages. Unlike `ResourceBundleLambda` this resolver is not limited to String-based values. However keep in mind that resource bundle keys may not contain dots.
 
 |*Helper*
-|+org.trimou.handlebars.i18n.DateTimeFormatHelper+
-|This is an alternative to +DateTimeFormatResolver+. The main advantage lies in the ability to specify custom pattern per tag: +{{formatTime now pattern="DD-MM-yyyy HH:mm"}}+.
+|`org.trimou.handlebars.i18n.DateTimeFormatHelper`
+|This is an alternative to `DateTimeFormatResolver`. The main advantage lies in the ability to specify custom pattern per tag: `{{formatTime now pattern="DD-MM-yyyy HH:mm"}}`.
 
 |*Helper*
-|+org.trimou.handlebars.i18n.ResourceBundleHelper+
+|`org.trimou.handlebars.i18n.ResourceBundleHelper`
 |The most flexible way of rendering localized messages. Supports message parameters and multiple resource bundles.
 
 |*Lambda*
-|+org.trimou.lambda.i18n.ResourceBundleLambda+
-|Renders localized messages. Unlike +ResourceBundleResolver+ this lambda supports resource bundle keys that contain dots.
+|`org.trimou.lambda.i18n.ResourceBundleLambda`
+|Renders localized messages. Unlike `ResourceBundleResolver` this lambda supports resource bundle keys that contain dots.
 
 |===
 
@@ -778,10 +786,12 @@ String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date
 <2> Manually add resolver
 
 .foo.html
+[source,Handlebars]
 ----
 Now: {{now.formatCustom}}
 ----
 results in something similar:
+[source,Bash]
 ----
 Now: 03-05-2013 22:05
 ----
@@ -791,7 +801,7 @@ Now: 03-05-2013 22:05
 
 If you encounter a problem during template processing/rendering, try to:
 
-* configure http://www.slf4j.org/[Simple Logging Facade for Java (SLF4J)] - increase the log level for +org.trimou+ loggers
+* configure http://www.slf4j.org/[Simple Logging Facade for Java (SLF4J)] - increase the log level for `org.trimou` loggers
 * enable <<configuration,debug mode>> - this disables the template cache and provides some more logging during template rendering (otherwise disabled due to performance)
 * implement your own <<missingvaluehandler,MissingValueHandler>> - to handle variable miss during interpolation of a variable tag
 * use <<helpers,LogHelper>> - this might useful for production environments
@@ -799,9 +809,9 @@ If you encounter a problem during template processing/rendering, try to:
 [[how_to_extend]]
 == How to extend
 
-Basically, all the extension points are focused on +MustacheEngine+ configuration. Some components may be automatically added using the +org.trimou.engine.config.ConfigurationExtension+ and JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Others may be added manually via +MustacheEngineBuilder+ methods. See existing extensions to get acquainted with the basic principles.
+Basically, all the extension points are focused on `MustacheEngine` configuration. Some components may be automatically added using the `org.trimou.engine.config.ConfigurationExtension` and JDK http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html[service-provider loading facility]. Others may be added manually via `MustacheEngineBuilder` methods. See existing extensions to get acquainted with the basic principles.
 
-NOTE: Automatic +org.trimou.engine.config.ConfigurationExtension+ processing may be disabled per engine - see also +MustacheEngineBuilder#omitServiceLoaderConfigurationExtensions()+.
+NOTE: Automatic `org.trimou.engine.config.ConfigurationExtension` processing may be disabled per engine - see also `MustacheEngineBuilder#omitServiceLoaderConfigurationExtensions()`.
 
 [[resolver]]
 === Resolver
@@ -814,63 +824,81 @@ WARNING: Implementing/adding a custom resolver may have serious impact on the en
 
 All resolvers have a priority and resolvers with *higher priority* are called *first*. Keep in mind that all resolvers must be thread-safe. There are two ways to extend the basic set of resolvers:
 
-* automatically via +org.trimou.engine.config.ConfigurationExtension+,
-* you can also use +MustacheEngineBuilder.addResolver()+ method.
+* automatically via `org.trimou.engine.config.ConfigurationExtension`,
+* you can also use `MustacheEngineBuilder.addResolver()` method.
 
-TIP: <<cdi,trimou-extension-cdi>> extension provides +CDIBeanResolver+ to lookup normal-scoped CDI beans with name. <<servlets,trimou-extension-servlet>> extension provides +HttpServletRequestResolver+ to get the current Servlet request wrapper.
+TIP: <<cdi,trimou-extension-cdi>> extension provides `CDIBeanResolver` to lookup normal-scoped CDI beans with name. <<servlets,trimou-extension-servlet>> extension provides `HttpServletRequestResolver` to get the current Servlet request wrapper.
 
 ==== EnhancedResolver
 
-An enhanced resolver should be able to create a +Hint+ for a sucessfully resolved context object and name. A hint could be used to skip the resolver chain for a part of the key of a specific tag and improve the interpolation performance.
+An enhanced resolver should be able to create a `Hint` for a sucessfully resolved context object and name. A hint could be used to skip the resolver chain for a part of the key of a specific tag and improve the interpolation performance.
 
-NOTE: Hints are enabled by default. See +RESOLVER_HINTS_ENABLED+ in <<configuration,Configuration properties>>.
+NOTE: Hints are enabled by default. See `RESOLVER_HINTS_ENABLED` in <<configuration,Configuration properties>>.
 
 [[template_locator]]
 === TemplateLocator
 
-Template locators automatically locate the template contents for the given template identifier. The form of the template identifier is not defined, however in most cases the id will represent a template name, e.g. +foo+ and +foo.html+, or virtual path like +order/orderDetail+. The default virtual path separator is +/+ and can be configured via +org.trimou.engine.locator.PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY+. Template locators may only be added with +MustacheEngineBuilder.addTemplateLocator()+ method.
+Template locators automatically locate the template contents for the given template identifier. The form of the template identifier is not defined, however in most cases the id will represent a template name, e.g. `foo` and `foo.html`, or virtual path like `order/orderDetail`. The default virtual path separator is `/` and can be configured via `org.trimou.engine.locator.PathTemplateLocator.VIRTUAL_PATH_SEPARATOR_KEY`. Template locators may only be added with `MustacheEngineBuilder.addTemplateLocator()` method.
 
-There are three basic built-in implementations. +org.trimou.engine.locator.FilesystemTemplateLocator+ finds templates on the filesystem, within the given root directory (watch out, this wouldn't be likely portable across various operating systems). +org.trimou.engine.locator.ClassPathTemplateLocator+ makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. +org.trimou.engine.locator.MapTemplateLocator+ is backed by a +Map+. See javadoc for more configuration info.
+There are three basic built-in implementations. `org.trimou.engine.locator.FilesystemTemplateLocator` finds templates on the filesystem, within the given root directory (watch out, this wouldn't be likely portable across various operating systems). `org.trimou.engine.locator.ClassPathTemplateLocator` makes use of ClassLoader, either thread context class loader (TCCL) or custom CL set via constructor. `org.trimou.engine.locator.MapTemplateLocator` is backed by a `Map`. See javadoc for more configuration info.
 
 TIP: Locators with *higher priority* are called *first*.
 
-TIP: <<servlets,trimou-extension-servlet>> extension provides +org.trimou.servlet.locator.ServletContextTemplateLocator+ to be used in web apps deployed to a servlet container.
+TIP: <<servlets,trimou-extension-servlet>> extension provides `org.trimou.servlet.locator.ServletContextTemplateLocator` to be used in web apps deployed to a servlet container.
 
 [[text_support]]
 === TextSupport
 
-+org.trimou.engine.text.TextSupport+ is used to escape variable text if necessary (see also <<escaping_hml>>). You can set the custom instance with +org.trimou.engine.MustacheEngineBuilder.setTextSupport()+ method. Implement your own logic to extend functionality or improve performance!
+`org.trimou.engine.text.TextSupport` is used to escape variable text if necessary (see also <<escaping_hml>>). You can set the custom instance with `org.trimou.engine.MustacheEngineBuilder.setTextSupport()` method. Implement your own logic to extend functionality or improve performance!
 
 [[locale_support]]
 === LocaleSupport
 
-+org.trimou.engine.locale.LocaleSupport+ allows the engine and its components (e.g. resolvers) to get the current locale via +getCurrentLocale()+. You can set the custom +org.trimou.engine.locale.LocaleSupport+ instance with +org.trimou.engine.MustacheEngineBuilder.setLocaleSupport()+ method.
+`org.trimou.engine.locale.LocaleSupport` allows the engine and its components (e.g. resolvers) to get the current locale via `getCurrentLocale()`. You can set the custom `org.trimou.engine.locale.LocaleSupport` instance with `org.trimou.engine.MustacheEngineBuilder.setLocaleSupport()` method.
 
 
 [[mustache_listener]]
 === MustacheListener
 
-Any registered +org.trimou.engine.listener.MustacheListener+ receives notifications about template processing. In particular +compilationFinished()+ method is invoked when a template is compiled, +renderingStarted()+ and +renderingFinished()+ methods are invoked for each template rendering. +parsingStarted()+ is invoked right before a template is processed by the parser. Listeners are invoked in the order of their registration, except for +renderingFinished()+ method which is invoked in reverse order.
+Any registered `org.trimou.engine.listener.MustacheListener` receives notifications about template processing. In particular `compilationFinished()` method is invoked when a template is compiled, `renderingStarted()` and `renderingFinished()` methods are invoked for each template rendering. `parsingStarted()` is invoked right before a template is processed by the parser. Listeners are invoked in the order of their registration, except for `renderingFinished()` method which is invoked in reverse order.
 
 There are two ways to register a custom listener:
 
-* +MustacheEngineBuilder.addMustacheListener()+ method,
-* automatically via +org.trimou.engine.config.ConfigurationExtension+ (extension listeners are always registered after manually added listeners).
+* `MustacheEngineBuilder.addMustacheListener()` method,
+* automatically via `org.trimou.engine.config.ConfigurationExtension` (extension listeners are always registered after manually added listeners).
 
 NOTE: Code inside a listener may throw an unchecked exception - this aborts further processing of template and no more listeners are invoked afterwards.
 
 [[custom_helpers]]
 === Helper
 
-+org.trimou.handlebars.Helper+ API is inspired by Handlebars but it's not 100% compatible. Mainly, it does not define "inverse" section, so for example the built-in +if+ helper doesn't support +else+ block. On the other hand any helper is able to validate the tag definition (see +Helper.validate()+) and fail fast if there's invalid number of arguments etc.
+`org.trimou.handlebars.Helper` API is inspired by Handlebars but it's not 100% compatible.
+Mainly, it does not define the "inverse" section, so for example the built-in `if` helper doesn't support `else` block.
+On the other hand any helper is able to validate the tag definition (see `Helper.validate()`) and fail fast if there's invalid number of arguments etc.
 
-A helper may be registered via +MustacheEngineBuilder.registerHelper()+ or +MustacheEngineBuilder.registerHelpers()+ methods. Note that each helper must be registered with a unique name. If there are more helpers registered with the same name an +IllegalArgumentException+ is thrown during engine build. There is a special method `MustacheEngineBuilder.registerHelpers(Map<String, Helper>, boolean)` which allows to overwrite the existing helper instance (e.g. to define a custom `if` helper). Some <<helpers,built-in helpers>> are registered automatically.
+A helper may be registered via `MustacheEngineBuilder.registerHelper()` or `MustacheEngineBuilder.registerHelpers()` methods.
+Note that each helper must be registered with a unique name.
+If there are more helpers registered with the same name an `IllegalArgumentException` is thrown during engine build.
+There is a special method `MustacheEngineBuilder.registerHelpers(Map<String, Helper>, boolean)` which allows to overwrite the existing helper instance (e.g. to define a custom `if` helper).
+Some <<helpers,built-in helpers>> are registered automatically.
 
-WARNING: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
+NOTE: The number of registered helpers should not affect the engine performance (unlike the number of registered resolvers).
 
-The main advantage of helpers is the ability to consume multiple parameters and optional hash map. Check out +org.trimou.handlebars.Options+ and the source of built-in helpers to see what helpers can do.
+The main advantage of helpers is the ability to consume multiple parameters and optional hash map.
+A parameter or a hash map value may be a literal (see also <<literalSupport>>), a value placeholder (evaluated at runtime, during each execution of a helper) or a list of literals and value placeholders.
 
-TIP: If you're using Java 8 and want to register a simple helper utilizing functional interfaces, try `SimpleHelpers` from <<jdk8>> extension.
+[source,Handlebars]
+----
+{{#if foo}}Foo is a value placeholder, is evaluated each time the helper is executed{{/if}}
+
+{{#if true}}true is a literal{{/if}}
+
+{{#each [foo, 1]}}
+    [foo, 1] is a list containing value placeholder and literal
+{{/each}}
+----
+
+Check out `org.trimou.handlebars.Options` and the source of built-in helpers to see what helpers can do.
 
 ==== Simple helpers
 
@@ -890,27 +918,35 @@ MustacheEngine engine = MustacheEngineBuilder
 [[missingvaluehandler]]
 === MissingValueHandler
 
-+org.trimou.engine.interpolation.MissingValueHandler+ handles variable miss (no value found) during interpolation of a variable tag. By default +org.trimou.engine.interpolation.NoOpMissingValueHandler+ is used so that a miss does not result in any special operation. However you can set your own handler through the +MustacheEngineBuilder.setMissingValueHandler()+ method. There is also +org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler+ which throws an exception in case of a miss (actually it replaces deprecated configuration property +EngineConfigurationKey#NO_VALUE_INDICATES_PROBLEM+).
+`org.trimou.engine.interpolation.MissingValueHandler` handles variable miss (no value found) during interpolation of a variable tag. By default `org.trimou.engine.interpolation.NoOpMissingValueHandler` is used so that a miss does not result in any special operation. However you can set your own handler through the `MustacheEngineBuilder.setMissingValueHandler()` method. There is also `org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler` which throws an exception in case of a miss (actually it replaces deprecated configuration property `EngineConfigurationKey#NO_VALUE_INDICATES_PROBLEM`).
 
 [[keysplitter]]
 === KeySplitter
 
-+org.trimou.engine.interpolation.KeySplitter+ is responsible for splitting a variable key. +org.trimou.engine.interpolation.DotKeySplitter+ which follows the dot notation is used by default. +org.trimou.engine.interpolation.BracketDotKeySplitter+ enables to use bracket notation and literals in variable keys. E.g. +{{messages["my.message.key"]}}+. You can set your own splitter through the +MustacheEngineBuilder.setKeySplitter()+ method.
+`org.trimou.engine.interpolation.KeySplitter` is responsible for splitting a variable key.
+`org.trimou.engine.interpolation.DotKeySplitter` which follows the dot notation is used by default.
+`org.trimou.engine.interpolation.BracketDotKeySplitter` enables to use bracket notation and literals in variable keys.
+E.g. `{{messages["my.message.key"]}}`.
+You can set your own splitter through the `MustacheEngineBuilder.setKeySplitter()` method.
 
 [[computingcache]]
 === ComputingCacheFactory
 
-+org.trimou.engine.cache.ComputingCache+ is a simple abstraction for thread-safe computing (lazy loading) cache. It's used in some internal components (e.g. +ReflectionResolver+) and may also be used in custom components too. +org.trimou.engine.cache.ComputingCacheFactory+ component is responsible for creating new instances of +ComputingCache+. The default computing cache implementation is backed by +java.util.concurrent.ConcurrentHashMap+.
+`org.trimou.engine.cache.ComputingCache` is a simple abstraction for thread-safe computing (lazy loading) cache.
+It's used in some internal components (e.g. `ReflectionResolver`) and may also be used in custom components too. `org.trimou.engine.cache.ComputingCacheFactory` component is responsible for creating new instances of `ComputingCache`.
+The default computing cache implementation is backed by `java.util.concurrent.ConcurrentHashMap`.
 
 [[identifiergenerator]]
 === IdentifierGenerator
 
-+org.trimou.engine.id.IdentifierGenerator+ is used to generate identifiers for various components and use-cases (e.g. +Mustache+, +MustacheRenderingEvent+ and one-off lambda names).  There are some restrictions on the uniqueness of the generated id - see also the javadoc.
+`org.trimou.engine.id.IdentifierGenerator` is used to generate identifiers for various components and use-cases (e.g. `Mustache`, `MustacheRenderingEvent` and one-off lambda names).
+There are some restrictions on the uniqueness of the generated id - see also the javadoc.
 
 [[literalSupport]]
 === LiteralSupport
 
-+org.trimou.engine.interpolation.LiteralSupport+ allows to customize the way the helpers extract literals from params and hash values. The default implementation currently supports string and integer literals.
+`org.trimou.engine.interpolation.LiteralSupport` allows to customize the way the helpers extract literals from params and hash values.
+The default implementation currently supports String (`"foo"` or `'foo'`), Integer, Long (`10L` or `10l`), Boolean (`true` or `false`) literals.
 
 [[extensions]]
 == Extensions
@@ -930,11 +966,11 @@ MustacheEngine engine = MustacheEngineBuilder
 
 ==== CDIBeanResolver
 
-Tries to resolve a CDI bean with the given name (i.e. annotated with +@Named+ or with a +@Named+ stereotype).
+Tries to resolve a CDI bean with the given name (i.e. annotated with `@Named` or with a `@Named` stereotype).
 
 ==== Rendering context
 
-The rendering scope is active during each rendering of a template, i.e. during +Mustache.render()+ invocation - there is exactly one bean instance per rendering which is destroyed after the rendering is finished. This could be useful in SE environments where usually only +@ApplicationScoped+ and +@Dependent+ built-in scopes are available. You can annotate your bean with +org.trimou.cdi.context.RenderingScoped+ to declare the rendering scope.
+The rendering scope is active during each rendering of a template, i.e. during `Mustache.render()` invocation - there is exactly one bean instance per rendering which is destroyed after the rendering is finished. This could be useful in SE environments where usually only `@ApplicationScoped` and `@Dependent` built-in scopes are available. You can annotate your bean with `org.trimou.cdi.context.RenderingScoped` to declare the rendering scope.
 
 [[servlets]]
 === Servlets
@@ -953,7 +989,7 @@ At the moment only Servlet 3.x API is supported.
 
 ==== ServletContextTemplateLocator
 
-Locates the template anywhere in the web app. The root path must begin with a +/+ and is interpreted as relative to the current context root, or relative to the +/META-INF/resources+ directory of a JAR file inside the web application's +/WEB-INF/lib+ directory.
+Locates the template anywhere in the web app. The root path must begin with a `/` and is interpreted as relative to the current context root, or relative to the `/META-INF/resources` directory of a JAR file inside the web application's `/WEB-INF/lib` directory.
 
 [source,java]
 ----
@@ -965,7 +1001,7 @@ MustacheEngineBuilder
 
 ==== HttpServletRequestResolver
 
-Resolves a key of value *request* to +HttpServletRequestWrapper+. Why the wrapper? Well, we just don't think it's the right thing to call the request object directly.
+Resolves a key of value *request* to `HttpServletRequestWrapper`. Why the wrapper? Well, we just don't think it's the right thing to call the request object directly.
 
 ==== RequestLocaleSupport
 
@@ -1004,14 +1040,14 @@ String output = mustache.render(ImmutableMap.<String, Object> of("now", new Date
 
 ==== PrettyTimeHelper
 
-Developers are encouraged to use this helper instead of +PrettyTimeResolver+ to avoid the negative performance impact during interpolation. However, +PrettyTimeResolver+ is registered automatically through +PrettyTimeConfigurationExtension+. So don't forget to disable the resolver by means of +org.trimou.prettytime.resolver.PrettyTimeResolver.ENABLED_KEY+, e.g. use +org.trimou.prettytime.resolver.PrettyTimeResolver.enabled=false+ in your properties file.
+Developers are encouraged to use this helper instead of `PrettyTimeResolver` to avoid the negative performance impact during interpolation. However, `PrettyTimeResolver` is registered automatically through `PrettyTimeConfigurationExtension`. So don't forget to disable the resolver by means of `org.trimou.prettytime.resolver.PrettyTimeResolver.ENABLED_KEY`, e.g. use `org.trimou.prettytime.resolver.PrettyTimeResolver.enabled=false` in your properties file.
 
 [[minify]]
 === Minify
 
-Minify extension allows you to minify your HTML and XML templates (or any other type of content if you provide your own +org.trimou.minify.Minifier+ implementation). Trimou integrates small and efficient http://code.google.com/p/htmlcompressor/[HtmlCompressor] library. There are two ways to minify the templates. It's possible to register a special listener to minify templates before parsing/compilation or use a special lambda to minify some parts of the template contents.
+Minify extension allows you to minify your HTML and XML templates (or any other type of content if you provide your own `org.trimou.minify.Minifier` implementation). Trimou integrates small and efficient http://code.google.com/p/htmlcompressor/[HtmlCompressor] library. There are two ways to minify the templates. It's possible to register a special listener to minify templates before parsing/compilation or use a special lambda to minify some parts of the template contents.
 
-TIP: +org.trimou.minify.Minify+ helper methods are useful to create the default listeners and lambdas (i.e. if you don't require some extra configuration).
+TIP: `org.trimou.minify.Minify` helper methods are useful to create the default listeners and lambdas (i.e. if you don't require some extra configuration).
 
 NOTE: From the performance point of view: both listener and lambda decrease the size of the rendered template. However listeners may also improve the rendering performance (template is minified only once - before the compilation). Whereas lambdas will likely make rendering performance worse (part of the template is minified every time the lambda is invoked).
 
@@ -1040,7 +1076,7 @@ String output = mustache.render(ImmutableMap.<String, Object> of("foo", "FOO"));
 // <html><body> FOO </body></html>
 ----
 
-TIP: It's also possible to customize the underlying +com.googlecode.htmlcompressor.compressor.HtmlCompressor+ instance - see also our https://github.com/trimou/trimou/blob/master/extensions/minify/src/test/java/org/trimou/minify/MinifyListenerTest.java#L81[MinifyListenerTest].
+TIP: It's also possible to customize the underlying `com.googlecode.htmlcompressor.compressor.HtmlCompressor` instance - see also our https://github.com/trimou/trimou/blob/master/extensions/minify/src/test/java/org/trimou/minify/MinifyListenerTest.java#L81[MinifyListenerTest].
 
 ==== MinifyLambda
 
@@ -1089,19 +1125,21 @@ Gson extension brings some basic support for http://www.json.org/[JSON format] b
 
 ==== JsonElementResolver
 
-+org.trimou.gson.resolver.JsonElementResolver+ makes it easier to work with +com.google.gson.JsonElement+ instances. It is automatically loaded if you place the extension jar on the classpath.
+`org.trimou.gson.resolver.JsonElementResolver` makes it easier to work with `com.google.gson.JsonElement` instances. It is automatically loaded if you place the extension jar on the classpath.
 
-* allows to access +JsonObject+ properties via dot notation
-** e.g. if foo is an instance of +JsonObject+ then +foo.bar+ is translated to +foo.get("bar")+
-* +JsonArray+ elements can be accessed via index
-** e.g. if foo is an instance of +JsonArray+ then +foo.1+ is translated to +foo.get(1)+
+* allows to access `JsonObject` properties via dot notation
+** e.g. if foo is an instance of `JsonObject` then `foo.bar` is translated to `foo.get("bar")`
+* `JsonArray` elements can be accessed via index
+** e.g. if foo is an instance of `JsonArray` then `foo.1` is translated to `foo.get(1)`
 
 `JsonNull` is resolved as a `Placeholder#NULL` and `JsonPrimitive` is automatically unwrapped.
-E.g. +foo.bar+ in +JsonObject+ example is translated to +foo.get("bar").getAsNumber()+ if bar is an instance of a +java.lang.Number+.
-This automatic unwrapping can be also disabled - see +JsonElementResolver+ javadoc.
+E.g. `foo.bar` in `JsonObject` example is translated to `foo.get("bar").getAsNumber()` if bar is an instance of a `java.lang.Number`.
+This automatic unwrapping can be also disabled - see `JsonElementResolver` javadoc.
 
-However, unwrapping only works if +JsonElementResolver+ is involved!
-So for example if you iterate over +["Jim", true, 5]+, a special keyword +unwrapThis+ must be used so that the primitives are unwrapped:
+However, unwrapping only works if `JsonElementResolver` is involved!
+So for example if you iterate over `["Jim", true, 5]`, a special keyword `unwrapThis` must be used so that the primitives are unwrapped:
+
+[source,Handlebars]
 ----
 {{#jsonArray}}{{unwrapThis}}{{/jsonArray}}
 ----
@@ -1124,17 +1162,18 @@ So for example if you iterate over +["Jim", true, 5]+, a special keyword +unwrap
     "phoneNumbers": [
         {
             "type": "home",
-            "number": "+42002012345"
+            "number": "`42002012345"
         },
         {
             "type": "mobile",
-            "number": "+420728000111"
+            "number": "`420728000111"
         }
     ]
 }
 ----
 
 .Example template
+[source,Handlebars]
 ----
 Last name: {{lastName}}
 Street: {{address.street}}
@@ -1157,10 +1196,11 @@ String output = mustache.render(jsonElement);
 ----
 
 .Expected output
+[source,Bash]
 ----
 Last name: Novy
 Street: Nova
-Phone numbers: +42002012345, +420728000111
+Phone numbers: `42002012345, `420728000111
 Type of the first phone number: home
 Type of the second phone number: mobile
 ----
@@ -1188,6 +1228,7 @@ Automatic unwrapping means resolving `JsonString#getString()` for a `JsonString`
 However, unwrapping only works if `JsonValueResolver` is involved!
 So for example if you iterate over `["Jim", true, 5]`, a special keyword `unwrapThis` must be used so that the primitives are unwrapped:
 
+[source,Handlebars]
 ----
 {{#jsonArray}}{{unwrapThis}}{{/jsonArray}}
 ----
@@ -1212,17 +1253,18 @@ NOTE: This resolver should always have higher priority than `MapResolver` to be 
     "phoneNumbers": [
         {
             "type": "home",
-            "number": "+42002012345"
+            "number": "`42002012345"
         },
         {
             "type": "mobile",
-            "number": "+420728000111"
+            "number": "`420728000111"
         }
     ]
 }
 ----
 
 .Example template
+[source,Handlebars]
 ----
 Last name: {{lastName}}
 Street: {{address.street}}
@@ -1245,10 +1287,11 @@ String output = mustache.render(jsonElement);
 ----
 
 .Expected output
+[source,Bash]
 ----
 Last name: Novy
 Street: Nova
-Phone numbers: +42002012345, +420728000111
+Phone numbers: `42002012345, `420728000111
 Type of the first phone number: home
 Type of the second phone number: mobile
 ----
@@ -1285,7 +1328,7 @@ This extension provides a basic https://dropwizard.github.io/dropwizard/[Dropwiz
 
 ==== TrimouViewRenderer
 
-+org.trimou.dropwizard.views.TrimouViewRenderer+ is a +io.dropwizard.views.ViewRenderer+ implementation backed by Trimou. There's a simple builder for convenience: +org.trimou.dropwizard.views.TrimouViewRenderer.Builder+.
+`org.trimou.dropwizard.views.TrimouViewRenderer` is a `io.dropwizard.views.ViewRenderer` implementation backed by Trimou. There's a simple builder for convenience: `org.trimou.dropwizard.views.TrimouViewRenderer.Builder`.
 
 
 [[el]]
@@ -1307,6 +1350,7 @@ This extension provides a basic https://uel.java.net/[EL 3.0] integration.
 
 `org.trimou.el.ELIfHelper` extends the built-in `IfHelper` in the sense that a `String` param is evaluated as EL expression:
 
+[source,Handlebars]
 ----
 {{#if "item.price gt 200"}}
   {{item.name}}
@@ -1323,6 +1367,7 @@ If the helper represents a section and the value is not `null` the value is push
 If the helper represents a variable and the value is `null`, the current `MissingValueHandler` is used.
 If the helper represents a variable and the final value is not `null` the the value's `Object#toString()` is rendered.
 
+[source,Handlebars]
 ----
 {{el 'item.active ? "active" : "inactive"'}}
 ----

@@ -32,6 +32,13 @@ public class HelperExecutionHandlerTest {
         // String literal may contain anything
         assertHelperNameParts("foo='bar = \n baz' qux", "foo='bar = \n baz'",
                 "qux");
+        // List/array literal
+        assertHelperNameParts("[ 'foo', 'bar', qux] foo", "[ 'foo', 'bar', qux]",
+                "foo");
+        assertHelperNameParts("1 20 ['', '1'] foo", "1", "20", "['', '1']",
+                "foo");
+        assertHelperNameParts("'[1, 2]'", "'[1, 2]'");
+        assertHelperNameParts("'[1, '2', 'alpha']'", "'[1, '2', 'alpha']'");
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)

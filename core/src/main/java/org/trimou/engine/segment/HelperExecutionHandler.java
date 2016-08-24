@@ -34,6 +34,7 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.engine.interpolation.LiteralSupport;
 import org.trimou.engine.parser.Template;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -96,18 +97,34 @@ class HelperExecutionHandler {
 
         ImmutableListBuilder<Object> params = ImmutableList.builder();
         ImmutableMapBuilder<String, Object> hash = ImmutableMap.builder();
+        LiteralSupport literalSupport = engine.getConfiguration()
+                .getLiteralSupport();
 
         while (parts.hasNext()) {
             // Next part is a param or a hash entry
             String part = parts.next();
-            int equalsPosition = getFirstDeterminingEqualsCharPosition(part);
-            if (equalsPosition != -1) {
-                hash.put(part.substring(0, equalsPosition),
-                        getLiteralOrPlaceholder(part
-                                .substring(equalsPosition + 1, part.length()),
-                                engine, segment));
+            if (Strings.isListLiteral(part)) {
+                params.add(new ListValuePlaceholder(part, engine,
+                        literalSupport, segment));
             } else {
-                params.add(getLiteralOrPlaceholder(part, engine, segment));
+                int equalsPosition = getFirstDeterminingEqualsCharPosition(
+                        part);
+                if (equalsPosition != -1) {
+                    String value = part.substring(equalsPosition + 1,
+                            part.length());
+                    if (Strings.isListLiteral(value)) {
+                        hash.put(part.substring(0, equalsPosition),
+                                new ListValuePlaceholder(part, engine,
+                                        literalSupport, segment));
+                    } else {
+                        hash.put(part.substring(0, equalsPosition),
+                                getLiteralOrPlaceholder(value, engine, segment,
+                                        literalSupport));
+                    }
+                } else {
+                    params.add(getLiteralOrPlaceholder(part, engine, segment,
+                            literalSupport));
+                }
             }
         }
 
@@ -151,6 +168,7 @@ class HelperExecutionHandler {
     static Iterator<String> splitHelperName(String name, Segment segment) {
 
         boolean stringLiteral = false;
+        boolean arrayLiteral = false;
         boolean space = false;
         List<String> parts = new ArrayList<String>();
         StringBuilder buffer = new StringBuilder();
@@ -158,7 +176,7 @@ class HelperExecutionHandler {
         for (int i = 0; i < name.length(); i++) {
             if (name.charAt(i) == ' ') {
                 if (!space) {
-                    if (!stringLiteral) {
+                    if (!stringLiteral && !arrayLiteral) {
                         if (buffer.length() > 0) {
                             parts.add(buffer.toString());
                             buffer = new StringBuilder();
@@ -169,8 +187,15 @@ class HelperExecutionHandler {
                     }
                 }
             } else {
-                if (Strings.isStringLiteralSeparator(name.charAt(i))) {
+                if (!arrayLiteral
+                        && Strings.isStringLiteralSeparator(name.charAt(i))) {
                     stringLiteral = !stringLiteral;
+                } else if (!stringLiteral
+                        && Strings.isListLiteralStart(name.charAt(i))) {
+                    arrayLiteral = true;
+                } else if (!stringLiteral
+                        && Strings.isListLiteralEnd(name.charAt(i))) {
+                    arrayLiteral = false;
                 }
                 space = false;
                 buffer.append(name.charAt(i));
@@ -178,10 +203,11 @@ class HelperExecutionHandler {
         }
 
         if (buffer.length() > 0) {
-            if (stringLiteral) {
+            if (stringLiteral || arrayLiteral) {
                 throw new MustacheException(
                         MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
-                        "Unterminated string literal detected: %s", segment);
+                        "Unterminated string or array literal detected: %s",
+                        segment);
             }
             parts.add(buffer.toString());
         }
@@ -213,9 +239,9 @@ class HelperExecutionHandler {
     }
 
     private static Object getLiteralOrPlaceholder(String value,
-            MustacheEngine engine, HelperAwareSegment segment) {
-        Object literal = engine.getConfiguration().getLiteralSupport()
-                .getLiteral(value, segment.getTagInfo());
+            MustacheEngine engine, HelperAwareSegment segment,
+            LiteralSupport literalSupport) {
+        Object literal = literalSupport.getLiteral(value, segment.getTagInfo());
         return literal != null ? literal
                 : new DefaultValuePlaceholder(value, engine);
     }
@@ -276,8 +302,7 @@ class HelperExecutionHandler {
         public DefaultOptions build(Appendable appendable,
                 ExecutionContext executionContext) {
             List<ValueWrapper> valueWrappers = isParamValuePlaceholderFound
-                    || isHashValuePlaceholderFound
-                            ? new LinkedList<>() : null;
+                    || isHashValuePlaceholderFound ? new LinkedList<>() : null;
             return new DefaultOptions(appendable, executionContext, segment,
                     getFinalParameters(executionContext, valueWrappers),
                     getFinalHash(executionContext, valueWrappers),
@@ -340,16 +365,32 @@ class HelperExecutionHandler {
                 List<ValueWrapper> valueWrappers,
                 ExecutionContext executionContext) {
             if (value instanceof ValuePlaceholder) {
-                final ValueWrapper wrapper;
-                if (value instanceof DefaultValuePlaceholder) {
-                    wrapper = ((DefaultValuePlaceholder) value).getProvider()
-                            .get(executionContext);
+                if (value instanceof ListValuePlaceholder) {
+                    ListValuePlaceholder listValues = (ListValuePlaceholder) value;
+                    if (listValues.hasValuePlaceholderElement) {
+                        ImmutableListBuilder<Object> builder = ImmutableList
+                                .builder();
+                        for (Object element : listValues) {
+                            builder.add(resolveValue(element, valueWrappers,
+                                    executionContext));
+                        }
+                        return builder.build();
+                    } else {
+                        // Values are immutable
+                        return listValues.getValues();
+                    }
                 } else {
-                    wrapper = executionContext
-                            .getValue(((ValuePlaceholder) value).getName());
+                    final ValueWrapper wrapper;
+                    if (value instanceof DefaultValuePlaceholder) {
+                        wrapper = ((DefaultValuePlaceholder) value)
+                                .getProvider().get(executionContext);
+                    } else {
+                        wrapper = executionContext
+                                .getValue(((ValuePlaceholder) value).getName());
+                    }
+                    valueWrappers.add(wrapper);
+                    return wrapper.get();
                 }
-                valueWrappers.add(wrapper);
-                return wrapper.get();
             } else {
                 return value;
             }
@@ -625,6 +666,51 @@ class HelperExecutionHandler {
 
         ValueProvider getProvider() {
             return provider;
+        }
+
+    }
+
+    private static class ListValuePlaceholder
+            implements ValuePlaceholder, Iterable<Object> {
+
+        private final boolean hasValuePlaceholderElement;
+
+        private final List<Object> values;
+
+        ListValuePlaceholder(String value, MustacheEngine engine,
+                LiteralSupport literalSupport, HelperAwareSegment segment) {
+            List<String> elements = Strings
+                    .split(value.substring(1, value.length() - 1), ",");
+            ImmutableListBuilder<Object> builder = ImmutableList.builder();
+            for (String element : elements) {
+                builder.add(getLiteralOrPlaceholder(element.trim(), engine, segment,
+                        literalSupport));
+            }
+            values = builder.build();
+            hasValuePlaceholderElement = initHasValuePlaceholderElement();
+        }
+
+        @Override
+        public String getName() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            return values.iterator();
+        }
+
+        List<Object> getValues() {
+            return values;
+        }
+
+        private boolean initHasValuePlaceholderElement() {
+            for (Object val : values) {
+                if (val instanceof ValuePlaceholder) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }
