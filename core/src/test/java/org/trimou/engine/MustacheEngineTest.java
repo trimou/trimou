@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -259,6 +260,21 @@ public class MustacheEngineTest extends AbstractEngineTest {
     public void testGeneratedIdsAreUnique() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
         assertNotEquals(engine.compileMustache("foo", "{{foo}}").getGeneratedId(), engine.compileMustache("foo", "{{foo}}").getGeneratedId());
+    }
+
+    @Test
+    public void testInvalidateTemplateCache() {
+        final AtomicInteger locatorCalled = new AtomicInteger(0);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().addTemplateLocator((name) -> {
+            locatorCalled.incrementAndGet();
+            return new StringReader("{{this}}");
+        }).build();
+        assertEquals("foo", engine.getMustache("any").render("foo"));
+        assertEquals("bar", engine.getMustache("one").render("bar"));
+        assertEquals(2, locatorCalled.get());
+        engine.invalidateTemplateCache((name) ->  name.equals("any"));
+        assertEquals("foo", engine.getMustache("any").render("foo"));
+        assertEquals(3, locatorCalled.get());
     }
 
     private static class MyStringReader extends StringReader {

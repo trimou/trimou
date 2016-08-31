@@ -16,6 +16,7 @@
 package org.trimou.engine.locator;
 
 import java.io.Reader;
+import java.util.Collections;
 import java.util.Set;
 
 import org.trimou.engine.config.ConfigurationAware;
@@ -31,6 +32,7 @@ import org.trimou.engine.priority.WithPriority;
  *
  * @author Martin Kouba
  */
+@FunctionalInterface
 public interface TemplateLocator extends WithPriority, ConfigurationAware {
 
     int DEFAULT_PRIORITY = 10;
@@ -48,12 +50,15 @@ public interface TemplateLocator extends WithPriority, ConfigurationAware {
     public Reader locate(String name);
 
     /**
+     * This method should return an empty set if it's not possible to collect the names/identifiers.
      *
      * @return the set of names of all available template identifiers (i.e. all
      *         available templates)
      * @see EngineConfigurationKey#PRECOMPILE_ALL_TEMPLATES
      */
-    public Set<String> getAllIdentifiers();
+    default Set<String> getAllIdentifiers() {
+        return Collections.emptySet();
+    }
 
     @Override
     default int getPriority() {

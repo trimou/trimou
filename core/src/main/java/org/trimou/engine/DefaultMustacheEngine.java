@@ -16,13 +16,16 @@
 package org.trimou.engine;
 
 import static org.trimou.util.Checker.checkArgumentNotEmpty;
+import static org.trimou.util.Checker.checkArgumentNotNull;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,12 +132,27 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     public void invalidateTemplateCache() {
+        if (isCacheEnabled()) {
+            templateCache.clear();
+            sourceCache.clear();
+        }
+    }
+
+    @Override
+    public void invalidateTemplateCache(Predicate<String> predicate) {
+        if (isCacheEnabled()) {
+            checkArgumentNotNull(predicate);
+            templateCache.invalidate((name) -> predicate.test(name));
+            sourceCache.invalidate((name) -> predicate.test(name));
+        }
+    }
+
+    private boolean isCacheEnabled() {
         if (templateCache == null) {
             LOGGER.warn("Unable to invalidate the template cache - it's disabled!");
-            return;
+            return false;
         }
-        templateCache.clear();
-        sourceCache.clear();
+        return true;
     }
 
     private ComputingCache<String, Optional<Mustache>> buildTemplateCache() {
@@ -195,13 +213,10 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private void precompileTemplates() {
-
         Set<String> templateNames = new HashSet<String>();
-
         for (TemplateLocator locator : configuration.getTemplateLocators()) {
             templateNames.addAll(locator.getAllIdentifiers());
         }
-
         for (String templateName : templateNames) {
             getTemplateFromCache(templateName);
         }
@@ -217,15 +232,12 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private Reader locate(String templateId) {
-
-        if (configuration.getTemplateLocators() == null
-                || configuration.getTemplateLocators().isEmpty()) {
+        List<TemplateLocator> locators = configuration.getTemplateLocators();
+        if (locators == null || locators.isEmpty()) {
             return null;
         }
-
         Reader reader = null;
-
-        for (TemplateLocator locator : configuration.getTemplateLocators()) {
+        for (TemplateLocator locator : locators) {
             reader = locator.locate(templateId);
             if (reader != null) {
                 break;
