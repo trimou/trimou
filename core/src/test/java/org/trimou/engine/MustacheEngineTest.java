@@ -277,6 +277,31 @@ public class MustacheEngineTest extends AbstractEngineTest {
         assertEquals(3, locatorCalled.get());
     }
 
+    @Test
+    public void testTemplateCacheUsedForSource() {
+        final AtomicInteger locatorCalled = new AtomicInteger(0);
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator((name) -> {
+                    locatorCalled.incrementAndGet();
+                    return new StringReader("{{this}}");
+                }).build();
+        assertEquals("{{this}}", engine.getMustacheSource("any"));
+        assertEquals("{{this}}", engine.getMustacheSource("any"));
+        assertEquals(2, locatorCalled.get());
+        locatorCalled.set(0);
+        engine = MustacheEngineBuilder.newBuilder()
+                .setProperty(
+                        EngineConfigurationKey.TEMPLATE_CACHE_USED_FOR_SOURCE,
+                        true)
+                .addTemplateLocator((name) -> {
+                    locatorCalled.incrementAndGet();
+                    return new StringReader("{{this}}");
+                }).build();
+        assertEquals("{{this}}", engine.getMustacheSource("any"));
+        assertEquals("{{this}}", engine.getMustacheSource("any"));
+        assertEquals(1, locatorCalled.get());
+    }
+
     private static class MyStringReader extends StringReader {
 
         final AtomicBoolean isCloseInvoked;

@@ -91,14 +91,17 @@ class DefaultMustacheEngine implements MustacheEngine {
                 .getBooleanPropertyValue(EngineConfigurationKey.DEBUG_MODE)) {
             templateCache = null;
             sourceCache = null;
-            LOGGER.warn("Attention! Debug mode enabled: template cache disabled, additional logging enabled");
+            LOGGER.warn(
+                    "Attention! Debug mode enabled: template cache disabled, additional logging enabled");
         } else {
-            if (configuration
-                    .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
+            if (configuration.getBooleanPropertyValue(
+                    EngineConfigurationKey.TEMPLATE_CACHE_ENABLED)) {
                 templateCache = buildTemplateCache();
-                sourceCache = buildSourceCache();
-                if (configuration
-                        .getBooleanPropertyValue(EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
+                sourceCache = configuration.getBooleanPropertyValue(
+                        EngineConfigurationKey.TEMPLATE_CACHE_USED_FOR_SOURCE)
+                                ? buildSourceCache() : null;
+                if (configuration.getBooleanPropertyValue(
+                        EngineConfigurationKey.PRECOMPILE_ALL_TEMPLATES)) {
                     precompileTemplates();
                 }
             } else {
@@ -134,7 +137,9 @@ class DefaultMustacheEngine implements MustacheEngine {
     public void invalidateTemplateCache() {
         if (isCacheEnabled()) {
             templateCache.clear();
-            sourceCache.clear();
+            if (sourceCache != null) {
+                sourceCache.clear();
+            }
         }
     }
 
@@ -143,13 +148,16 @@ class DefaultMustacheEngine implements MustacheEngine {
         if (isCacheEnabled()) {
             checkArgumentNotNull(predicate);
             templateCache.invalidate((name) -> predicate.test(name));
-            sourceCache.invalidate((name) -> predicate.test(name));
+            if (sourceCache != null) {
+                sourceCache.invalidate((name) -> predicate.test(name));
+            }
         }
     }
 
     private boolean isCacheEnabled() {
         if (templateCache == null) {
-            LOGGER.warn("Unable to invalidate the template cache - it's disabled!");
+            LOGGER.warn(
+                    "Unable to invalidate the template cache - it's disabled!");
             return false;
         }
         return true;
@@ -197,8 +205,8 @@ class DefaultMustacheEngine implements MustacheEngine {
             ComputingCache.Function<K, V> loader,
             ComputingCache.Listener<K> listener) {
 
-        Long expirationTimeout = configuration
-                .getLongPropertyValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
+        Long expirationTimeout = configuration.getLongPropertyValue(
+                EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
 
         if (expirationTimeout > 0) {
             LOGGER.info("{} cache expiration timeout set: {} seconds", name,
@@ -338,8 +346,8 @@ class DefaultMustacheEngine implements MustacheEngine {
      *
      * @author Martin Kouba
      */
-    private static class DefaultMustacheCompilationEvent implements
-            MustacheCompilationEvent {
+    private static class DefaultMustacheCompilationEvent
+            implements MustacheCompilationEvent {
 
         private final Mustache mustache;
 
@@ -359,8 +367,8 @@ class DefaultMustacheEngine implements MustacheEngine {
      *
      * @author Martin Kouba
      */
-    private static class DefaultMustacheParsingEvent implements
-            MustacheParsingEvent {
+    private static class DefaultMustacheParsingEvent
+            implements MustacheParsingEvent {
 
         private final String mustacheName;
 

@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.config;
 
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.engine.resolver.EnhancedResolver.Hint;
 import org.trimou.engine.segment.LineSeparatorSegment;
@@ -129,7 +130,14 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * any start tag of a nested template definition is considered to be a
      * regular variable tag.
      */
-    NESTED_TEMPLATE_SUPPORT_ENABLED(true),;
+    NESTED_TEMPLATE_SUPPORT_ENABLED(true),
+    /**
+     * If set to <code>true</code> the template cache is also used for template sources.
+     *
+     * @see MustacheEngine#getMustacheSource(String)
+     */
+    TEMPLATE_CACHE_USED_FOR_SOURCE(false),
+    ;
 
     private Object defaultValue;
 

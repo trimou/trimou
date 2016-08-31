@@ -49,7 +49,7 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
         assertEquals(1, reflectionCache.size());
 
         List<CustomComputingCache> templateCaches = factory.caches.get(MustacheEngine.COMPUTING_CACHE_CONSUMER_ID);
-        assertEquals(2, templateCaches.size());
+        assertEquals(1, templateCaches.size());
         for (CustomComputingCache cache : templateCaches) {
             cache.clear();
         }
