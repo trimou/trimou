@@ -89,6 +89,21 @@ public class InvokeHelperTest extends AbstractTest {
     }
 
     @Test
+    public void testDefaultMethodName() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty()
+                        .add("substring", InvokeHelper.of("substring"))
+                        .build())
+                .build();
+        assertEquals("345", engine
+                .compileMustache("invoke_defmethodname_01", "{{substring 3}}")
+                .render("012345"));
+        assertEquals("lo", engine
+                .compileMustache("invoke_defmethodname_01", "{{substring 3 on='hello' m='whatever'}}")
+                .render(null));
+    }
+
+    @Test
     public void testValidation() {
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)

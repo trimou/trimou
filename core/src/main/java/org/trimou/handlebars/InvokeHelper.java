@@ -39,23 +39,22 @@ import org.trimou.util.Primitives;
 
 /**
  * Invokes public methods with parameters via reflection.
- *
  * <p>
- * All the helper parameters are considered to be method parameters. The method
- * name must be always defined - either using the key {@link OptionsHashKeys#M}
- * or {@link OptionsHashKeys#METHOD}. The instance specified by
- * {@value OptionsHashKeys#ON} key is optional - if not specified and not a
- * static method invocation, the object at the top of the context stack is used.
- * The key {@link OptionsHashKeys#CLASS} may be used to invoke a static method
- * of a specific class. By default, the TCCL or the CL of this helper is used to
- * load the class if needed.
- * </p>
- *
+ * All the helper parameters are considered to be method parameters.
+ * <p>
+ * The method name must be always defined - either using the key
+ * {@link OptionsHashKeys#M}/{@link OptionsHashKeys#METHOD} or as a default
+ * method name.
+ * <p>
+ * The instance specified by {@value OptionsHashKeys#ON} key is optional - if
+ * not specified and not a static method invocation, the object at the top of
+ * the context stack is used. The key {@link OptionsHashKeys#CLASS} may be used
+ * to invoke a static method of a specific class. By default, the TCCL or the CL
+ * of this helper is used to load the class if needed.
  * <p>
  * E.g. the following template will invoke
  * {@link String#replace(CharSequence, CharSequence)} method on {@code "foo"}
  * string with paramteres {@code "f"} and {@code "b"}.
- * </p>
  *
  * <pre>
  * {{invoke "f" "b" on="foo" m="replace"}}
@@ -101,6 +100,10 @@ import org.trimou.util.Primitives;
  */
 public class InvokeHelper extends BasicHelper {
 
+    public static InvokeHelper of(String defaultMethodName) {
+        return new InvokeHelper(null, defaultMethodName);
+    }
+
     /**
      * Limit the size of the cache. Use zero value to disable the cache.
      */
@@ -111,15 +114,10 @@ public class InvokeHelper extends BasicHelper {
 
     private final ClassLoader classLoader;
 
-    /**
-     *
-     */
+    private final String defaultMethodName;
+
     public InvokeHelper() {
-        ClassLoader cl = SecurityActions.getContextClassLoader();
-        if (cl == null) {
-            cl = SecurityActions.getClassLoader(InvokeHelper.class);
-        }
-        this.classLoader = cl;
+        this(null, null);
     }
 
     /**
@@ -128,16 +126,38 @@ public class InvokeHelper extends BasicHelper {
      *            The CL used to load a class for a static method invocation
      */
     public InvokeHelper(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+        this(classLoader, null);
+    }
+
+    /**
+     *
+     * @param classLoader
+     *            The CL used to load a class for a static method invocation
+     * @param defaultMethodName
+     */
+    public InvokeHelper(ClassLoader classLoader, String defaultMethodName) {
+        if (classLoader != null) {
+            this.classLoader = classLoader;
+        } else {
+            ClassLoader cl = SecurityActions.getContextClassLoader();
+            if (cl == null) {
+                cl = SecurityActions.getClassLoader(InvokeHelper.class);
+            }
+            this.classLoader = cl;
+        }
+        this.defaultMethodName = defaultMethodName;
     }
 
     @Override
     public void execute(Options options) {
 
         Class<?> clazz = null;
-        Object methodName = options.getHash().get(M);
+        Object methodName = defaultMethodName;
         if (methodName == null) {
-            methodName = options.getHash().get(METHOD);
+            methodName = options.getHash().get(M);
+            if (methodName == null) {
+                methodName = options.getHash().get(METHOD);
+            }
         }
         Object instance = options.getHash().get(ON);
         if (instance == null) {
@@ -187,9 +207,9 @@ public class InvokeHelper extends BasicHelper {
     @Override
     public void init() {
         super.init();
-        this.methodCache = configuration.getComputingCacheFactory()
-                .create(InvokeHelper.class
-                        .getName(), new MethodComputingFunction(), null,
+        this.methodCache = configuration.getComputingCacheFactory().create(
+                InvokeHelper.class.getName(), new MethodComputingFunction(),
+                null,
                 configuration.getLongPropertyValue(METHOD_CACHE_MAX_SIZE_KEY),
                 null);
     }
@@ -208,7 +228,8 @@ public class InvokeHelper extends BasicHelper {
     public void validate(HelperDefinition definition) {
         super.validate(definition);
         if (!definition.getHash().containsKey(METHOD)
-                && !definition.getHash().containsKey(M)) {
+                && !definition.getHash().containsKey(M)
+                && defaultMethodName == null) {
             throw HelperValidator.newValidationException(
                     "A method name must be always defined", this.getClass(),
                     definition);
