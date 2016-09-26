@@ -22,13 +22,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
-import org.trimou.ExceptionAssert;
 import org.trimou.Mustache;
+import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.AbstractTemplateLocator;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.locator.TemplateLocator;
-import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
+import org.trimou.exception.ProblemCode;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 import org.trimou.util.ImmutableList;
@@ -244,7 +245,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
         isCloseInvoked.set(false);
         assertFalse(isCloseInvoked.get());
 
-        ExceptionAssert.expect(MustacheException.class)
+        MustacheExceptionAssert.expect(MustacheProblem.COMPILE_INVALID_TEMPLATE, "Unexpected non-text buffer")
                 .check(() -> engine.getMustache("whatever").render(null));
         assertTrue(isCloseInvoked.get());
     }

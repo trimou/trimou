@@ -335,11 +335,12 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private RuntimeException unwrapUncheckedExecutionException(Exception e) {
-        if (e.getCause() instanceof RuntimeException) {
-            return (RuntimeException) e.getCause();
+        Throwable cause = e.getCause() == null ? e : e.getCause();
+        if (cause instanceof RuntimeException) {
+            return (RuntimeException) cause;
         }
         return new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
-                e.getCause());
+                cause);
     }
 
     /**
