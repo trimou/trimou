@@ -29,7 +29,6 @@ import org.trimou.engine.locator.AbstractTemplateLocator;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.exception.MustacheProblem;
-import org.trimou.exception.ProblemCode;
 import org.trimou.lambda.Lambda;
 import org.trimou.lambda.SpecCompliantLambda;
 import org.trimou.util.ImmutableList;

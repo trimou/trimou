@@ -18,12 +18,19 @@ package org.trimou.engine.segment;
 import org.trimou.engine.resolver.Mapper;
 
 /**
- * An immutable iteration metadata. This is a replacement for
- * {@link IterationMeta} which can't be used in asynchronous scenarios.
+ * An immutable iteration metadata.
  *
  * @author Martin Kouba
  */
 public final class ImmutableIterationMeta implements Mapper {
+
+    static final String KEY_INDEX = "iterIndex";
+
+    static final String KEY_HAS_NEXT = "iterHasNext";
+
+    static final String KEY_FIRST = "iterIsFirst";
+
+    static final String KEY_LAST = "iterIsLast";
 
     private final String alias;
 
@@ -164,13 +171,13 @@ public final class ImmutableIterationMeta implements Mapper {
             return value;
         }
         // Preserved for backwards compatibility
-        if (IterationMeta.KEY_INDEX.equals(key)) {
+        if (KEY_INDEX.equals(key)) {
             return getIndex();
-        } else if (IterationMeta.KEY_HAS_NEXT.equals(key)) {
+        } else if (KEY_HAS_NEXT.equals(key)) {
             return hasNext();
-        } else if (IterationMeta.KEY_FIRST.equals(key)) {
+        } else if (KEY_FIRST.equals(key)) {
             return isFirst();
-        } else if (IterationMeta.KEY_LAST.equals(key)) {
+        } else if (KEY_LAST.equals(key)) {
             return isLast();
         }
         return null;
