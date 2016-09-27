@@ -149,6 +149,7 @@ public interface Options extends HelperDefinition {
      * @author Martin Kouba
      * @since 1.8
      */
+    @FunctionalInterface
     public interface HelperExecutable {
 
         /**
