@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -72,6 +73,36 @@ public abstract class AbstractHelper extends AbstractConfigurationAware
                 throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
             }
         }
+    }
+
+    /**
+     *
+     * @param value
+     * @return the converted value
+     * @see ValueConverter
+     */
+    protected String convertValue(Object value) {
+        if (!configuration.getValueConverters().isEmpty()) {
+            for (ValueConverter converter : configuration
+                    .getValueConverters()) {
+                String result = converter.convert(value);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return value.toString();
+    }
+
+    /**
+     *
+     * @param options
+     * @param value
+     * @see AbstractHelper#append(Options, CharSequence)
+     * @see #convertValue(Object)
+     */
+    protected void convertAndAppend(Options options, Object value) {
+        append(options, convertValue(value));
     }
 
 }

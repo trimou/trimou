@@ -113,7 +113,7 @@ public class AlternativesHelper extends BasicHelper {
                         .handle(options.getTagInfo());
             }
             if (value != null) {
-                append(options, value.toString());
+                convertAndAppend(options, value);
             }
         }
     }

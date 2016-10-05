@@ -143,7 +143,7 @@ public class JoinHelper extends BasicValueHelper {
 
     private void append(Options options, Object value, Lambda lambda) {
         append(options, lambda != null ? lambda.invoke(value.toString())
-                : value.toString());
+                : convertValue(value));
     }
 
     private Lambda initLambda(Options options) {

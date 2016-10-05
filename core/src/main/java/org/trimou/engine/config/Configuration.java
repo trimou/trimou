@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.trimou.Mustache;
 import org.trimou.engine.cache.ComputingCacheFactory;
+import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.engine.interpolation.LiteralSupport;
@@ -151,5 +152,12 @@ public interface Configuration {
      * @since 1.8
      */
     public LiteralSupport getLiteralSupport();
+
+    /**
+     *
+     * @return the immutable list of converters
+     * @since 2.1
+     */
+    public List<ValueConverter> getValueConverters();
 
 }

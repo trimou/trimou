@@ -29,6 +29,8 @@ public interface Validateable {
      *
      * @return true if valid, false otherwise
      */
-    boolean isValid();
+    default boolean isValid() {
+        return true;
+    }
 
 }

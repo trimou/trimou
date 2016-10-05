@@ -107,7 +107,7 @@ public class EvalHelper extends BasicHelper {
                         options.getTagInfo());
             }
             if (value != null) {
-                append(options, value.toString());
+                convertAndAppend(options, value);
             }
         }
     }

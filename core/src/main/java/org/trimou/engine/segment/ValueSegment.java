@@ -16,11 +16,13 @@
 package org.trimou.engine.segment;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.trimou.annotations.Internal;
 import org.trimou.engine.MustacheTagType;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
+import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.parser.Template;
 import org.trimou.engine.text.TextSupport;
 import org.trimou.exception.MustacheException;
@@ -45,6 +47,8 @@ public class ValueSegment extends AbstractSegment
 
     private final ValueProvider provider;
 
+    private final List<ValueConverter> converters;
+
     /**
      *
      * @param text
@@ -59,9 +63,15 @@ public class ValueSegment extends AbstractSegment
         if (helperHandler == null) {
             this.textSupport = getEngineConfiguration().getTextSupport();
             this.provider = new ValueProvider(text, getEngineConfiguration());
+            if (getEngineConfiguration().getValueConverters().isEmpty()) {
+                this.converters = null;
+            } else {
+                this.converters = getEngineConfiguration().getValueConverters();
+            }
         } else {
             this.textSupport = null;
             this.provider = null;
+            this.converters = null;
         }
     }
 
@@ -119,8 +129,20 @@ public class ValueSegment extends AbstractSegment
         if (value instanceof Lambda) {
             processLambda(appendable, context, value);
         } else {
-            writeValue(appendable, value.toString());
+            writeValue(appendable, convertValue(value));
         }
+    }
+
+    private String convertValue(Object value) {
+        if (converters != null) {
+            for (ValueConverter converter : converters) {
+                String result = converter.convert(value);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return value.toString();
     }
 
     private void writeValue(Appendable appendable, String text) {

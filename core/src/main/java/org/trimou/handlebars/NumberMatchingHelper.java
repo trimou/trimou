@@ -22,8 +22,7 @@ public abstract class NumberMatchingHelper extends BasicHelper {
                     options.fn();
                 } else {
                     if (options.getParameters().size() > 1) {
-                        append(options, options.getParameters().get(1)
-                                .toString());
+                        convertAndAppend(options, options.getParameters().get(1));
                     } else {
                         throw new MustacheException(
                                 MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
@@ -35,7 +34,7 @@ public abstract class NumberMatchingHelper extends BasicHelper {
                 }
             } else {
                 if (isVariable(options) && options.getParameters().size() > 2) {
-                    append(options, options.getParameters().get(2).toString());
+                    convertAndAppend(options, options.getParameters().get(2));
                 }
             }
         }

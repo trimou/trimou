@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.cache.ComputingCacheFactory;
 import org.trimou.engine.cache.DefaultComputingCacheFactory;
+import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.id.SequenceIdentifierGenerator;
 import org.trimou.engine.interpolation.DefaultLiteralSupport;
@@ -100,6 +101,8 @@ class DefaultConfiguration implements Configuration {
 
     private final LiteralSupport literalSupport;
 
+    private final List<ValueConverter> valueConverters;
+
     /**
      *
      * @param builder
@@ -136,6 +139,7 @@ class DefaultConfiguration implements Configuration {
         MissingValueHandler missingValueHandler = initMissingValueHandler(
                 builder);
         Map<String, Helper> helpers = builder.buildHelpers();
+        List<ValueConverter> valueConverters = initValueConverters(builder);
 
         this.textSupport = initTextSupport(builder);
         this.localeSupport = initLocaleSupport(builder);
@@ -179,6 +183,7 @@ class DefaultConfiguration implements Configuration {
         components.addAll(mustacheListeners);
         components.addAll(helpers.values());
         components.add(literalSupport);
+        components.addAll(valueConverters);
 
         this.properties = initializeProperties(builder,
                 getConfigurationKeysToProcess(components));
@@ -207,10 +212,12 @@ class DefaultConfiguration implements Configuration {
         // Filter out invalid components
         removeInvalidComponents(resolvers);
         removeInvalidComponents(mustacheListeners);
+        removeInvalidComponents(valueConverters);
 
         this.resolvers = ImmutableList.copyOf(resolvers);
         this.mustacheListeners = ImmutableList.copyOf(mustacheListeners);
         this.executorService = builder.getExecutorService();
+        this.valueConverters = ImmutableList.copyOf(valueConverters);
     }
 
     @Override
@@ -361,6 +368,11 @@ class DefaultConfiguration implements Configuration {
         return literalSupport;
     }
 
+    @Override
+    public List<ValueConverter> getValueConverters() {
+        return valueConverters;
+    }
+
     private void initializeConfigurationAwareComponents(
             Set<ConfigurationAware> components) {
         for (ConfigurationAware component : components) {
@@ -370,11 +382,12 @@ class DefaultConfiguration implements Configuration {
 
     private List<Resolver> initResolvers(MustacheEngineBuilder builder) {
         Set<Resolver> builderResolvers = builder.buildResolvers();
-        List<Resolver> resolvers = new ArrayList<Resolver>();
-        if (!builderResolvers.isEmpty()) {
-            resolvers.addAll(builderResolvers);
-            Collections.sort(resolvers, Priorities.higherFirst());
+        if (builderResolvers.isEmpty()) {
+            return Collections.emptyList();
         }
+        List<Resolver> resolvers = new ArrayList<Resolver>();
+        resolvers.addAll(builderResolvers);
+        Collections.sort(resolvers, Priorities.higherFirst());
         return resolvers;
     }
 
@@ -479,6 +492,18 @@ class DefaultConfiguration implements Configuration {
         } else {
             return null;
         }
+    }
+
+    private List<ValueConverter> initValueConverters(
+            MustacheEngineBuilder builder) {
+        Set<ValueConverter> builderConverters = builder.buildValueConverters();
+        if (builderConverters.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<ValueConverter> converters = new ArrayList<>();
+        converters.addAll(builderConverters);
+        Collections.sort(converters, Priorities.higherFirst());
+        return converters;
     }
 
     @SuppressWarnings("unused")

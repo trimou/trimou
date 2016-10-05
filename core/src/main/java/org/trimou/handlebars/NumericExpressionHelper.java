@@ -122,7 +122,7 @@ public class NumericExpressionHelper extends BasicHelper {
             } else {
                 String output;
                 Object outputValue = options.getHash().get(OUTPUT);
-                output = outputValue != null ? outputValue.toString()
+                output = outputValue != null ? convertValue(outputValue)
                         : Boolean.TRUE.toString();
                 append(options, output);
             }
