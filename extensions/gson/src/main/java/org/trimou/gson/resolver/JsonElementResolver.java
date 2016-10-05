@@ -26,6 +26,7 @@ import org.trimou.engine.resolver.IndexResolver;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.Placeholder;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.gson.converter.GsonValueConverter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -53,9 +54,13 @@ public class JsonElementResolver extends IndexResolver {
     /**
      * If set to <code>true</code> instances of JsonPrimitive and JsonNull are
      * unwrapped automatically.
+     * <p>
+     * TODO Since 2.1 unwrapping is disabled by default. See also
+     * {@link GsonValueConverter}.
      */
     public static final ConfigurationKey UNWRAP_JSON_PRIMITIVE_KEY = new SimpleConfigurationKey(
-            JsonElementResolver.class.getName() + ".unwrapJsonPrimitive", true);
+            JsonElementResolver.class.getName() + ".unwrapJsonPrimitive",
+            false);
 
     private boolean unwrapJsonPrimitive;
 
@@ -100,17 +105,19 @@ public class JsonElementResolver extends IndexResolver {
             final Integer index = getIndexValue(name, context.getKey(),
                     jsonArray.size());
             if (index != null) {
-                return unwrapJsonElementIfNecessary(jsonArray.get(index));
+                return unwrapJsonElementIfNecessary(jsonArray.get(index),
+                        unwrapJsonPrimitive);
             }
         } else if (element.isJsonObject()) {
             // JsonObject properties
             JsonObject jsonObject = (JsonObject) element;
             JsonElement member = jsonObject.get(name);
             if (member != null) {
-                return unwrapJsonElementIfNecessary(member);
+                return unwrapJsonElementIfNecessary(member,
+                        unwrapJsonPrimitive);
             }
         } else if (name.equals(NAME_UNWRAP_THIS)) {
-            return unwrapJsonElementIfNecessary(element);
+            return unwrapJsonElementIfNecessary(element, true);
         }
         return null;
     }
@@ -132,13 +139,12 @@ public class JsonElementResolver extends IndexResolver {
         return hint;
     }
 
-    private Object unwrapJsonElementIfNecessary(JsonElement jsonElement) {
-        if (unwrapJsonPrimitive) {
-            if (jsonElement.isJsonPrimitive()) {
-                return unwrapJsonPrimitive((JsonPrimitive) jsonElement);
-            } else if (jsonElement.isJsonNull()) {
-                return Placeholder.NULL;
-            }
+    private Object unwrapJsonElementIfNecessary(JsonElement jsonElement,
+            boolean unwrapJsonPrimitive) {
+        if (unwrapJsonPrimitive && jsonElement.isJsonPrimitive()) {
+            return unwrapJsonPrimitive((JsonPrimitive) jsonElement);
+        } else if (jsonElement.isJsonNull()) {
+            return Placeholder.NULL;
         }
         return jsonElement;
     }

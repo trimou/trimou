@@ -17,9 +17,11 @@ import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.resolver.DummyResolutionContext;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.Placeholder;
+import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.ThisResolver;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.gson.converter.GsonValueConverter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -43,6 +45,8 @@ public class JsonElementResolverTest extends AbstractTest {
         // Init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
+                        true)
                 .addResolver(resolver).build();
         assertNull(resolver.resolve(null, "foo", ctx));
         assertNull(resolver.resolve("bar", "foo", ctx));
@@ -77,7 +81,9 @@ public class JsonElementResolverTest extends AbstractTest {
             throws JsonIOException, JsonSyntaxException, FileNotFoundException {
 
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
                 .addResolver(new JsonElementResolver())
+                .addResolver(new ReflectionResolver())
                 .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
                         false)
                 .build();
@@ -85,6 +91,20 @@ public class JsonElementResolverTest extends AbstractTest {
                 "json_element_unwrap_primitive_disabled_test",
                 "{{firstName.asString.length}}|{{phoneNumbers.1.type.asString.toUpperCase}}");
         assertEquals("3|MOBILE", mustache.render(loadJsonData()));
+
+        // Test together with converter
+        engine = MustacheEngineBuilder.newBuilder()
+                .omitServiceLoaderConfigurationExtensions()
+                .addResolver(new ReflectionResolver())
+                .addResolver(new JsonElementResolver())
+                .addValueConverter(new GsonValueConverter())
+                .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
+                        false)
+                .setProperty(GsonValueConverter.ENABLED_KEY, true).build();
+        mustache = engine.compileMustache(
+                "json_element_unwrap_primitive_disabled_test2",
+                "{{firstName}}|{{phoneNumbers.1.type}}|{{phoneNumbers.1.type.getAsString.toUpperCase}}");
+        assertEquals("Jan|mobile|MOBILE", mustache.render(loadJsonData()));
     }
 
     @Test
@@ -156,6 +176,8 @@ public class JsonElementResolverTest extends AbstractTest {
     private MustacheEngine getEngine() {
         return MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
+                        true)
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new JsonElementResolver()).build();
     }

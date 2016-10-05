@@ -16,6 +16,7 @@
 package org.trimou.gson;
 
 import org.trimou.engine.config.ConfigurationExtension;
+import org.trimou.gson.converter.GsonValueConverter;
 import org.trimou.gson.resolver.JsonElementResolver;
 
 /**
@@ -27,6 +28,7 @@ public class GsonConfigurationExtension implements ConfigurationExtension {
     @Override
     public void register(ConfigurationExtensionBuilder builder) {
         builder.addResolver(new JsonElementResolver());
+        builder.addValueConverter(new GsonValueConverter());
     }
 
 }
