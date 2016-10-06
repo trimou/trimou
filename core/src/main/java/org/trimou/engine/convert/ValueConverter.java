@@ -28,8 +28,8 @@ import org.trimou.engine.validation.Validateable;
  * in the final list of converters returned by
  * {@link org.trimou.engine.config.Configuration#getValueConverters()}.
  * <p>
- * This component has also a priority - see also {@link WithPriority}, and is
- * {@link ConfigurationAware}.
+ * This component has also a priority - converters with higher priority are
+ * called first, and is {@link ConfigurationAware}.
  * <p>
  * If no component is able to convert an object, {@link Object#toString()} is
  * used.

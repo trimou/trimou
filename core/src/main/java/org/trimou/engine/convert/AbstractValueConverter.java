@@ -13,23 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.jsonp;
-
-import org.trimou.engine.config.ConfigurationExtension;
-import org.trimou.jsonp.converter.JsonProcessingValueConverter;
-import org.trimou.jsonp.resolver.JsonValueResolver;
+package org.trimou.engine.convert;
 
 /**
  *
  * @author Martin Kouba
  */
-public class JsonProcessingConfigurationExtension
-        implements ConfigurationExtension {
+public abstract class AbstractValueConverter implements ValueConverter {
+
+    public static final int DEFAULT_PRIORITY = 10;
+
+    protected volatile boolean isEnabled;
+
+    private final int priority;
+
+    public AbstractValueConverter() {
+        this(DEFAULT_PRIORITY);
+    }
+
+    /**
+     *
+     * @param priority
+     */
+    public AbstractValueConverter(int priority) {
+        this.priority = priority;
+    }
 
     @Override
-    public void register(ConfigurationExtensionBuilder builder) {
-        builder.addResolver(new JsonValueResolver());
-        builder.addValueConverter(new JsonProcessingValueConverter());
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public boolean isValid() {
+        return isEnabled;
     }
 
 }

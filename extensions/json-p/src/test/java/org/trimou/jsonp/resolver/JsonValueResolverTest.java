@@ -28,6 +28,7 @@ import org.trimou.engine.resolver.Placeholder;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.ThisResolver;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.jsonp.converter.JsonProcessingValueConverter;
 
 /**
  *
@@ -42,7 +43,8 @@ public class JsonValueResolverTest extends AbstractTest {
         // Init the resolver
         MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
-                .addResolver(resolver).build();
+                .addResolver(resolver)
+                .setProperty(JsonValueResolver.ENABLED_KEY, true).build();
         assertNull(resolver.resolve(null, "foo", ctx));
         assertNull(resolver.resolve("bar", "foo", ctx));
         assertEquals(Boolean.TRUE,
@@ -93,6 +95,8 @@ public class JsonValueResolverTest extends AbstractTest {
                 .setMissingValueHandler(
                         new ThrowingExceptionMissingValueHandler())
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(JsonValueResolver.ENABLED_KEY, true)
+                .setProperty(JsonProcessingValueConverter.ENABLED_KEY, false)
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new JsonValueResolver()).build();
         final Mustache mustache = engine.compileMustache("unwrap_array_index",
@@ -136,7 +140,10 @@ public class JsonValueResolverTest extends AbstractTest {
         return MustacheEngineBuilder.newBuilder()
                 .omitServiceLoaderConfigurationExtensions()
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
-                .addResolver(new JsonValueResolver()).build();
+                .addResolver(new JsonValueResolver())
+                .setProperty(JsonValueResolver.ENABLED_KEY, true)
+                .setProperty(JsonProcessingValueConverter.ENABLED_KEY, false)
+                .build();
     }
 
     private JsonStructure loadJsonData() throws FileNotFoundException {

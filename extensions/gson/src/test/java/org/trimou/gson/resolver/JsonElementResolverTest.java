@@ -47,6 +47,7 @@ public class JsonElementResolverTest extends AbstractTest {
                 .omitServiceLoaderConfigurationExtensions()
                 .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
                         true)
+                .setProperty(GsonValueConverter.ENABLED_KEY, false)
                 .addResolver(resolver).build();
         assertNull(resolver.resolve(null, "foo", ctx));
         assertNull(resolver.resolve("bar", "foo", ctx));
@@ -86,6 +87,7 @@ public class JsonElementResolverTest extends AbstractTest {
                 .addResolver(new ReflectionResolver())
                 .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
                         false)
+                .setProperty(GsonValueConverter.ENABLED_KEY, false)
                 .build();
         Mustache mustache = engine.compileMustache(
                 "json_element_unwrap_primitive_disabled_test",
@@ -131,6 +133,9 @@ public class JsonElementResolverTest extends AbstractTest {
                 .setMissingValueHandler(
                         new ThrowingExceptionMissingValueHandler())
                 .omitServiceLoaderConfigurationExtensions()
+                .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
+                        true)
+                .setProperty(GsonValueConverter.ENABLED_KEY, false)
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new JsonElementResolver()).build();
         final Mustache mustache = engine.compileMustache("unwrap_array_index",
@@ -178,6 +183,7 @@ public class JsonElementResolverTest extends AbstractTest {
                 .omitServiceLoaderConfigurationExtensions()
                 .setProperty(JsonElementResolver.UNWRAP_JSON_PRIMITIVE_KEY,
                         true)
+                .setProperty(GsonValueConverter.ENABLED_KEY, false)
                 .addResolver(new ThisResolver()).addResolver(new MapResolver())
                 .addResolver(new JsonElementResolver()).build();
     }

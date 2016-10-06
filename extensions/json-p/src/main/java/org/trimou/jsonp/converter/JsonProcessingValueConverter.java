@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.gson.converter;
+package org.trimou.jsonp.converter;
 
 import java.util.Collections;
 import java.util.Set;
+
+import javax.json.JsonString;
+import javax.json.JsonValue;
 
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
@@ -24,31 +27,28 @@ import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.convert.AbstractValueConverter;
 import org.trimou.util.Strings;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
-
 /**
  *
  * @author Martin Kouba
  */
-public class GsonValueConverter extends AbstractValueConverter {
+public class JsonProcessingValueConverter extends AbstractValueConverter {
 
     public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
-            GsonValueConverter.class.getName() + ".enabled", true);
+            JsonProcessingValueConverter.class.getName() + ".enabled", true);
 
-    public GsonValueConverter() {
+    public JsonProcessingValueConverter() {
         super();
     }
 
-    public GsonValueConverter(int priority) {
+    public JsonProcessingValueConverter(int priority) {
         super(priority);
     }
 
     @Override
     public String convert(Object value) {
-        if (value instanceof JsonPrimitive) {
-            return ((JsonPrimitive) value).getAsString();
-        } else if (value instanceof JsonNull) {
+        if (value instanceof JsonString) {
+            return ((JsonString) value).getString();
+        } else if (JsonValue.NULL.equals(value)) {
             return Strings.EMPTY;
         }
         return null;

@@ -17,8 +17,10 @@ package org.trimou.jsonp.resolver;
 
 import static org.trimou.engine.priority.Priorities.rightBefore;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.json.JsonArray;
 import javax.json.JsonNumber;
@@ -27,10 +29,14 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
+import org.trimou.engine.config.Configuration;
+import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.engine.resolver.IndexResolver;
 import org.trimou.engine.resolver.MapResolver;
 import org.trimou.engine.resolver.Placeholder;
 import org.trimou.engine.resolver.ResolutionContext;
+import org.trimou.engine.validation.Validateable;
 
 /**
  * JSON Processing Object Model API (JSR 353) resolver. Since {@link JsonObject}
@@ -47,10 +53,13 @@ import org.trimou.engine.resolver.ResolutionContext;
  *
  * @author Martin Kouba
  */
-public class JsonValueResolver extends IndexResolver {
+public class JsonValueResolver extends IndexResolver implements Validateable {
 
     public static final int JSON_VALUE_RESOLVER_PRIORITY = rightBefore(
             MapResolver.MAP_RESOLVER_PRIORITY);
+
+    public static final ConfigurationKey ENABLED_KEY = new SimpleConfigurationKey(
+            JsonValueResolver.class.getName() + ".enabled", false);
 
     /**
      * Use this name if you want to unwrap the current context object (note that
@@ -59,6 +68,8 @@ public class JsonValueResolver extends IndexResolver {
     public static final String NAME_UNWRAP_THIS = "unwrapThis";
 
     private final Hint hint;
+
+    protected volatile boolean isEnabled;
 
     public JsonValueResolver() {
         this(JSON_VALUE_RESOLVER_PRIORITY);
@@ -116,6 +127,16 @@ public class JsonValueResolver extends IndexResolver {
     public Hint createHint(Object contextObject, String name,
             ResolutionContext context) {
         return hint;
+    }
+
+    @Override
+    public void init(Configuration configuration) {
+        isEnabled = configuration.getBooleanPropertyValue(ENABLED_KEY);
+    }
+
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(ENABLED_KEY);
     }
 
     private Object unwrapJsonValueIfNecessary(JsonValue jsonValue) {

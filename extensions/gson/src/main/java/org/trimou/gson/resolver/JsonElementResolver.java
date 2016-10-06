@@ -30,6 +30,7 @@ import org.trimou.gson.converter.GsonValueConverter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -52,10 +53,10 @@ public class JsonElementResolver extends IndexResolver {
     public static final String NAME_UNWRAP_THIS = "unwrapThis";
 
     /**
-     * If set to <code>true</code> instances of JsonPrimitive and JsonNull are
-     * unwrapped automatically.
+     * If set to <code>true</code> instances of {@link JsonPrimitive} and
+     * {@link JsonNull} instances are unwrapped automatically.
      * <p>
-     * TODO Since 2.1 unwrapping is disabled by default. See also
+     * Since 2.1 automatic unwrapping is disabled by default. See also
      * {@link GsonValueConverter}.
      */
     public static final ConfigurationKey UNWRAP_JSON_PRIMITIVE_KEY = new SimpleConfigurationKey(
@@ -141,10 +142,12 @@ public class JsonElementResolver extends IndexResolver {
 
     private Object unwrapJsonElementIfNecessary(JsonElement jsonElement,
             boolean unwrapJsonPrimitive) {
-        if (unwrapJsonPrimitive && jsonElement.isJsonPrimitive()) {
-            return unwrapJsonPrimitive((JsonPrimitive) jsonElement);
-        } else if (jsonElement.isJsonNull()) {
-            return Placeholder.NULL;
+        if (unwrapJsonPrimitive) {
+            if (jsonElement.isJsonPrimitive()) {
+                return unwrapJsonPrimitive((JsonPrimitive) jsonElement);
+            } else if (jsonElement.isJsonNull()) {
+                return Placeholder.NULL;
+            }
         }
         return jsonElement;
     }
