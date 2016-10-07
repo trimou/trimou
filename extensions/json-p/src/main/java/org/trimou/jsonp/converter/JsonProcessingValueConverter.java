@@ -28,6 +28,7 @@ import org.trimou.engine.convert.AbstractValueConverter;
 import org.trimou.util.Strings;
 
 /**
+ * Converts {@link JsonString} and {@link JsonValue#NULL}.
  *
  * @author Martin Kouba
  */

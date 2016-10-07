@@ -28,6 +28,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 
 /**
+ * Converts {@link JsonPrimitive} and {@link JsonNull}.
  *
  * @author Martin Kouba
  */

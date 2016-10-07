@@ -948,6 +948,14 @@ There are some restrictions on the uniqueness of the generated id - see also the
 `org.trimou.engine.interpolation.LiteralSupport` allows to customize the way the helpers extract literals from params and hash values.
 The default implementation currently supports String (`"foo"` or `'foo'`), Integer, Long (`10L` or `10l`), Boolean (`true` or `false`) literals.
 
+[[valueConverter]]
+=== ValueConverter
+
+`org.trimou.engine.convert.ValueConverter` is used to convert an object to a string representation.
+Converters are mostly used in variable tags, e.g. `{{foo}}`.
+A converter has also a priority - converters with higher priority are called first.
+If no converter is able to convert an object, `Object#toString()` is used.
+
 [[extensions]]
 == Extensions
 
@@ -1123,26 +1131,28 @@ Gson extension brings some basic support for http://www.json.org/[JSON format] b
 </dependency>
 ----
 
+==== GsonValueConverter
+
+Converts `JsonPrimitive` to `JsonPrimitive.getAsString()` and `JsonNull` to an empty string.
+This converter is enabled by default and could be disabled by setting `org.trimou.gson.converter.GsonValueConverter.enabled` configuration property to `false`.
+
 ==== JsonElementResolver
 
-`org.trimou.gson.resolver.JsonElementResolver` makes it easier to work with `com.google.gson.JsonElement` instances. It is automatically loaded if you place the extension jar on the classpath.
+`org.trimou.gson.resolver.JsonElementResolver` makes it easier to work with `com.google.gson.JsonElement` instances.
+It is automatically loaded if you place the extension jar on the classpath.
 
 * allows to access `JsonObject` properties via dot notation
 ** e.g. if foo is an instance of `JsonObject` then `foo.bar` is translated to `foo.get("bar")`
 * `JsonArray` elements can be accessed via index
 ** e.g. if foo is an instance of `JsonArray` then `foo.1` is translated to `foo.get(1)`
 
-`JsonNull` is resolved as a `Placeholder#NULL` and `JsonPrimitive` is automatically unwrapped.
+`JsonNull` and `JsonPrimitive` might be automatically unwrapped if `org.trimou.gson.resolver.JsonElementResolver.unwrapJsonPrimitive` configuration property is set to `true`.
+`JsonNull` is resolved as a `Placeholder#NULL` and `JsonPrimitive` is unwrapped according to its type.
 E.g. `foo.bar` in `JsonObject` example is translated to `foo.get("bar").getAsNumber()` if bar is an instance of a `java.lang.Number`.
-This automatic unwrapping can be also disabled - see `JsonElementResolver` javadoc.
+Since 2.1 this automatic unwrapping is disabled by default - see `JsonElementResolver` javadoc.
 
-However, unwrapping only works if `JsonElementResolver` is involved!
-So for example if you iterate over `["Jim", true, 5]`, a special keyword `unwrapThis` must be used so that the primitives are unwrapped:
-
-[source,Handlebars]
-----
-{{#jsonArray}}{{unwrapThis}}{{/jsonArray}}
-----
+NOTE: Unwrapping only works if `JsonElementResolver` is involved! So for example if you iterate over `["Jim", true, 5]` (and `GsonValueConverter` is not enabled), a special keyword `unwrapThis` must be used so that the primitives are unwrapped:
+`{{#jsonArray}}{{unwrapThis}}{{/jsonArray}}`.
 
 ===== Example code
 
@@ -1220,9 +1230,18 @@ This extension simplifies the usage of Object Model API along with Trimou templa
 </dependency>
 ----
 
+==== JsonProcessingValueConverter
+
+Converts `JsonString` to `JsonString.getString()` and `JsonValue.NULL` to an empty string.
+This converter is enabled by default and could be disabled by setting `org.trimou.jsonp.converter.JsonProcessingValueConverter.enabled` configuration property to `false`.
+
+
 ==== JsonValueResolver
 
-`org.trimou.jsonp.resolver.JsonValueResolver` makes it easier to work with `javax.json.JsonValue` instances. It is automatically loaded if you place the extension jar on the classpath.
+WARNING: Since 2.1 this resolver is disabled by default.
+
+`org.trimou.jsonp.resolver.JsonValueResolver` makes it easier to work with `javax.json.JsonValue` instances.
+It is automatically loaded if you place the extension jar on the classpath.
 Since `JsonObject` implements `Map` and `JsonArray` implements `List` this resolver is only useful if automatic unwrapping is required.
 Automatic unwrapping means resolving `JsonString#getString()` for a `JsonString`, `JsonNumber#bigDecimalValue()` for a `JsonNumber`, `Boolean#TRUE` for a `JsonValue#TRUE`, `Boolean#FALSE` for `JsonValue#FALSE` and `Placeholder#NULL` for a `JsonValue#NULL`.
 However, unwrapping only works if `JsonValueResolver` is involved!

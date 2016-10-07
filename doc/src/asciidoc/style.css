@@ -88,7 +88,7 @@ a:hover {
     text-decoration: none;
 }
 
-p code, p tt, p tt, td.content tt {
+p code, p tt, p tt, td.content tt, div.note code {
     background-color: #EFEFEF;
     border: 1px solid #E2E2E2;
     border-radius: 3px 3px 3px 3px;
