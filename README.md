@@ -58,16 +58,26 @@ Helpers are de-facto *tags which are able to consume multiple parameters and opt
 
 Five built-in helpers are registered automatically: `if`, `unless`, `each`, `with` and `is`. Some of them have extended functionality, e.g. for `if` helper multiple params may be evaluated and an optional `else` (which supports simple value expressions) may be also specified:
 ```
-{{#if item.active item.valid logic="or" else="{item.id} is inactive or invalid!"}}
-  {{item.name}}
+{{#if item.active item.valid logic="or"}}
+  {{item.name}} is active or valid!
+{{/if}}
+{{#if item.active else="{item.id} is inactive!"}}
+  {{item.id}} with name {{item.name}} is active!
 {{/if}}
 ```
-For `each` it's possible to supply an alias to access the value of the current iteration and it's also possible to apply a function to each element:
+`each` helper allows to supply an alias to access the value of the current iteration:
 ```
-{{#each items as='item' apply=mySuperFunction}}
+{{#each items as='item'}}
   {{! Show the current iteration index (the first element has index 1)}}
   {{index}}. 
   {{item.name}}
+{{/each}}
+```
+`each` helper could be also used to iterate over multiple objects:
+````
+{{! First iterate over list1 and then iterate over list2}}
+{{#each list1 list2}}
+  {{name}}
 {{/each}}
 ```
 
@@ -91,6 +101,15 @@ Template:
 {{msg "helloworld" "Martin"}}
 ```
 
+##### FormatHelper
+
+A simple printf-style format helper.
+The first param represents a format string and other params are arguments (referenced by the format specifiers):
+
+```
+{{fmt '%tA' now locale='en'}}
+```
+
 ##### DateTimeFormatHelper
 
 Format dates easily:
@@ -103,22 +122,6 @@ MustacheEngine engine = MustacheEngineBuilder
 Template:
 ```
 {{formatTime now pattern="DD-MM-yyyy HH:mm"}}
-```
-
-##### ChooseHelper
-
-This helper works similarly as the JSP `c:choose` tag:
-```
-{{#each items}}
-  {{#choose}}
-    {{#when active}}
-      Hello active item!
-    {{/when}}
-    {{#otherwise}}
-      No match.
-    {{/otherwise}}
-  {{/choose}}
-{{/each}}
 ```
 
 ##### LogHelper
