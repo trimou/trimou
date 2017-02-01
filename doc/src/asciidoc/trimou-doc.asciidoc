@@ -498,7 +498,7 @@ NOTE: The support for nested templates is enabled by default. See also `NESTED_T
 [[get_started]]
 === Get started
 
-First, get the `trimou-core.jar` and its dependencies (`guava`,`slf4j-api` and `commons-lang3` at the moment).
+First, get the `trimou-core.jar` and `slf4j-api` as its dependency.
 
 [source,xml]
 ----
