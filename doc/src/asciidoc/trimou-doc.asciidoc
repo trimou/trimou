@@ -701,7 +701,7 @@ By default a variable miss returns an empty string. If set to `true` a `org.trim
 |TEMPLATE_CACHE_EXPIRATION_TIMEOUT
 *org.trimou.engine.config.templateCacheExpirationTimeout*
 |0
-|The template cache expiration timeout in seconds. Zero and negative values mean no timeout. The template cachec never expires by default.
+|The template cache expiration timeout in seconds. Zero and negative values mean no timeout. The template cache never expires by default.
 
 
 |HANDLEBARS_SUPPORT_ENABLED
