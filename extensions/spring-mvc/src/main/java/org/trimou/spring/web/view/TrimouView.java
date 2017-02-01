@@ -51,7 +51,7 @@ public class TrimouView extends AbstractTemplateView {
         try {
             Mustache template = engine.getMustache(viewName);
             if (template == null) {
-                new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
+                throw new MustacheException(MustacheProblem.TEMPLATE_LOADING_ERROR,
                         "Template not found: " + viewName);
             }
             template.render(writer, model);
