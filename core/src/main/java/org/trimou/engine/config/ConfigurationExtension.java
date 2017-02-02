@@ -139,6 +139,7 @@ public interface ConfigurationExtension extends WithPriority {
          *
          * @param converter
          * @return self
+         * @since 2.1
          */
         ConfigurationExtensionBuilder addValueConverter(ValueConverter converter);
 

@@ -35,6 +35,7 @@ import org.trimou.engine.validation.Validateable;
  * used.
  *
  * @author Martin Kouba
+ * @since 2.1
  */
 @FunctionalInterface
 public interface ValueConverter extends Converter<Object, String>, WithPriority,
