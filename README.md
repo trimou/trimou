@@ -168,6 +168,7 @@ Invokes public methods with parameters via reflection. In this case `java.util.c
 
 * a really [simple example](https://github.com/trimou/trimou/tree/master/examples/simple)
 * a little bit more complex [web application example](https://github.com/trimou/trimou/tree/master/examples/ping).
+* a small example using [Spring Boot auto-configuration](https://github.com/trimou/trimou/tree/master/examples/spring-boot)
 
 ## Building Trimou
 
