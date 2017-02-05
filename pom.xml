@@ -53,6 +53,7 @@
       <module>extensions/json-p</module>
       <module>extensions/el</module>
       <module>extensions/spring4-mvc</module>
+      <module>extensions/spring-boot-starter</module>
    </modules>
 
    <properties>
