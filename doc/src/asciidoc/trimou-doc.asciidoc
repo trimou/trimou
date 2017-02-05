@@ -1398,6 +1398,52 @@ Hello world!
 My default message
 ----
 
+[[spring-boot]]
+=== Spring Boot Starter
+
+To make the Spring integration even more comfortable, we provide a http://docs.spring.io/spring-boot/docs/1.5.1.RELEASE/reference/htmlsingle/#using-boot-starter[Spring Boot]
+starter artifact. This is the only artifact you have to include to use Trimou as template engine within your Spring MVC
+ setup.
+
+.Maven dependency
+[source,xml]
+----
+<dependency>
+    <groupId>org.trimou</groupId>
+    <artifactId>trimou-extension-spring-boot-starter</artifactId>
+    <version>${project.version}</version>
+</dependency>
+----
+
+To customize the auto-configured `MustacheEngine` you can create a `trimou.properties` file in your classpath. In
+addition to this default behaviour it's also possible to set these settings via your `application.properties` file. Any
+configuration must be prefixed with `trimou` (eg. org.trimou.engine.config.startDelimiter gets trimou.start-delimiter).
+If you need to customize the `MustacheEngine` even more, you can simply implement the interface `TrimouConfigurer`
+and annotate this class as normal
+http://docs.spring.io/spring-boot/docs/1.5.1.RELEASE/reference/htmlsingle/#using-boot-configuration-classes[Spring configuration]
+class.
+
+.Register global data
+[source,java]
+----
+@Configuration
+class TrimouConfigurationDecorator implements TrimouConfigurer {
+
+    private final MessageSource messageSource;
+
+    public TrimouConfigurationDecorator(final MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    @Override
+    public void configure(final MustacheEngineBuilder engineBuilder) {
+        engineBuilder
+                .addGlobalData("footer", "(c) Trimou Team")
+                .registerHelper("msg", new SpringMessageSourceHelper(messageSource));
+    }
+}
+----
+
 [[dropwizard]]
 === Dropwizard
 
