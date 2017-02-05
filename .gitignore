@@ -1,6 +1,6 @@
 /.settings
 /.project
-/target
+target
 /src
 *.iml
 .idea

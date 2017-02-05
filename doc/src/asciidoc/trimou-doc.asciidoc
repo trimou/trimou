@@ -1320,6 +1320,7 @@ Type of the second phone number: mobile
 
 This extension provides a basic http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html[Spring MVC] integration.
 
+==== Spring 3.x
 .Maven dependency
 [source,xml]
 ----
@@ -1328,6 +1329,73 @@ This extension provides a basic http://docs.spring.io/spring/docs/current/spring
   <artifactId>trimou-extension-spring-mvc</artifactId>
   <version>${version.trimou}</version>
 </dependency>
+----
+
+==== Spring 4.x
+.Maven dependency
+[source,xml]
+----
+<dependency>
+  <groupId>org.trimou</groupId>
+  <artifactId>trimou-extension-spring4-mvc</artifactId>
+  <version>${version.trimou}</version>
+</dependency>
+----
+
+The `TrimoView` implements the `View` interface from the Spring MVC Framework and acts as the presentation layer. The
+`TrimouViewResolver` implements the `ViewResolver` interface and is responsible to load the views from a desired
+location. Per default the `SpringResourceTemplateLocator` is used, that catches any templates prefixed with
+`classpath:/templates/` and the suffix `.trimou`.
+In order to use this extension it is your job to provide a recent version of `spring-webmvc` as we do not provide any.
+
+NOTE: The newly provided `SpringResourceTemplateLocator` does not respect the option `TEMPLATE_CACHE_EXPIRATION_TIMEOUT`.
+
+===== i18n Support
+In order to use Spring's http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/MessageSource.html[MessageSource]
+interface to localize message codes you can add the `SpringMessageSourceHelper`during `MustacheEngine` initialization.
+
+.Register `SpringMessageSourceHelper`
+[source,java]
+----
+MustacheEngineBuilder.newBuilder()
+    .setLocaleSupport(...)
+    .registerHelper("msg", new SpringMessageSourceHelper(messageSource))
+    .build();
+----
+
+This helper support two options `locale` and `defaultMessage`. If the `locale` option is not given, the locale will be
+ read by the configured locale support of the engine.
+
+.messages.properties
+[source,properties]
+----
+label.greeting=Hello {0}!
+----
+
+.Template
+[source,java]
+----
+{{msg 'label.greeting' 'world' locale='en'}}
+----
+
+.Result
+[source,java]
+----
+Hello world!
+----
+
+{empty} +
+
+.Template
+[source,java]
+----
+{{msg 'label.missing' defaultMessage='My default message'}}
+----
+
+.Result
+[source,java]
+----
+My default message
 ----
 
 [[dropwizard]]
