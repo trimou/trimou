@@ -1,0 +1,6 @@
+{{<layout}}
+    {{$content}}
+    <h1>A Message</h1>
+    <p>{{message}}</p>
+    {{/content}}
+{{/layout}}
