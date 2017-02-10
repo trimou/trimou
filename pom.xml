@@ -52,7 +52,7 @@
       <module>extensions/dropwizard</module>
       <module>extensions/json-p</module>
       <module>extensions/el</module>
-      <module>extensions/trimou-spring4-mvc</module>
+      <module>extensions/spring4-mvc</module>
    </modules>
 
    <properties>
