@@ -35,8 +35,7 @@ public interface MustacheEngine {
     /**
      * @see ComputingCache
      */
-    public static final String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class
-            .getName();
+    static final String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class.getName();
 
     /**
      * Get the compiled template with the given id.
@@ -83,18 +82,30 @@ public interface MustacheEngine {
     Configuration getConfiguration();
 
     /**
-     * Invalidate all the cache entries for both compiled and uncompiled templates.
+     * Invalidate all the cache entries for both compiled and uncompiled
+     * templates.
      *
      * @see #invalidateTemplateCache(Predicate)
      */
     void invalidateTemplateCache();
 
     /**
-     * Invalidate the cache entries whose template name is matching the given predicate.
+     * Invalidate the cache entries whose template name is matching the given
+     * predicate.
      *
      * @param predicate
      * @see #invalidateTemplateCache()
      */
     void invalidateTemplateCache(Predicate<String> predicate);
+
+    /**
+     * A convenient way of obtaining a {@link MustacheEngineBuilder} instance.
+     *
+     * @return a new engine builder instance
+     * @since 2.2
+     */
+    static MustacheEngineBuilder builder() {
+        return MustacheEngineBuilder.newBuilder();
+    }
 
 }
