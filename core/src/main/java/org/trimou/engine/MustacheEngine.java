@@ -108,4 +108,14 @@ public interface MustacheEngine {
         return MustacheEngineBuilder.newBuilder();
     }
 
+    /**
+     * A convenient way of obtaining a default {@link MustacheEngine} instance.
+     *
+     * @return a new engine instance
+     * @since 2.2
+     */
+    static MustacheEngine build() {
+        return builder().build();
+    }
+
 }
