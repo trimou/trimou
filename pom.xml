@@ -57,6 +57,13 @@
 
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <java.version>1.8</java.version>
+      <maven.compiler.source>${java.version}</maven.compiler.source>
+      <maven.compiler.target>${java.version}</maven.compiler.target>
+      <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
+      <build.timestamp>${maven.build.timestamp}</build.timestamp>
+      <!-- Versions -->
       <version.asm>5.0.3</version.asm>
       <version.arquillian>1.1.8.Final</version.arquillian>
       <version.arquillian.wildfly>1.0.1.Final</version.arquillian.wildfly>
@@ -77,18 +84,16 @@
       <version.jersey>2.22.2</version.jersey>
       <version.jersey.test.framework>1.18.1</version.jersey.test.framework>
       <version.jetty>9.3.7.v20160115</version.jetty>
-      <version.junit>4.11</version.junit>
+      <version.junit>4.12</version.junit>
       <version.mockito>1.9.5</version.mockito>
       <version.mvc-api>1.0-edr2</version.mvc-api>
       <version.ozark>1.0.0-m02</version.ozark>
       <version.prettytime>3.2.7.Final</version.prettytime>
       <version.slf4j>1.7.4</version.slf4j>
       <version.springframework>3.1.0.RELEASE</version.springframework>
-      <version.weld2>2.3.4.Final</version.weld2>
+      <version.weld2>2.4.2.SP1</version.weld2>
       <version.weld1>1.1.33.Final</version.weld1>
-      <version.wildfly>10.0.0.Final</version.wildfly>
-      <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-      <build.timestamp>${maven.build.timestamp}</build.timestamp>
+      <version.wildfly>10.1.0.Final</version.wildfly>
    </properties>
 
    <build>
