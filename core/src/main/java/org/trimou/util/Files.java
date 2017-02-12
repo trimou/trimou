@@ -46,15 +46,17 @@ public final class Files {
         List<File> files = new ArrayList<>();
 
         if (dir.isDirectory()) {
-
-            for (File file : dir.listFiles()) {
-                if (file.isDirectory()) {
-                    files.addAll(listFiles(file, suffix));
-                } else if (file.isFile()) {
-                    if (suffix != null && !file.getName().endsWith(suffix)) {
-                        continue;
+            final File[] fileList = dir.listFiles();
+            if (fileList != null) {
+                for (File file : fileList) {
+                    if (file.isDirectory()) {
+                        files.addAll(listFiles(file, suffix));
+                    } else if (file.isFile()) {
+                        if (suffix != null && !file.getName().endsWith(suffix)) {
+                            continue;
+                        }
+                        files.add(file);
                     }
-                    files.add(file);
                 }
             }
         }

@@ -168,6 +168,8 @@ public final class MustacheEngineBuilder
         }
         if (Strings.isEmpty(version)) {
             version = "SNAPSHOT";
+        }
+        if (Strings.isEmpty(timestamp)) {
             timestamp = "n/a";
         }
 
