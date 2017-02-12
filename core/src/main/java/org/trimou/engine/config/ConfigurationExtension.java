@@ -55,7 +55,7 @@ public interface ConfigurationExtension extends WithPriority {
      *
      * @author Martin Kouba
      */
-    public interface ConfigurationExtensionBuilder {
+    interface ConfigurationExtensionBuilder {
 
         /**
          * Adds a value resolver.

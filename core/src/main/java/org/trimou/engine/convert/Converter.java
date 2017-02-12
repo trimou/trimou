@@ -32,6 +32,6 @@ public interface Converter<FROM, TO> {
      * @param from
      * @return the converted object or <code>null</code> if it's not possible to convert the object
      */
-    public TO convert(FROM from);
+    TO convert(FROM from);
 
 }

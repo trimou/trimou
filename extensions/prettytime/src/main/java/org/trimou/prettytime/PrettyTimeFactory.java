@@ -33,6 +33,6 @@ public interface PrettyTimeFactory {
      *
      * @return a new instance of {@link PrettyTime} for the given locale
      */
-    public PrettyTime createPrettyTime(Locale locale);
+    PrettyTime createPrettyTime(Locale locale);
 
 }

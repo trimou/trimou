@@ -26,6 +26,6 @@ public interface MustacheCompilationEvent {
     /**
      * @return the compiled template
      */
-    public Mustache getMustache();
+    Mustache getMustache();
 
 }

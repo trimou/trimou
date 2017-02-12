@@ -36,6 +36,6 @@ public interface KeySplitter extends ConfigurationAware {
      * @param key
      * @return an iterator over the parts of the key
      */
-    public Iterator<String> split(String key);
+    Iterator<String> split(String key);
 
 }

@@ -77,7 +77,7 @@ public interface EnhancedResolver extends Resolver {
      * @see EnhancedResolver#createHint(Object, String)
      * @see Hints#INAPPLICABLE_HINT
      */
-    public interface Hint {
+    interface Hint {
 
         /**
          * Note that the runtime class of the context object may be different

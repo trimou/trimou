@@ -31,13 +31,13 @@ public interface MustacheRenderingEvent extends ReleaseCallbackContainer, Identi
      * @return the template name
      * @see org.trimou.Mustache#getName()
      */
-    public String getMustacheName();
+    String getMustacheName();
 
     /**
      *
      * @return the generated id
      * @see org.trimou.Mustache#getGeneratedId()
      */
-    public long getMustacheGeneratedId();
+    long getMustacheGeneratedId();
 
 }

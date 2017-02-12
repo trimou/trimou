@@ -33,6 +33,6 @@ public interface Parser {
      * @param reader
      * @param handler
      */
-    public void parse(String name, Reader reader, ParsingHandler handler);
+    void parse(String name, Reader reader, ParsingHandler handler);
 
 }

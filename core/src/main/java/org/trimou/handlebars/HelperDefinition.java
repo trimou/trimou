@@ -68,9 +68,9 @@ public interface HelperDefinition {
      * the actual value, i.e. placeholders are only present during tag
      * validation.
      */
-    public interface ValuePlaceholder {
+    interface ValuePlaceholder {
 
-        public String getName();
+        String getName();
 
     }
 

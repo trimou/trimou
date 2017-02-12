@@ -519,7 +519,7 @@ public final class MustacheEngineBuilder
     @FunctionalInterface
     public interface EngineBuiltCallback {
 
-        public void engineBuilt(MustacheEngine engine);
+        void engineBuilt(MustacheEngine engine);
 
     }
 

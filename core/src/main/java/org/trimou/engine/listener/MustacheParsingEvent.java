@@ -29,18 +29,18 @@ public interface MustacheParsingEvent {
      * @return the template name
      * @see org.trimou.Mustache#getName()
      */
-    public String getMustacheName();
+    String getMustacheName();
 
     /**
      *
      * @return the template contents
      */
-    public Reader getMustacheContents();
+    Reader getMustacheContents();
 
     /**
      *
      * @param contents
      */
-    public void setMustacheContents(Reader contents);
+    void setMustacheContents(Reader contents);
 
 }

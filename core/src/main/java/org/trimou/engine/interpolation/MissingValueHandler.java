@@ -33,6 +33,6 @@ public interface MissingValueHandler extends ConfigurationAware {
      * @param tagInfo
      * @return the replacement to process, may be <code>null</code>
      */
-    public Object handle(MustacheTagInfo tagInfo);
+    Object handle(MustacheTagInfo tagInfo);
 
 }

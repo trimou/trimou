@@ -35,7 +35,7 @@ public interface MustacheEngine {
     /**
      * @see ComputingCache
      */
-    static final String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class.getName();
+    String COMPUTING_CACHE_CONSUMER_ID = MustacheEngine.class.getName();
 
     /**
      * Get the compiled template with the given id.
