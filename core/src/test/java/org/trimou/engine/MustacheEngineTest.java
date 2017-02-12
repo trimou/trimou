@@ -116,7 +116,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
     public void testTemplateCacheExpirationTimeout()
             throws InterruptedException {
 
-        Map<String, String> templates = new HashMap<String, String>();
+        Map<String, String> templates = new HashMap<>();
         templates.put("foo", "0");
         long timeout = 1;
 
@@ -154,7 +154,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
                 }).build();
 
         int size = 10;
-        Set<String> values = new HashSet<String>(size);
+        Set<String> values = new HashSet<>(size);
         for (int i = 0; i < size; i++) {
             values.add(engine.getMustache("foo").render(null));
         }
@@ -164,7 +164,7 @@ public class MustacheEngineTest extends AbstractEngineTest {
     @Test
     public void testPrecompileAllAvailableTemplates() {
 
-        final List<String> sequence = new ArrayList<String>();
+        final List<String> sequence = new ArrayList<>();
 
         TemplateLocator locator01 = new AbstractTemplateLocator(10) {
 

@@ -108,7 +108,7 @@ public class SwitchHelper extends BasicSectionHelper {
     @Override
     public void validate(HelperDefinition definition) {
         super.validate(definition);
-        Set<String> validNames = new HashSet<String>(4);
+        Set<String> validNames = new HashSet<>(4);
         for (Entry<String, Helper> entry : configuration.getHelpers()
                 .entrySet()) {
             if (entry.getValue() instanceof CaseHelper

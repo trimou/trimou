@@ -50,7 +50,7 @@ class ValueProvider {
      */
     ValueProvider(String text, Configuration configuration) {
         this.key = text;
-        ArrayList<String> parts = new ArrayList<String>();
+        ArrayList<String> parts = new ArrayList<>();
         for (Iterator<String> iterator = configuration.getKeySplitter()
                 .split(text); iterator.hasNext();) {
             parts.add(iterator.next());
@@ -58,7 +58,7 @@ class ValueProvider {
         this.keyParts = parts.toArray(new String[parts.size()]);
         if (configuration.getBooleanPropertyValue(
                 EngineConfigurationKey.RESOLVER_HINTS_ENABLED)) {
-            this.hint = new AtomicReference<Hint>();
+            this.hint = new AtomicReference<>();
         } else {
             this.hint = null;
         }

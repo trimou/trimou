@@ -83,7 +83,7 @@ public class NumberHelpersTest extends AbstractTest {
                 .addGlobalData("longValuesArray", new Long[] { 10l, 12l })
                 .registerHelpers(HelpersBuilder.empty().addNumExpr().build())
                 .build();
-        Map<String, Object> data = ImmutableMap.<String, Object> of("val1",
+        Map<String, Object> data = ImmutableMap.of("val1",
                 2, "val2", 1, "val3",
                 10L, "val4", BigDecimal.ZERO, "val5",
                 BigInteger.ONE);

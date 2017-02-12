@@ -121,7 +121,7 @@ public class Escaper {
         private final Map<Character, String> replacements;
 
         private Builder() {
-            this.replacements = new HashMap<Character, String>();
+            this.replacements = new HashMap<>();
         }
 
         public Builder add(char c, String replacement) {

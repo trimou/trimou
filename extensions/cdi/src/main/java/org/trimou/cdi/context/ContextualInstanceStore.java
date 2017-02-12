@@ -38,7 +38,7 @@ final class ContextualInstanceStore {
 
     ContextualInstanceStore() {
         // Synchronization is not needed
-        contextualInstancesMap = new HashMap<Contextual<?>, ContextualInstance<?>>();
+        contextualInstancesMap = new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -49,7 +49,7 @@ final class ContextualInstanceStore {
                 .get(contextual);
 
         if (contextualInstance == null && creationalContext != null) {
-            contextualInstance = new ContextualInstance<T>(
+            contextualInstance = new ContextualInstance<>(
                     contextual.create(creationalContext), creationalContext,
                     contextual);
             contextualInstancesMap.put(contextual, contextualInstance);

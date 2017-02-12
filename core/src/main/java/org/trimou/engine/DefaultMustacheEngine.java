@@ -221,7 +221,7 @@ class DefaultMustacheEngine implements MustacheEngine {
     }
 
     private void precompileTemplates() {
-        Set<String> templateNames = new HashSet<String>();
+        Set<String> templateNames = new HashSet<>();
         for (TemplateLocator locator : configuration.getTemplateLocators()) {
             templateNames.addAll(locator.getAllIdentifiers());
         }

@@ -80,7 +80,7 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
         public <K, V> ComputingCache<K, V> create(String consumerId,
                 Function<K, V> computingFunction, Long expirationTimeout,
                 Long maxSize, Listener<K> listener) {
-            CustomComputingCache<K, V> cache = new CustomComputingCache<K, V>(new HashMap<K, V>(),
+            CustomComputingCache<K, V> cache = new CustomComputingCache<>(new HashMap<>(),
                     computingFunction);
             List<CustomComputingCache> list = caches.get(consumerId);
             if(list == null) {

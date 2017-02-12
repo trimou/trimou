@@ -54,7 +54,7 @@ public class PartialSegment extends AbstractSegment {
         this.indentation = indentation != null ? new TextSegment(indentation,
                 new Origin(origin.getTemplate())) : null;
         this.cachedPartialTemplate = Segments
-                .isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<Template>()
+                .isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<>()
                 : null;
     }
 

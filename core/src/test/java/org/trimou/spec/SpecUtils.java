@@ -110,7 +110,7 @@ public final class SpecUtils {
 
     static List<Definition> parseDefinitions(Reader reader) throws IOException {
 
-        List<Definition> definitions = new ArrayList<Definition>();
+        List<Definition> definitions = new ArrayList<>();
         JsonParser parser = new JsonParser();
         JsonElement spec = parser.parse(reader);
         reader.close();
@@ -126,7 +126,7 @@ public final class SpecUtils {
             definition.setTemplate(testObject.get("template").getAsString());
             definition.setExpected(testObject.get("expected").getAsString());
 
-            Map<String, Object> data = new HashMap<String, Object>();
+            Map<String, Object> data = new HashMap<>();
             JsonObject dataObject = testObject.get("data").getAsJsonObject();
             for (Entry<String, JsonElement> property : dataObject.entrySet()) {
                 if (!property.getKey().equals("lambda")) {
@@ -142,7 +142,7 @@ public final class SpecUtils {
             if (testObject.has("partials")) {
                 JsonObject partialsObject = testObject.get("partials")
                         .getAsJsonObject();
-                Map<String, String> partials = new HashMap<String, String>();
+                Map<String, String> partials = new HashMap<>();
                 for (Entry<String, JsonElement> entry : partialsObject
                         .entrySet()) {
                     partials.put(entry.getKey(), entry.getValue().getAsString());
@@ -162,7 +162,7 @@ public final class SpecUtils {
         } else if (element.isJsonArray()) {
             return getJsonArrayElementValue(element);
         } else if (element.isJsonObject()) {
-            Map<String, Object> objectData = new HashMap<String, Object>();
+            Map<String, Object> objectData = new HashMap<>();
             for (Entry<String, JsonElement> objectProperty : element
                     .getAsJsonObject().entrySet()) {
                 objectData.put(objectProperty.getKey(),
@@ -192,7 +192,7 @@ public final class SpecUtils {
     private static Object getJsonArrayElementValue(JsonElement element) {
 
         JsonArray array = element.getAsJsonArray();
-        List<Object> values = new ArrayList<Object>(array.size());
+        List<Object> values = new ArrayList<>(array.size());
         for (JsonElement jsonElement : array) {
             values.add(getJsonElementValue(jsonElement));
         }

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public final class RequestHolder {
 
-    private static final ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
+    private static final ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<>();
 
     static void requestInitialized(HttpServletRequest request) {
         CURRENT_REQUEST.set(request);

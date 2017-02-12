@@ -89,7 +89,7 @@ class ImmutableArrayList<E> extends AbstractList<E> {
         if (fromIndex == toIndex) {
             return Collections.emptyList();
         }
-        return new ImmutableArrayList<E>(
+        return new ImmutableArrayList<>(
                 Arrays.copyOfRange(this.elements, fromIndex, toIndex));
     }
 

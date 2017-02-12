@@ -67,7 +67,7 @@ class DefaultParsingHandler implements ParsingHandler {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultParsingHandler.class);
 
-    private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<ContainerSegmentBase>();
+    private final Deque<ContainerSegmentBase> containerStack = new ArrayDeque<>();
 
     private final List<Template> nestedTemplates = new ArrayList<>();
 
@@ -262,7 +262,7 @@ class DefaultParsingHandler implements ParsingHandler {
             // start with section end key
 
             StringBuilder msg = new StringBuilder();
-            List<String> params = new ArrayList<String>();
+            List<String> params = new ArrayList<>();
             msg.append("Invalid section end: ");
             if (container == null
                     || SegmentType.ROOT.equals(container.getType())) {
@@ -452,12 +452,12 @@ class DefaultParsingHandler implements ParsingHandler {
         ContainerSegmentBase(SegmentType type, String content, int line,
                 int index) {
             super(type, content, line, index);
-            this.segments = new ArrayList<SegmentBase>();
+            this.segments = new ArrayList<>();
         }
 
         ContainerSegmentBase(ParsedTag tag, int line, int index) {
             super(tag, line, index);
-            this.segments = new ArrayList<SegmentBase>();
+            this.segments = new ArrayList<>();
         }
 
         boolean addSegment(SegmentBase segment) {

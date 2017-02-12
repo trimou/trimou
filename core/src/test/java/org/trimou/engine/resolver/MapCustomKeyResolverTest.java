@@ -40,7 +40,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
                                 return Integer.valueOf(name);
                             }
                         }).build();
-        Map<Integer, String> dataMap = new HashMap<Integer, String>();
+        Map<Integer, String> dataMap = new HashMap<>();
         dataMap.put(1, "Hello");
         dataMap.put(2, "there");
         assertEquals(
@@ -54,7 +54,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
     public void testEnumKey() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addResolver(new EnumKeyResolver()).build();
-        Map<EnumKey, String> dataMap = new HashMap<MapCustomKeyResolverTest.EnumKey, String>();
+        Map<EnumKey, String> dataMap = new HashMap<>();
         dataMap.put(EnumKey.ONE, "Hello");
         dataMap.put(EnumKey.TWO, "there");
         assertEquals(
@@ -78,7 +78,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
         private static List<String> keys;
 
         static {
-            keys = new ArrayList<String>(EnumKey.values().length);
+            keys = new ArrayList<>(EnumKey.values().length);
             for (EnumKey key : EnumKey.values()) {
                 keys.add(key.toString());
             }

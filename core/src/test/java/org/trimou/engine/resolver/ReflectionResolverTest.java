@@ -42,7 +42,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
     @Test
     public void testInterpolation() {
         int[] array = new int[] { 1, 2 };
-        Map<String, Object> data = ImmutableMap.<String, Object> of("hammer",
+        Map<String, Object> data = ImmutableMap.of("hammer",
                 new Hammer(), "type", ArchiveType.class, "array", array);
         assertEquals("Hello Edgar of age 10, persistent: false and !",
                 engine.compileMustache("reflection_resolver",

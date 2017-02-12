@@ -45,7 +45,7 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals("",
                 engine.compileMustache("each_helper4",
                         "{{#each data apply=myFilter}}{{this}}{{/each}}")
-                        .render(ImmutableMap.<String, Object> of("myFilter",
+                        .render(ImmutableMap.of("myFilter",
                                 new Function() {
                                     @Override
                                     public Object apply(Object value) {
@@ -56,7 +56,7 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
         assertEquals("332",
                 engine.compileMustache("each_helper5",
                         "{{#each data apply=toLength}}{{this}}{{/each}}")
-                        .render(ImmutableMap.<String, Object> of("toLength",
+                        .render(ImmutableMap.of("toLength",
                                 new Function() {
                                     @Override
                                     public Object apply(Object value) {

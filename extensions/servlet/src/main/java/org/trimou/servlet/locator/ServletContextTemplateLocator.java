@@ -140,7 +140,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
             return Collections.emptySet();
         }
 
-        Set<String> identifiers = new HashSet<String>();
+        Set<String> identifiers = new HashSet<>();
         for (String resource : resources) {
             String id = stripSuffix(constructVirtualPath(resource));
             identifiers.add(id);
@@ -151,7 +151,7 @@ public class ServletContextTemplateLocator extends PathTemplateLocator<String> {
 
     private Set<String> listResources(String path, ServletContext ctx) {
 
-        Set<String> resources = new HashSet<String>();
+        Set<String> resources = new HashSet<>();
         Set<String> resourcePaths = ctx.getResourcePaths(path);
 
         if (resourcePaths != null) {

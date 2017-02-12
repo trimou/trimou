@@ -18,7 +18,7 @@ public class PrioritiesTest extends AbstractEngineTest {
     @Test
     public void testComparator() {
 
-        List<WithPriority> list = new ArrayList<WithPriority>();
+        List<WithPriority> list = new ArrayList<>();
         list.add(new WithPriority() {
 
             @Override

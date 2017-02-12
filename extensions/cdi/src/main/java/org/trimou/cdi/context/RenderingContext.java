@@ -38,7 +38,7 @@ public final class RenderingContext implements Context {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RenderingContext.class);
 
-    private final ThreadLocal<ContextualInstanceStore> contextualInstanceStore = new ThreadLocal<ContextualInstanceStore>();
+    private final ThreadLocal<ContextualInstanceStore> contextualInstanceStore = new ThreadLocal<>();
 
     @Override
     public Class<? extends Annotation> getScope() {

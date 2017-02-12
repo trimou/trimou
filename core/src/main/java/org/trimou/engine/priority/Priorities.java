@@ -47,6 +47,6 @@ public final class Priorities {
     }
 
     public static <T extends WithPriority> Comparator<T> lowerFirst() {
-        return Comparator.<T> comparingInt((e) -> e.getPriority());
+        return Comparator.comparingInt((e) -> e.getPriority());
     }
 }

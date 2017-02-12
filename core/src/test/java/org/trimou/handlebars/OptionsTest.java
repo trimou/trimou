@@ -174,7 +174,7 @@ public class OptionsTest extends AbstractTest {
 
     @Test
     public void testGetTagInfo() {
-        final AtomicReference<MustacheTagInfo> reference = new AtomicReference<MustacheTagInfo>();
+        final AtomicReference<MustacheTagInfo> reference = new AtomicReference<>();
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override

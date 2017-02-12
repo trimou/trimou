@@ -152,8 +152,7 @@ public class ReflectionResolver extends AbstractResolver {
 
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
-        return Collections
-                .<ConfigurationKey> singleton(MEMBER_CACHE_MAX_SIZE_KEY);
+        return Collections.singleton(MEMBER_CACHE_MAX_SIZE_KEY);
     }
 
     /**
@@ -200,7 +199,7 @@ public class ReflectionResolver extends AbstractResolver {
             if (!foundMethod.isAccessible()) {
                 SecurityActions.setAccessible(foundMethod);
             }
-            return Optional.<MemberWrapper> of(new MethodWrapper(foundMethod));
+            return Optional.of(new MethodWrapper(foundMethod));
         }
 
         // Find public field
@@ -210,7 +209,7 @@ public class ReflectionResolver extends AbstractResolver {
             if (!foundField.isAccessible()) {
                 SecurityActions.setAccessible(foundField);
             }
-            return Optional.<MemberWrapper> of(new FieldWrapper(foundField));
+            return Optional.of(new FieldWrapper(foundField));
         }
         // Member not found
         return Optional.empty();

@@ -45,7 +45,7 @@ public class ExtendSegment extends AbstractSectionSegment {
     public ExtendSegment(String text, Origin origin, List<Segment> segments) {
         super(text, origin, segments);
         this.cachedExtendedTemplate = Segments
-                .isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<Template>()
+                .isTemplateCachingAllowed(getEngineConfiguration()) ? new AtomicReference<>()
                 : null;
     }
 

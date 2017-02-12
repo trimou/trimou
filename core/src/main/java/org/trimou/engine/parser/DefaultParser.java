@@ -90,7 +90,7 @@ class DefaultParser implements Parser {
                 .getConfiguration().getStringPropertyValue(END_DELIMITER));
         this.supportedSeparators = ImmutableSet.of(Strings.LINE_SEPARATOR_LF,
                 Strings.LINE_SEPARATOR_CR, Strings.LINE_SEPARATOR_CRLF);
-        this.zeroIndexNonSeparatorCharacters = new HashSet<Character>();
+        this.zeroIndexNonSeparatorCharacters = new HashSet<>();
     }
 
     public void parse(String name, Reader reader, ParsingHandler handler) {
@@ -396,7 +396,7 @@ class DefaultParser implements Parser {
             return Collections.emptyList();
         }
 
-        List<String> matchedSeparators = new ArrayList<String>(
+        List<String> matchedSeparators = new ArrayList<>(
                 supportedSeparators.size());
 
         for (String separator : supportedSeparators) {

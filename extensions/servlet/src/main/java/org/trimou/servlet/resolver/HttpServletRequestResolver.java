@@ -63,7 +63,7 @@ public class HttpServletRequestResolver extends AbstractResolver
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HttpServletRequestResolver.class);
 
-    private static final ThreadLocal<HttpServletRequestWrapper> REQUEST_WRAPPER = new ThreadLocal<HttpServletRequestWrapper>();
+    private static final ThreadLocal<HttpServletRequestWrapper> REQUEST_WRAPPER = new ThreadLocal<>();
 
     private boolean isEnabled;
 

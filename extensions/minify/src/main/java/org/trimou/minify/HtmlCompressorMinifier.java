@@ -54,7 +54,7 @@ public class HtmlCompressorMinifier extends CompressorMinifier<HtmlCompressor> {
             compressor.setPreservePatterns(Collections
                     .singletonList(mustachePattern));
         } else {
-            List<Pattern> newPatterns = new ArrayList<Pattern>(preservePatterns);
+            List<Pattern> newPatterns = new ArrayList<>(preservePatterns);
             newPatterns.add(mustachePattern);
             compressor.setPreservePatterns(newPatterns);
         }

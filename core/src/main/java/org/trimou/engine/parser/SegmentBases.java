@@ -51,7 +51,7 @@ final class SegmentBases {
         List<List<SegmentBase>> lines = readSegmentLines(rootSegment);
 
         // First identify the segments to remove
-        Set<SegmentBase> segmentsToRemove = new HashSet<SegmentBase>();
+        Set<SegmentBase> segmentsToRemove = new HashSet<>();
         int idx = 0;
         for (List<SegmentBase> line : lines) {
             idx++;
@@ -95,7 +95,7 @@ final class SegmentBases {
 
     static void reuseLineSeparatorSegments(ContainerSegmentBase container) {
 
-        Map<String, SegmentBase> lineSeparators = new HashMap<String, SegmentBase>();
+        Map<String, SegmentBase> lineSeparators = new HashMap<>();
 
         for (ListIterator<SegmentBase> iterator = container.listIterator(); iterator
                 .hasNext();) {
@@ -202,7 +202,7 @@ final class SegmentBases {
      */
     private static List<List<SegmentBase>> readSegmentLines(
             ContainerSegmentBase container) {
-        List<List<SegmentBase>> lines = new ArrayList<List<SegmentBase>>();
+        List<List<SegmentBase>> lines = new ArrayList<>();
         // Add the last line manually - there is no line separator to trigger
         // flush
         lines.add(readSegmentLines(lines, null, container));
@@ -221,7 +221,7 @@ final class SegmentBases {
             ContainerSegmentBase container) {
 
         if (currentLine == null) {
-            currentLine = new ArrayList<SegmentBase>();
+            currentLine = new ArrayList<>();
         }
 
         if (!SegmentType.ROOT.equals(container.getType())) {
@@ -239,7 +239,7 @@ final class SegmentBases {
                 // New line separator - flush the line
                 currentLine.add(segment);
                 lines.add(currentLine);
-                currentLine = new ArrayList<SegmentBase>();
+                currentLine = new ArrayList<>();
             }
         }
 

@@ -143,7 +143,7 @@ public class CDIBeanResolver extends AbstractResolver {
                         }
 
                         try {
-                            return Optional.<Bean<?>> of(
+                            return Optional.of(
                                     (Bean<?>) beanManager.resolve(beans));
                         } catch (AmbiguousResolutionException e) {
                             LOGGER.warn(
@@ -159,8 +159,7 @@ public class CDIBeanResolver extends AbstractResolver {
 
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
-        return Collections
-                .<ConfigurationKey> singleton(BEAN_CACHE_MAX_SIZE_KEY);
+        return Collections.singleton(BEAN_CACHE_MAX_SIZE_KEY);
     }
 
     private <T> Object getReference(Bean<T> bean, ResolutionContext context) {
@@ -170,7 +169,7 @@ public class CDIBeanResolver extends AbstractResolver {
 
         if (Dependent.class.equals(bean.getScope())) {
             T reference = bean.create(creationalContext);
-            context.registerReleaseCallback(new DependentDestroyCallback<T>(
+            context.registerReleaseCallback(new DependentDestroyCallback<>(
                     bean, creationalContext, reference));
             return reference;
         } else {

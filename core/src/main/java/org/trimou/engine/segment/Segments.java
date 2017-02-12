@@ -115,8 +115,8 @@ final class Segments {
      */
     static List<List<Segment>> readSegmentLinesBeforeRendering(
             AbstractContainerSegment container) {
-        List<List<Segment>> lines = new ArrayList<List<Segment>>();
-        List<Segment> currentLine = new ArrayList<Segment>();
+        List<List<Segment>> lines = new ArrayList<>();
+        List<Segment> currentLine = new ArrayList<>();
 
         for (Segment segment : container) {
             if (!SegmentType.LINE_SEPARATOR.equals(segment.getType())) {
@@ -125,7 +125,7 @@ final class Segments {
                 // New line separator - flush the line
                 currentLine.add(segment);
                 lines.add(currentLine);
-                currentLine = new ArrayList<Segment>();
+                currentLine = new ArrayList<>();
             }
         }
         // Add the last line manually - there is no line separator to trigger

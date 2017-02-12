@@ -12,7 +12,7 @@ import javax.inject.Named;
 @Dependent
 public class Delta {
 
-    public static List<Long> destructions = new ArrayList<Long>();
+    public static List<Long> destructions = new ArrayList<>();
 
     private long createdAt;
 

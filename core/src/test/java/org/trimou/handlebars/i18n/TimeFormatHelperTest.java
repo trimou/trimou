@@ -48,7 +48,7 @@ public class TimeFormatHelperTest extends AbstractEngineTest {
         String expectedMedium = "Jan 1, 2013 1:00:00 PM";
         String expectedCustom = "01-01-2013 13:00";
 
-        Map<String, Object> data = ImmutableMap.<String, Object> of("calendar",
+        Map<String, Object> data = ImmutableMap.of("calendar",
                 day, "date", day.getTime(), "milis", milis, "localDateTime",
                 LocalDateTime.ofInstant(day.toInstant(), TimeZone.getDefault()
                         .toZoneId()));

@@ -31,7 +31,7 @@ public class DefaultExecutionContextTest extends AbstractEngineTest {
         assertEquals(ctx01, ctx02.getParent());
         assertNotNull(ctx02.getValue("this").get());
         ExecutionContext ctx03 = ctx02
-                .setDefiningSections(new ArrayList<Segment>());
+                .setDefiningSections(new ArrayList<>());
         assertNotNull(ctx03.getFirstContextObject());
         assertNotNull(ctx03.getParent());
         assertEquals(ctx02.getFirstContextObject(),

@@ -170,7 +170,7 @@ class HelperExecutionHandler {
         boolean stringLiteral = false;
         boolean arrayLiteral = false;
         boolean space = false;
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < name.length(); i++) {
@@ -322,7 +322,7 @@ class HelperExecutionHandler {
                             .singletonList(resolveValue(parameters.get(0),
                                     valueWrappers, executionContext));
                 default:
-                    List<Object> finalParams = new ArrayList<Object>(size);
+                    List<Object> finalParams = new ArrayList<>(size);
                     for (Object param : parameters) {
                         finalParams.add(resolveValue(param, valueWrappers,
                                 executionContext));
@@ -348,7 +348,7 @@ class HelperExecutionHandler {
                             resolveValue(singleEntry.getValue(), valueWrappers,
                                     executionContext));
                 default:
-                    Map<String, Object> finalHash = new HashMap<String, Object>();
+                    Map<String, Object> finalHash = new HashMap<>();
                     for (Entry<String, Object> entry : hash.entrySet()) {
                         finalHash.put(entry.getKey(),
                                 resolveValue(entry.getValue(), valueWrappers,
@@ -524,7 +524,7 @@ class HelperExecutionHandler {
         @Override
         public Object getValue(String key) {
             if (valueWrappers == null) {
-                valueWrappers = new ArrayList<ValueWrapper>(5);
+                valueWrappers = new ArrayList<>(5);
             }
             ValueWrapper wrapper = executionContext.getValue(key);
             valueWrappers.add(wrapper);
@@ -559,7 +559,7 @@ class HelperExecutionHandler {
                             DefaultOptions asyncOptions = new DefaultOptions(
                                     new AsyncAppendable(asyncAppendable),
                                     executionContext, segment, parameters, hash,
-                                    new ArrayList<ValueWrapper>(), engine);
+                                    new ArrayList<>(), engine);
                             executable.execute(asyncOptions);
                             return (AsyncAppendable) asyncOptions
                                     .getAppendable();
