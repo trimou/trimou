@@ -29,10 +29,8 @@ public class SimpleHelperTest {
                         SimpleHelpers
                                 .builder()
                                 .execute(
-                                        (o, c) -> {
-                                            o.append(o.getParameters().get(0)
-                                                    .toString().toLowerCase());
-                                        })
+                                        (o, c) -> o.append(o.getParameters().get(0)
+                                                .toString().toLowerCase()))
                                 .validate(
                                         (d, c) -> {
                                             if (d.getParameters().isEmpty())
@@ -55,9 +53,8 @@ public class SimpleHelperTest {
         MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
                 .registerHelper("test",
-                        SimpleHelpers.builder().execute((o, c) -> {
-                            o.append(c.getLongPropertyValue(key).toString());
-                        }).addConfigurationKey(key).build()).build();
+                        SimpleHelpers.builder().execute((o, c) -> o.append(c.getLongPropertyValue(key).toString()))
+                                .addConfigurationKey(key).build()).build();
         assertEquals("10",
                 engine.compileMustache("simple_helper_config_01", "{{test}}")
                         .render(null));
