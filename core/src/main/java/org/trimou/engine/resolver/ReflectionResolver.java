@@ -297,8 +297,7 @@ public class ReflectionResolver extends AbstractResolver {
             foundMatch = (foundGetMatch != null ? foundGetMatch : foundIsMatch);
         }
 
-        LOGGER.debug("{} method {}found [type: {}]", new Object[] { name,
-                foundMatch != null ? "" : "not ", clazz.getName() });
+        LOGGER.debug("{} method {}found [type: {}]", name, foundMatch != null ? "" : "not ", clazz.getName());
         return foundMatch;
     }
 
@@ -321,8 +320,7 @@ public class ReflectionResolver extends AbstractResolver {
                 found = field;
             }
         }
-        LOGGER.debug("{} field {}found [type: {}]", new Object[] { name,
-                found != null ? "" : "not ", clazz.getName() });
+        LOGGER.debug("{} field {}found [type: {}]", name, found != null ? "" : "not ", clazz.getName());
         return found;
     }
 

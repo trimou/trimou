@@ -139,8 +139,8 @@ class DefaultParsingHandler implements ParsingHandler {
         }
 
         LOGGER.debug("Compilation of {} finished [time: {} ms, segments: {}]",
-                new Object[] { templateName, System.currentTimeMillis() - start,
-                        template.getRootSegment().getSegmentsSize(true) });
+                templateName, System.currentTimeMillis() - start,
+                template.getRootSegment().getSegmentsSize(true));
 
         rootSegmentBase = null;
         nestedTemplates.clear();
