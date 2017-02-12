@@ -194,7 +194,7 @@ public class NumericExpressionHelper extends BasicHelper {
      *
      * @author Martin Kouba
      */
-    public static enum Operator {
+    public enum Operator {
 
         /**
          * Evaluates to true if the first and the second value are equal in

@@ -239,7 +239,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
      *
      * @author Martin Kouba
      */
-    public static enum MaxSizeStrategy {
+    public enum MaxSizeStrategy {
 
         /**
          * Do nothing
@@ -250,7 +250,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
          */
         CLEAR(true),;
 
-        private MaxSizeStrategy(boolean isEvictionSupported) {
+        MaxSizeStrategy(boolean isEvictionSupported) {
             this.isEvictionSupported = isEvictionSupported;
         }
 
@@ -262,7 +262,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
 
     }
 
-    public static enum RemovalCause {
+    public enum RemovalCause {
 
         EXPIRED,
         MAX_SIZE_EXCEEDED,

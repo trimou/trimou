@@ -207,7 +207,7 @@ public class LogHelper extends BasicValueHelper {
     /**
      * Log level.
      */
-    public static enum Level {
+    public enum Level {
 
         ERROR,
         WARN,
