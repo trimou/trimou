@@ -368,13 +368,7 @@ public class InvokeHelper extends BasicHelper {
             if (found.isEmpty()) {
                 return Optional.empty();
             }
-            for (Iterator<Method> iterator = found.iterator(); iterator
-                    .hasNext();) {
-                Method method = iterator.next();
-                if (!matches(method, key.getParamTypes())) {
-                    iterator.remove();
-                }
-            }
+            found.removeIf(method -> !matches(method, key.getParamTypes()));
             if (found.size() == 1) {
                 Method method = found.get(0);
                 if ((!Modifier.isPublic(method.getModifiers()) || !Modifier

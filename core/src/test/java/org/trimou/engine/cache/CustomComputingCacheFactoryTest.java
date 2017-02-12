@@ -129,13 +129,7 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
         @Override
         public synchronized void invalidate(
                 ComputingCache.KeyPredicate<K> keyPredicate) {
-            for (Iterator<Entry<K, V>> iterator = map.entrySet().iterator(); iterator
-                    .hasNext();) {
-                Entry<K, V> entry = iterator.next();
-                if (keyPredicate.apply(entry.getKey())) {
-                    iterator.remove();
-                }
-            }
+            map.entrySet().removeIf(entry -> keyPredicate.apply(entry.getKey()));
         }
 
         @Override
