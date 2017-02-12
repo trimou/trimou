@@ -75,7 +75,7 @@ public class EqualsHelper extends BasicSectionHelper {
             return;
         }
 
-        if (testInequality ? !obj1.equals(obj2) : obj1.equals(obj2)) {
+        if (testInequality != obj1.equals(obj2)) {
             options.fn();
         }
     }
