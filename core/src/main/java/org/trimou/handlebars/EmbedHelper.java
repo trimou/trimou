@@ -43,12 +43,10 @@ public class EmbedHelper extends BasicValueHelper {
     private final SourceProcessor processor;
 
     public EmbedHelper() {
-        this((name, source) -> {
-            return new StringBuilder().append("<script id=\"")
-                    .append(name.replace("/", "_"))
-                    .append("\" type=\"text/template\">\n").append(source)
-                    .append("\n").append("</script>").toString();
-        });
+        this((name, source) -> new StringBuilder().append("<script id=\"")
+                .append(name.replace("/", "_"))
+                .append("\" type=\"text/template\">\n").append(source)
+                .append("\n").append("</script>").toString());
     }
 
     /**
