@@ -347,9 +347,8 @@ public class NumericExpressionHelper extends BasicHelper {
                     continue;
                 }
                 if (toTest instanceof Iterable) {
-                    Iterator<?> iterator = ((Iterable<?>) toTest).iterator();
-                    while (iterator.hasNext()) {
-                        if (test(val, getDecimal(iterator.next(), options))) {
+                    for (final Object o : ((Iterable<?>) toTest)) {
+                        if (test(val, getDecimal(o, options))) {
                             return true;
                         }
                     }

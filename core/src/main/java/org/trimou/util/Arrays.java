@@ -37,9 +37,9 @@ public final class Arrays {
         if (array == null) {
             return false;
         }
-        for (int i = 0; i < array.length; i++) {
-            if ((object != null && object.equals(array[i]))
-                    || (object == null && array[i] == null)) {
+        for (final Object element : array) {
+            if ((object != null && object.equals(element))
+                    || (object == null && element == null)) {
                 return true;
             }
         }

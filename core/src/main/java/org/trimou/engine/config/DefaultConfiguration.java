@@ -121,10 +121,9 @@ class DefaultConfiguration implements Configuration {
                 }
             }
             List<ConfigurationExtension> configurationExtensions = new ArrayList<>();
-            for (Iterator<ConfigurationExtension> iterator = ServiceLoader
-                    .load(ConfigurationExtension.class, cl).iterator(); iterator
-                            .hasNext();) {
-                configurationExtensions.add(iterator.next());
+            for (final ConfigurationExtension configurationExtension1 : ServiceLoader
+                    .load(ConfigurationExtension.class, cl)) {
+                configurationExtensions.add(configurationExtension1);
             }
             Collections.sort(configurationExtensions, Priorities.higherFirst());
             for (ConfigurationExtension configurationExtension : configurationExtensions) {
