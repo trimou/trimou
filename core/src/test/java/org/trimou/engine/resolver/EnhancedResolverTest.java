@@ -26,8 +26,8 @@ public class EnhancedResolverTest extends AbstractTest {
     @Test
     public void testHint() {
 
-        final List<String> resolvedNames = new ArrayList<String>();
-        final List<String> hintNames = new ArrayList<String>();
+        final List<String> resolvedNames = new ArrayList<>();
+        final List<String> hintNames = new ArrayList<>();
         final AtomicInteger hintCounter = new AtomicInteger();
 
         EnhancedResolver resolver = new AbstractResolver(10) {
@@ -75,8 +75,8 @@ public class EnhancedResolverTest extends AbstractTest {
     @Test
     public void testHintIsOnlyUsedForTheFirstPartOfKey() {
 
-        final List<String> resolvedNames = new ArrayList<String>();
-        final List<String> hintNames = new ArrayList<String>();
+        final List<String> resolvedNames = new ArrayList<>();
+        final List<String> hintNames = new ArrayList<>();
         final AtomicInteger hintCounter = new AtomicInteger();
         final Hammer hammer1 = new Hammer(10);
         final Hammer hammer2 = new Hammer(20);

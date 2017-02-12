@@ -73,7 +73,7 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
             return Collections.emptySet();
         }
 
-        Set<String> identifiers = new HashSet<String>();
+        Set<String> identifiers = new HashSet<>();
         for (File file : files) {
             if (Files.isFileUsable(file)) {
                 String id = stripSuffix(constructVirtualPath(file));
@@ -89,7 +89,7 @@ public abstract class FilePathTemplateLocator extends PathTemplateLocator<File> 
 
         File rootDir = getRootDir();
         File parent = source.getParentFile();
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
 
         if (parent == null) {
             throw new IllegalStateException(

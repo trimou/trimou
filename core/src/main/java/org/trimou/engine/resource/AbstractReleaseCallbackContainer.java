@@ -60,7 +60,7 @@ public abstract class AbstractReleaseCallbackContainer
     @Override
     public void registerReleaseCallback(ReleaseCallback callback) {
         if (releaseCallbacks == null) {
-            releaseCallbacks = new LinkedList<ReleaseCallback>();
+            releaseCallbacks = new LinkedList<>();
         }
         releaseCallbacks.add(callback);
     }

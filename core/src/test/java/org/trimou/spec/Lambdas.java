@@ -15,7 +15,7 @@ public final class Lambdas {
 
     private static Map<String, Lambda> init() {
 
-        Map<String, Lambda> lambdas = new HashMap<String, Lambda>();
+        Map<String, Lambda> lambdas = new HashMap<>();
 
         lambdas.put("Interpolation", new SpecCompliantLambda() {
 

@@ -83,7 +83,7 @@ public class PartialSegmentTest extends AbstractEngineTest {
                         EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT,
                         0).build();
 
-        Map<String, Object> data = ImmutableMap.<String, Object> of("content",
+        Map<String, Object> data = ImmutableMap.of("content",
                 "X", "nodes", new Map[] { ImmutableMap.of("content", "Y",
                         "nodes", new Map[] { ImmutableMap.of("content", "Z",
                                 "nodes", new Map[] {}) }) });
@@ -111,7 +111,7 @@ public class PartialSegmentTest extends AbstractEngineTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(locator).build();
 
-        Map<String, Object> data = ImmutableMap.<String, Object> of("content",
+        Map<String, Object> data = ImmutableMap.of("content",
                 "X", "nodes", new Map[] { ImmutableMap.of("content", "Y",
                         "nodes", new Map[] { ImmutableMap.of("content", "Z",
                                 "nodes", new Map[] {}) }) });

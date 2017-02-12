@@ -18,7 +18,7 @@ public class ListIndexResolverTest extends AbstractEngineTest {
 
     @Test
     public void testInterpolation() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("foo");
         list.add("bar");
         Map<String, Object> data = ImmutableMap.of("list", list);

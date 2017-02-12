@@ -140,7 +140,7 @@ public class ValueWrapperTest extends AbstractTest {
     @Test
     public void testGetKey() {
 
-        final AtomicReference<String> key = new AtomicReference<String>();
+        final AtomicReference<String> key = new AtomicReference<>();
 
         MustacheEngineBuilder
                 .newBuilder()
@@ -163,7 +163,7 @@ public class ValueWrapperTest extends AbstractTest {
     @Test
     public void testGetKeyPartIndex() {
 
-        final List<Integer> indexes = new ArrayList<Integer>();
+        final List<Integer> indexes = new ArrayList<>();
 
         MustacheEngineBuilder
                 .newBuilder()

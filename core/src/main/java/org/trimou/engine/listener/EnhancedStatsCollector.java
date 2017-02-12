@@ -53,7 +53,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
     public EnhancedStatsCollector(Predicate<String> templatePredicate,
             TimeUnit timeUnit) {
         super(templatePredicate, timeUnit);
-        idsToNames = new ConcurrentHashMap<Long, String>();
+        idsToNames = new ConcurrentHashMap<>();
     }
 
     @Override

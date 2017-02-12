@@ -167,7 +167,7 @@ final class DefaultExecutionContext implements ExecutionContext {
         for (Segment segment : segments) {
             if (getDefiningSection(segment.getText()) == null) {
                 if (definingSections == null) {
-                    definingSections = new HashMap<String, Segment>();
+                    definingSections = new HashMap<>();
                 }
                 definingSections.put(segment.getText(), segment);
             }

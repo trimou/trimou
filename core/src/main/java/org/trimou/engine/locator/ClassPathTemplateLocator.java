@@ -219,7 +219,7 @@ public class ClassPathTemplateLocator extends PathTemplateLocator<String> {
     private String constructVirtualPath(File root, File source) {
 
         File parent = source.getParentFile();
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
 
         if (parent == null) {
             throw new IllegalStateException(

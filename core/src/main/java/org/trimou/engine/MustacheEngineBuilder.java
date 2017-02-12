@@ -118,13 +118,13 @@ public final class MustacheEngineBuilder
      */
     private MustacheEngineBuilder() {
         this.omitServiceLoaderConfigurationExtensions = false;
-        this.resolvers = new HashSet<Resolver>();
-        this.templateLocators = new HashSet<TemplateLocator>();
-        this.globalData = new HashMap<String, Object>();
-        this.properties = new HashMap<String, Object>();
-        this.mustacheListeners = new ArrayList<MustacheListener>();
-        this.helpers = new HashMap<String, Helper>();
-        this.engineReadyCallbacks = new ArrayList<MustacheEngineBuilder.EngineBuiltCallback>();
+        this.resolvers = new HashSet<>();
+        this.templateLocators = new HashSet<>();
+        this.globalData = new HashMap<>();
+        this.properties = new HashMap<>();
+        this.mustacheListeners = new ArrayList<>();
+        this.helpers = new HashMap<>();
+        this.engineReadyCallbacks = new ArrayList<>();
         this.valueConverters = new HashSet<>();
     }
 

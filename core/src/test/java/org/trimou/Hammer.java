@@ -21,7 +21,7 @@ public class Hammer {
     public Hammer(Integer age) {
         this.id = UUID.randomUUID().toString();
         this.age = age;
-        this.map = new HashMap<String, Integer>();
+        this.map = new HashMap<>();
         this.map.put("foo", 10);
     }
 

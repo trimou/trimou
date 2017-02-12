@@ -110,10 +110,8 @@ public class SectionSegmentTest extends AbstractEngineTest {
         String templateContents = "{{#lambda}}{{foo}}{{/lambda}}";
         Mustache mustache = engine.compileMustache("lambda", templateContents);
 
-        assertEquals("prefix_{{foo}}", mustache.render(ImmutableMap
-                .<String, Object> of("foo", "Mine", "lambda", literal)));
-        assertEquals("prefix_Mine", mustache.render(ImmutableMap
-                .<String, Object> of("foo", "Mine", "lambda", processed)));
+        assertEquals("prefix_{{foo}}", mustache.render(ImmutableMap.of("foo", "Mine", "lambda", literal)));
+        assertEquals("prefix_Mine", mustache.render(ImmutableMap.of("foo", "Mine", "lambda", processed)));
     }
 
     @Test

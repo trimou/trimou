@@ -43,7 +43,7 @@ public final class Files {
      */
     public static List<File> listFiles(File dir, String suffix) {
 
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
 
         if (dir.isDirectory()) {
 

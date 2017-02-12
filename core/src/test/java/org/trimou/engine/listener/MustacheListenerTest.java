@@ -29,10 +29,10 @@ public class MustacheListenerTest extends AbstractEngineTest {
     @Test
     public void testListenersInvoked() {
 
-        final List<String> parsed = new ArrayList<String>();
-        final List<String> compiled = new ArrayList<String>();
-        final List<String> renderingStarts = new ArrayList<String>();
-        final List<String> renderingEnds = new ArrayList<String>();
+        final List<String> parsed = new ArrayList<>();
+        final List<String> compiled = new ArrayList<>();
+        final List<String> renderingStarts = new ArrayList<>();
+        final List<String> renderingEnds = new ArrayList<>();
 
         SpecCompliantLambda lambda = new SpecCompliantLambda() {
 
@@ -106,8 +106,8 @@ public class MustacheListenerTest extends AbstractEngineTest {
     @Test
     public void testListenerThrowsUncheckedException() {
 
-        final List<String> renderingStarts = new ArrayList<String>();
-        final List<String> renderingEnds = new ArrayList<String>();
+        final List<String> renderingStarts = new ArrayList<>();
+        final List<String> renderingEnds = new ArrayList<>();
         final AtomicBoolean callbackInvoked = new AtomicBoolean(false);
 
         MustacheListener listener1 = new AbstractMustacheListener() {

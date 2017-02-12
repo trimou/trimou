@@ -40,7 +40,7 @@ public class BracketDotKeySplitter extends AbstractConfigurationAware
         }
         boolean stringLiteral = false;
         boolean separator = false;
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < key.length(); i++) {
             if (isSeparator(key.charAt(i))) {

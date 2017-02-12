@@ -9,7 +9,7 @@ import javax.enterprise.event.Observes;
 @ApplicationScoped
 public class Observer {
 
-    private List<Long> foos = new ArrayList<Long>();
+    private List<Long> foos = new ArrayList<>();
 
     public void observeFoo(@Observes Foo foo) {
         foos.add(foo.getCreatedAt());

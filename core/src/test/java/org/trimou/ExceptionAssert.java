@@ -52,7 +52,7 @@ public class ExceptionAssert<T extends Exception> {
 
     public static <T extends Exception> ExceptionAssert<T> expect(
             Class<T> exceptionClazz) {
-        return new ExceptionAssert<T>(exceptionClazz);
+        return new ExceptionAssert<>(exceptionClazz);
     }
 
 }

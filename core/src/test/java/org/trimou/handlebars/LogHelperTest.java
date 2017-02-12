@@ -81,9 +81,9 @@ public class LogHelperTest extends AbstractTest {
 
     private static class TestLoggerAdapter extends Slf4jLoggerAdapter {
 
-        final List<Level> levels = new ArrayList<Level>();
-        final List<String> messages = new ArrayList<String>();
-        final List<Object[]> parameters = new ArrayList<Object[]>();
+        final List<Level> levels = new ArrayList<>();
+        final List<String> messages = new ArrayList<>();
+        final List<Object[]> parameters = new ArrayList<>();
 
         public TestLoggerAdapter(String name) {
             super(name);

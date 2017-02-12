@@ -84,8 +84,7 @@ public class DateTimeFormatResolverTest extends AbstractEngineTest {
         String expectedCustom = "01-01-2013 13:00";
         String expectedDate = "Jan 1, 2013";
 
-        Map<String, Object> data = ImmutableMap.<String, Object> of("calendar",
-                day, "date", day.getTime(), "milis", milis);
+        Map<String, Object> data = ImmutableMap.of("calendar", day, "date", day.getTime(), "milis", milis);
 
         assertEquals(Strings.repeat(expectedMedium, 3, "|"),
                 engine.compileMustache("date_time_medium",

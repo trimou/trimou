@@ -34,7 +34,7 @@ public final class Primitives {
     }
 
     static {
-        Map<Class<?>, Class<?>> primitiveToWrapper = new HashMap<Class<?>, Class<?>>();
+        Map<Class<?>, Class<?>> primitiveToWrapper = new HashMap<>();
         primitiveToWrapper.put(boolean.class, Boolean.class);
         primitiveToWrapper.put(char.class, Character.class);
         primitiveToWrapper.put(short.class, Short.class);

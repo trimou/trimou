@@ -291,7 +291,7 @@ public class CacheHelper extends BasicSectionHelper {
             this.hits = new AtomicLong(0);
             this.lastUsed = new AtomicLong();
             this.content = new AtomicReference<>();
-            this.guard = new AtomicReference<String>();
+            this.guard = new AtomicReference<>();
         }
 
         /**

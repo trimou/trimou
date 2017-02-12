@@ -68,7 +68,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
             throw new IllegalArgumentException(
                     "Max size limit not supported - use a different eviction strategy");
         }
-        return new ConcurrentHashMapAdapter<K, V>(computingFunction, maxSize,
+        return new ConcurrentHashMapAdapter<>(computingFunction, maxSize,
                 maxSizeStrategy, expirationTimeout, listener);
     }
 

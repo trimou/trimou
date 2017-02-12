@@ -133,7 +133,7 @@ class DefaultConfiguration implements Configuration {
 
         // Non-final components
         List<Resolver> resolvers = initResolvers(builder);
-        List<MustacheListener> mustacheListeners = new ArrayList<MustacheListener>(
+        List<MustacheListener> mustacheListeners = new ArrayList<>(
                 builder.buildMustacheListeners());
         MissingValueHandler missingValueHandler = initMissingValueHandler(
                 builder);
@@ -170,15 +170,14 @@ class DefaultConfiguration implements Configuration {
         // so that it's possible to collect all configuration keys
         // Preserve the order - some components must be initialized before
         // others
-        Set<ConfigurationAware> components = new LinkedHashSet<ConfigurationAware>();
+        Set<ConfigurationAware> components = new LinkedHashSet<>();
         components.add(computingCacheFactory);
         components.add(identifierGenerator);
         components.addAll(resolvers);
         components.add(textSupport);
         components.add(localeSupport);
         components.add(keySplitter);
-        components.addAll(templateLocators != null ? templateLocators
-                : Collections.<ConfigurationAware> emptySet());
+        components.addAll(templateLocators != null ? templateLocators : Collections.emptySet());
         components.addAll(mustacheListeners);
         components.addAll(helpers.values());
         components.add(literalSupport);
@@ -384,7 +383,7 @@ class DefaultConfiguration implements Configuration {
         if (builderResolvers.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Resolver> resolvers = new ArrayList<Resolver>();
+        List<Resolver> resolvers = new ArrayList<>();
         resolvers.addAll(builderResolvers);
         Collections.sort(resolvers, Priorities.higherFirst());
         return resolvers;
@@ -445,7 +444,7 @@ class DefaultConfiguration implements Configuration {
 
     private Set<ConfigurationKey> getConfigurationKeysToProcess(
             Set<ConfigurationAware> components) {
-        Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
+        Set<ConfigurationKey> keys = new HashSet<>();
         // Global keys
         Collections.addAll(keys, EngineConfigurationKey.values());
         for (ConfigurationAware component : components) {
@@ -482,7 +481,7 @@ class DefaultConfiguration implements Configuration {
         Set<TemplateLocator> builderTemplateLocators = builder
                 .buildTemplateLocators();
         if (!builderTemplateLocators.isEmpty()) {
-            List<TemplateLocator> locators = new ArrayList<TemplateLocator>(
+            List<TemplateLocator> locators = new ArrayList<>(
                     builder.buildTemplateLocators());
             Collections.sort(locators, Priorities.higherFirst());
             return ImmutableList.copyOf(locators);
@@ -507,7 +506,7 @@ class DefaultConfiguration implements Configuration {
     private Set<ConfigurationAware> getConfigurationAwareComponents(
             Set<ConfigurationAware> initialSet) {
 
-        Set<ConfigurationAware> components = new HashSet<ConfigurationAware>();
+        Set<ConfigurationAware> components = new HashSet<>();
 
         components.add(missingValueHandler);
         components.addAll(helpers.values());

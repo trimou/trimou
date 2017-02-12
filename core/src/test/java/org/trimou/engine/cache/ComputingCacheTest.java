@@ -60,7 +60,7 @@ public class ComputingCacheTest extends AbstractEngineTest {
 
         final ExecutorService executorService = Executors
                 .newFixedThreadPool(threads);
-        final List<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
+        final List<Callable<Boolean>> tasks = new ArrayList<>();
 
         for (int i = 0; i < threads; i++) {
             tasks.add(new Callable<Boolean>() {
