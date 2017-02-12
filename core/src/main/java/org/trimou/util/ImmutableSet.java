@@ -58,9 +58,7 @@ public final class ImmutableSet {
             return Collections.singleton(elements[0]);
         }
         Set<T> set = new HashSet<>();
-        for (T element : elements) {
-            set.add(element);
-        }
+        Collections.addAll(set, elements);
         return Collections.unmodifiableSet(set);
     }
 
