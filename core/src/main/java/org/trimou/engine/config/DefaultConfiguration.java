@@ -448,9 +448,7 @@ class DefaultConfiguration implements Configuration {
             Set<ConfigurationAware> components) {
         Set<ConfigurationKey> keys = new HashSet<ConfigurationKey>();
         // Global keys
-        for (ConfigurationKey key : EngineConfigurationKey.values()) {
-            keys.add(key);
-        }
+        Collections.addAll(keys, EngineConfigurationKey.values());
         for (ConfigurationAware component : components) {
             keys.addAll(component.getConfigurationKeys());
         }

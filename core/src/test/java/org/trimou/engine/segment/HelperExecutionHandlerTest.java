@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -76,9 +77,7 @@ public class HelperExecutionHandlerTest {
             result.add(iterator.next());
         }
         List<String> expected = new ArrayList<>();
-        for (String part : parts) {
-            expected.add(part);
-        }
+        Collections.addAll(expected, parts);
         assertTrue("Parts: " + expected + " != " + result,
                 expected.containsAll(result) && result.containsAll(expected));
     }
