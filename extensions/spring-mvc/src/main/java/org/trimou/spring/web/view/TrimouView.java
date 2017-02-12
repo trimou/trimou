@@ -69,7 +69,7 @@ public class TrimouView extends AbstractTemplateView {
         }
         Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
-            String attributeName = (String) attributeNames.nextElement();
+            String attributeName = attributeNames.nextElement();
             model.put(attributeName, request.getAttribute(attributeName));
         }
     }
