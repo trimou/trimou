@@ -78,13 +78,8 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
         public <K, V> ComputingCache<K, V> create(String consumerId,
                 Function<K, V> computingFunction, Long expirationTimeout,
                 Long maxSize, Listener<K> listener) {
-            CustomComputingCache<K, V> cache = new CustomComputingCache<>(new HashMap<>(),
-                    computingFunction);
-            List<CustomComputingCache> list = caches.get(consumerId);
-            if(list == null) {
-                list = new ArrayList<>();
-                caches.put(consumerId, list);
-            }
+            CustomComputingCache<K, V> cache = new CustomComputingCache<>(new HashMap<>(), computingFunction);
+            List<CustomComputingCache> list = caches.computeIfAbsent(consumerId, k -> new ArrayList<>());
             list.add(cache);
             return cache;
         }
@@ -106,12 +101,7 @@ public class CustomComputingCacheFactoryTest extends AbstractTest {
 
         @Override
         public synchronized V get(K key) {
-            V value = map.get(key);
-            if(value == null) {
-                value = computingFunction.compute(key);
-                map.put(key, value);
-            }
-            return value;
+            return map.computeIfAbsent(key, k -> computingFunction.compute(key));
         }
 
         @Override
