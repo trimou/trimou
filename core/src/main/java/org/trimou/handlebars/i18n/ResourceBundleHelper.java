@@ -188,7 +188,7 @@ public class ResourceBundleHelper extends LocaleAwareValueHelper {
      *
      * @author Martin Kouba
      */
-    public static enum Format {
+    public enum Format {
 
         /**
          * @see Formatter

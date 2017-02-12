@@ -64,7 +64,7 @@ public class MapCustomKeyResolverTest extends AbstractTest {
                         ImmutableMap.of("data", dataMap)));
     }
 
-    private static enum EnumKey {
+    private enum EnumKey {
         ONE,
         TWO, ;
     }
