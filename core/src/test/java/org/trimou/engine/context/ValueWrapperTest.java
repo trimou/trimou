@@ -43,13 +43,7 @@ public class ValueWrapperTest extends AbstractTest {
                                     String name, ResolutionContext context) {
 
                                 if ("bar".equals(name)) {
-                                    context.registerReleaseCallback(new ReleaseCallback() {
-
-                                        @Override
-                                        public void release() {
-                                            callbackInvoked.set(true);
-                                        }
-                                    });
+                                    context.registerReleaseCallback(() -> callbackInvoked.set(true));
                                     return "foo";
                                 } else {
                                     return null;
@@ -87,13 +81,7 @@ public class ValueWrapperTest extends AbstractTest {
                             public Object resolve(Object contextObject,
                                     String name, ResolutionContext context) {
 
-                                context.registerReleaseCallback(new ReleaseCallback() {
-
-                                    @Override
-                                    public void release() {
-                                        callbackInvoked.set(true);
-                                    }
-                                });
+                                context.registerReleaseCallback(() -> callbackInvoked.set(true));
                                 return null;
                             }
                         }).build();

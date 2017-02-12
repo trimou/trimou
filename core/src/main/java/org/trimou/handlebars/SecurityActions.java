@@ -51,12 +51,9 @@ final class SecurityActions {
         if (System.getSecurityManager() == null) {
             accessibleObject.setAccessible(true);
         }
-        AccessController.doPrivileged(new PrivilegedAction<AccessibleObject>() {
-            @Override
-            public AccessibleObject run() {
-                accessibleObject.setAccessible(true);
-                return accessibleObject;
-            }
+        AccessController.doPrivileged((PrivilegedAction<AccessibleObject>) () -> {
+            accessibleObject.setAccessible(true);
+            return accessibleObject;
         });
     }
 
@@ -69,12 +66,7 @@ final class SecurityActions {
             return Thread.currentThread().getContextClassLoader();
         }
         return AccessController
-                .doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        return Thread.currentThread().getContextClassLoader();
-                    }
-                });
+                .doPrivileged((PrivilegedAction<ClassLoader>) () -> Thread.currentThread().getContextClassLoader());
     }
 
     /**

@@ -48,14 +48,11 @@ public class ComputingCacheTest extends AbstractEngineTest {
                 .getConfiguration()
                 .getComputingCacheFactory()
                 .create(consumerId,
-                        new ComputingCache.Function<Long, String>() {
-                            @Override
-                            public String compute(Long key) {
-                                // logger.debug("Loading {}", key);
-                                computations.incrementAndGet();
-                                return key + ":"
-                                        + Thread.currentThread().getId();
-                            }
+                        key -> {
+                            // logger.debug("Loading {}", key);
+                            computations.incrementAndGet();
+                            return key + ":"
+                                    + Thread.currentThread().getId();
                         }, expirationTimeout, maxSize, null);
 
         final ExecutorService executorService = Executors
@@ -63,21 +60,18 @@ public class ComputingCacheTest extends AbstractEngineTest {
         final List<Callable<Boolean>> tasks = new ArrayList<>();
 
         for (int i = 0; i < threads; i++) {
-            tasks.add(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    startSignal.countDown();
-                    startSignal.await();
-                    // Thread thread = Thread.currentThread();
-                    // logger.debug("{}/{} started", thread.getId(),
-                    // thread.getName());
-                    for (long j = 0; j < actions; j++) {
-                        cache.get(j);
-                    }
-                    // logger.debug("{}/{} finished", thread.getId(),
-                    // thread.getName());
-                    return true;
+            tasks.add(() -> {
+                startSignal.countDown();
+                startSignal.await();
+                // Thread thread = Thread.currentThread();
+                // logger.debug("{}/{} started", thread.getId(),
+                // thread.getName());
+                for (long j = 0; j < actions; j++) {
+                    cache.get(j);
                 }
+                // logger.debug("{}/{} finished", thread.getId(),
+                // thread.getName());
+                return true;
             });
         }
         List<Future<Boolean>> results = executorService.invokeAll(tasks);
@@ -124,23 +118,13 @@ public class ComputingCacheTest extends AbstractEngineTest {
 
         final ComputingCache<Long, String> cache = engine.getConfiguration()
                 .getComputingCacheFactory()
-                .create("test", new ComputingCache.Function<Long, String>() {
-                    @Override
-                    public String compute(Long key) {
-                        return "" + key;
-                    }
-                }, null, null, null);
+                .create("test", key -> "" + key, null, null, null);
 
         for (long i = 0; i < 100; i++) {
             cache.get(i);
         }
 
-        cache.invalidate(new ComputingCache.KeyPredicate<Long>() {
-            @Override
-            public boolean apply(Long key) {
-                return key % 2 == 0;
-            }
-        });
+        cache.invalidate(key -> key % 2 == 0);
         assertEquals(50, cache.size());
     }
 

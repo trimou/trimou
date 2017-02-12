@@ -76,33 +76,18 @@ public class SimpleStatsCollector extends AbstractStatsCollector {
         // data set is not known beforehand
         this.data = configuration.getComputingCacheFactory().create(
                 COMPUTING_CACHE_CONSUMER_ID,
-                new Function<String, ComputingCache<Long, AtomicLong>>() {
-                    @Override
-                    public ComputingCache<Long, AtomicLong> compute(String key) {
-                        return configuration.getComputingCacheFactory().create(
-                                COMPUTING_CACHE_CONSUMER_ID,
-                                new Function<Long, AtomicLong>() {
-                                    @Override
-                                    public AtomicLong compute(Long key) {
-                                        return new AtomicLong(0);
-                                    }
-                                }, null, null, null);
-                    }
-                }, null, null, null);
+                key -> configuration.getComputingCacheFactory()
+                        .create(COMPUTING_CACHE_CONSUMER_ID, k ->
+                                new AtomicLong(0), null, null, null), null, null, null);
     }
 
     @Override
     public void renderingStarted(final MustacheRenderingEvent event) {
         if (isApplied(event.getMustacheName())) {
             final long start = System.nanoTime();
-            event.registerReleaseCallback(new ReleaseCallback() {
-                @Override
-                public void release() {
-                    data.get(event.getMustacheName())
-                            .get(convert(System.nanoTime() - start))
-                            .incrementAndGet();
-                }
-            });
+            event.registerReleaseCallback(() -> data.get(event.getMustacheName())
+                    .get(convert(System.nanoTime() - start))
+                    .incrementAndGet());
         }
     }
 

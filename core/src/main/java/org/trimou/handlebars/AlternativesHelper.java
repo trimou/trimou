@@ -139,17 +139,14 @@ public class AlternativesHelper extends BasicHelper {
         private final Condition condition;
 
         public ConditionSelector() {
-            this(new Condition() {
-                @Override
-                public boolean matches(Object param) {
-                    if (param == null) {
-                        return false;
-                    }
-                    if (param instanceof String) {
-                        return !param.toString().isEmpty();
-                    }
-                    return true;
+            this(param -> {
+                if (param == null) {
+                    return false;
                 }
+                if (param instanceof String) {
+                    return !param.toString().isEmpty();
+                }
+                return true;
             });
         }
 

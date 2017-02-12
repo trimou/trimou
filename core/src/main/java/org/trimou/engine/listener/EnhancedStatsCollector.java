@@ -76,13 +76,8 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
 
     @Override
     protected void init() {
-        data = configuration.getComputingCacheFactory().create(COMPUTING_CACHE_CONSUMER_ID,
-                new ComputingCache.Function<Long, ConcurrentMap<Long, ExecutionData>>() {
-                    @Override
-                    public ConcurrentMap<Long, ExecutionData> compute(Long key) {
-                        return new ConcurrentHashMap<>();
-                    }
-                }, null, null, null);
+        data = configuration.getComputingCacheFactory().create(COMPUTING_CACHE_CONSUMER_ID, key ->
+                new ConcurrentHashMap<>(), null, null, null);
     }
 
     /**

@@ -35,12 +35,9 @@ final class SecurityActions {
         if (System.getSecurityManager() == null) {
             accessibleObject.setAccessible(true);
         }
-        AccessController.doPrivileged(new PrivilegedAction<AccessibleObject>() {
-            @Override
-            public AccessibleObject run() {
-                accessibleObject.setAccessible(true);
-                return accessibleObject;
-            }
+        AccessController.doPrivileged((PrivilegedAction<AccessibleObject>) () -> {
+            accessibleObject.setAccessible(true);
+            return accessibleObject;
         });
     }
 

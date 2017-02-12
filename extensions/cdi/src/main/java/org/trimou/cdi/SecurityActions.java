@@ -36,12 +36,7 @@ final class SecurityActions {
             return Thread.currentThread().getContextClassLoader();
         }
         return AccessController
-                .doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        return Thread.currentThread().getContextClassLoader();
-                    }
-                });
+                .doPrivileged((PrivilegedAction<ClassLoader>) () -> Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -58,12 +53,7 @@ final class SecurityActions {
             return clazz.getMethod(name, parameterTypes);
         }
         return AccessController
-                .doPrivileged(new PrivilegedExceptionAction<Method>() {
-                    @Override
-                    public Method run() throws Exception {
-                        return clazz.getMethod(name, parameterTypes);
-                    }
-                });
+                .doPrivileged((PrivilegedExceptionAction<Method>) () -> clazz.getMethod(name, parameterTypes));
     }
 
 }

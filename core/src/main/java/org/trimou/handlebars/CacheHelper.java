@@ -134,15 +134,12 @@ public class CacheHelper extends BasicSectionHelper {
         super.init();
         this.fragments = configuration.getComputingCacheFactory().create(
                 CacheHelper.class.getName(),
-                new ComputingCache.Function<Key, Fragment>() {
-                    @Override
-                    public Fragment compute(Key key) {
-                        Fragment fragment = new Fragment();
-                        fragment.update(getContent(key.getOptions()),
-                                key.getOptions().getHash().get(GUARD));
-                        key.cleanupAfterCompute();
-                        return fragment;
-                    }
+                key -> {
+                    Fragment fragment = new Fragment();
+                    fragment.update(getContent(key.getOptions()),
+                            key.getOptions().getHash().get(GUARD));
+                    key.cleanupAfterCompute();
+                    return fragment;
                 }, null,
                 configuration.getLongPropertyValue(FRAGMENT_CACHE_MAX_SIZE_KEY),
                 null);
@@ -214,13 +211,7 @@ public class CacheHelper extends BasicSectionHelper {
         if (fragments == null || keyPart == null) {
             return;
         }
-        fragments
-                .invalidate(new ComputingCache.KeyPredicate<CacheHelper.Key>() {
-                    @Override
-                    public boolean apply(Key fragmentKey) {
-                        return fragmentKey.getKey().contains(keyPart);
-                    }
-                });
+        fragments.invalidate(fragmentKey -> fragmentKey.getKey().contains(keyPart));
     }
 
     @Override

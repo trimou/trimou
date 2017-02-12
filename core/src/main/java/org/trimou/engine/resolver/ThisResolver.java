@@ -34,12 +34,7 @@ public class ThisResolver extends AbstractResolver {
 
     public ThisResolver(int priority) {
         super(priority);
-        this.hint = new Hint() {
-            @Override
-            public Object resolve(Object contextObject, String name, ResolutionContext context) {
-                return contextObject;
-            }
-        };
+        this.hint = (contextObject, name, context) -> contextObject;
     }
 
     @Override

@@ -216,13 +216,10 @@ public class NumericExpressionHelper extends BasicHelper {
          *
          * @see BigDecimal#compareTo(BigDecimal)
          */
-        GT(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val1 = getDecimal(0, options);
-                BigDecimal val2 = getDecimal(1, options);
-                return val1.compareTo(val2) > 0;
-            }
+        GT(options -> {
+            BigDecimal val1 = getDecimal(0, options);
+            BigDecimal val2 = getDecimal(1, options);
+            return val1.compareTo(val2) > 0;
         }),
         /**
          * Evaluates to true if the first value is greater than or equal to the
@@ -230,26 +227,20 @@ public class NumericExpressionHelper extends BasicHelper {
          *
          * @see BigDecimal#compareTo(BigDecimal)
          */
-        GE(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val1 = getDecimal(0, options);
-                BigDecimal val2 = getDecimal(1, options);
-                return val1.compareTo(val2) >= 0;
-            }
+        GE(options -> {
+            BigDecimal val1 = getDecimal(0, options);
+            BigDecimal val2 = getDecimal(1, options);
+            return val1.compareTo(val2) >= 0;
         }),
         /**
          * Evaluates to true if the first value is less than the second value.
          *
          * @see BigDecimal#compareTo(BigDecimal)
          */
-        LT(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val1 = getDecimal(0, options);
-                BigDecimal val2 = getDecimal(1, options);
-                return val1.compareTo(val2) < 0;
-            }
+        LT(options -> {
+            BigDecimal val1 = getDecimal(0, options);
+            BigDecimal val2 = getDecimal(1, options);
+            return val1.compareTo(val2) < 0;
         }),
         /**
          * Evaluates to true if the first value is less than or equal to the
@@ -257,32 +248,19 @@ public class NumericExpressionHelper extends BasicHelper {
          *
          * @see BigDecimal#compareTo(BigDecimal)
          */
-        LE(new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                BigDecimal val1 = getDecimal(0, options);
-                BigDecimal val2 = getDecimal(1, options);
-                return val1.compareTo(val2) <= 0;
-            }
+        LE(options -> {
+            BigDecimal val1 = getDecimal(0, options);
+            BigDecimal val2 = getDecimal(1, options);
+            return val1.compareTo(val2) <= 0;
         }),
         /**
          * Evaluates to true if the first value is negative.
          */
-        NEG(1, new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                return getDecimal(0, options).compareTo(BigDecimal.ZERO) < 0;
-            }
-        }),
+        NEG(1, options -> getDecimal(0, options).compareTo(BigDecimal.ZERO) < 0),
         /**
          * Evaluates to true if the first value is positive.
          */
-        POS(1, new Evaluator() {
-            @Override
-            public boolean evaluate(Options options) {
-                return getDecimal(0, options).compareTo(BigDecimal.ZERO) > 0;
-            }
-        }),
+        POS(1, options -> getDecimal(0, options).compareTo(BigDecimal.ZERO) > 0),
         /**
          * Evaluates to true if the first value is found in the set of other
          * values. Elements of {@link Iterable}s and arrays are treated as

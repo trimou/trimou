@@ -141,12 +141,7 @@ public class JsonElementResolverTest extends AbstractTest {
         final Mustache mustache = engine.compileMustache("unwrap_array_index",
                 template);
         MustacheExceptionAssert.expect(MustacheProblem.RENDER_NO_VALUE)
-                .check(new Runnable() {
-                    @Override
-                    public void run() {
-                        mustache.render(jsonElement);
-                    }
-                });
+                .check(() -> mustache.render(jsonElement));
     }
 
     @Test

@@ -129,13 +129,7 @@ public class MustacheListenerTest extends AbstractEngineTest {
             @Override
             public void renderingStarted(MustacheRenderingEvent event) {
                 renderingStarts.add(event.getMustacheName() + "2");
-                event.registerReleaseCallback(new ReleaseCallback() {
-
-                    @Override
-                    public void release() {
-                        callbackInvoked.set(true);
-                    }
-                });
+                event.registerReleaseCallback(() -> callbackInvoked.set(true));
             }
 
             @Override

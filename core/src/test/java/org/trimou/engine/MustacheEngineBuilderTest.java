@@ -115,11 +115,7 @@ public class MustacheEngineBuilderTest extends AbstractTest {
             // Expected
         }
         try {
-            builder.registerCallback(new EngineBuiltCallback() {
-                @Override
-                public void engineBuilt(MustacheEngine engine) {
-                }
-            });
+            builder.registerCallback(engine -> { });
             fail();
         } catch (Exception e) {
             // Expected

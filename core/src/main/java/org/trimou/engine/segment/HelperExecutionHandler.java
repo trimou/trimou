@@ -551,19 +551,16 @@ class HelperExecutionHandler {
                         "ExecutorService must be set in order to submit an asynchronous task");
             }
             Future<AsyncAppendable> future = executor
-                    .submit(new Callable<AsyncAppendable>() {
-                        @Override
-                        public AsyncAppendable call() throws Exception {
-                            // We need a separate appendable for the async
-                            // execution
-                            DefaultOptions asyncOptions = new DefaultOptions(
-                                    new AsyncAppendable(asyncAppendable),
-                                    executionContext, segment, parameters, hash,
-                                    new ArrayList<>(), engine);
-                            executable.execute(asyncOptions);
-                            return (AsyncAppendable) asyncOptions
-                                    .getAppendable();
-                        }
+                    .submit(() -> {
+                        // We need a separate appendable for the async
+                        // execution
+                        DefaultOptions asyncOptions = new DefaultOptions(
+                                new AsyncAppendable(asyncAppendable),
+                                executionContext, segment, parameters, hash,
+                                new ArrayList<>(), engine);
+                        executable.execute(asyncOptions);
+                        return (AsyncAppendable) asyncOptions
+                                .getAppendable();
                     });
             asyncAppendable.setFuture(future);
             this.appendable = asyncAppendable;
