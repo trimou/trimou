@@ -1,14 +1,5 @@
 package org.trimou.engine.cache;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.Hammer;
@@ -21,6 +12,13 @@ import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.resolver.ReflectionResolver;
 import org.trimou.engine.resolver.Resolver;
 import org.trimou.util.ImmutableMap;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  *

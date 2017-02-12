@@ -15,8 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import java.util.Iterator;
-
 import org.trimou.engine.interpolation.BracketDotKeySplitter;
 import org.trimou.engine.interpolation.DotKeySplitter;
 import org.trimou.engine.interpolation.KeySplitter;

@@ -15,20 +15,6 @@
  */
 package org.trimou.handlebars;
 
-import static org.trimou.handlebars.OptionsHashKeys.CLASS;
-import static org.trimou.handlebars.OptionsHashKeys.M;
-import static org.trimou.handlebars.OptionsHashKeys.METHOD;
-import static org.trimou.handlebars.OptionsHashKeys.ON;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import org.trimou.engine.cache.ComputingCache;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
@@ -36,6 +22,19 @@ import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.ImmutableSet;
 import org.trimou.util.Primitives;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.trimou.handlebars.OptionsHashKeys.CLASS;
+import static org.trimou.handlebars.OptionsHashKeys.M;
+import static org.trimou.handlebars.OptionsHashKeys.METHOD;
+import static org.trimou.handlebars.OptionsHashKeys.ON;
 
 /**
  * Invokes public methods with parameters via reflection.
