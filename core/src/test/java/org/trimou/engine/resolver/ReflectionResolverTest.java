@@ -35,8 +35,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         assertNull(resolver.resolve(null, "whatever", null));
         assertNotNull(resolver.resolve(hammer, "age", null));
         // Methods have higher priority
-        assertEquals(Integer.valueOf(10),
-                resolver.resolve(hammer, "age", null));
+        assertEquals(10, resolver.resolve(hammer, "age", null));
         assertNull(resolver.resolve(hammer, "getAgeForName", null));
     }
 

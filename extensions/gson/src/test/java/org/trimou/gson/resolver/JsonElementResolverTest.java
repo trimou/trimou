@@ -63,9 +63,9 @@ public class JsonElementResolverTest extends AbstractTest {
         assertEquals(Boolean.TRUE, resolver.resolve(jsonObject, "baz", ctx));
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(new JsonPrimitive(true));
-        jsonArray.add(new JsonPrimitive(Integer.valueOf(1)));
+        jsonArray.add(new JsonPrimitive(1));
         assertEquals(true, resolver.resolve(jsonArray, "0", ctx));
-        assertEquals(Integer.valueOf(1), resolver.resolve(jsonArray, "1", ctx));
+        assertEquals(1, resolver.resolve(jsonArray, "1", ctx));
     }
 
     @Test

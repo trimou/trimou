@@ -65,7 +65,7 @@ public class InvertedSectionSegmentTest extends AbstractEngineTest {
         Mustache mustache = engine.compileMustache("number", templateContents);
         assertEquals("Hello !", mustache.render(new BigDecimal("0.1")));
         assertEquals("Hello !", mustache.render(BigDecimal.ZERO));
-        assertEquals("Hello !", mustache.render(Long.valueOf(0l)));
+        assertEquals("Hello !", mustache.render(0L));
     }
 
 }

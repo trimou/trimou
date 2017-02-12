@@ -15,7 +15,7 @@ public class Hammer {
     private Map<String, Integer> map;
 
     public Hammer() {
-        this(Integer.valueOf(10));
+        this(10);
     }
 
     public Hammer(Integer age) {
