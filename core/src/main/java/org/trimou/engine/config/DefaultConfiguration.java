@@ -125,7 +125,7 @@ class DefaultConfiguration implements Configuration {
                     .load(ConfigurationExtension.class, cl)) {
                 configurationExtensions.add(configurationExtension1);
             }
-            Collections.sort(configurationExtensions, Priorities.higherFirst());
+            configurationExtensions.sort(Priorities.higherFirst());
             for (ConfigurationExtension configurationExtension : configurationExtensions) {
                 configurationExtension.register(builder);
             }
@@ -385,7 +385,7 @@ class DefaultConfiguration implements Configuration {
         }
         List<Resolver> resolvers = new ArrayList<>();
         resolvers.addAll(builderResolvers);
-        Collections.sort(resolvers, Priorities.higherFirst());
+        resolvers.sort(Priorities.higherFirst());
         return resolvers;
     }
 
@@ -483,7 +483,7 @@ class DefaultConfiguration implements Configuration {
         if (!builderTemplateLocators.isEmpty()) {
             List<TemplateLocator> locators = new ArrayList<>(
                     builder.buildTemplateLocators());
-            Collections.sort(locators, Priorities.higherFirst());
+            locators.sort(Priorities.higherFirst());
             return ImmutableList.copyOf(locators);
         } else {
             return null;
@@ -498,7 +498,7 @@ class DefaultConfiguration implements Configuration {
         }
         List<ValueConverter> converters = new ArrayList<>();
         converters.addAll(builderConverters);
-        Collections.sort(converters, Priorities.higherFirst());
+        converters.sort(Priorities.higherFirst());
         return converters;
     }
 
