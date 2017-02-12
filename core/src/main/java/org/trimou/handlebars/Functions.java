@@ -31,7 +31,7 @@ public final class Functions {
      */
     public static Function from(
             final java.util.function.Function<Object, Object> function) {
-        return (input) -> function.apply(input);
+        return function::apply;
     }
 
 }

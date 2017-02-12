@@ -30,8 +30,7 @@ import org.trimou.handlebars.Options.HelperExecutable;
  */
 public class AsyncHelper extends BasicSectionHelper {
 
-    private static final HelperExecutable ASYNC_EXECUTABLE = (
-            asyncOptions) -> asyncOptions.fn();
+    private static final HelperExecutable ASYNC_EXECUTABLE = Options::fn;
 
     @Override
     public void execute(Options options) {
