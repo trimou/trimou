@@ -38,15 +38,14 @@ public class EmbedHelperTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
                 .registerHelpers(
-                        HelpersBuilder.empty().addEmbed(new SourceProcessor() {
-                            @Override
-                            public String process(String mustacheName,
-                                    String mustacheSource) {
-                                return new StringBuilder().append("<source>")
-                                        .append(mustacheSource)
-                                        .append("</source>").toString();
-                            }
-                        }).build())
+                        HelpersBuilder.empty()
+                                .addEmbed((mustacheName, mustacheSource) ->
+                                        new StringBuilder()
+                                                .append("<source>")
+                                                .append(mustacheSource)
+                                                .append("</source>")
+                                                .toString())
+                                .build())
                 .addTemplateLocator(
                         new MapTemplateLocator(ImmutableMap.of("template",
                                 "{{foo}}"))).build();

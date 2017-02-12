@@ -25,14 +25,7 @@ public final class Hints {
      * A hint which is never applicable. Implementations are encouraged to use
      * this instance if it's not possible to create a hint.
      */
-    public static final EnhancedResolver.Hint INAPPLICABLE_HINT = new EnhancedResolver.Hint() {
-
-        @Override
-        public Object resolve(Object contextObject, String name,
-                ResolutionContext context) {
-            return null;
-        }
-    };
+    public static final EnhancedResolver.Hint INAPPLICABLE_HINT = (contextObject, name, context) -> null;
 
     private Hints() {
     }

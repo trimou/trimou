@@ -45,19 +45,16 @@ public class TimeFormatHelper extends
         super.init();
         formatterCache = configuration.getComputingCacheFactory().create(
                 "todo",
-                new ComputingCache.Function<CacheKey, DateTimeFormatter>() {
-                    @Override
-                    public DateTimeFormatter compute(CacheKey key) {
-                        DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
-                        if (key.getPattern() != null) {
-                            builder.appendPattern(key.getPattern());
-                        } else if (key.getStyle() != null) {
-                            builder.appendLocalized(key.getStyle(),
-                                    key.getStyle());
-                        }
-                        return builder.toFormatter(key.getLocale()).withZone(
-                                key.getTimeZone().toZoneId());
+                key -> {
+                    DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
+                    if (key.getPattern() != null) {
+                        builder.appendPattern(key.getPattern());
+                    } else if (key.getStyle() != null) {
+                        builder.appendLocalized(key.getStyle(),
+                                key.getStyle());
                     }
+                    return builder.toFormatter(key.getLocale()).withZone(
+                            key.getTimeZone().toZoneId());
                 }, null, null, null);
     }
 

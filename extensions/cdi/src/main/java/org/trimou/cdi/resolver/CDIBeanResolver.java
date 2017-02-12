@@ -131,27 +131,23 @@ public class CDIBeanResolver extends AbstractResolver {
                 .getLongPropertyValue(BEAN_CACHE_MAX_SIZE_KEY);
         beanCache = configuration.getComputingCacheFactory().create(
                 COMPUTING_CACHE_CONSUMER_ID,
-                new ComputingCache.Function<String, Optional<Bean<?>>>() {
-                    @Override
-                    public Optional<Bean<?>> compute(String key) {
+                key -> {
+                    Set<Bean<?>> beans = beanManager.getBeans(key);
 
-                        Set<Bean<?>> beans = beanManager.getBeans(key);
-
-                        // Check required for CDI 1.0
-                        if (beans == null || beans.isEmpty()) {
-                            return Optional.empty();
-                        }
-
-                        try {
-                            return Optional.of(beanManager.resolve(beans));
-                        } catch (AmbiguousResolutionException e) {
-                            LOGGER.warn(
-                                    "An ambiguous EL name exists [name: {}]",
-                                    key);
-                            return Optional.empty();
-                        }
-
+                    // Check required for CDI 1.0
+                    if (beans == null || beans.isEmpty()) {
+                        return Optional.empty();
                     }
+
+                    try {
+                        return Optional.of(beanManager.resolve(beans));
+                    } catch (AmbiguousResolutionException e) {
+                        LOGGER.warn(
+                                "An ambiguous EL name exists [name: {}]",
+                                key);
+                        return Optional.empty();
+                    }
+
                 }, null, beanCacheMaxSize, null);
         LOGGER.debug("Initialized [beanCacheMaxSize: {}]", beanCacheMaxSize);
     }

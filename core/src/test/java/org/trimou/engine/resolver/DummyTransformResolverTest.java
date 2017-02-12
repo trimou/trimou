@@ -16,13 +16,7 @@ import org.trimou.engine.MustacheEngineBuilder;
 public class DummyTransformResolverTest extends AbstractTest {
 
     final DummyTransformResolver resolver = new DummyTransformResolver(100,
-            new Transformer() {
-                @Override
-                public Object transform(Object contextObject, String name,
-                        ResolutionContext context) {
-                    return "{{" + name.toUpperCase() + "}}";
-                }
-            }, "ng");
+            (contextObject, name, context) -> "{{" + name.toUpperCase() + "}}", "ng");
 
     @Test
     public void testResolution() {

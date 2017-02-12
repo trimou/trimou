@@ -98,15 +98,11 @@ public class PrettyTimeResolverTest {
     public void testCustomPrettyTimeFactory() throws InterruptedException {
 
         PrettyTimeResolver resolver = new PrettyTimeResolver(100,
-                new PrettyTimeFactory() {
-
-                    @Override
-                    public PrettyTime createPrettyTime(Locale locale) {
-                        PrettyTime prettyTime = new PrettyTime(locale);
-                        prettyTime.getUnit(JustNow.class)
-                                .setMaxQuantity(1000L * 2L);
-                        return prettyTime;
-                    }
+                locale -> {
+                    PrettyTime prettyTime = new PrettyTime(locale);
+                    prettyTime.getUnit(JustNow.class)
+                            .setMaxQuantity(1000L * 2L);
+                    return prettyTime;
                 });
 
         // Just to init the resolver

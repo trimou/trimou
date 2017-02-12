@@ -248,17 +248,13 @@ public class OptionsTest extends AbstractTest {
 
                     @Override
                     public void execute(Options options) {
-                        options.executeAsync(new Options.HelperExecutable() {
-
-                            @Override
-                            public void execute(Options options) {
-                                try {
-                                    Thread.sleep(50);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                options.append("done");
+                        options.executeAsync(o -> {
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
                             }
+                            o.append("done");
                         });
                     }
                 }).build();

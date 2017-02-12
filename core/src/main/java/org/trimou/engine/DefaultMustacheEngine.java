@@ -165,19 +165,10 @@ class DefaultMustacheEngine implements MustacheEngine {
 
     private ComputingCache<String, Optional<Mustache>> buildTemplateCache() {
         return buildCache("Template",
-                new ComputingCache.Function<String, Optional<Mustache>>() {
-                    @Override
-                    public Optional<Mustache> compute(String key) {
-                        return Optional.ofNullable(locateAndParse(key));
-                    }
-                }, new ComputingCache.Listener<String>() {
-                    @Override
-                    public void entryInvalidated(String key, String cause) {
-                        LOGGER.debug(
-                                "Removed template from cache [templateId: {}, cause: {}]",
-                                key, cause);
-                    }
-                });
+                key ->
+                        Optional.ofNullable(locateAndParse(key)),
+                (key, cause) ->
+                        LOGGER.debug("Removed template from cache [templateId: {}, cause: {}]", key, cause));
     }
 
     /**
@@ -186,19 +177,10 @@ class DefaultMustacheEngine implements MustacheEngine {
      */
     private ComputingCache<String, Optional<String>> buildSourceCache() {
         return buildCache("Source",
-                new ComputingCache.Function<String, Optional<String>>() {
-                    @Override
-                    public Optional<String> compute(String key) {
-                        return Optional.ofNullable(locateAndRead(key));
-                    }
-                }, new ComputingCache.Listener<String>() {
-                    @Override
-                    public void entryInvalidated(String key, String cause) {
-                        LOGGER.debug(
-                                "Removed template source from cache [templateId: {}, cause: {}]",
-                                key, cause);
-                    }
-                });
+                key ->
+                        Optional.ofNullable(locateAndRead(key)),
+                (key, cause) ->
+                        LOGGER.debug("Removed template source from cache [templateId: {}, cause: {}]", key, cause));
     }
 
     private <K, V> ComputingCache<K, V> buildCache(String name,
@@ -209,8 +191,7 @@ class DefaultMustacheEngine implements MustacheEngine {
                 EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT);
 
         if (expirationTimeout > 0) {
-            LOGGER.info("{} cache expiration timeout set: {} seconds", name,
-                    expirationTimeout);
+            LOGGER.info("{} cache expiration timeout set: {} seconds", name, expirationTimeout);
             expirationTimeout = expirationTimeout * 1000L;
         } else {
             expirationTimeout = null;
