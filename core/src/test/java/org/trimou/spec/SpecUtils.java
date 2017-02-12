@@ -93,9 +93,8 @@ public final class SpecUtils {
             }
             // Use warn log level so that this message is visible during
             // ordinary build (warn is the default log level)
-            LOGGER.warn(
-                    "Spec tests finished [filename: {}, tests: {}, failures: {}]",
-                    new Object[] { filename, definitions.size(), failures });
+            LOGGER.warn("Spec tests finished [filename: {}, tests: {}, failures: {}]", filename, definitions.size(),
+                    failures);
             if (failures > 0) {
                 fail(String.format("Spec tests failures: %s", failures));
             }

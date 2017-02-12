@@ -640,10 +640,8 @@ class HelperExecutionHandler {
             if (pushed > 0) {
                 LOGGER.info(
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
-                        new Object[] { pushed,
-                                splitHelperName(segment.getTagInfo().getText(),
-                                        segment).next(),
-                                segment.getTagInfo().getTemplateName() });
+                        pushed, splitHelperName(segment.getTagInfo().getText(), segment).next(),
+                        segment.getTagInfo().getTemplateName());
             }
         }
 
