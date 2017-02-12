@@ -178,7 +178,7 @@ public class ValueWrapperTest extends AbstractTest {
                 }).build().compileMustache("getkeypartindex", "{{my.key.foo}}")
                 .render(null);
 
-        assertEquals(3l, indexes.size());
+        assertEquals(3L, indexes.size());
         assertEquals(Integer.valueOf(0), indexes.get(0));
         assertEquals(Integer.valueOf(1), indexes.get(1));
         assertEquals(Integer.valueOf(2), indexes.get(2));

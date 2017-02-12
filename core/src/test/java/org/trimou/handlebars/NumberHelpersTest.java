@@ -79,8 +79,8 @@ public class NumberHelpersTest extends AbstractTest {
     public void testNumericExpressionHelper() {
         final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addGlobalData("operator", "lt")
-                .addGlobalData("longValuesSet", ImmutableSet.of(10l, 12l))
-                .addGlobalData("longValuesArray", new Long[] { 10l, 12l })
+                .addGlobalData("longValuesSet", ImmutableSet.of(10L, 12L))
+                .addGlobalData("longValuesArray", new Long[] {10L, 12L})
                 .registerHelpers(HelpersBuilder.empty().addNumExpr().build())
                 .build();
         Map<String, Object> data = ImmutableMap.of("val1",

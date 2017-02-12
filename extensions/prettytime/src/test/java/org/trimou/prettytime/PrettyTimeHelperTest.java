@@ -67,12 +67,12 @@ public class PrettyTimeHelperTest {
         assertEquals(bundle.getString("JustNowPastPrefix"),
                 engine.compileMustache("pretty_helper_custom_factory_01",
                         "{{pretty this}}")
-                        .render(new Date().getTime() - 1000l));
+                        .render(new Date().getTime() - 1000L));
         assertEquals("4 " + bundle.getString("SecondPluralName")
                 + bundle.getString("SecondPastSuffix"), engine
                         .compileMustache("pretty_helper_custom_factory_02",
                                 "{{pretty this}}")
-                        .render(new Date().getTime() - 4000l));
+                        .render(new Date().getTime() - 4000L));
     }
 
     @Test

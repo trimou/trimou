@@ -57,7 +57,7 @@ public class ReflectionResolver extends AbstractResolver {
      * compilation is involved). Use zero value to disable the cache.
      */
     public static final ConfigurationKey MEMBER_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-            ReflectionResolver.class.getName() + ".memberCacheMaxSize", 10000l);
+            ReflectionResolver.class.getName() + ".memberCacheMaxSize", 10000L);
 
     /**
      * Even if the runtime class of the context object changes try to apply the
@@ -178,7 +178,7 @@ public class ReflectionResolver extends AbstractResolver {
     }
 
     long getMemberCacheSize() {
-        return memberCache != null ? memberCache.size() : 0l;
+        return memberCache != null ? memberCache.size() : 0L;
     }
 
     private static Optional<MemberWrapper> findWrapper(MemberKey key) {

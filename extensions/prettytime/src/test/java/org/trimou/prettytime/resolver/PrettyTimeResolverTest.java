@@ -41,7 +41,7 @@ public class PrettyTimeResolverTest {
         assertNull(resolver.resolve(null, "prettyTime", null));
         assertNull(resolver.resolve("foo", "prettyTime", null));
         assertNotNull(resolver.resolve(new Date(), "prettyTime", null));
-        assertNotNull(resolver.resolve(10000l, "prettyTime", null));
+        assertNotNull(resolver.resolve(10000L, "prettyTime", null));
         assertNotNull(
                 resolver.resolve(Calendar.getInstance(), "prettyTime", null));
     }
@@ -118,11 +118,11 @@ public class PrettyTimeResolverTest {
 
         Resources_en bundle = new Resources_en();
         assertEquals(bundle.getString("JustNowPastPrefix"), resolver
-                .resolve(new Date().getTime() - 1000l, "prettyTime", null));
+                .resolve(new Date().getTime() - 1000L, "prettyTime", null));
         assertEquals(
                 "4 " + bundle.getString("SecondPluralName")
                         + bundle.getString("SecondPastSuffix"),
-                resolver.resolve(new Date().getTime() - 4000l, "prettyTime",
+                resolver.resolve(new Date().getTime() - 4000L, "prettyTime",
                         null));
     }
 

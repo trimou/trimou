@@ -104,9 +104,7 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
     public void init(Configuration configuration) {
         super.init(configuration);
         prettyTimeCache = configuration.getComputingCacheFactory()
-                .create(COMPUTING_CACHE_CONSUMER_ID,
-                        factory::createPrettyTime, null, 10l,
-                        null);
+                .create(COMPUTING_CACHE_CONSUMER_ID, factory::createPrettyTime, null, 10L, null);
     }
 
     @Override

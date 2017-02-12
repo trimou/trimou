@@ -107,7 +107,7 @@ public class InvokeHelper extends BasicHelper {
      * Limit the size of the cache. Use zero value to disable the cache.
      */
     public static final ConfigurationKey METHOD_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-            InvokeHelper.class.getName() + ".methodCacheMaxSize", 500l);
+            InvokeHelper.class.getName() + ".methodCacheMaxSize", 500L);
 
     private volatile ComputingCache<MethodKey, Optional<Method>> methodCache;
 

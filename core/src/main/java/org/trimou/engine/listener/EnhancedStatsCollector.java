@@ -140,11 +140,11 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
 
     private Stats parseData(String mustacheName, long mustacheId,
             Collection<ExecutionData> executions) {
-        long errors = 0l;
-        long finished = 0l;
-        long totalTime = 0l;
+        long errors = 0L;
+        long finished = 0L;
+        long totalTime = 0L;
         long minTime = Long.MAX_VALUE;
-        long maxTime = 0l;
+        long maxTime = 0L;
         for (ExecutionData execution : executions) {
             if (execution.isFinished()) {
                 long value = convert(execution.getValue());

@@ -28,7 +28,7 @@ public class ConfigurationPropertiesTest {
     public void testConvertConfigValue() {
         assertEquals(10, ConfigurationProperties
                 .convertConfigValue(Integer.class, "10"));
-        assertEquals(10l,
+        assertEquals(10L,
                 ConfigurationProperties.convertConfigValue(Long.class, "10"));
         assertEquals(Boolean.FALSE, ConfigurationProperties
                 .convertConfigValue(Boolean.class, "10"));
