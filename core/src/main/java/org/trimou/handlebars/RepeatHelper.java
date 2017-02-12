@@ -88,7 +88,7 @@ public class RepeatHelper extends BasicSectionHelper {
         } else {
             Object whileValue = options.getHash().get(WHILE);
             if (whileValue != null) {
-                Object value = null;
+                Object value;
                 String whileExpr = whilePlaceholderKeys.get(getKey(options));
                 if (whileExpr != null) {
                     value = whileValue;

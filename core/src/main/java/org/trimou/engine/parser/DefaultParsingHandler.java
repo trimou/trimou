@@ -142,7 +142,6 @@ class DefaultParsingHandler implements ParsingHandler {
                 templateName, System.currentTimeMillis() - start,
                 template.getRootSegment().getSegmentsSize(true));
 
-        rootSegmentBase = null;
         nestedTemplates.clear();
         containerStack.clear();
     }

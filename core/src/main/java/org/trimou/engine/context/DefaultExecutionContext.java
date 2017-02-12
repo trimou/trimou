@@ -81,7 +81,7 @@ final class DefaultExecutionContext implements ExecutionContext {
             AtomicReference<Hint> hintRef) {
 
         ValueWrapper value = new ValueWrapper(key);
-        Object lastValue = null;
+        Object lastValue;
 
         if (keyParts == null || keyParts.length == 0) {
             Iterator<String> parts = configuration.getKeySplitter().split(key);
