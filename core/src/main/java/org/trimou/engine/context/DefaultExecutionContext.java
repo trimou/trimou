@@ -262,12 +262,11 @@ final class DefaultExecutionContext implements ExecutionContext {
     private Object resolve(Object contextObject, String name,
             ValueWrapper value, boolean createHint) {
         Object resolved = null;
-        for (final Resolver resolver1 : resolvers) {
-            resolved = resolver1.resolve(contextObject, name, value);
+        for (final Resolver resolver : resolvers) {
+            resolved = resolver.resolve(contextObject, name, value);
             if (resolved != null) {
                 if (createHint) {
                     // Initialize a new hint if possible
-                    Resolver resolver = resolver1;
                     if (resolver instanceof EnhancedResolver) {
                         value.setHint(((EnhancedResolver) resolver).createHint(
                                 contextObject, name, value));
