@@ -532,11 +532,9 @@ class DefaultParsingHandler implements ParsingHandler {
 
         private boolean unescape;
 
-        ValueSegmentBase(ParsedTag tag, int line, int index,
-                boolean skipValueEscaping) {
+        ValueSegmentBase(ParsedTag tag, int line, int index, boolean skipValueEscaping) {
             super(SegmentType.VALUE, tag.getContent(), line, index);
-            unescape = skipValueEscaping ? true
-                    : tag.getType().equals(MustacheTagType.UNESCAPE_VARIABLE);
+            unescape = skipValueEscaping || tag.getType().equals(MustacheTagType.UNESCAPE_VARIABLE);
         }
 
         @Override
