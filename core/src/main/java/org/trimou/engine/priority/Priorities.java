@@ -43,10 +43,10 @@ public final class Priorities {
     }
 
     public static <T extends WithPriority> Comparator<T> higherFirst() {
-        return Comparator.<T> comparingInt((e) -> e.getPriority()).reversed();
+        return Comparator.<T> comparingInt(WithPriority::getPriority).reversed();
     }
 
     public static <T extends WithPriority> Comparator<T> lowerFirst() {
-        return Comparator.comparingInt((e) -> e.getPriority());
+        return Comparator.comparingInt(WithPriority::getPriority);
     }
 }

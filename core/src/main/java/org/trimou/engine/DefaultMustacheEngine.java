@@ -147,9 +147,9 @@ class DefaultMustacheEngine implements MustacheEngine {
     public void invalidateTemplateCache(Predicate<String> predicate) {
         if (isCacheEnabled()) {
             checkArgumentNotNull(predicate);
-            templateCache.invalidate((name) -> predicate.test(name));
+            templateCache.invalidate(predicate::test);
             if (sourceCache != null) {
-                sourceCache.invalidate((name) -> predicate.test(name));
+                sourceCache.invalidate(predicate::test);
             }
         }
     }

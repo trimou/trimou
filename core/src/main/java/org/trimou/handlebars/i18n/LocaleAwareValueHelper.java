@@ -63,7 +63,7 @@ public abstract class LocaleAwareValueHelper extends BasicValueHelper {
      */
     protected Locale getCurrentLocale(Options options) {
         if (options != null) {
-            return localeSupport.getCurrentLocale((k) -> options.getValue(k));
+            return localeSupport.getCurrentLocale(options::getValue);
         }
         return localeSupport.getCurrentLocale();
     }

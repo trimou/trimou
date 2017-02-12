@@ -17,7 +17,7 @@ public class SimpleLambdaTest {
     public void testSimpleLambda() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addGlobalData("lc",
-                        SimpleLambdas.invoke((t) -> t.toLowerCase()))
+                        SimpleLambdas.invoke(String::toLowerCase))
                 .addGlobalData("lc-builder",
                         SimpleLambdas.builder().inputType(InputType.PROCESSED)
                                 .invoke((t) -> t.toUpperCase() + " {{foo}}")

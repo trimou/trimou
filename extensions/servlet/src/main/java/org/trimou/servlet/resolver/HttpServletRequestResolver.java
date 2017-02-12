@@ -114,7 +114,7 @@ public class HttpServletRequestResolver extends AbstractResolver
 
     @Override
     public void renderingStarted(MustacheRenderingEvent event) {
-        event.registerReleaseCallback(() -> REQUEST_WRAPPER.remove());
+        event.registerReleaseCallback(REQUEST_WRAPPER::remove);
     }
 
     @Override

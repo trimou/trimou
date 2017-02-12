@@ -69,7 +69,7 @@ public class ReflectionResolver extends AbstractResolver {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ReflectionResolver.class);
 
-    private static final MemberWrapper ARRAY_GET_LENGTH = (instance) -> Array.getLength(instance);
+    private static final MemberWrapper ARRAY_GET_LENGTH = Array::getLength;
 
     public static final String GET_PREFIX = "get";
     public static final String IS_PREFIX = "is";
@@ -143,7 +143,7 @@ public class ReflectionResolver extends AbstractResolver {
                 memberCacheMaxSize);
         if (memberCacheMaxSize > 0) {
             memberCache = configuration.getComputingCacheFactory().create(
-                    COMPUTING_CACHE_CONSUMER_ID, (key) -> findWrapper(key),
+                    COMPUTING_CACHE_CONSUMER_ID, ReflectionResolver::findWrapper,
                     null, memberCacheMaxSize, null);
         }
         hintFallbackEnabled = configuration
