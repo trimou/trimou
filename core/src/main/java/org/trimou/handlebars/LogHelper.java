@@ -229,7 +229,7 @@ public class LogHelper extends BasicValueHelper {
     /**
      * Log event adapter.
      */
-    public static interface LoggerAdapter {
+    public interface LoggerAdapter {
 
         /**
          *

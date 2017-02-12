@@ -40,6 +40,6 @@ public interface IdentifierGenerator extends ConfigurationAware {
      *            be <code>null</code>
      * @return the generated identifier
      */
-    public long generate(Class<? extends Identified> componentType);
+    long generate(Class<? extends Identified> componentType);
 
 }

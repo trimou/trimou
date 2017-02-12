@@ -150,7 +150,7 @@ public interface Options extends HelperDefinition {
      * @since 1.8
      */
     @FunctionalInterface
-    public interface HelperExecutable {
+    interface HelperExecutable {
 
         /**
          *

@@ -45,98 +45,98 @@ public interface Configuration {
      * @return the ordered immutable list of resolvers, or <code>null</code> if
      *         no resolvers defined
      */
-    public List<Resolver> getResolvers();
+    List<Resolver> getResolvers();
 
     /**
      * @return the immutable map of global values, or <code>null</code> if no
      *         global values defined
      */
-    public Map<String, Object> getGlobalData();
+    Map<String, Object> getGlobalData();
 
     /**
      * @return the ordered immutable list of template locators, or
      *         <code>null</code> if no template locators defined
      */
-    public List<TemplateLocator> getTemplateLocators();
+    List<TemplateLocator> getTemplateLocators();
 
     /**
      * @return the text support implementation
      */
-    public TextSupport getTextSupport();
+    TextSupport getTextSupport();
 
     /**
      * @return the locale support implementation
      */
-    public LocaleSupport getLocaleSupport();
+    LocaleSupport getLocaleSupport();
 
     /**
      * @return the immutable list of {@link Mustache} listeners
      */
-    public List<MustacheListener> getMustacheListeners();
+    List<MustacheListener> getMustacheListeners();
 
     /**
      * @return the key splitter implementation
      * @since 1.5
      */
-    public KeySplitter getKeySplitter();
+    KeySplitter getKeySplitter();
 
     /**
      * @return the missing value handler implementation
      * @since 1.5
      */
-    public MissingValueHandler getMissingValueHandler();
+    MissingValueHandler getMissingValueHandler();
 
     /**
      * @return the immutable map of registered helpers
      */
-    public Map<String, Helper> getHelpers();
+    Map<String, Helper> getHelpers();
 
     /**
      *
      * @param configurationKey
      * @return the property value for the given key
      */
-    public <T extends ConfigurationKey> Long getLongPropertyValue(T configurationKey);
+    <T extends ConfigurationKey> Long getLongPropertyValue(T configurationKey);
 
     /**
      *
      * @param configurationKey
      * @return the property value for the given key
      */
-    public <T extends ConfigurationKey> Integer getIntegerPropertyValue(T configurationKey);
+    <T extends ConfigurationKey> Integer getIntegerPropertyValue(T configurationKey);
 
     /**
      *
      * @param configurationKey
      * @return the property value for the given key
      */
-    public <T extends ConfigurationKey> String getStringPropertyValue(T configurationKey);
+    <T extends ConfigurationKey> String getStringPropertyValue(T configurationKey);
 
     /**
      *
      * @param configurationKey
      * @return the property value for the given key
      */
-    public <T extends ConfigurationKey> Boolean getBooleanPropertyValue(T configurationKey);
+    <T extends ConfigurationKey> Boolean getBooleanPropertyValue(T configurationKey);
 
     /**
      * @return the description info
      */
-    public String getInfo();
+    String getInfo();
 
     /**
      *
      * @return the computing cache factory
      * @since 1.7
      */
-    public ComputingCacheFactory getComputingCacheFactory();
+    ComputingCacheFactory getComputingCacheFactory();
 
     /**
      *
      * @return the idenfitier generator
      * @since 1.7
      */
-    public IdentifierGenerator getIdentifierGenerator();
+    IdentifierGenerator getIdentifierGenerator();
 
     /**
      *
@@ -144,20 +144,20 @@ public interface Configuration {
      * @see Options#executeAsync(org.trimou.handlebars.Options.HelperExecutable)
      * @since 1.8
      */
-    public ExecutorService geExecutorService();
+    ExecutorService geExecutorService();
 
     /**
      *
      * @return the literal support implementation
      * @since 1.8
      */
-    public LiteralSupport getLiteralSupport();
+    LiteralSupport getLiteralSupport();
 
     /**
      *
      * @return the immutable list of converters
      * @since 2.1
      */
-    public List<ValueConverter> getValueConverters();
+    List<ValueConverter> getValueConverters();
 
 }

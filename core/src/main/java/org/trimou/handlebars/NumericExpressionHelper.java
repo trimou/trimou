@@ -330,7 +330,7 @@ public class NumericExpressionHelper extends BasicHelper {
 
     }
 
-    static interface Evaluator {
+    interface Evaluator {
 
         boolean evaluate(Options options);
     }

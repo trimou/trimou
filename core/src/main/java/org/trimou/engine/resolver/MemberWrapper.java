@@ -32,7 +32,7 @@ interface MemberWrapper {
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    public Object getValue(Object instance) throws IllegalAccessException,
+    Object getValue(Object instance) throws IllegalAccessException,
             IllegalArgumentException, InvocationTargetException;
 
 }

@@ -32,7 +32,7 @@ public interface ParsingHandler {
      * @param name
      * @param delimiters
      */
-    public void startTemplate(String name, Delimiters delimiters,
+    void startTemplate(String name, Delimiters delimiters,
             MustacheEngine engine);
 
     /**
@@ -40,26 +40,26 @@ public interface ParsingHandler {
      *
      * @param text
      */
-    public void text(String text);
+    void text(String text);
 
     /**
      * Flush a tag.
      *
      * @param tag
      */
-    public void tag(ParsedTag tag);
+    void tag(ParsedTag tag);
 
     /**
      * Flush a line separator.
      *
      * @param separator
      */
-    public void lineSeparator(String separator);
+    void lineSeparator(String separator);
 
     /**
      * Parsing ended.
      */
-    public void endTemplate();
+    void endTemplate();
 
     /**
      *
@@ -67,6 +67,6 @@ public interface ParsingHandler {
      * @throws MustacheException
      *             If not finished yet
      */
-    public Mustache getCompiledTemplate();
+    Mustache getCompiledTemplate();
 
 }

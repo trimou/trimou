@@ -47,7 +47,7 @@ public interface TemplateLocator extends WithPriority, ConfigurationAware {
      *         exists
      * @see org.trimou.Mustache#getName()
      */
-    public Reader locate(String name);
+    Reader locate(String name);
 
     /**
      * This method should return an empty set if it's not possible to collect the names/identifiers.

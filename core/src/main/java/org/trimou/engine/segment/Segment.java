@@ -33,25 +33,25 @@ public interface Segment {
     /**
      * @return the segment type
      */
-    public SegmentType getType();
+    SegmentType getType();
 
     /**
      * @return the segment text (a tag key, a line separator text, etc.)
      */
-    public String getText();
+    String getText();
 
     /**
      * @return the origin of this segment or <code>null</code> in case of this
      *         segment is a template
      */
-    public Origin getOrigin();
+    Origin getOrigin();
 
     /**
      *
      * @return the info about the original tag or <code>null</code> if the
      *         segment does not represent a tag (e.g. {@link SegmentType#TEXT})
      */
-    public MustacheTagInfo getTagInfo();
+    MustacheTagInfo getTagInfo();
 
     /**
      * Note that the text is reconstructed and will not be an exact copy when
@@ -62,7 +62,7 @@ public interface Segment {
      * @see InputType#LITERAL
      * @see Options#getContentLiteralBlock()
      */
-    public String getLiteralBlock();
+    String getLiteralBlock();
 
     /**
      * Execute this segment (e.g. write down some variable value).
@@ -71,6 +71,6 @@ public interface Segment {
      * @param context
      * @return the appendable which should be used for the next executions
      */
-    public Appendable execute(Appendable appendable, ExecutionContext context);
+    Appendable execute(Appendable appendable, ExecutionContext context);
 
 }
