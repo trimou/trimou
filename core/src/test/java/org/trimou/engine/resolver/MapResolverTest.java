@@ -35,7 +35,7 @@ public class MapResolverTest extends AbstractEngineTest {
         Mapper mapper = new Mapper() {
             @Override
             public Object get(String key) {
-                return "foo".equals(key) ? Integer.valueOf(10) : null;
+                return "foo".equals(key) ? 10 : null;
             }
         };
         Map<String, Object> data = ImmutableMap.<String, Object> of("map", map,

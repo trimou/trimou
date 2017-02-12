@@ -41,11 +41,11 @@ public class NumberHelpersTest extends AbstractTest {
         assertEquals("",
                 engine.compileMustache("isEven_section",
                         "{{#isEven this}}even{{/isEven}}")
-                        .render(Integer.valueOf(3)));
+                        .render(3));
         assertEquals("even",
                 engine.compileMustache("isEven_section",
                         "{{#isEven this}}even{{/isEven}}")
-                        .render(Integer.valueOf(2)));
+                        .render(2));
         assertCompilationFails(engine, "isEven_fail", "{{isEven}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
@@ -66,11 +66,11 @@ public class NumberHelpersTest extends AbstractTest {
         assertEquals("",
                 engine.compileMustache("isOdd_section",
                         "{{#isOdd this}}odd{{/isOdd}}")
-                        .render(Integer.valueOf(4)));
+                        .render(4));
         assertEquals("odd",
                 engine.compileMustache("isOdd_section",
                         "{{#isOdd this}}odd{{/isOdd}}")
-                        .render(Integer.valueOf(9)));
+                        .render(9));
         assertCompilationFails(engine, "isOdd_fail", "{{isOdd}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
     }
@@ -84,41 +84,41 @@ public class NumberHelpersTest extends AbstractTest {
                 .registerHelpers(HelpersBuilder.empty().addNumExpr().build())
                 .build();
         Map<String, Object> data = ImmutableMap.<String, Object> of("val1",
-                Integer.valueOf(2), "val2", Integer.valueOf(1), "val3",
-                Long.valueOf(10), "val4", BigDecimal.ZERO, "val5",
+                2, "val2", 1, "val3",
+                10L, "val4", BigDecimal.ZERO, "val5",
                 BigInteger.ONE);
         assertEquals("true", engine
                 .compileMustache("number_pos1", "{{numExpr this op='pos'}}")
-                .render(Long.valueOf(1)));
+                .render(1L));
         assertEquals("", engine
                 .compileMustache("number_pos2", "{{numExpr this op='pos'}}")
-                .render(Long.valueOf(-1)));
+                .render(-1L));
         assertEquals("true",
                 engine.compileMustache("number_pos3", "{{numExpr 10 op='pos'}}")
                         .render(null));
 
         assertEquals("", engine
                 .compileMustache("number_neg1", "{{numExpr this op='neg'}}")
-                .render(Long.valueOf(1)));
+                .render(1L));
         assertEquals("yes",
                 engine.compileMustache("number_neg2",
                         "{{numExpr this op='neg' out='yes'}}")
-                        .render(Long.valueOf(-1)));
+                        .render(-1L));
         assertEquals("true",
                 engine.compileMustache("number_eq1", "{{numExpr this '1'}}")
-                        .render(Long.valueOf(1)));
+                        .render(1L));
         assertEquals("One!",
                 engine.compileMustache("number_eq2",
                         "{{numExpr this '1' out='One!'}}")
-                        .render(Long.valueOf(1)));
+                        .render(1L));
         assertEquals("yes",
                 engine.compileMustache("number_eq3",
                         "{{#numExpr this '1' op='eq'}}yes{{/numExpr}}")
-                        .render(Long.valueOf(1)));
+                        .render(1L));
         assertEquals("Not equal!",
                 engine.compileMustache("number_neq1",
                         "{{numExpr -2 +2 op='neq' out='Not equal!'}}")
-                        .render(Long.valueOf(1)));
+                        .render(1L));
         assertEquals("yes",
                 engine.compileMustache("number_gt1",
                         "{{#numExpr val1 val2 op='gt'}}yes{{/numExpr}}")
@@ -227,12 +227,12 @@ public class NumberHelpersTest extends AbstractTest {
                 "foo", engine
                         .compileMustache("number_default_op",
                                 "{{#gt this 10}}foo{{/gt}}")
-                        .render(Long.valueOf(11)));
+                        .render(11L));
         assertEquals(
                 "", engine
                         .compileMustache("number_default_op",
                                 "{{#gt this 10}}foo{{/gt}}")
-                        .render(Long.valueOf(10)));
+                        .render(10L));
     }
 
     @Test
@@ -245,18 +245,18 @@ public class NumberHelpersTest extends AbstractTest {
                 "foo", engine
                         .compileMustache("number_default_op1",
                                 "{{#gt this 10}}foo{{/gt}}")
-                        .render(Long.valueOf(11)));
+                        .render(11L));
         assertEquals(
                 "foo", engine
                         .compileMustache("number_default_op2",
                                 "{{#eq this 10}}foo{{/eq}}")
-                        .render(Long.valueOf(10)));
+                        .render(10L));
         assertEquals("yes",
                 engine.compileMustache("number_nin1",
                         "{{#nin val1 '0' '5'}}yes{{/nin}}")
                         .render(ImmutableMap.<String, Object> of("val1",
-                                Integer.valueOf(2), "val2", Integer.valueOf(1),
-                                "val3", Long.valueOf(10), "val4",
+                                2, "val2", 1,
+                                "val3", 10L, "val4",
                                 BigDecimal.ZERO, "val5", BigInteger.ONE)));
     }
 
