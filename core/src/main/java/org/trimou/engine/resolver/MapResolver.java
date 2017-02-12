@@ -37,13 +37,7 @@ public class MapResolver extends AbstractResolver {
 
     public MapResolver(int priority) {
         super(priority);
-        this.hint = new Hint() {
-            @Override
-            public Object resolve(Object contextObject, String name,
-                    ResolutionContext context) {
-                return MapResolver.this.resolve(contextObject, name, context);
-            }
-        };
+        this.hint = MapResolver.this::resolve;
     }
 
     @SuppressWarnings("rawtypes")

@@ -80,14 +80,7 @@ public class JsonValueResolver extends IndexResolver implements Validateable {
      */
     public JsonValueResolver(int priority) {
         super(priority);
-        this.hint = new Hint() {
-            @Override
-            public Object resolve(Object contextObject, String name,
-                    ResolutionContext context) {
-                return JsonValueResolver.this.resolve(contextObject, name,
-                        context);
-            }
-        };
+        this.hint = JsonValueResolver.this::resolve;
     }
 
     @Override
