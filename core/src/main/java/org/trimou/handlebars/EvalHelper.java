@@ -90,9 +90,8 @@ public class EvalHelper extends BasicHelper {
     @Override
     public void execute(Options options) {
         StringBuilder key = new StringBuilder();
-        Iterator<Object> iterator = options.getParameters().iterator();
-        while (iterator.hasNext()) {
-            notation.append(key, iterator.next().toString());
+        for (final Object o : options.getParameters()) {
+            notation.append(key, o.toString());
         }
         Object value = options.getValue(key.toString());
         if (isSection(options)) {

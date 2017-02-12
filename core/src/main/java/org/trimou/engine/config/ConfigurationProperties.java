@@ -61,8 +61,8 @@ final class ConfigurationProperties {
     static String buildPropertyKey(String propertyName, String delimiter,
             String[] prefixParts) {
         StringBuilder key = new StringBuilder();
-        for (int i = 0; i < prefixParts.length; i++) {
-            key.append(prefixParts[i]);
+        for (final String prefixPart : prefixParts) {
+            key.append(prefixPart);
             key.append(Strings.DOT);
         }
         key.append(

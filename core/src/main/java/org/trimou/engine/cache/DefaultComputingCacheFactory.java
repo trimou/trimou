@@ -172,9 +172,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
         @Override
         public Map<K, V> getAllPresent() {
             ImmutableMapBuilder<K, V> builder = ImmutableMap.builder();
-            for (Iterator<Entry<K, CacheEntry<V>>> iterator = map.entrySet()
-                    .iterator(); iterator.hasNext();) {
-                Entry<K, CacheEntry<V>> entry = iterator.next();
+            for (Entry<K, CacheEntry<V>> entry : map.entrySet()) {
                 if (!entry.getValue().isExpired(expirationTimeout)) {
                     builder.put(entry.getKey(), entry.getValue().value);
                 }
