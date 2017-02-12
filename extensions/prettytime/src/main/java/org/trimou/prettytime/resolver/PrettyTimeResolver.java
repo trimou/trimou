@@ -141,7 +141,7 @@ public class PrettyTimeResolver extends TransformResolver implements
         setMatchingNames(configuration.getStringPropertyValue(MATCH_NAME_KEY));
         prettyTimeCache = configuration.getComputingCacheFactory().create(
                 COMPUTING_CACHE_CONSUMER_ID,
-                factory::createPrettyTime, null, 10l, null);
+                factory::createPrettyTime, null, 10L, null);
         LOGGER.info("Initialized [matchingName: {}]", matchingName(0));
     }
 

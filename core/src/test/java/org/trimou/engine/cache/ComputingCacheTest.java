@@ -82,7 +82,7 @@ public class ComputingCacheTest extends AbstractEngineTest {
         }
         List<Future<Boolean>> results = executorService.invokeAll(tasks);
         while (!isFinished(results)) {
-            Thread.sleep(10l);
+            Thread.sleep(10L);
         }
         return new Result(cache, computations);
     }
@@ -146,9 +146,9 @@ public class ComputingCacheTest extends AbstractEngineTest {
 
     @Test
     public void testEviction() throws InterruptedException {
-        long actions = 1000l;
+        long actions = 1000L;
         int threads = 10;
-        Result result = runComputations(threads, actions, "test", null, 500l);
+        Result result = runComputations(threads, actions, "test", null, 500L);
         assertTrue(result.getComputations().get() >= actions);
         assertTrue(result.getCache().size() < actions);
     }

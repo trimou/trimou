@@ -49,7 +49,7 @@ public class SimpleHelperTest {
     @Test
     public void testSimpleHelperConfiguration() {
         final SimpleConfigurationKey key = new SimpleConfigurationKey(
-                "test.key", 10l);
+                "test.key", 10L);
         MustacheEngine engine = MustacheEngineBuilder
                 .newBuilder()
                 .registerHelper("test",

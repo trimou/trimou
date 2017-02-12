@@ -61,7 +61,7 @@ public class CDIBeanResolver extends AbstractResolver {
             ReflectionResolver.REFLECTION_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey BEAN_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-            CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000l);
+            CDIBeanResolver.class.getName() + ".beanCacheMaxSize", 1000L);
 
     private BeanManager beanManager;
 

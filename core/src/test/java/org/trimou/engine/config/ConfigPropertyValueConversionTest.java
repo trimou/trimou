@@ -32,14 +32,14 @@ public class ConfigPropertyValueConversionTest extends AbstractEngineTest {
         testValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT,
                 "foo", false);
         testValue(EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT,
-                10l, true);
+                10L, true);
         testValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT,
                 false, false);
         testValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT,
                 10, true);
         testValue(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY, "nonsense",
                 false);
-        testValue(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY, 10l, true);
+        testValue(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY, 10L, true);
 
         // Invalid default value type
         final ConfigurationKey key = new ConfigurationKey() {

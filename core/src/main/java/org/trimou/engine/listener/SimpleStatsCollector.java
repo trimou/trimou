@@ -201,8 +201,8 @@ public class SimpleStatsCollector extends AbstractStatsCollector {
 
         SimpleStats(String name, Map<Long, AtomicLong> data) {
             this.name = name;
-            long executions = 0l;
-            long totalTime = 0l;
+            long executions = 0L;
+            long totalTime = 0L;
             for (Entry<Long, AtomicLong> entry : data.entrySet()) {
                 executions += entry.getValue().get();
                 totalTime += entry.getKey() * entry.getValue().get();

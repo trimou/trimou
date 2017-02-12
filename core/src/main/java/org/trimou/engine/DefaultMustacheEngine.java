@@ -211,7 +211,7 @@ class DefaultMustacheEngine implements MustacheEngine {
         if (expirationTimeout > 0) {
             LOGGER.info("{} cache expiration timeout set: {} seconds", name,
                     expirationTimeout);
-            expirationTimeout = expirationTimeout * 1000l;
+            expirationTimeout = expirationTimeout * 1000L;
         } else {
             expirationTimeout = null;
         }

@@ -93,7 +93,7 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * The template cache expiration timeout in seconds. Zero and negative
      * values mean no timeout.
      */
-    TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0l),
+    TEMPLATE_CACHE_EXPIRATION_TIMEOUT(0L),
     /**
      * If set to <code>true</code> handlebars-like helpers are supported.
      *

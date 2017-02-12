@@ -96,7 +96,7 @@ public class CacheHelper extends BasicSectionHelper {
      * Limit the size of the fragment cache.
      */
     public static final ConfigurationKey FRAGMENT_CACHE_MAX_SIZE_KEY = new SimpleConfigurationKey(
-            CacheHelper.class.getName() + ".fragmentCacheMaxSize", 500l);
+            CacheHelper.class.getName() + ".fragmentCacheMaxSize", 500L);
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CacheHelper.class);

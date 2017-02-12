@@ -46,7 +46,7 @@ public class SimpleStatsCollectorTest extends AbstractEngineTest {
             @Override
             public String invoke(String text) {
                 try {
-                    Thread.sleep(10l + random.nextInt(10));
+                    Thread.sleep(10L + random.nextInt(10));
                 } catch (InterruptedException e) {
                     throw new IllegalStateException();
                 }

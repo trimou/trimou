@@ -77,7 +77,7 @@ public class EnhancedStatsCollectorTest extends AbstractEngineTest {
         Stats stats = collector.getStats(mustache);
         assertNotNull(stats);
         assertEquals(loop - 1, stats.getFinished());
-        assertEquals(1l, stats.getErrors());
+        assertEquals(1L, stats.getErrors());
         assertTrue(stats.getMaxTime() > 0);
         assertTrue(stats.getMinTime() > 0);
         assertTrue(stats.getMeanTime() > 0 && stats.getMeanTime() <= stats.getMaxTime());

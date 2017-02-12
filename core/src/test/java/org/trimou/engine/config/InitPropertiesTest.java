@@ -26,7 +26,7 @@ public class InitPropertiesTest extends AbstractEngineTest {
             "test.key.alpha", true);
 
     private final ConfigurationKey testResolverKeyBravo = new SimpleConfigurationKey(
-            "test.key.bravo", 1l);
+            "test.key.bravo", 1L);
 
     @Before
     public void buildEngine() {
