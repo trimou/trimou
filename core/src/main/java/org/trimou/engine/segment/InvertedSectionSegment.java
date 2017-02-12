@@ -66,7 +66,7 @@ public class InvertedSectionSegment extends AbstractSectionSegment {
     @SuppressWarnings("rawtypes")
     private boolean process(Object value) {
         if (value instanceof Boolean) {
-            return !((Boolean) value).booleanValue();
+            return !(Boolean) value;
         } else if (value instanceof Collection) {
             return ((Collection) value).isEmpty();
         } else if (value instanceof Iterable) {

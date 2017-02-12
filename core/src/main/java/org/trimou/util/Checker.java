@@ -85,7 +85,7 @@ public final class Checker {
         if (value == null) {
             return true;
         } else if (value instanceof Boolean) {
-            return !((Boolean) value).booleanValue();
+            return !(Boolean) value;
         } else if (value instanceof Collection) {
             return ((Collection) value).isEmpty();
         } else if (value instanceof Iterable) {
