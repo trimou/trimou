@@ -143,8 +143,7 @@ public class CDIBeanResolver extends AbstractResolver {
                         }
 
                         try {
-                            return Optional.of(
-                                    (Bean<?>) beanManager.resolve(beans));
+                            return Optional.of(beanManager.resolve(beans));
                         } catch (AmbiguousResolutionException e) {
                             LOGGER.warn(
                                     "An ambiguous EL name exists [name: {}]",
