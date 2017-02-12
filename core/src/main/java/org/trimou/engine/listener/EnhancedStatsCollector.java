@@ -184,7 +184,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
         }
 
         long getValue() {
-            return end.longValue() - start;
+            return end - start;
         }
 
     }
