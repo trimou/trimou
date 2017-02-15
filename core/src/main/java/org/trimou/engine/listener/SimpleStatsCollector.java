@@ -25,8 +25,6 @@ import java.util.function.Predicate;
 
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.cache.ComputingCache;
-import org.trimou.engine.cache.ComputingCache.Function;
-import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.util.ImmutableMap;
 import org.trimou.util.ImmutableMap.ImmutableMapBuilder;
 import org.trimou.util.ImmutableSet;

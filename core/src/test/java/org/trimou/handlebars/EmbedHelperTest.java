@@ -7,7 +7,6 @@ import org.trimou.AbstractTest;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locator.MapTemplateLocator;
-import org.trimou.handlebars.EmbedHelper.SourceProcessor;
 import org.trimou.util.ImmutableMap;
 
 /**

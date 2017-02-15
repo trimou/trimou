@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.lambda.SpecCompliantLambda;
 
 /**
