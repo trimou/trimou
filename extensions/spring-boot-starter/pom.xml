@@ -20,11 +20,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.trimou</groupId>
             <artifactId>trimou-extension-spring4-mvc</artifactId>
             <version>${project.version}</version>
