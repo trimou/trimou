@@ -28,8 +28,6 @@ import java.util.TimeZone;
 
 import org.trimou.engine.MustacheTagInfo;
 import org.trimou.engine.cache.ComputingCache;
-import org.trimou.handlebars.i18n.AbstractTimeFormatHelper;
-import org.trimou.handlebars.i18n.DateTimeFormatHelper;
 
 /**
  * An alternative to {@link DateTimeFormatHelper} which makes use of java.time

@@ -15,6 +15,14 @@
  */
 package org.trimou.spring4.i18n;
 
+import static org.trimou.handlebars.OptionsHashKeys.LOCALE;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -26,14 +34,6 @@ import org.trimou.handlebars.i18n.LocaleAwareValueHelper;
 import org.trimou.util.Arrays;
 import org.trimou.util.ImmutableSet;
 import org.trimou.util.Strings;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import static org.trimou.handlebars.OptionsHashKeys.LOCALE;
 
 /**
  * <p>
