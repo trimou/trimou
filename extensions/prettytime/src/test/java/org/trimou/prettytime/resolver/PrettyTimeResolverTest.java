@@ -17,7 +17,6 @@ import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.engine.resolver.MapResolver;
-import org.trimou.prettytime.PrettyTimeFactory;
 import org.trimou.util.ImmutableMap;
 
 /**

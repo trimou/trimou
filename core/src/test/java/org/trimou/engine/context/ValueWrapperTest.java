@@ -17,7 +17,6 @@ import org.trimou.engine.interpolation.ThrowingExceptionMissingValueHandler;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.Resolver;
-import org.trimou.engine.resource.ReleaseCallback;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 

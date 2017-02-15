@@ -15,16 +15,16 @@
  */
 package org.trimou.handlebars;
 
-import org.trimou.exception.MustacheException;
-import org.trimou.exception.MustacheProblem;
-import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
+import static org.trimou.handlebars.OptionsHashKeys.OPERATOR;
+import static org.trimou.handlebars.OptionsHashKeys.OUTPUT;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static org.trimou.handlebars.OptionsHashKeys.OPERATOR;
-import static org.trimou.handlebars.OptionsHashKeys.OUTPUT;
+import org.trimou.exception.MustacheException;
+import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 
 /**
  * A simple numeric expression helper. During evaluation all the params are

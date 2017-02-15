@@ -1,12 +1,14 @@
 package org.trimou.engine.context;
 
-import org.junit.Test;
-import org.trimou.AbstractEngineTest;
-import org.trimou.Hammer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.trimou.AbstractEngineTest;
+import org.trimou.Hammer;
 
 /**
  *

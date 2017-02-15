@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.trimou.AbstractTest;
-import org.trimou.engine.MustacheEngineBuilder.EngineBuiltCallback;
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.EngineConfigurationKey;
