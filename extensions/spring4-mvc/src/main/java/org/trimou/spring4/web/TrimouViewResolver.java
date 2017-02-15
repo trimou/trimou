@@ -16,6 +16,8 @@
 
 package org.trimou.spring4.web;
 
+import java.util.Locale;
+
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
@@ -23,8 +25,6 @@ import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.EngineConfigurationKey;
-
-import java.util.Locale;
 
 /**
  * Spring MVC {@link ViewResolver} for Trimou.

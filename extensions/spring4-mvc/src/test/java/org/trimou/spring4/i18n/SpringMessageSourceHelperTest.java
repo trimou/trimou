@@ -16,6 +16,12 @@
 
 package org.trimou.spring4.i18n;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.Locale;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,11 +35,6 @@ import org.trimou.engine.locale.FixedLocaleSupport;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.Arrays;
-
-import java.util.Locale;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
 public class SpringMessageSourceHelperTest {

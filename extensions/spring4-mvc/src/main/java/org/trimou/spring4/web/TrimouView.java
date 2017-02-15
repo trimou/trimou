@@ -16,14 +16,14 @@
 
 package org.trimou.spring4.web;
 
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.AbstractTemplateView;
-import org.trimou.Mustache;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Map;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.trimou.Mustache;
 
 /**
  * Spring MVC {@link View} using the Trimou template engine.

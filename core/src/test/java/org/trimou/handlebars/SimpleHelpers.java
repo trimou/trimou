@@ -22,10 +22,6 @@ import java.util.function.BiConsumer;
 
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.ConfigurationKey;
-import org.trimou.handlebars.AbstractHelper;
-import org.trimou.handlebars.Helper;
-import org.trimou.handlebars.HelperDefinition;
-import org.trimou.handlebars.Options;
 import org.trimou.util.Checker;
 
 /**

@@ -16,6 +16,11 @@
 
 package org.trimou.spring4.web;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ResourceLoaderAware;
@@ -26,11 +31,6 @@ import org.trimou.engine.locator.AbstractTemplateLocator;
 import org.trimou.engine.locator.TemplateLocator;
 import org.trimou.engine.priority.WithPriority;
 import org.trimou.util.Strings;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Trimou template locator implementation that uses a prefix, suffix and the Spring Resource abstraction to load

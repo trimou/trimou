@@ -16,6 +16,11 @@
 
 package org.trimou.spring4.web;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-
-import java.util.Collections;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
 public class TrimouViewTest {

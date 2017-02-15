@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import java.util.Iterator;
 
 import org.junit.Test;
-import org.trimou.engine.interpolation.DotKeySplitter;
 
 /**
  *
