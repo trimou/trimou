@@ -94,6 +94,7 @@
       <version.weld2>2.4.2.SP1</version.weld2>
       <version.weld1>1.1.33.Final</version.weld1>
       <version.wildfly>10.1.0.Final</version.wildfly>
+      <version.maven-jar-plugin>2.6</version.maven-jar-plugin>
    </properties>
 
    <build>
