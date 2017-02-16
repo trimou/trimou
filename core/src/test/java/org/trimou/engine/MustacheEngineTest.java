@@ -252,13 +252,13 @@ public class MustacheEngineTest extends AbstractEngineTest {
     @Test
     public void testHelloWorld() {
         String data = "Hello world!";
-        assertEquals(data, MustacheEngineBuilder.newBuilder().build()
+        assertEquals(data, MustacheEngineFactory.defaultEngine()
                 .compileMustache("myTemplateName", "{{this}}").render(data));
     }
 
     @Test
     public void testGeneratedIdsAreUnique() {
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        MustacheEngine engine = MustacheEngineFactory.defaultEngine();
         assertNotEquals(engine.compileMustache("foo", "{{foo}}").getGeneratedId(), engine.compileMustache("foo", "{{foo}}").getGeneratedId());
     }
 

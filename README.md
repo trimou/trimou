@@ -23,11 +23,11 @@ All the artifacts are available in the Maven Central Repository:
   <version>${version.trimou}</version>
 </dependency>
 ```
-Use the `MustacheEngineBuilder` to build a `MustacheEngine` - a central point for template management.
+Use the `MustacheEngineFactory` to build a `MustacheEngine` - a central point for template management.
 
 ```java
 // Don't configure anything - use sensible defaults
-MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+MustacheEngine engine = MustacheEngineFactory.defaultEngine();
 // Provide the template contents - no caching and no template locators used
 Mustache mustache = engine.compileMustache("hello", "Hello {{this}}!");
 // Renders "Hello world!"

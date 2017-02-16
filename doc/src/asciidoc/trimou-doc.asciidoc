@@ -518,14 +518,13 @@ And now for something completely different...
 ----
 String data = "Hello world!";
 String template = "{{this}}";
-MustacheEngine engine = MustacheEngineBuilder.newBuilder().build(); <1>
+MustacheEngine engine = MustacheEngineFactory.defaultEngine(); <1>
 Mustache mustache = engine.compileMustache("myTemplateName", template); <2>
 String output = mustache.render(data); <3>
 
 <1> <2> <3>
-String output = MustacheEngineBuilder
-                  .newBuilder()
-                  .build()
+String output = MustacheEngineFactory
+                  .defaultEngine()
                   .compileMustache("myTemplateName", template)
                   .render(data);
 
@@ -542,7 +541,7 @@ NOTE: Instances of `MustacheEngineBuilder` are not reusable. The builder is cons
 
 [source,java]
 ----
-MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+MustacheEngine engine = MustacheEngineFactory.defaultEngine();
 Mustache mustache = engine.compileMustache("fooTemplate", "{{foo}}");
 
 // It's possible to pass a java.lang.Appendable impl, e.g. any java.io.Writer

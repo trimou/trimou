@@ -17,7 +17,6 @@ import org.trimou.engine.resolver.i18n.DateTimeFormatResolver;
 import org.trimou.engine.text.TextSupport;
 
 /**
- *
  * @author Martin Kouba
  */
 public class MustacheEngineBuilderTest extends AbstractTest {
@@ -25,7 +24,7 @@ public class MustacheEngineBuilderTest extends AbstractTest {
     @Test
     public void testBuilderIsImmutable() {
 
-        MustacheEngineBuilder builder = MustacheEngine.builder();
+        MustacheEngineBuilder builder = MustacheEngineBuilder.newBuilder();
         builder.build();
         try {
             builder.addGlobalData("foo", 10);
@@ -114,12 +113,11 @@ public class MustacheEngineBuilderTest extends AbstractTest {
             // Expected
         }
         try {
-            builder.registerCallback(engine -> { });
+            builder.registerCallback(engine -> {
+            });
             fail();
         } catch (Exception e) {
             // Expected
         }
-
     }
-
 }

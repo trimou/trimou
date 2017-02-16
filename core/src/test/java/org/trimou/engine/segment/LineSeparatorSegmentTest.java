@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheEngineFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.parser.Template;
 
@@ -23,7 +24,7 @@ public class LineSeparatorSegmentTest extends AbstractEngineTest {
     @Test
     public void testLineSeparators() {
         String templateContents = "\nHello\r\n\n!";
-        Mustache mustache = MustacheEngineBuilder.newBuilder().build()
+        Mustache mustache = MustacheEngineFactory.defaultEngine()
                 .compileMustache("line_sep", templateContents);
         assertEquals("\nHello\r\n\n!", mustache.render(null));
     }
