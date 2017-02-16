@@ -12,6 +12,7 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheEngineFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.exception.MustacheException;
@@ -19,7 +20,6 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.util.ImmutableMap;
 
 /**
- *
  * @author Martin Kouba
  */
 public class PartialSegmentTest extends AbstractEngineTest {
@@ -84,9 +84,9 @@ public class PartialSegmentTest extends AbstractEngineTest {
                         0).build();
 
         Map<String, Object> data = ImmutableMap.of("content",
-                "X", "nodes", new Map[] { ImmutableMap.of("content", "Y",
-                        "nodes", new Map[] { ImmutableMap.of("content", "Z",
-                                "nodes", new Map[] {}) }) });
+                "X", "nodes", new Map[]{ImmutableMap.of("content", "Y",
+                        "nodes", new Map[]{ImmutableMap.of("content", "Z",
+                                "nodes", new Map[]{})})});
 
         try {
             engine.getMustache("node").render(data);
@@ -112,9 +112,9 @@ public class PartialSegmentTest extends AbstractEngineTest {
                 .addTemplateLocator(locator).build();
 
         Map<String, Object> data = ImmutableMap.of("content",
-                "X", "nodes", new Map[] { ImmutableMap.of("content", "Y",
-                        "nodes", new Map[] { ImmutableMap.of("content", "Z",
-                                "nodes", new Map[] {}) }) });
+                "X", "nodes", new Map[]{ImmutableMap.of("content", "Y",
+                        "nodes", new Map[]{ImmutableMap.of("content", "Z",
+                                "nodes", new Map[]{})})});
 
         assertEquals("X<Y<Z<>>>", engine.getMustache("node").render(data));
     }
@@ -122,7 +122,7 @@ public class PartialSegmentTest extends AbstractEngineTest {
     @Test
     public void testPartialNotFound() {
 
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        MustacheEngine engine = MustacheEngineFactory.defaultEngine();
 
         try {
             engine.compileMustache("partial_not_found",
@@ -189,5 +189,4 @@ public class PartialSegmentTest extends AbstractEngineTest {
         map.put("bravo", "NOTHING");
         assertEquals("NOTHING", mustache.render("foo"));
     }
-
 }

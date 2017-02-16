@@ -77,7 +77,7 @@ public class TrimouAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MustacheEngine.class)
     public MustacheEngine mustacheEngine(final SpringResourceTemplateLocator springResourceTemplateLocator) {
-        final MustacheEngineBuilder mustacheEngineBuilder = MustacheEngine.builder()
+        final MustacheEngineBuilder mustacheEngineBuilder = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(springResourceTemplateLocator);
         properties.applyToTrimouMustacheEngineBuilder(mustacheEngineBuilder);
         for (TrimouConfigurer configurer : applicationContext.getBeansOfType(TrimouConfigurer.class).values()) {

@@ -2,9 +2,9 @@ package org.trimou;
 
 import org.junit.Before;
 import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngineFactory;
 
 /**
- *
  * @author Martin Kouba
  */
 public abstract class AbstractEngineTest extends AbstractTest {
@@ -13,7 +13,6 @@ public abstract class AbstractEngineTest extends AbstractTest {
 
     @Before
     public void buildEngine() {
-        engine = MustacheEngine.build();
+        engine = MustacheEngineFactory.defaultEngine();
     }
-
 }

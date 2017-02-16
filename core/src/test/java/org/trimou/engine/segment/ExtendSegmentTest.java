@@ -12,6 +12,7 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheEngineFactory;
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.exception.MustacheException;
@@ -19,7 +20,6 @@ import org.trimou.exception.MustacheProblem;
 import org.trimou.util.ImmutableMap;
 
 /**
- *
  * @author Martin Kouba
  */
 public class ExtendSegmentTest extends AbstractEngineTest {
@@ -39,7 +39,7 @@ public class ExtendSegmentTest extends AbstractEngineTest {
                 .addTemplateLocator(locator).build();
         Mustache sub = engine.getMustache("sub");
         assertEquals("And now... Hello Edgar!",
-                sub.render(ImmutableMap.<String, Object> of("name", "Edgar")));
+                sub.render(ImmutableMap.<String, Object>of("name", "Edgar")));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ExtendSegmentTest extends AbstractEngineTest {
     @Test
     public void testExtendNotFound() {
 
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        MustacheEngine engine = MustacheEngineFactory.defaultEngine();
 
         try {
             engine.compileMustache("extend_not_found",
@@ -202,5 +202,4 @@ public class ExtendSegmentTest extends AbstractEngineTest {
         engine.invalidateTemplateCache();
         assertEquals("Martin", mustache.render("foo"));
     }
-
 }

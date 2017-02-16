@@ -31,7 +31,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheEngineFactory;
 
 @RunWith(JUnit4.class)
 public class TrimouViewTest {
@@ -52,7 +52,7 @@ public class TrimouViewTest {
 
     @Test
     public void viewResolves() throws Exception {
-        final MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        final MustacheEngine engine = MustacheEngineFactory.defaultEngine();
         final TrimouView view = new TrimouView(engine.compileMustache("hello", "Hello {{msg}}"));
         view.setApplicationContext(context);
         view.render(Collections.singletonMap("msg", "world!"), request, response);

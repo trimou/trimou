@@ -8,10 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
-import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheEngineFactory;
 
 /**
- *
  * @author Martin Kouba
  */
 public class PatternsTest {
@@ -19,9 +18,7 @@ public class PatternsTest {
     @Test
     public void testMustacheTagPattern() {
         String text = "{{foo }} and {{#bar}}...{{/bar}}";
-        Pattern tagPattern = Patterns
-                .newMustacheTagPattern(MustacheEngineBuilder.newBuilder()
-                        .build().getConfiguration());
+        Pattern tagPattern = Patterns.newMustacheTagPattern(MustacheEngineFactory.defaultEngine().getConfiguration());
         Matcher matcher = tagPattern.matcher(text);
         StringBuffer result = new StringBuffer();
         int occurences = 0;
@@ -71,5 +68,4 @@ public class PatternsTest {
         assertFalse(Patterns.newHelperIntegerLiteralPattern()
                 .matcher("1000000000000").matches());
     }
-
 }

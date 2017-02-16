@@ -47,10 +47,8 @@ public interface MustacheEngine {
      * cache so that no compilation happens the next time the template is
      * requested.
      *
-     * @param name
-     *            The template identifier
-     * @return the compiled template with the given name or <code>null</code> if
-     *         no such template exists
+     * @param name The template identifier
+     * @return the compiled template with the given name or <code>null</code> if no such template exists
      * @see Mustache#getName()
      * @see TemplateLocator
      * @see EngineConfigurationKey#TEMPLATE_CACHE_ENABLED
@@ -69,8 +67,7 @@ public interface MustacheEngine {
      * Compile the given template. The compiled template is not cached and so
      * it's not available for partials and template inheritance.
      *
-     * @param name
-     *            The template identifier
+     * @param name The template identifier
      * @param templateContent
      * @return the compiled template
      */
@@ -97,25 +94,4 @@ public interface MustacheEngine {
      * @see #invalidateTemplateCache()
      */
     void invalidateTemplateCache(Predicate<String> predicate);
-
-    /**
-     * A convenient way of obtaining a {@link MustacheEngineBuilder} instance.
-     *
-     * @return a new engine builder instance
-     * @since 2.2
-     */
-    static MustacheEngineBuilder builder() {
-        return MustacheEngineBuilder.newBuilder();
-    }
-
-    /**
-     * A convenient way of obtaining a default {@link MustacheEngine} instance.
-     *
-     * @return a new engine instance
-     * @since 2.2
-     */
-    static MustacheEngine build() {
-        return builder().build();
-    }
-
 }

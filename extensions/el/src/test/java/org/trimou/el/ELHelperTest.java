@@ -6,18 +6,17 @@ import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.Hammer;
 import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.MustacheEngineFactory;
 import org.trimou.util.ImmutableMap;
 
 /**
- *
  * @author Martin Kouba
  */
 public class ELHelperTest extends AbstractTest {
 
     @Test
     public void testHelper() {
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        MustacheEngine engine = MustacheEngineFactory.defaultEngine();
         assertEquals("true",
                 engine.compileMustache("elhelper_01", "{{el 'this eq this'}}")
                         .render(true));
@@ -47,5 +46,4 @@ public class ELHelperTest extends AbstractTest {
                         "{{#el 'foo < bar ? foo : bar'}}{{this}}{{/el}}")
                         .render(ImmutableMap.of("foo", 10, "bar", 20)));
     }
-
 }
