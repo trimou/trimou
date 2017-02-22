@@ -1,5 +1,6 @@
-/.settings
-/.project
+.settings
+.project
+.classpath
 target
 /src
 *.iml
