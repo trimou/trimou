@@ -13,7 +13,7 @@ public abstract class AbstractEngineTest extends AbstractTest {
 
     @Before
     public void buildEngine() {
-        engine = MustacheEngine.build();
+        engine = MustacheEngine.builder().build();
     }
 
 }
