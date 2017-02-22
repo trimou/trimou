@@ -75,19 +75,6 @@ public class Template implements Mustache {
      */
     public Template(Long generatedId, String name, MustacheEngine engine,
             List<Template> nestedTemplates) {
-        this(generatedId, name, engine, nestedTemplates, null);
-    }
-
-   /**
-     *
-     * @param generatedId
-     * @param name
-     * @param engine
-     * @param nestedTemplates
-     * @param parent
-     */
-    private Template(Long generatedId, String name, MustacheEngine engine,
-            List<Template> nestedTemplates, Template parent) {
         this.generatedId = generatedId;
         this.name = name;
         this.engine = engine;
@@ -103,7 +90,6 @@ public class Template implements Mustache {
             }
             this.nestedTemplates = builder.build();
         }
-        this.parent = parent;
     }
 
     @Override
@@ -145,7 +131,7 @@ public class Template implements Mustache {
         return rootSegment;
     }
 
-    synchronized void setRootSegment(RootSegment rootSegment) {
+    synchronized void initRootSegment(RootSegment rootSegment) {
         if (this.rootSegment != null) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);
@@ -153,7 +139,7 @@ public class Template implements Mustache {
         this.rootSegment = rootSegment;
     }
 
-    synchronized void setParent(Template parent) {
+    synchronized void initParent(Template parent) {
         if (this.parent != null) {
             throw new MustacheException(
                     MustacheProblem.TEMPLATE_MODIFICATION_NOT_ALLOWED);

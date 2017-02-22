@@ -87,7 +87,7 @@ abstract class AbstractSegment implements Segment {
                 getOrigin());
     }
 
-    public Template getTemplate() {
+    protected Template getTemplate() {
         return origin.getTemplate();
     }
 

@@ -133,9 +133,9 @@ class DefaultParsingHandler implements ParsingHandler {
         template = new Template(engine.getConfiguration()
                 .getIdentifierGenerator().generate(Mustache.class),
                 templateName, engine, nestedTemplates);
-        template.setRootSegment(rootSegmentBase.asSegment(template));
+        template.initRootSegment(rootSegmentBase.asSegment(template));
         for (Template nested : nestedTemplates) {
-            nested.setParent(template);
+            nested.initParent(template);
         }
 
         LOGGER.debug("Compilation of {} finished [time: {} ms, segments: {}]",
@@ -285,7 +285,7 @@ class DefaultParsingHandler implements ParsingHandler {
             Template nested = new Template(engine.getConfiguration()
                     .getIdentifierGenerator().generate(Mustache.class),
                     container.getContent(), engine);
-            nested.setRootSegment(nestedBase.asSegment(nested));
+            nested.initRootSegment(nestedBase.asSegment(nested));
             nestedTemplates.add(nested);
             currentNestedBase = null;
         } else {
