@@ -2,6 +2,7 @@ package org.trimou;
 
 import org.junit.Before;
 import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngineBuilder;
 
 /**
  *
@@ -13,7 +14,7 @@ public abstract class AbstractEngineTest extends AbstractTest {
 
     @Before
     public void buildEngine() {
-        engine = MustacheEngine.builder().build();
+        engine = MustacheEngineBuilder.newBuilder().build();
     }
 
 }

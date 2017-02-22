@@ -25,7 +25,7 @@ public class MustacheEngineBuilderTest extends AbstractTest {
     @Test
     public void testBuilderIsImmutable() {
 
-        MustacheEngineBuilder builder = MustacheEngine.builder();
+        MustacheEngineBuilder builder = MustacheEngineBuilder.newBuilder();
         builder.build();
         try {
             builder.addGlobalData("foo", 10);

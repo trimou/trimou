@@ -82,30 +82,18 @@ public interface MustacheEngine {
     Configuration getConfiguration();
 
     /**
-     * Invalidate all the cache entries for both compiled and uncompiled
-     * templates.
+     * Invalidate all the cache entries for both compiled and uncompiled templates.
      *
      * @see #invalidateTemplateCache(Predicate)
      */
     void invalidateTemplateCache();
 
     /**
-     * Invalidate the cache entries whose template name is matching the given
-     * predicate.
+     * Invalidate the cache entries whose template name is matching the given predicate.
      *
      * @param predicate
      * @see #invalidateTemplateCache()
      */
     void invalidateTemplateCache(Predicate<String> predicate);
-
-    /**
-     * A convenient way of obtaining a {@link MustacheEngineBuilder} instance.
-     *
-     * @return a new engine builder instance
-     * @since 2.2
-     */
-    static MustacheEngineBuilder builder() {
-        return MustacheEngineBuilder.newBuilder();
-    }
 
 }
