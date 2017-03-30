@@ -57,29 +57,33 @@ Helpers are de-facto *tags which are able to consume multiple parameters and opt
 #### Built-in helpers
 
 Five built-in helpers are registered automatically: `if`, `unless`, `each`, `with` and `is`. Some of them have extended functionality, e.g. for `if` helper multiple params may be evaluated and an optional `else` (which supports simple value expressions) may be also specified:
-```
+
+````
 {{#if item.active item.valid logic="or"}}
   {{item.name}} is active or valid!
 {{/if}}
 {{#if item.active else="{item.id} is inactive!"}}
   {{item.id}} with name {{item.name}} is active!
 {{/if}}
-```
+````
+
 `each` helper allows to supply an alias to access the value of the current iteration:
-```
+
+````
 {{#each items as='item'}}
   {{! Show the current iteration index (the first element has index 1)}}
   {{index}}. 
   {{item.name}}
 {{/each}}
-```
+````
 `each` helper could be also used to iterate over multiple objects:
+
 ````
 {{! First iterate over list1 and then iterate over list2}}
 {{#each list1 list2}}
   {{name}}
 {{/each}}
-```
+````
 
 Trimou also provides a lot of useful helpers which are not registered automatically - see also [Built-in helpers](http://trimou.org/doc/latest.html#helpers).
 
