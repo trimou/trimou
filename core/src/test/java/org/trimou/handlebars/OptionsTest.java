@@ -33,7 +33,7 @@ import org.trimou.util.ImmutableMap;
 public class OptionsTest extends AbstractTest {
 
     @Test
-    public void testParametes() {
+    public void testParameters() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .registerHelper("test", new AbstractHelper() {
                     @Override
@@ -43,6 +43,10 @@ public class OptionsTest extends AbstractTest {
                         assertEquals("1", params.get(0));
                         assertEquals(10, params.get(1));
                         assertNull(params.get(2));
+                        assertEquals("1", options.getParameter(0, null));
+                        assertEquals(10, options.getParameter(1, null));
+                        assertNull(options.getParameter(4, null));
+                        assertNull(options.getParameter(-5, null));
                     }
                 }).build();
         engine.compileMustache("helper_params",

@@ -44,6 +44,21 @@ public interface HelperDefinition {
     List<Object> getParameters();
 
     /**
+     *
+     * @param index
+     * @param defaultValue
+     * @return the parameter at the specified position or the default value if
+     *         not found
+     * @since 2.2.1
+     */
+    default Object getParameter(int index, Object defaultValue) {
+        if (index >= 0 && getParameters().size() > index) {
+            return getParameters().get(index);
+        }
+        return defaultValue;
+    }
+
+    /**
      * The map may contain {@link ValuePlaceholder} instances during validation.
      *
      * @return an immutable "hash" map
