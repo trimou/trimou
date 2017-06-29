@@ -24,6 +24,11 @@ public class SimpleHelperTest {
                     String value = o.getParameters().get(0).toString();
                     o.append(value.toLowerCase());
                 }))
+                .registerHelper("var", o -> {
+                    o.append("{{");
+                    o.append(o.getParameters().get(0).toString());
+                    o.append("}}");
+                })
                 .registerHelper(
                         "lc_validate",
                         SimpleHelpers
@@ -39,6 +44,9 @@ public class SimpleHelperTest {
                                         }).build()).build();
         assertEquals("ok",
                 engine.compileMustache("simple_helper_01", "{{lc 'OK'}}")
+                        .render(null));
+        assertEquals("{{ok}}",
+                engine.compileMustache("simple_helper_02", "{{var 'ok'}}")
                         .render(null));
         MustacheExceptionAssert.expect(
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE).check(
