@@ -106,6 +106,8 @@ public final class HelpersBuilder {
 
     public static final String FMT = "fmt";
 
+    public static final String TAG = "tag";
+
     private final ImmutableMapBuilder<String, Helper> builder;
 
     private HelpersBuilder() {
@@ -468,6 +470,11 @@ public final class HelpersBuilder {
         return this;
     }
 
+    public HelpersBuilder addTag() {
+        builder.put(TAG, new TagHelper());
+        return this;
+    }
+
     /**
      *
      * @return self
@@ -508,6 +515,7 @@ public final class HelpersBuilder {
         addCache();
         addRepeat();
         addFmt();
+        addTag();
         return this;
     }
 
