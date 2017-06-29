@@ -35,8 +35,7 @@ public class TextSegment extends AbstractSegment {
     }
 
     public Appendable execute(Appendable appendable, ExecutionContext context) {
-        append(appendable, getText());
-        return appendable;
+        return appendText(appendable);
     }
 
     @Override

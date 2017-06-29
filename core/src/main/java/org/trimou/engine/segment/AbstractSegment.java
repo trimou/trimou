@@ -124,12 +124,16 @@ abstract class AbstractSegment implements Segment {
         return Strings.EMPTY;
     }
 
-    protected void append(Appendable appendable, String text) {
+    protected Appendable append(Appendable appendable, String text) {
         try {
-            appendable.append(text);
+            return appendable.append(text);
         } catch (IOException e) {
             throw new MustacheException(MustacheProblem.RENDER_IO_ERROR, e);
         }
+    }
+
+    protected Appendable appendText(Appendable appendable) {
+        return append(appendable, text);
     }
 
     protected MustacheTagType getTagType() {
