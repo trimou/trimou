@@ -45,6 +45,10 @@ public class Hammer {
         return false;
     }
 
+    public boolean isCool() {
+        return true;
+    }
+
     public Integer getAgeForName(String name) {
         return 20;
     }

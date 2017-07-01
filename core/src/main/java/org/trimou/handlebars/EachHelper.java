@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.resolver.ReflectionResolver;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.segment.ImmutableIterationMeta;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.Checker;
 import org.trimou.util.ImmutableSet;
 import org.trimou.util.Iterables;
 
@@ -40,7 +43,7 @@ import org.trimou.util.Iterables;
  *
  * <p>
  * It's possible to apply a function to each element. The function must be an
- * instance of {@link Function}. Note that the function cannot be type-safe. If
+ * instance of {@link Function} or a string referencing a built-in function. If
  * the result does not equal to {@link EachHelper#SKIP_RESULT} it's used instead
  * of the original element. If the result equals to
  * {@link EachHelper#SKIP_RESULT} the element is skipped. This might be useful
@@ -50,6 +53,31 @@ import org.trimou.util.Iterables;
  * <code>
  * {{#each items apply=myFunction}}
  *  {{name}}
+ * {{/each}}
+ * </code>
+ *
+ * <p>
+ * There are some built-in functions that can be specified using string
+ * literals:
+ * </p>
+ * <ul>
+ * <li>{@value #SKIP_IF_NULL} - skip all null elements</li>
+ * <li>{@value #SKIP_IF} - skip an element if the result of an expression is "truthy" (see
+ * also {@link Checker#isFalsy(Object)})</li>
+ * <li>{@value #SKIP_UNLESS} - skip an element if the result of an expression is
+ * "falsy"</li>
+ * <li>{@value #MAP} - replace the element with the result of an expression</li>
+ * </ul>
+ *
+ * <code>
+ * {{#each items apply="skipUnless:active"}}
+ *  Inactive items are skipped
+ * {{/each}}
+ * </code>
+ *
+ * <code>
+ * {{#each items apply="map:name"}}
+ *  Iterate over names
  * {{/each}}
  * </code>
  *
@@ -82,13 +110,25 @@ public class EachHelper extends BasicSectionHelper {
 
     public static final String SKIP_RESULT = "org.trimou.handlebars.skipResult";
 
+    private static final String SKIP_IF_NULL = "skipIfNull";
+
+    private static final String SKIP_UNLESS = "skipUnless:";
+
+    private static final String SKIP_IF = "skipIf:";
+
+    private static final String MAP = "map:";
+
+    private static final Function SKIP_NULL_FUNC = (e) -> e != null ? e : SKIP_RESULT;
+
     private String iterationMetadataAlias;
+
+    private ReflectionResolver reflectionResolver;
 
     @Override
     public void init() {
         super.init();
-        this.iterationMetadataAlias = configuration.getStringPropertyValue(
-                EngineConfigurationKey.ITERATION_METADATA_ALIAS);
+        this.iterationMetadataAlias = configuration
+                .getStringPropertyValue(EngineConfigurationKey.ITERATION_METADATA_ALIAS);
     }
 
     @Override
@@ -104,8 +144,7 @@ public class EachHelper extends BasicSectionHelper {
             int size = 0;
             int index = 1;
             List<Object> params = new ArrayList<>(options.getParameters());
-            for (Iterator<Object> iterator = params.iterator(); iterator
-                    .hasNext();) {
+            for (Iterator<Object> iterator = params.iterator(); iterator.hasNext();) {
                 Object param = iterator.next();
                 int paramSize = 0;
                 if (param != null) {
@@ -132,40 +171,33 @@ public class EachHelper extends BasicSectionHelper {
         return ImmutableSet.of(APPLY, AS);
     }
 
-    private int processParameter(Object param, Options options, int index,
-            int size) {
+    private int processParameter(Object param, Options options, int index, int size) {
         if (param instanceof Iterable) {
             return processIterable((Iterable<?>) param, options, index, size);
         } else if (param.getClass().isArray()) {
             return processArray(param, options, index, size);
         } else {
-            throw new MustacheException(
-                    MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                    "%s is nor an Iterable nor an array [%s]", param,
-                    options.getTagInfo());
+            throw new MustacheException(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
+                    "%s is nor an Iterable nor an array [%s]", param, options.getTagInfo());
         }
     }
 
-    private int processIterable(Iterable<?> iterable, Options options,
-            int index, int size) {
+    private int processIterable(Iterable<?> iterable, Options options, int index, int size) {
         Iterator<?> iterator = iterable.iterator();
         Function function = initFunction(options);
         String alias = initValueAlias(options);
         while (iterator.hasNext()) {
-            nextElement(options, iterator.next(), size, index++, function,
-                    alias);
+            nextElement(options, iterator.next(), size, index++, function, alias);
         }
         return index;
     }
 
-    private int processArray(Object array, Options options, int index,
-            int size) {
+    private int processArray(Object array, Options options, int index, int size) {
         int length = Array.getLength(array);
         Function function = initFunction(options);
         String alias = initValueAlias(options);
         for (int i = 0; i < length; i++) {
-            nextElement(options, Array.get(array, i), size, index++, function,
-                    alias);
+            nextElement(options, Array.get(array, i), size, index++, function, alias);
         }
         return index;
     }
@@ -179,8 +211,7 @@ public class EachHelper extends BasicSectionHelper {
         return 0;
     }
 
-    private void nextElement(Options options, Object value, int size, int index,
-            Function function, String valueAlias) {
+    private void nextElement(Options options, Object value, int size, int index, Function function, String valueAlias) {
         if (function != null) {
             value = function.apply(value);
             if (SKIP_RESULT.equals(value)) {
@@ -188,13 +219,11 @@ public class EachHelper extends BasicSectionHelper {
             }
         }
         if (valueAlias != null) {
-            options.push(new ImmutableIterationMeta(iterationMetadataAlias,
-                    size, index, valueAlias, value));
+            options.push(new ImmutableIterationMeta(iterationMetadataAlias, size, index, valueAlias, value));
             options.fn();
             options.pop();
         } else {
-            options.push(new ImmutableIterationMeta(iterationMetadataAlias,
-                    size, index));
+            options.push(new ImmutableIterationMeta(iterationMetadataAlias, size, index));
             options.push(value);
             options.fn();
             options.pop();
@@ -210,10 +239,61 @@ public class EachHelper extends BasicSectionHelper {
         if (function instanceof Function) {
             return (Function) function;
         }
-        throw new MustacheException(
-                MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
-                "%s is not a valid function [%s]", function,
-                options.getTagInfo());
+        String functionStr = function.toString();
+        if (SKIP_IF_NULL.equals(functionStr)) {
+            return SKIP_NULL_FUNC;
+        } else if (functionStr.startsWith(SKIP_IF)) {
+            return skip(functionStr, options, false);
+        } else if (function.toString().startsWith(SKIP_UNLESS)) {
+            return skip(functionStr, options, true);
+        } else if (function.toString().startsWith(MAP)) {
+            ReflectionResolver resolver = getReflectionResolver(functionStr, options);
+            return (e) -> resolve(resolver, e, functionStr.substring(MAP.length()));
+        }
+        throw new MustacheException(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS, "%s is not a valid function [%s]",
+                function, options.getTagInfo());
+    }
+
+    private Function skip(String funcStr, Options options, boolean unless) {
+        ReflectionResolver resolver = getReflectionResolver(funcStr, options);
+        if (unless) {
+            return e -> Checker.isFalsy(resolve(resolver, e, funcStr.substring(SKIP_UNLESS.length()))) ? SKIP_RESULT
+                    : e;
+        } else {
+            return e -> !Checker.isFalsy(resolve(resolver, e, funcStr.substring(SKIP_IF.length()))) ? SKIP_RESULT : e;
+        }
+    }
+
+    private Object resolve(ReflectionResolver resolver, Object element, String key) {
+        Object value = element;
+        for (Iterator<String> iterator = configuration.getKeySplitter().split(key); iterator.hasNext();) {
+            String keyPart = iterator.next();
+            Object resolved = resolver.resolve(value, keyPart, null);
+            if (resolved == null) {
+                // Value not found - miss
+                return null;
+            } else {
+                value = resolved;
+            }
+        }
+        return value;
+    }
+
+    private ReflectionResolver getReflectionResolver(String functionStr, Options options) {
+        if (reflectionResolver == null) {
+            // Synchronization is not needed
+            for (Resolver resolver : configuration.getResolvers()) {
+                if (resolver instanceof ReflectionResolver) {
+                    reflectionResolver = (ReflectionResolver) resolver;
+                    break;
+                }
+            }
+        }
+        if (reflectionResolver == null) {
+            throw new MustacheException(MustacheProblem.RENDER_GENERIC_ERROR,
+                    "%s cannot be used - ReflectionResolver not found [%s]", functionStr, options.getTagInfo());
+        }
+        return reflectionResolver;
     }
 
     private String initValueAlias(Options options) {
