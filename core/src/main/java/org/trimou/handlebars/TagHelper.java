@@ -19,13 +19,16 @@ import static org.trimou.util.Strings.GAP;
 import static org.trimou.util.Strings.HASH;
 import static org.trimou.util.Strings.SLASH;
 
+import java.util.Iterator;
+
 import org.trimou.engine.config.EngineConfigurationKey;
 
 /**
  * This helper allows to easily render tags which make use of the same
  * delimiters as Trimou does (i.e. would be normally parsed as mustache tags).
- * The first parameter represents the tag name and the second parameter
- * (optional) represents the tag params. For example:
+ * The first parameter represents the tag name (needed to render section tags
+ * correctly). Other parameters (optional) are simply evaluated and added as tag
+ * params (the first one is separated by a space). For example:
  *
  * <pre>
  * {{tag "foo"}}
@@ -63,15 +66,11 @@ public class TagHelper extends BasicHelper {
     @Override
     public void execute(Options options) {
         String tag = options.getParameters().get(0).toString();
-        Object params = options.getParameter(1, null);
         if (isSection(options)) {
             options.append(startDelimiter());
             options.append(HASH);
             options.append(tag);
-            if (params != null) {
-                options.append(GAP);
-                options.append(params.toString());
-            }
+            appendParams(options);
             options.append(endDelimiter());
             options.fn();
             options.append(startDelimiter());
@@ -81,11 +80,17 @@ public class TagHelper extends BasicHelper {
         } else {
             options.append(startDelimiter());
             options.append(tag);
-            if (params != null) {
-                options.append(GAP);
-                options.append(params.toString());
-            }
+            appendParams(options);
             options.append(endDelimiter());
+        }
+    }
+
+    private void appendParams(Options options) {
+        if (options.getParameters().size() > 1) {
+            options.append(GAP);
+            for (Iterator<Object> iterator = options.getParameters().listIterator(1); iterator.hasNext();) {
+                options.append(iterator.next().toString());
+            }
         }
     }
 

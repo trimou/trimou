@@ -23,6 +23,8 @@ public class TagHelperTest extends AbstractTest {
         assertEquals("{{#each items as=\"item\"}}{{this}}{{/each}}",
                 engine.compileMustache("tag_helper2", "{{#tag 'each' 'items as=\"item\"'}}{{tag 'this'}}{{/tag}}")
                         .render(null));
+        assertEquals("{{foo bar apply=\"me\"}}",
+                engine.compileMustache("tag_helper3", "{{tag 'foo' this ' apply=\"me\"'}}").render("bar"));
     }
 
     @Test
