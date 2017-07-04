@@ -35,11 +35,13 @@ import org.trimou.util.ImmutableSet;
 import org.trimou.util.Iterables;
 
 /**
- * <code>
+ * Iterate over the params or the object at the top of the context stack:
+ *
+ * <pre>
  * {{#each items}}
  *  {{name}}
  * {{/each}}
- * </code>
+ * </pre>
  *
  * <p>
  * It's possible to apply a function to each element. The function must be an
@@ -50,11 +52,11 @@ import org.trimou.util.Iterables;
  * to filter out unnecessary elements or to wrap/transform elements.
  * </p>
  *
- * <code>
+ * <pre>
  * {{#each items apply=myFunction}}
  *  {{name}}
  * {{/each}}
- * </code>
+ * </pre>
  *
  * <p>
  * There are some built-in functions that can be specified using string
@@ -62,46 +64,46 @@ import org.trimou.util.Iterables;
  * </p>
  * <ul>
  * <li>{@value #SKIP_IF_NULL} - skip all null elements</li>
- * <li>{@value #SKIP_IF} - skip an element if the result of an expression is "truthy" (see
- * also {@link Checker#isFalsy(Object)})</li>
+ * <li>{@value #SKIP_IF} - skip an element if the result of an expression is
+ * "truthy" (see also {@link Checker#isFalsy(Object)})</li>
  * <li>{@value #SKIP_UNLESS} - skip an element if the result of an expression is
  * "falsy"</li>
  * <li>{@value #MAP} - replace the element with the result of an expression</li>
  * </ul>
  *
- * <code>
+ * <pre>
  * {{#each items apply="skipUnless:active"}}
  *  Inactive items are skipped
  * {{/each}}
- * </code>
  *
- * <code>
+ * {{#each items apply="skipIf:name.isEmpty"}}
+ *  Items with null or empty names are skipped
+ * {{/each}}
+ *
  * {{#each items apply="map:name"}}
  *  Iterate over names
  * {{/each}}
- * </code>
+ * </pre>
  *
  * <p>
  * It's also possible to supply an alias to access the value of the current
  * iteration:
  * </p>
  *
- * <code>
- * {{#each items as='item'}}
- *  {{item.name}}
- * {{/each}}
- * </code>
+ * <pre>
+ * {{#each items as='item'}}{{item.name}}{{/each}}
+ * </pre>
  *
  * <p>
  * This helper could be used to iterate over multiple objects:
  * <p>
  *
- * <code>
+ * <pre>
  * {{! First iterate over list1 and then iterate over list2}}
  * {{#each list1 list2}}
  *  {{name}}
  * {{/each}}
- * </code>
+ * </pre>
  *
  * @see Function
  * @author Martin Kouba
@@ -133,7 +135,10 @@ public class EachHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
-        if (options.getParameters().size() == 1) {
+        if (options.getParameters().isEmpty()) {
+            Object head = options.peek();
+            processParameter(head, options, 1, getSize(head));
+        } else if (options.getParameters().size() == 1) {
             Object param = options.getParameters().get(0);
             if (param == null) {
                 // Treat null values as empty objects
@@ -164,6 +169,11 @@ public class EachHelper extends BasicSectionHelper {
                 index = processParameter(param, options, index, size);
             }
         }
+    }
+
+    @Override
+    protected int numberOfRequiredParameters() {
+        return 0;
     }
 
     @Override

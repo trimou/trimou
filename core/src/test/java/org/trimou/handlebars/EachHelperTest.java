@@ -39,14 +39,24 @@ public class EachHelperTest extends AbstractEngineTest {
         assertEquals("=10",
                 engine.compileMustache("each_skipif_2", "={{#each this apply='skipIf:map.isEmpty'}}{{age}}{{/each}}")
                         .render(ImmutableList.of(new Hammer())));
+        assertEquals("11",
+                engine.compileMustache("each_skipif_3", "{{#each this apply='skipIf:empty'}}{{length}}{{/each}}")
+                        .render(ImmutableList.of(null, "", "1", "2")));
     }
 
     @Test
     public void testMap() {
         assertEquals("332", engine.compileMustache("each_map_1", "{{#each this apply='map:length'}}{{this}}{{/each}}")
                 .render(ImmutableList.of("foo", "bar", "uf")));
-        assertEquals("1020", engine.compileMustache("each_map_2", "{{#each this apply='map:age.longValue'}}{{this}}{{/each}}")
-                .render(ImmutableList.of(new Hammer(), new Hammer(20))));
+        assertEquals("1020",
+                engine.compileMustache("each_map_2", "{{#each this apply='map:age.longValue'}}{{this}}{{/each}}")
+                        .render(ImmutableList.of(new Hammer(), new Hammer(20))));
+    }
+
+    @Test
+    public void testIterateOverPeek() {
+        assertEquals("123", engine.compileMustache("each_peek_1", "{{#with this}}{{#each}}{{this}}{{/each}}{{/with}}")
+                .render(ImmutableList.of("1", "2", "3")));
     }
 
 }

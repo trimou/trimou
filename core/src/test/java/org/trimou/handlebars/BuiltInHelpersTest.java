@@ -90,10 +90,7 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                 engine.compileMustache("each_helper_empty_collection",
                         "{{#each this}}foo{{/each}}")
                         .render(new ArrayList<>()));
-        assertCompilationFails(engine, "each_helper_fail1",
-                "{{#each}}{{this}}{{/each}}",
-                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
-        assertCompilationFails(engine, "each_helper_fail2", "{{each}}",
+        assertCompilationFails(engine, "each_helper_fail1", "{{each}}",
                 MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE);
         MustacheExceptionAssert
                 .expect(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS)
