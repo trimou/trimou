@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.TimeFormat;
 import org.ocpsoft.prettytime.i18n.Resources_cs;
 import org.ocpsoft.prettytime.i18n.Resources_en;
 import org.ocpsoft.prettytime.units.JustNow;
@@ -32,10 +33,9 @@ public class PrettyTimeHelperTest {
                 .registerHelper("pretty", new PrettyTimeHelper()).build();
 
         String expected = new Resources_en().getString("JustNowPastPrefix");
-        // JustNow the first time unit in the default list has max quantity 5
-        // mins
+        // JustNow (the first time unit in the default list) has max quantity 1 min
         Calendar now = Calendar.getInstance();
-        now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
+        now.add(Calendar.SECOND, -30);
 
         assertEquals(expected, engine
                 .compileMustache("pretty_cal", "{{pretty this}}").render(now));
@@ -52,7 +52,10 @@ public class PrettyTimeHelperTest {
 
         PrettyTimeHelper helper = new PrettyTimeHelper(locale -> {
             PrettyTime prettyTime = new PrettyTime(locale);
-            prettyTime.getUnit(JustNow.class).setMaxQuantity(1000L * 2L);
+            TimeFormat timeFormat = prettyTime.removeUnit(JustNow.class);
+            JustNow justNow = new JustNow();
+            justNow.setMaxQuantity(1000L * 2L);
+            prettyTime.registerUnit(justNow, timeFormat);
             return prettyTime;
         });
 
@@ -84,10 +87,9 @@ public class PrettyTimeHelperTest {
                 .addResolver(new ThisResolver())
                 .registerHelper("pretty", new PrettyTimeHelper()).build();
 
-        // JustNow the first time unit in the default list has max quantity 5
-        // mins
+        // JustNow (the first time unit in the default list) has max quantity 1 min
         Calendar now = Calendar.getInstance();
-        now.set(Calendar.MINUTE, now.get(Calendar.MINUTE) - 1);
+        now.add(Calendar.SECOND, -30);
 
         assertEquals(new Resources_cs().getString("JustNowPastPrefix"),
                 engine.compileMustache("pretty_helper_locale",

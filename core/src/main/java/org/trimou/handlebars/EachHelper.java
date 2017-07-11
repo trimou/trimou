@@ -194,20 +194,16 @@ public class EachHelper extends BasicSectionHelper {
 
     private int processIterable(Iterable<?> iterable, Options options, int index, int size) {
         Iterator<?> iterator = iterable.iterator();
-        Function function = initFunction(options);
-        String alias = initValueAlias(options);
         while (iterator.hasNext()) {
-            nextElement(options, iterator.next(), size, index++, function, alias);
+            nextElement(options, iterator.next(), size, index++, initFunction(options), initValueAlias(options));
         }
         return index;
     }
 
     private int processArray(Object array, Options options, int index, int size) {
         int length = Array.getLength(array);
-        Function function = initFunction(options);
-        String alias = initValueAlias(options);
         for (int i = 0; i < length; i++) {
-            nextElement(options, Array.get(array, i), size, index++, function, alias);
+            nextElement(options, Array.get(array, i), size, index++, initFunction(options), initValueAlias(options));
         }
         return index;
     }
