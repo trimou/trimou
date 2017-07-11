@@ -93,7 +93,7 @@ public class PrettyTimeHelper extends LocaleAwareValueHelper {
      * @param factory
      * @param converter
      */
-    private PrettyTimeHelper(PrettyTimeFactory factory,
+    public PrettyTimeHelper(PrettyTimeFactory factory,
             Converter<Object, Date> converter) {
         checkArgumentsNotNull(factory, converter);
         this.factory = factory;
