@@ -12,7 +12,9 @@ import org.trimou.AbstractEngineTest;
 import org.trimou.ArchiveType;
 import org.trimou.Hammer;
 import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.util.ImmutableList;
 import org.trimou.util.ImmutableMap;
 
 /**
@@ -123,6 +125,16 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         assertNotNull(
                 ReflectionResolver.findField(Charlie.class, "publicField"));
         assertNull(ReflectionResolver.findField(Charlie.class, "privateField"));
+    }
+
+    @Test
+    public void testGetSimpleName() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
+                .addResolver(new ReflectionResolver()).addResolver(new ThisResolver())
+                .addResolver(new CombinedIndexResolver()).build();
+        assertEquals(Integer.class.getSimpleName() + ":" + ArchiveType.class.getSimpleName(),
+                engine.compileMustache("testTemplate", "{{this.0.simpleName}}:{{this.1.simpleName}}")
+                        .render(ImmutableList.of(Integer.class, ArchiveType.class)));
     }
 
     public static class Alpha {

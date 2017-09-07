@@ -55,4 +55,19 @@ public final class Reflections {
                 && decapitalize(methodName, prefix).equals(name);
     }
 
+    /**
+     *
+     * @param enumClazz
+     * @param name
+     * @return <code>true</code> if the specified enum declares a constant with the specified name
+     */
+    public static boolean isConstantName(Class<?> enumClazz, String name) {
+        for (Object constant : enumClazz.getEnumConstants()) {
+            if (name.equals(constant.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

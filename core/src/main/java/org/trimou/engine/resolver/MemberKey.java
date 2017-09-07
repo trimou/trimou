@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.resolver;
 
+import org.trimou.util.Reflections;
+
 /**
  *
  * @author Martin Kouba
@@ -83,9 +85,14 @@ final class MemberKey {
      * @return a new instance
      */
     static MemberKey newInstance(Object contextObject, String name) {
-        return (contextObject instanceof Class<?>) ? new MemberKey(
-                (Class<?>) contextObject, name) : new MemberKey(
-                contextObject.getClass(), name);
+        if (contextObject instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) contextObject;
+            if (clazz.isEnum() && ("values".equals(name) || Reflections.isConstantName(clazz, name))) {
+                // Special handling for enums - allows to access values() and constants
+                return new MemberKey(clazz, name);
+            }
+        }
+        return new MemberKey(contextObject.getClass(), name);
     }
 
 }
