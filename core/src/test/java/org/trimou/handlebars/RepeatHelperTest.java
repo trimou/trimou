@@ -2,8 +2,11 @@ package org.trimou.handlebars;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.trimou.AbstractTest;
+import org.trimou.Mustache;
 import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
@@ -66,6 +69,16 @@ public class RepeatHelperTest extends AbstractTest {
                                 HelpersBuilder.empty().addRepeat().build())
                         .build().compileMustache("repeat_validation_03",
                                 "{{#repeat times='a'}}{{/repeat}}"));
+    }
+
+    @Test
+    public void testStreamIteration() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty().addRepeat().build()).build();
+        List<String> data = ImmutableList.of("foo", "baz", "foos");
+        Mustache mustache = engine.compileMustache("stream",
+                "{{#with this.sequential.iterator}}{{#repeat while=hasNext}}{{next}}/{{/repeat}}{{/with}}");
+        assertEquals("foo/baz/", mustache.render(data.stream().filter((e) -> e.toString().length() == 3)));
     }
 
 }
