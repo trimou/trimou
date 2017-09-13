@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.trimou.AbstractEngineTest;
 import org.trimou.Hammer;
 import org.trimou.util.ImmutableList;
+import org.trimou.util.ImmutableMap;
 
 /**
  * @author Martin Kouba
@@ -57,6 +58,39 @@ public class EachHelperTest extends AbstractEngineTest {
     public void testIterateOverPeek() {
         assertEquals("123", engine.compileMustache("each_peek_1", "{{#with this}}{{#each}}{{this}}{{/each}}{{/with}}")
                 .render(ImmutableList.of("1", "2", "3")));
+    }
+
+    @Test
+    public void testOmitMeta() {
+        assertEquals("123",
+                engine.compileMustache("each_omitMeta_1", "{{#each omitMeta=true}}{{iterIndex}}{{this}}{{/each}}")
+                        .render(ImmutableList.of("1", "2", "3")));
+        assertEquals("123foo", engine
+                .compileMustache("each_omitMeta_2", "{{#each list array omitMeta=true}}{{iterIndex}}{{this}}{{/each}}")
+                .render(ImmutableMap.of("list", ImmutableList.of("1", "2", "3"), "array", new String[] { "foo" })));
+    }
+
+    @Test
+    public void testStream() {
+        assertEquals("13", engine.compileMustache("each_stream_1", "{{#each this}}{{iterIndex}}{{this}}{{/each}}")
+                .render(ImmutableList.of("1", "2", "3").stream().filter((e) -> !e.equals("2"))));
+        assertEquals("13foo",
+                engine.compileMustache("each_omitMeta_2", "{{#each list array}}{{iterIndex}}{{this}}{{/each}}")
+                        .render(ImmutableMap.of("list",
+                                ImmutableList.of("1", "2", "3").stream().filter((e) -> !e.equals("2")), "array",
+                                new String[] { "foo" })));
+    }
+
+    @Test
+    public void testIterator() {
+        assertEquals("123", engine.compileMustache("each_stream_1", "{{#each this}}{{iterIndex}}{{this}}{{/each}}")
+                .render(ImmutableList.of("1", "2", "3").iterator()));
+    }
+
+    @Test
+    public void testSpliterator() {
+        assertEquals("123", engine.compileMustache("each_stream_1", "{{#each this}}{{iterIndex}}{{this}}{{/each}}")
+                .render(ImmutableList.of("1", "2", "3").spliterator()));
     }
 
 }

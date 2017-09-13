@@ -17,12 +17,15 @@ package org.trimou.handlebars;
 
 import static org.trimou.handlebars.OptionsHashKeys.APPLY;
 import static org.trimou.handlebars.OptionsHashKeys.AS;
+import static org.trimou.handlebars.OptionsHashKeys.OMIT_META;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.stream.Stream;
 
 import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.resolver.ReflectionResolver;
@@ -35,7 +38,14 @@ import org.trimou.util.ImmutableSet;
 import org.trimou.util.Iterables;
 
 /**
- * Iterate over the params or the object at the top of the context stack:
+ * Iterates over the params or the object at the top of the context stack.
+ *
+ * <p>
+ * The param could be {@link Iterable}, array, {@link Iterator},
+ * {@link Spliterator} and {@link Stream}. If any of the params is
+ * {@link Iterator}, {@link Spliterator} or {@link Stream} the iteration
+ * metadata are not provided. Null values are treated as empty objects.
+ * </p>
  *
  * <pre>
  * {{#each items}}
@@ -105,6 +115,16 @@ import org.trimou.util.Iterables;
  * {{/each}}
  * </pre>
  *
+ * <p>
+ * By default, the parameters are analyzed and iteration metadata are available.
+ * In some cases, it could be useful to omit the analysis and iteration metadata
+ * generation:
+ * </p>
+ *
+ * <pre>
+ * {{#each items omitMeta=true}}{{this}}{{/each}}
+ * </pre>
+ *
  * @see Function
  * @author Martin Kouba
  */
@@ -136,37 +156,53 @@ public class EachHelper extends BasicSectionHelper {
     @Override
     public void execute(Options options) {
         if (options.getParameters().isEmpty()) {
+            // No params - try the object at the top of the context stack
             Object head = options.peek();
-            processParameter(head, options, 1, getSize(head));
+            processParameter(head, options, 1, getSize(head), isOmitMeta(options));
         } else if (options.getParameters().size() == 1) {
+            // Single param
             Object param = options.getParameters().get(0);
             if (param == null) {
                 // Treat null values as empty objects
                 return;
             }
-            processParameter(param, options, 1, getSize(param));
+            processParameter(param, options, 1, getSize(param), isOmitMeta(options));
         } else {
+            // Multiple params require some additional handling
             int size = 0;
             int index = 1;
+            boolean omitMeta = isOmitMeta(options);
             List<Object> params = new ArrayList<>(options.getParameters());
             for (Iterator<Object> iterator = params.iterator(); iterator.hasNext();) {
                 Object param = iterator.next();
-                int paramSize = 0;
-                if (param != null) {
-                    paramSize = getSize(param);
-                }
-                if (paramSize > 0) {
-                    size += paramSize;
-                } else {
+                if (param == null) {
                     // Treat null values as empty objects
                     iterator.remove();
+                    continue;
+                }
+                if (param instanceof Iterator || param instanceof Spliterator || param instanceof Stream) {
+                    omitMeta = true;
                 }
             }
-            if (size == 0) {
+            if (!omitMeta) {
+                for (Iterator<Object> iterator = params.iterator(); iterator.hasNext();) {
+                    Object param = iterator.next();
+                    int paramSize = 0;
+                    if (param != null) {
+                        paramSize = getSize(param);
+                    }
+                    if (paramSize > 0) {
+                        size += paramSize;
+                    } else {
+                        iterator.remove();
+                    }
+                }
+            }
+            if (!omitMeta && size == 0) {
                 return;
             }
             for (Object param : params) {
-                index = processParameter(param, options, index, size);
+                index = processParameter(param, options, index, size, omitMeta);
             }
         }
     }
@@ -178,34 +214,53 @@ public class EachHelper extends BasicSectionHelper {
 
     @Override
     protected Set<String> getSupportedHashKeys() {
-        return ImmutableSet.of(APPLY, AS);
+        return ImmutableSet.of(APPLY, AS, OMIT_META);
     }
 
-    private int processParameter(Object param, Options options, int index, int size) {
+    private int processParameter(Object param, Options options, int index, int size, boolean isOmitMeta) {
         if (param instanceof Iterable) {
-            return processIterable((Iterable<?>) param, options, index, size);
+            return processIterator(((Iterable<?>) param).iterator(), options, index, size, isOmitMeta);
         } else if (param.getClass().isArray()) {
-            return processArray(param, options, index, size);
+            return processArray(param, options, index, size, isOmitMeta);
+        } else if (param instanceof Iterator) {
+            return processIterator((Iterator<?>) param, options, index, size, true);
+        } else if (param instanceof Spliterator) {
+            return processSpliterator((Spliterator<?>) param, options, index, size, true);
+        } else if (param instanceof Stream) {
+            return processSpliterator(((Stream<?>) param).sequential().spliterator(), options, index, size, true);
         } else {
             throw new MustacheException(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "%s is nor an Iterable nor an array [%s]", param, options.getTagInfo());
         }
     }
 
-    private int processIterable(Iterable<?> iterable, Options options, int index, int size) {
-        Iterator<?> iterator = iterable.iterator();
+    private int processIterator(Iterator<?> iterator, Options options, int index, int size, boolean isOmitMeta) {
+        Function function = initFunction(options);
+        String alias = initValueAlias(options);
         while (iterator.hasNext()) {
-            nextElement(options, iterator.next(), size, index++, initFunction(options), initValueAlias(options));
+            nextElement(options, iterator.next(), size, index++, function, alias, isOmitMeta);
         }
         return index;
     }
 
-    private int processArray(Object array, Options options, int index, int size) {
+    private int processArray(Object array, Options options, int index, int size, boolean isOmitMeta) {
         int length = Array.getLength(array);
+        Function function = initFunction(options);
+        String alias = initValueAlias(options);
         for (int i = 0; i < length; i++) {
-            nextElement(options, Array.get(array, i), size, index++, initFunction(options), initValueAlias(options));
+            nextElement(options, Array.get(array, i), size, index++, function, alias, isOmitMeta);
         }
         return index;
+    }
+
+    private int processSpliterator(Spliterator<?> spliterator, Options options, int index, int size,
+            boolean isOmitMeta) {
+        Function function = initFunction(options);
+        String alias = initValueAlias(options);
+        spliterator.forEachRemaining((e) -> {
+            nextElement(options, e, size, Integer.MIN_VALUE, function, alias, isOmitMeta);
+        });
+        return Integer.MIN_VALUE;
     }
 
     private int getSize(Object param) {
@@ -217,22 +272,25 @@ public class EachHelper extends BasicSectionHelper {
         return 0;
     }
 
-    private void nextElement(Options options, Object value, int size, int index, Function function, String valueAlias) {
+    private void nextElement(Options options, Object value, int size, int index, Function function, String valueAlias,
+            boolean isOmitMeta) {
         if (function != null) {
             value = function.apply(value);
             if (SKIP_RESULT.equals(value)) {
                 return;
             }
         }
-        if (valueAlias != null) {
-            options.push(new ImmutableIterationMeta(iterationMetadataAlias, size, index, valueAlias, value));
-            options.fn();
-            options.pop();
-        } else {
-            options.push(new ImmutableIterationMeta(iterationMetadataAlias, size, index));
-            options.push(value);
-            options.fn();
-            options.pop();
+        ImmutableIterationMeta meta = isOmitMeta ? null
+                : (valueAlias != null
+                        ? new ImmutableIterationMeta(iterationMetadataAlias, size, index, valueAlias, value)
+                        : new ImmutableIterationMeta(iterationMetadataAlias, size, index));
+        if (meta != null) {
+            options.push(meta);
+        }
+        options.push(value);
+        options.fn();
+        options.pop();
+        if (meta != null) {
             options.pop();
         }
     }
@@ -308,6 +366,17 @@ public class EachHelper extends BasicSectionHelper {
             return null;
         }
         return as.toString();
+    }
+
+    private boolean isOmitMeta(Options options) {
+        Object value = options.getHash().get(OMIT_META);
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof Boolean) {
+            return Boolean.TRUE.equals(value);
+        }
+        return Boolean.parseBoolean(value.toString());
     }
 
 }

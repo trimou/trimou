@@ -80,4 +80,6 @@ public final class OptionsHashKeys {
 
     public static final String LIMIT = "limit";
 
+    public static final String OMIT_META = "omitMeta";
+
 }
