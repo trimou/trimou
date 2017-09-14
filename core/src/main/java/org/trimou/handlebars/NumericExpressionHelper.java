@@ -21,6 +21,7 @@ import static org.trimou.handlebars.OptionsHashKeys.OUTPUT;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.BiConsumer;
 
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -69,18 +70,38 @@ public class NumericExpressionHelper extends BasicHelper {
     private final Operator defaultOperator;
 
     /**
-     * {@link Operator#toString()} is used the helper name.
+     * {@link Operator#toString()} is used as the helper name.
      *
-     * @return a builder instance with {@link NumericExpressionHelper} instance
+     * @return a new builder instance with {@link NumericExpressionHelper} instance
      *         registered for each {@link Operator}
      */
     public static HelpersBuilder forEachOperator() {
-        HelpersBuilder builder = HelpersBuilder.empty();
-        for (Operator operator : Operator.values()) {
-            builder.add(operator.toString().toLowerCase(),
-                    new NumericExpressionHelper(operator));
-        }
+        return forEachOperator(HelpersBuilder.empty());
+    }
+
+    /**
+     *
+     * @param builder
+     * @return an enriched builder instance with {@link NumericExpressionHelper} instance
+     *         registered for each {@link Operator}
+     */
+    public static HelpersBuilder forEachOperator(HelpersBuilder builder) {
+        forEachOperator((name, helper) -> builder.add(name, helper));
         return builder;
+    }
+
+    /**
+     * Invokes the specified consumer for all operators. {@link Operator#toString()}
+     * is used as the first argument and the corresponding
+     * {@link NumericExpressionHelper} instance as the second argument.
+     *
+     *
+     * @param consumer
+     */
+    public static void forEachOperator(BiConsumer<String, Helper> consumer) {
+        for (Operator operator : Operator.values()) {
+            consumer.accept(operator.toString().toLowerCase(), new NumericExpressionHelper(operator));
+        }
     }
 
     /**
