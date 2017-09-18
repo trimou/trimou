@@ -33,21 +33,17 @@ public class TrimouExtension implements Extension {
 
     private RenderingContext renderingContext;
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TrimouExtension.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrimouExtension.class);
 
     /**
      *
      * @param event
      * @param beanManager
      */
-    public void observeAfterBeanDiscovery(@Observes AfterBeanDiscovery event,
-            BeanManager beanManager) {
-        LOGGER.info("Register context for @RenderingScoped");
+    public void observeAfterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager) {
+        LOGGER.info("Registering context for @RenderingScoped");
         renderingContext = new RenderingContext();
         event.addContext(renderingContext);
-        // Workaround to support CDI 1.0 and SE
-        BeanManagerLocator.setExtensionProvidedBeanManager(beanManager);
     }
 
     RenderingContext getRenderingContext() {

@@ -15,14 +15,9 @@
  */
 package org.trimou.cdi;
 
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.trimou.cdi.context.RenderingContext;
 import org.trimou.cdi.context.RenderingContextListener;
 import org.trimou.cdi.resolver.CDIBeanResolver;
@@ -34,33 +29,19 @@ import org.trimou.engine.config.ConfigurationExtension;
  */
 public class CDIConfigurationExtension implements ConfigurationExtension {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CDIConfigurationExtension.class);
-
     @Override
     public void register(ConfigurationExtensionBuilder builder) {
-        BeanManager beanManager = BeanManagerLocator.locate();
-        if (beanManager == null) {
-            LOGGER.warn(
-                    "CDI extension not operational - unable to locate BeanManager");
-            return;
-        }
+        BeanManager beanManager = CDI.current().getBeanManager();
         builder.addResolver(new CDIBeanResolver(beanManager));
-        builder.addMustacheListener(
-                new RenderingContextListener(getRenderingContext(beanManager)));
+        builder.addMustacheListener(new RenderingContextListener(getRenderingContext(beanManager)));
     }
 
     private RenderingContext getRenderingContext(BeanManager beanManager) {
-        Set<Bean<?>> beans = beanManager.getBeans(TrimouExtension.class);
-        if (beans.isEmpty()) {
-            throw new IllegalStateException(
-                    "Unable to get rendering context reference");
+        try {
+            return beanManager.getExtension(TrimouExtension.class).getRenderingContext();
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to get rendering context reference", e);
         }
-        Bean<?> bean = beanManager.resolve(beans);
-        CreationalContext<?> ctx = beanManager.createCreationalContext(bean);
-        TrimouExtension trimouExtension = (TrimouExtension) beanManager
-                .getReference(bean, TrimouExtension.class, ctx);
-        return trimouExtension.getRenderingContext();
     }
 
 }

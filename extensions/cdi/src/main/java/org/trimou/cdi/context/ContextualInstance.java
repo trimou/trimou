@@ -48,7 +48,7 @@ final class ContextualInstance<T> {
      *
      * @return the instance
      */
-    T getInstance() {
+    T get() {
         return instance;
     }
 
