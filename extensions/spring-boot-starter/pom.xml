@@ -12,10 +12,6 @@
     <artifactId>trimou-extension-spring-boot-starter</artifactId>
     <description>Starter and auto-configuration for building Spring MVC web applications using Trimou</description>
 
-    <properties>
-        <version.spring-boot>1.5.1.RELEASE</version.spring-boot>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.trimou</groupId>

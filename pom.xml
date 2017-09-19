@@ -91,7 +91,9 @@
       <version.ozark>1.0.0-m02</version.ozark>
       <version.prettytime>4.0.0.Final</version.prettytime>
       <version.slf4j>1.7.4</version.slf4j>
-      <version.springframework>3.1.0.RELEASE</version.springframework>
+      <version.springframework>3.2.18.RELEASE</version.springframework>
+      <version.springframework4>4.3.11.RELEASE</version.springframework4>
+      <version.spring-boot>1.5.7.RELEASE</version.spring-boot>
       <version.weld2>2.4.5.Final</version.weld2>
       <version.weld3>3.0.1.Final</version.weld3>
       <version.wildfly>10.1.0.Final</version.wildfly>

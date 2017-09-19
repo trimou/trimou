@@ -13,8 +13,6 @@
     <description>Extension to provide Spring 4 MVC support</description>
 
     <properties>
-        <version.spring-boot>1.5.1.RELEASE</version.spring-boot>
-        <version.springframework>4.3.6.RELEASE</version.springframework>
         <version.servlet-api>3.1.0</version.servlet-api>
     </properties>
 
@@ -34,7 +32,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${version.springframework}</version>
+            <version>${version.springframework4}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -81,7 +79,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${version.springframework}</version>
+            <version>${version.springframework4}</version>
             <scope>test</scope>
         </dependency>
 

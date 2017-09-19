@@ -16,10 +16,6 @@
         A simple Spring Boot example showing some of Trimou's key features in action.
     </description>
 
-    <properties>
-        <version.spring-boot>1.5.1.RELEASE</version.spring-boot>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.trimou</groupId>
