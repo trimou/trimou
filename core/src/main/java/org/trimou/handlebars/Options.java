@@ -144,6 +144,13 @@ public interface Options extends HelperDefinition {
     void executeAsync(HelperExecutable executable);
 
     /**
+     *
+     * @return the original helper definition whose params and hash map may contain value placeholders
+     * @since 2.3
+     */
+    HelperDefinition getOriginalDefinition();
+
+    /**
      * A helper task to be executed asynchronously.
      *
      * @author Martin Kouba

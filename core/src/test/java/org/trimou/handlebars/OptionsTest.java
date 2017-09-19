@@ -24,6 +24,7 @@ import org.trimou.engine.locator.MapTemplateLocator;
 import org.trimou.engine.resolver.AbstractResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.handlebars.HelperDefinition.ValuePlaceholder;
 import org.trimou.util.ImmutableMap;
 
 /**
@@ -288,6 +289,15 @@ public class OptionsTest extends AbstractTest {
                 .check(() -> engine
                         .compileMustache("helper_source02", "{{test 'bar'}}")
                         .render(null));
+    }
+
+    @Test
+    public void testOriginalDefinition() {
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelper("foo",
+                        (o) -> o.append(((ValuePlaceholder) o.getOriginalDefinition().getHash().get("test")).getName()))
+                .build();
+        assertEquals("bar", engine.compileMustache("helper_origdef01", "{{foo test=bar}}").render(null));
     }
 
 }

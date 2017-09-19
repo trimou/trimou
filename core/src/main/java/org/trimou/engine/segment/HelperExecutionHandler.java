@@ -305,7 +305,7 @@ class HelperExecutionHandler {
             return new DefaultOptions(appendable, executionContext, segment,
                     getFinalParameters(executionContext, valueWrappers),
                     getFinalHash(executionContext, valueWrappers),
-                    valueWrappers, engine);
+                    valueWrappers, engine, this);
         }
 
         private List<Object> getFinalParameters(
@@ -444,6 +444,8 @@ class HelperExecutionHandler {
 
         private final Map<String, Object> hash;
 
+        private final HelperDefinition originalDefinition;
+
         /**
          *
          * @param appendable
@@ -453,11 +455,12 @@ class HelperExecutionHandler {
          * @param hash
          * @param valueWrappers
          * @param engine
+         * @param originalDefinition
          */
         DefaultOptions(Appendable appendable, ExecutionContext executionContext,
                 HelperAwareSegment segment, List<Object> parameters,
                 Map<String, Object> hash, List<ValueWrapper> valueWrappers,
-                MustacheEngine engine) {
+                MustacheEngine engine, HelperDefinition originalDefinition) {
             this.appendable = appendable;
             this.valueWrappers = valueWrappers;
             this.executionContext = executionContext;
@@ -466,6 +469,7 @@ class HelperExecutionHandler {
             this.parameters = parameters;
             this.hash = hash;
             this.engine = engine;
+            this.originalDefinition = originalDefinition;
         }
 
         @Override
@@ -556,7 +560,7 @@ class HelperExecutionHandler {
                         DefaultOptions asyncOptions = new DefaultOptions(
                                 new AsyncAppendable(asyncAppendable),
                                 executionContext, segment, parameters, hash,
-                                new ArrayList<>(), engine);
+                                new ArrayList<>(), engine, originalDefinition);
                         executable.execute(asyncOptions);
                         return (AsyncAppendable) asyncOptions
                                 .getAppendable();
@@ -602,6 +606,11 @@ class HelperExecutionHandler {
             } else {
                 return Strings.EMPTY;
             }
+        }
+
+        @Override
+        public HelperDefinition getOriginalDefinition() {
+            return originalDefinition;
         }
 
         protected void partial(String templateId, Appendable appendable,

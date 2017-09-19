@@ -24,8 +24,6 @@ import static org.trimou.handlebars.OptionsHashKeys.WHILE;
 
 import java.util.ListIterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
@@ -72,12 +70,6 @@ import org.trimou.util.ImmutableSet;
  */
 public class RepeatHelper extends BasicSectionHelper {
 
-    private final ConcurrentMap<String, String> whilePlaceholderKeys;
-
-    public RepeatHelper() {
-        this.whilePlaceholderKeys = new ConcurrentHashMap<>();
-    }
-
     @Override
     public void execute(Options options) {
         Integer times = initIntHashEntry(options, TIMES);
@@ -89,22 +81,19 @@ public class RepeatHelper extends BasicSectionHelper {
             Object whileValue = options.getHash().get(WHILE);
             if (whileValue != null) {
                 Object value;
-                String whileExpr = whilePlaceholderKeys.get(getKey(options));
+                String whileExpr = getWhilePlaceholderKey(options);
                 if (whileExpr != null) {
                     value = whileValue;
                 } else {
                     whileExpr = whileValue.toString();
                     value = options.getValue(whileExpr);
                 }
-                int limit = initIntHashEntry(options, LIMIT,
-                        Integer.MAX_VALUE);
+                int limit = initIntHashEntry(options, LIMIT, Integer.MAX_VALUE);
                 int i = 0;
                 while (!Checker.isFalsy(value)) {
                     options.fn();
                     if (i++ >= limit) {
-                        throw new MustacheException(
-                                MustacheProblem.RENDER_GENERIC_ERROR,
-                                "Iteration limit exceeded");
+                        throw new MustacheException(MustacheProblem.RENDER_GENERIC_ERROR, "Iteration limit exceeded");
                     }
                     value = options.getValue(whileExpr);
                 }
@@ -126,13 +115,7 @@ public class RepeatHelper extends BasicSectionHelper {
                             e);
                 }
             }
-        } else if (definition.getHash().containsKey(WHILE)) {
-            Object whileExpr = definition.getHash().get(WHILE);
-            if (isValuePlaceholder(whileExpr)) {
-                whilePlaceholderKeys.put(getKey(definition),
-                        ((ValuePlaceholder) whileExpr).getName());
-            }
-        } else {
+        } else if (!definition.getHash().containsKey(WHILE)) {
             throw newValidationException(
                     "Either 'times' or 'while' hash entry is expected",
                     RepeatHelper.class, definition);
@@ -154,9 +137,13 @@ public class RepeatHelper extends BasicSectionHelper {
         return ImmutableSet.of(TIMES, WHILE, LIMIT);
     }
 
-    private String getKey(HelperDefinition definition) {
-        return definition.getTagInfo().getTemplateGeneratedId()
-                + definition.getTagInfo().getId();
+    private String getWhilePlaceholderKey(Options options) {
+        Object value = options.getOriginalDefinition().getHash().get(WHILE);
+        if (isValuePlaceholder(value)) {
+            ValuePlaceholder placeholder = (ValuePlaceholder) value;
+            return placeholder.getName();
+        }
+        return null;
     }
 
 }
