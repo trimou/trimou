@@ -302,6 +302,16 @@ public class MustacheEngineTest extends AbstractEngineTest {
         assertEquals(1, locatorCalled.get());
     }
 
+    @Test
+    public void testCompileWithoutName() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
+        Mustache mustache1 = engine.compileMustache("{{this}}");
+        Mustache mustache2 = engine.compileMustache("{{this}}");
+        assertNotEquals(mustache1.getName(), mustache2.getName());
+        assertEquals("foo", mustache1.render("foo"));
+        assertEquals("foo", mustache2.render("foo"));
+    }
+
     private static class MyStringReader extends StringReader {
 
         final AtomicBoolean isCloseInvoked;

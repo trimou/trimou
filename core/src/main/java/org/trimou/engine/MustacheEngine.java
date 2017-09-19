@@ -77,6 +77,17 @@ public interface MustacheEngine {
     Mustache compileMustache(String name, String templateContent);
 
     /**
+     * Compile the given template. The compiled template is not cached and so it's
+     * not available for partials and template inheritance.
+     * {@link Mustache#getName()} is generated automatically.
+     *
+     * @param templateContent
+     * @return the compiled template
+     * @since 2.3
+     */
+    Mustache compileMustache(String templateContent);
+
+    /**
      * @return the engine configuration
      */
     Configuration getConfiguration();

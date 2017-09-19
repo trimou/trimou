@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.slf4j.Logger;
@@ -128,6 +129,11 @@ class DefaultMustacheEngine implements MustacheEngine {
         checkArgumentNotEmpty(templateId);
         checkArgumentNotEmpty(templateContent);
         return parse(templateId, new StringReader(templateContent));
+    }
+
+    @Override
+    public Mustache compileMustache(String templateContent) {
+        return compileMustache(UUID.randomUUID().toString(), templateContent);
     }
 
     public Configuration getConfiguration() {
