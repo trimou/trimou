@@ -40,6 +40,7 @@ public class HelperExecutionHandlerTest {
                 "foo");
         assertHelperNameParts("'[1, 2]'", "'[1, 2]'");
         assertHelperNameParts("'[1, '2', 'alpha']'", "'[1, '2', 'alpha']'");
+        assertHelperNameParts("foo=[1, '2']", "foo=[1, '2']");
 
         MustacheExceptionAssert
                 .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)

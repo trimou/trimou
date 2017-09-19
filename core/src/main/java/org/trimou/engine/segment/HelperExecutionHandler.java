@@ -113,7 +113,7 @@ class HelperExecutionHandler {
                             part.length());
                     if (Strings.isListLiteral(value)) {
                         hash.put(part.substring(0, equalsPosition),
-                                new ListValuePlaceholder(part, engine,
+                                new ListValuePlaceholder(value, engine,
                                         literalSupport, segment));
                     } else {
                         hash.put(part.substring(0, equalsPosition),
@@ -680,6 +680,8 @@ class HelperExecutionHandler {
 
         private final List<Object> values;
 
+        private final String name;
+
         ListValuePlaceholder(String value, MustacheEngine engine,
                 LiteralSupport literalSupport, HelperAwareSegment segment) {
             List<String> elements = Strings
@@ -689,13 +691,14 @@ class HelperExecutionHandler {
                 builder.add(getLiteralOrPlaceholder(element.trim(), engine, segment,
                         literalSupport));
             }
-            values = builder.build();
-            hasValuePlaceholderElement = initHasValuePlaceholderElement();
+            this.values = builder.build();
+            this.hasValuePlaceholderElement = initHasValuePlaceholderElement();
+            this.name = value;
         }
 
         @Override
         public String getName() {
-            throw new UnsupportedOperationException();
+            return name;
         }
 
         @Override

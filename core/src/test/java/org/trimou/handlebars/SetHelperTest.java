@@ -21,16 +21,18 @@ public class SetHelperTest extends AbstractTest {
     @Test
     public void testSetHelper() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .registerHelpers(HelpersBuilder.empty().addSet().build())
-                .build();
-        assertEquals("hellohello",
-                engine.compileMustache("set_helper01",
-                        "{{foo}}{{bar}}{{#set foo=\"hello\"}}{{foo}}{{bar}}{{#set bar=foo}}{{bar}}{{/set}}{{/set}}{{foo}}{{bar}}")
-                        .render(null));
+                .registerHelpers(HelpersBuilder.empty().addSet().build()).build();
+        assertEquals("hellohello", engine.compileMustache("set_helper01",
+                "{{foo}}{{bar}}{{#set foo=\"hello\"}}{{foo}}{{bar}}{{#set bar=foo}}{{bar}}{{/set}}{{/set}}{{foo}}{{bar}}")
+                .render(null));
         assertEquals("helloping1",
                 engine.compileMustache("set_helper02",
                         "{{#set foo=\"hello\" bar=\"ping\" qux=one}}{{foo}}{{bar}}{{qux}}{{/set}}")
                         .render(ImmutableMap.of("one", BigDecimal.ONE)));
+        assertEquals("helloworld",
+                engine.compileMustache("set_helper03",
+                        "{{#set foo=['hello','world']}}{{#each foo}}{{this}}{{/each}}{{/set}}")
+                        .render(null));
     }
 
     @Test

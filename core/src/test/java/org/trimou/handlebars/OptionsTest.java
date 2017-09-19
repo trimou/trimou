@@ -298,6 +298,7 @@ public class OptionsTest extends AbstractTest {
                         (o) -> o.append(((ValuePlaceholder) o.getOriginalDefinition().getHash().get("test")).getName()))
                 .build();
         assertEquals("bar", engine.compileMustache("helper_origdef01", "{{foo test=bar}}").render(null));
+        assertEquals("[bar,'1',2]", engine.compileMustache("helper_origdef01", "{{foo test=[bar,'1',2]}}").render(null));
     }
 
 }
