@@ -424,6 +424,10 @@ Trimou provides some useful helpers which are not registered automatically:
 |Allows to repeat a section multiple times or until the `while` expression evaluates to a "falsy" value.
 |repeat
 
+|`org.trimou.handlebars.TagHelper`
+|Allows to easily render tags which make use of the same delimiters as Trimou does (i.e. would be normally parsed as mustache tags).
+|tag
+
 |===
 
 ==== Example of ResourceBundleHelper
