@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.config;
 
+import org.trimou.engine.convert.Converter;
+
 /**
  * A configuration key.
  *
@@ -29,12 +31,22 @@ public interface ConfigurationKey {
     String get();
 
     /**
-     * The set of supported value types which can be automatically converted
-     * consist of {@link String}, {@link Boolean}, {@link Integer} and
-     * {@link Long}.
      *
      * @return the default value
      */
     Object getDefaultValue();
+
+    /**
+     * The converter is used before a property value is stored in configuration.
+     * <p>
+     * By default, the set of supported value types which can be automatically
+     * converted consist of {@link String}, {@link Boolean}, {@link Integer} and
+     * {@link Long}.
+     *
+     * @return the value converter
+     */
+    default Converter<Object, Object> getConverter() {
+        return (value) -> ConfigurationProperties.convertConfigValue(getDefaultValue().getClass(), value);
+    }
 
 }

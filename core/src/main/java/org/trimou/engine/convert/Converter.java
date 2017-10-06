@@ -15,7 +15,6 @@
  */
 package org.trimou.engine.convert;
 
-
 /**
  * A component which is able to convert an object to a different object.
  *

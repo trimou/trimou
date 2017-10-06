@@ -42,20 +42,20 @@ import org.trimou.handlebars.Options;
 public interface Configuration {
 
     /**
-     * @return the ordered immutable list of resolvers, or <code>null</code> if
-     *         no resolvers defined
+     * @return the ordered immutable list of resolvers, or <code>null</code> if no
+     *         resolvers defined
      */
     List<Resolver> getResolvers();
 
     /**
-     * @return the immutable map of global values, or <code>null</code> if no
-     *         global values defined
+     * @return the immutable map of global values, or <code>null</code> if no global
+     *         values defined
      */
     Map<String, Object> getGlobalData();
 
     /**
-     * @return the ordered immutable list of template locators, or
-     *         <code>null</code> if no template locators defined
+     * @return the ordered immutable list of template locators, or <code>null</code>
+     *         if no template locators defined
      */
     List<TemplateLocator> getTemplateLocators();
 
@@ -111,6 +111,14 @@ public interface Configuration {
      * @return the property value for the given key
      */
     <T extends ConfigurationKey> String getStringPropertyValue(T configurationKey);
+
+    /**
+     *
+     * @param configurationKey
+     * @return the property value for the given key
+     * @since 2.4
+     */
+    <T extends ConfigurationKey> Object getPropertyValue(T configurationKey);
 
     /**
      *

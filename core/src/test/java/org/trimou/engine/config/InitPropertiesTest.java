@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.junit.After;
@@ -28,6 +29,12 @@ public class InitPropertiesTest extends AbstractEngineTest {
     private final ConfigurationKey testResolverKeyBravo = new SimpleConfigurationKey(
             "test.key.bravo", 1L);
 
+    private final ConfigurationKey testResolverKeyCustom = new SimpleConfigurationKey("test.key.custom.convert", "y",
+            (v) -> v.equals("x") ? Boolean.TRUE : v);
+
+    private final ConfigurationKey testResolverKeyCustomNext = new SimpleConfigurationKey("test.key.custom.next", "",
+            (v) -> v);
+
     @Before
     public void buildEngine() {
 
@@ -37,9 +44,11 @@ public class InitPropertiesTest extends AbstractEngineTest {
         System.setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY.get(),
                 "2000");
         System.setProperty("test.key.bravo", "1000");
+        System.setProperty("test.key.custom.convert", "x");
 
         engine = MustacheEngineBuilder
                 .newBuilder()
+                .setProperty(testResolverKeyCustomNext, BigDecimal.ONE)
                 .setProperty(ReflectionResolver.MEMBER_CACHE_MAX_SIZE_KEY,
                         "3000").addResolver(new AbstractResolver(0) {
 
@@ -51,7 +60,7 @@ public class InitPropertiesTest extends AbstractEngineTest {
 
                     @Override
                     public Set<ConfigurationKey> getConfigurationKeys() {
-                        return ImmutableSet.of(testResolverKeyAlpha, testResolverKeyBravo);
+                        return ImmutableSet.of(testResolverKeyAlpha, testResolverKeyBravo, testResolverKeyCustom, testResolverKeyCustomNext);
                     }
                 }).build();
 
@@ -98,5 +107,11 @@ public class InitPropertiesTest extends AbstractEngineTest {
         // System prop vs file prop priority
         assertEquals(Long.valueOf(1000), engine.getConfiguration()
                 .getLongPropertyValue(testResolverKeyBravo));
+
+        // Custom converter
+        assertEquals(Boolean.TRUE, engine.getConfiguration()
+                .getPropertyValue(testResolverKeyCustom));
+        assertEquals(BigDecimal.ONE, engine.getConfiguration()
+                .getPropertyValue(testResolverKeyCustomNext));
     }
 }

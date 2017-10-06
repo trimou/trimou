@@ -15,6 +15,9 @@
  */
 package org.trimou.engine.config;
 
+import org.trimou.engine.convert.Converter;
+import org.trimou.util.Checker;
+
 /**
  *
  * @author Martin Kouba
@@ -25,14 +28,28 @@ public class SimpleConfigurationKey implements ConfigurationKey {
 
     private final Object defaultValue;
 
+    private final Converter<Object, Object> converter;
+
     /**
      *
      * @param key
      * @param defaultValue
      */
     public SimpleConfigurationKey(String key, Object defaultValue) {
+        this(key, defaultValue, null);
+    }
+
+    /**
+     *
+     * @param key
+     * @param defaultValue
+     * @param converter
+     */
+    public SimpleConfigurationKey(String key, Object defaultValue, Converter<Object, Object> converter) {
+        Checker.checkArgumentsNotNull(key, defaultValue);
         this.key = key;
         this.defaultValue = defaultValue;
+        this.converter = converter;
     }
 
     @Override
@@ -46,10 +63,13 @@ public class SimpleConfigurationKey implements ConfigurationKey {
     }
 
     @Override
+    public Converter<Object, Object> getConverter() {
+        return converter != null ? converter : ConfigurationKey.super.getConverter();
+    }
+
+    @Override
     public String toString() {
-        return String.format(
-                "SimpleConfigurationKey [key:%s, defaultValue: %s]", key,
-                defaultValue);
+        return String.format("SimpleConfigurationKey [key:%s, defaultValue: %s]", key, defaultValue);
     }
 
     @Override

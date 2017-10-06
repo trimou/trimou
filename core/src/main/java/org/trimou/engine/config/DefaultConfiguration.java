@@ -311,6 +311,17 @@ class DefaultConfiguration implements Configuration {
         return value;
     }
 
+    @Override
+    public <T extends ConfigurationKey> Object getPropertyValue(T configurationKey) {
+
+        Object value = properties.get(configurationKey.get());
+
+        if (value == null) {
+            value = configurationKey.getDefaultValue();
+        }
+        return value;
+    }
+
     public String getInfo() {
         StringBuilder builder = new StringBuilder();
         if (templateLocators != null) {
@@ -428,8 +439,7 @@ class DefaultConfiguration implements Configuration {
 
             if (value != null) {
                 try {
-                    value = ConfigurationProperties.convertConfigValue(
-                            configKey.getDefaultValue().getClass(), value);
+                    value = configKey.getConverter().convert(value);
                 } catch (Exception e) {
                     throw new MustacheException(
                             MustacheProblem.CONFIG_PROPERTY_INVALID_VALUE, e);
