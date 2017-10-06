@@ -22,6 +22,7 @@ import javax.el.ELContext;
 import javax.el.ELProcessor;
 import javax.el.ELResolver;
 
+import org.trimou.engine.config.Configuration;
 import org.trimou.handlebars.Options;
 
 /**
@@ -34,15 +35,17 @@ class Expressions {
     }
 
     /**
-     * Note that we have to use a separate {@link ELProcessor} for each
-     * evaluation as the {@link OptionsELResolver} may not be reused.
+     * Note that we have to use a separate {@link ELProcessor} for each evaluation
+     * as the {@link OptionsELResolver} may not be reused.
      *
      * @param expression
      * @param options
      * @return the result of the expression evaluation
      */
-    static Object eval(String expression, Options options) {
-        ELProcessor elp = new ELProcessor();
+    static Object eval(String expression, Options options, Configuration configuration) {
+        ELProcessorFactory elpFactory = (ELProcessorFactory) configuration
+                .getPropertyValue(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY);
+        ELProcessor elp = elpFactory.createELProcessor(configuration);
         elp.getELManager().addELResolver(new OptionsELResolver(options));
         return elp.eval(expression);
     }
@@ -56,8 +59,7 @@ class Expressions {
         }
 
         @Override
-        public Object getValue(ELContext context, Object base,
-                Object property) {
+        public Object getValue(ELContext context, Object base, Object property) {
             if (context == null) {
                 throw new NullPointerException();
             }
@@ -72,25 +74,21 @@ class Expressions {
         }
 
         @Override
-        public Class<?> getType(ELContext context, Object base,
-                Object property) {
+        public Class<?> getType(ELContext context, Object base, Object property) {
             return null;
         }
 
         @Override
-        public void setValue(ELContext context, Object base, Object property,
-                Object value) {
+        public void setValue(ELContext context, Object base, Object property, Object value) {
         }
 
         @Override
-        public boolean isReadOnly(ELContext context, Object base,
-                Object property) {
+        public boolean isReadOnly(ELContext context, Object base, Object property) {
             return false;
         }
 
         @Override
-        public Iterator<FeatureDescriptor> getFeatureDescriptors(
-                ELContext context, Object base) {
+        public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
             return null;
         }
 

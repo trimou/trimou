@@ -17,6 +17,10 @@ package org.trimou.el;
 
 import static org.trimou.el.Expressions.eval;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.handlebars.IfHelper;
 import org.trimou.handlebars.Options;
 
@@ -52,10 +56,15 @@ public class ELIfHelper extends IfHelper {
     }
 
     @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY);
+    }
+
+    @Override
     protected boolean isMatching(Object value, Options options) {
         if (value instanceof String) {
             // String is expected to be an EL expression
-            return super.isMatching(eval(value.toString(), options));
+            return super.isMatching(eval(value.toString(), options, configuration));
         } else {
             return super.isMatching(value);
         }

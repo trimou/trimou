@@ -17,6 +17,10 @@ package org.trimou.el;
 
 import static org.trimou.el.Expressions.eval;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.interpolation.MissingValueHandler;
 import org.trimou.handlebars.BasicHelper;
 import org.trimou.handlebars.Options;
@@ -48,7 +52,7 @@ public class ELHelper extends BasicHelper {
 
     @Override
     public void execute(Options options) {
-        Object value = eval(options.getParameters().get(0).toString(), options);
+        Object value = eval(options.getParameters().get(0).toString(), options, configuration);
         if (isSection(options)) {
             if (value != null) {
                 options.push(value);
@@ -64,7 +68,11 @@ public class ELHelper extends BasicHelper {
                 append(options, value.toString());
             }
         }
+    }
 
+    @Override
+    public Set<ConfigurationKey> getConfigurationKeys() {
+        return Collections.singleton(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY);
     }
 
 }
