@@ -217,7 +217,7 @@ public class EachHelper extends BasicSectionHelper {
         return ImmutableSet.of(APPLY, AS, OMIT_META);
     }
 
-    private int processParameter(Object param, Options options, int index, int size, boolean isOmitMeta) {
+    protected int processParameter(Object param, Options options, int index, int size, boolean isOmitMeta) {
         if (param instanceof Iterable) {
             return processIterator(((Iterable<?>) param).iterator(), options, index, size, isOmitMeta);
         } else if (param.getClass().isArray()) {
