@@ -14,6 +14,7 @@ import org.trimou.AbstractTest;
 import org.trimou.Hammer;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.Configuration;
 import org.trimou.util.ImmutableMap;
 
 /**
@@ -44,7 +45,23 @@ public class ELHelperTest extends AbstractTest {
 
     @Test
     public void testCustomELProcessorFactory() {
-        ELProcessorFactory customFactory = (c) -> {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .setProperty(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY, new CustomELProcessorFactory()).build();
+        assertEquals("true", engine.compileMustache("elpfcustom_01", "{{el 'foo'}}").render(null));
+    }
+
+    @Test
+    public void testCustomELProcessorFactoryClazz() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .setProperty(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY, CustomELProcessorFactory.class.getName())
+                .build();
+        assertEquals("true", engine.compileMustache("elpfcustom_02", "{{el 'foo'}}").render(null));
+    }
+
+    static class CustomELProcessorFactory implements ELProcessorFactory {
+
+        @Override
+        public ELProcessor createELProcessor(Configuration configuration) {
             ELProcessor elp = new ELProcessor();
             elp.getELManager().addELResolver(new ELResolver() {
 
@@ -83,10 +100,8 @@ public class ELHelperTest extends AbstractTest {
             });
             ;
             return elp;
-        };
-        MustacheEngine engine = MustacheEngineBuilder.newBuilder()
-                .setProperty(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY, customFactory).build();
-        assertEquals("true", engine.compileMustache("elpfcustom_01", "{{el 'foo'}}").render(null));
+        }
+
     }
 
 }
