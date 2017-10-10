@@ -45,6 +45,14 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                  <archive>
+                     <manifestEntries>
+                        <Implementation-Title>${project.name}</Implementation-Title>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                     </manifestEntries>
+                  </archive>
+               </configuration>
             </plugin>
         </plugins>
         <resources>
