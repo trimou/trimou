@@ -87,11 +87,16 @@ public class EvalHelper extends BasicHelper {
 
     @Override
     public void execute(Options options) {
-        StringBuilder key = new StringBuilder();
+        final StringBuilder key = new StringBuilder();
+        boolean resolved = true;
         for (final Object o : options.getParameters()) {
+            if (o == null) {
+                resolved = false;
+                break;
+            }
             notation.append(key, o.toString());
         }
-        Object value = options.getValue(key.toString());
+        Object value = resolved ? options.getValue(key.toString()) : null;
         if (isSection(options)) {
             if (value != null) {
                 options.push(value);
