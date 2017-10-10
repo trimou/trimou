@@ -26,9 +26,7 @@ public class WithHelper extends BasicSectionHelper {
     public void execute(Options options) {
         Object value = options.getParameters().get(0);
         if (value != null) {
-            options.push(value);
-            options.fn();
-            options.pop();
+            options.pushAnd(value).fnAnd().pop();
         }
     }
 

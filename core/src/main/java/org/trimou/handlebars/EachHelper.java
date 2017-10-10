@@ -287,9 +287,7 @@ public class EachHelper extends BasicSectionHelper {
         if (meta != null) {
             options.push(meta);
         }
-        options.push(value);
-        options.fn();
-        options.pop();
+        options.pushAnd(value).fnAnd().pop();
         if (meta != null) {
             options.pop();
         }

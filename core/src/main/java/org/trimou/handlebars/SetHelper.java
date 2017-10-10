@@ -39,9 +39,7 @@ public class SetHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
-        options.push(options.getHash());
-        options.fn();
-        options.pop();
+        options.pushAnd(options.getHash()).fnAnd().pop();
     }
 
     @Override

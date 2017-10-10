@@ -301,4 +301,28 @@ public class OptionsTest extends AbstractTest {
         assertEquals("[bar,'1',2]", engine.compileMustache("helper_origdef01", "{{foo test=[bar,'1',2]}}").render(null));
     }
 
+    @Test
+    public void testFluentVersions() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().registerHelper("foo", (o) -> {
+            o.pushAnd("foo").fnAnd().partialAnd("baz").appendAnd(" and").pop();
+        }).registerHelper("bar", (o) -> {
+            o.pushAnd("bar")
+                .fnAnd(o.getAppendable())
+                .partialAnd("baz", o.getAppendable())
+                .getValueAnd("this", value -> assertEquals("bar", value))
+                .sourceAnd("baz", source -> assertEquals("{{this}}", source))
+                .peekAnd(object -> assertEquals("bar", object))
+                .appendAnd(" and ")
+                .getAppendableAnd(appendable -> {
+                    try {
+                        appendable.append("test");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .popAnd(object -> assertEquals("bar", object));
+        }).addTemplateLocator(MapTemplateLocator.builder().put("baz", "{{this}}").build()).build();
+        assertEquals("bar and test", engine.compileMustache("{{bar}}").render(null));
+    }
+
 }

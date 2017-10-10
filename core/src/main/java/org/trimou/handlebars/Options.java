@@ -15,6 +15,8 @@
  */
 package org.trimou.handlebars;
 
+import java.util.function.Consumer;
+
 import org.trimou.Mustache;
 import org.trimou.engine.interpolation.KeySplitter;
 import org.trimou.exception.MustacheException;
@@ -37,8 +39,8 @@ public interface Options extends HelperDefinition {
     void append(CharSequence sequence);
 
     /**
-     * Proceed with template execution, i.e. execute the block. This is no-op
-     * for variable tag helpers.
+     * Proceed with template execution, i.e. execute the block. This is no-op for
+     * variable tag helpers.
      */
     void fn();
 
@@ -65,22 +67,21 @@ public interface Options extends HelperDefinition {
     String source(String name);
 
     /**
-     * Push the specified object on the context stack. Helper should pop all
-     * pushed objects at the end of its execution. Otherwise all remaining
-     * objects will be removed automatically.
+     * Push the specified object on the context stack. Helper should pop all pushed
+     * objects at the end of its execution. Otherwise all remaining objects will be
+     * removed automatically.
      *
      * @param contextObject
      */
     void push(Object contextObject);
 
     /**
-     * Removes the object at the top of the context stack and returns that
-     * object.
+     * Removes the object at the top of the context stack and returns that object.
      *
      * @return the object at the top of the context stack
      * @throws MustacheException
-     *             In case of a helper tries to pop a context object it did not
-     *             push previously
+     *             In case of a helper tries to pop a context object it did not push
+     *             previously
      */
     Object pop();
 
@@ -103,8 +104,8 @@ public interface Options extends HelperDefinition {
     Appendable getAppendable();
 
     /**
-     * Proceed with execution, i.e. execute the block. This is no-op for
-     * variable tag helpers.
+     * Proceed with execution, i.e. execute the block. This is no-op for variable
+     * tag helpers.
      *
      * @param appendable
      *            The appendable to append the rendered block to
@@ -113,12 +114,12 @@ public interface Options extends HelperDefinition {
     void fn(Appendable appendable);
 
     /**
-     * The key is first processed by the {@link KeySplitter} and then processed
-     * by the resolver chain.
+     * The key is first processed by the {@link KeySplitter} and then processed by
+     * the resolver chain.
      *
      * @param key
-     * @return the value from the context for the given key, or
-     *         <code>null</code> if no such value exists
+     * @return the value from the context for the given key, or <code>null</code> if
+     *         no such value exists
      * @see KeySplitter
      * @since 1.8
      */
@@ -145,10 +146,158 @@ public interface Options extends HelperDefinition {
 
     /**
      *
-     * @return the original helper definition whose params and hash map may contain value placeholders
+     * @return the original helper definition whose params and hash map may contain
+     *         value placeholders
      * @since 2.3
      */
     HelperDefinition getOriginalDefinition();
+
+    /**
+     * Fluent version of {@link #append(CharSequence)}.
+     *
+     * @param sequence
+     * @return self
+     * @since 2.4
+     */
+    default Options appendAnd(CharSequence sequence) {
+        append(sequence);
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #fn()}.
+     *
+     * @return self
+     * @since 2.4
+     */
+    default Options fnAnd() {
+        fn();
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #fn(Appendable)}.
+     *
+     * @param appendable
+     * @return self
+     * @since 2.4
+     */
+    default Options fnAnd(Appendable appendable) {
+        fn(appendable);
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #partial(String)}.
+     *
+     * @param name
+     * @return self
+     * @since 2.4
+     */
+    default Options partialAnd(String name) {
+        partial(name);
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #partial(String, Appendable)}.
+     *
+     * @param templateId
+     * @param appendable
+     * @return self
+     * @since 2.4
+     */
+    default Options partialAnd(String templateId, Appendable appendable) {
+        partial(templateId, appendable);
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #source(String)}.
+     *
+     * @param name
+     * @param consumer
+     * @return self
+     * @since 2.4
+     */
+    default Options sourceAnd(String name, Consumer<String> consumer) {
+        consumer.accept(source(name));
+        return this;
+    }
+
+
+    /**
+     * Fluent version of {@link #push(Object)}.
+     *
+     * @param contextObject
+     * @return self
+     * @since 2.4
+     */
+    default Options pushAnd(Object contextObject) {
+        push(contextObject);
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #pop()}.
+     *
+     * @param consumer
+     * @return self
+     * @since 2.4
+     */
+    default Options popAnd(Consumer<Object> consumer) {
+        consumer.accept(pop());
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #peek()}.
+     *
+     * @param consumer
+     * @return self
+     * @since 2.4
+     */
+    default Options peekAnd(Consumer<Object> consumer) {
+        consumer.accept(peek());
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #getAppendable()}.
+     *
+     * @param consumer
+     * @return self
+     * @since 2.4
+     */
+    default Options getAppendableAnd(Consumer<Appendable> consumer) {
+        consumer.accept(getAppendable());
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #getValue(String)}.
+     *
+     * @param key
+     * @param consumer
+     * @return
+     * @since 2.4
+     */
+    default Options getValueAnd(String key, Consumer<Object> consumer) {
+        consumer.accept(getValue(key));
+        return this;
+    }
+
+    /**
+     * Fluent version of {@link #executeAsync(HelperExecutable)}.
+     *
+     * @param executable
+     * @return self
+     * @since 2.4
+     */
+    default Options executeAsyncAnd(HelperExecutable executable) {
+        executeAsync(executable);
+        return this;
+    }
 
     /**
      * A helper task to be executed asynchronously.
