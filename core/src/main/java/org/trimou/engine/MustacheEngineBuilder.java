@@ -18,15 +18,12 @@ package org.trimou.engine;
 import static org.trimou.util.Checker.checkArgumentNotNull;
 import static org.trimou.util.Checker.checkArgumentsNotNull;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -52,7 +49,6 @@ import org.trimou.handlebars.Helper;
 import org.trimou.util.ImmutableList;
 import org.trimou.util.ImmutableMap;
 import org.trimou.util.ImmutableSet;
-import org.trimou.util.Strings;
 
 /**
  * A builder for {@link MustacheEngine}. It's not thread-safe. The builder is
@@ -70,8 +66,6 @@ public final class MustacheEngineBuilder
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MustacheEngineBuilder.class);
-
-    private static final String BUILD_PROPERTIES_FILE = "/trimou-build.properties";
 
     private boolean isBuilt;
 
@@ -134,51 +128,12 @@ public final class MustacheEngineBuilder
      * @return the built engine
      */
     public synchronized MustacheEngine build() {
-
         MustacheEngine engine = new DefaultMustacheEngine(this);
         for (EngineBuiltCallback callback : engineReadyCallbacks) {
             callback.engineBuilt(engine);
         }
-
-        String version = null;
-        String timestamp = null;
-
-        try {
-            // First try to get trimou-build.properties file
-            InputStream in = MustacheEngineBuilder.class
-                    .getResourceAsStream(BUILD_PROPERTIES_FILE);
-            if (in != null) {
-                try {
-                    Properties buildProperties = new Properties();
-                    buildProperties.load(in);
-                    version = buildProperties.getProperty("version");
-                    timestamp = buildProperties.getProperty("timestamp");
-                } finally {
-                    in.close();
-                }
-            }
-        } catch (IOException e) {
-            // No-op
-        }
-        if (version == null) {
-            // If not available use the manifest info
-            Package pack = MustacheEngineBuilder.class.getPackage();
-            version = pack.getSpecificationVersion();
-            timestamp = pack.getImplementationVersion();
-        }
-        if (Strings.isEmpty(version)) {
-            version = "SNAPSHOT";
-        }
-        if (Strings.isEmpty(timestamp)) {
-            timestamp = "n/a";
-        }
-
-        int idx = timestamp.indexOf('T');
-        if (idx > 0) {
-            timestamp = timestamp.substring(0, idx);
-        }
-
-        LOGGER.info("Engine built {} ({})", version, timestamp);
+        BuildInfo buildInfo = BuildInfo.load();
+        LOGGER.info("Engine built {} ({})", buildInfo.getVersion(), buildInfo.getTimestampDate());
         LOGGER.debug("Engine configuration: {}",
                 engine.getConfiguration().getInfo());
         isBuilt = true;
