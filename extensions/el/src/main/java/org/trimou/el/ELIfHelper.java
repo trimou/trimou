@@ -39,9 +39,6 @@ import org.trimou.handlebars.Options;
  */
 public class ELIfHelper extends IfHelper {
 
-    /**
-     *
-     */
     public ELIfHelper() {
         super();
     }

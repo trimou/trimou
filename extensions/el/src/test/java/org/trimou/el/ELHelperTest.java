@@ -12,6 +12,7 @@ import javax.el.ELResolver;
 import org.junit.Test;
 import org.trimou.AbstractTest;
 import org.trimou.Hammer;
+import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.Configuration;
@@ -45,6 +46,7 @@ public class ELHelperTest extends AbstractTest {
 
     @Test
     public void testCustomELProcessorFactory() {
+        CustomELProcessorFactory.value = Boolean.TRUE;
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .setProperty(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY, new CustomELProcessorFactory()).build();
         assertEquals("true", engine.compileMustache("elpfcustom_01", "{{el 'foo'}}").render(null));
@@ -55,10 +57,15 @@ public class ELHelperTest extends AbstractTest {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .setProperty(ELProcessorFactory.EL_PROCESSOR_FACTORY_KEY, CustomELProcessorFactory.class.getName())
                 .build();
-        assertEquals("true", engine.compileMustache("elpfcustom_02", "{{el 'foo'}}").render(null));
+        CustomELProcessorFactory.value = 10;
+        Mustache mustache = engine.compileMustache("elpfcustom_02", "{{el 'foo'}}");
+        assertEquals("10", mustache.render(null));
+        assertEquals("10", mustache.render(null));
     }
 
     static class CustomELProcessorFactory implements ELProcessorFactory {
+
+        static Object value;
 
         @Override
         public ELProcessor createELProcessor(Configuration configuration) {
@@ -78,7 +85,7 @@ public class ELHelperTest extends AbstractTest {
                 public Object getValue(ELContext context, Object base, Object property) {
                     if (base == null && "foo".equals(property)) {
                         context.setPropertyResolved(true);
-                        return Boolean.TRUE;
+                        return value;
                     }
                     return null;
                 }

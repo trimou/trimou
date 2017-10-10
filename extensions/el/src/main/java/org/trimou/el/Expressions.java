@@ -40,6 +40,7 @@ class Expressions {
      *
      * @param expression
      * @param options
+     * @param configuration
      * @return the result of the expression evaluation
      */
     static Object eval(String expression, Options options, Configuration configuration) {

@@ -28,6 +28,7 @@ import org.trimou.engine.config.SimpleConfigurationKey;
  * @author Martin Kouba
  * @since 2.4
  */
+@FunctionalInterface
 public interface ELProcessorFactory {
 
     /**
@@ -36,22 +37,24 @@ public interface ELProcessorFactory {
     static ELProcessorFactory DEFAULT_ELP_FACTORY = (c) -> new ELProcessor();
 
     /**
-     * This configuration key could be used to specify a custom
+     * This configuration key can be used to specify a custom
      * {@link ELProcessorFactory}.
      */
     static ConfigurationKey EL_PROCESSOR_FACTORY_KEY = new SimpleConfigurationKey(ELProcessorFactory.class.getName(),
             DEFAULT_ELP_FACTORY, ELProcessorFactory::convert);
 
     /**
+     * The returned processor is used to evaluate a single EL expression.
      *
+     * @param configuration
      * @return a new EL processor instance
      */
     ELProcessor createELProcessor(Configuration configuration);
 
     /**
      * If the value is an instance of {@link ELProcessorFactory} it's returned. If
-     * it's a string then attempt to instantiate of this name. Otherwise throw
-     * {@link IllegalStateException}.
+     * it's a string then attempt to instantiate a class of this name. Otherwise
+     * throw {@link IllegalStateException}.
      *
      * @param value
      * @return the converted value
@@ -71,7 +74,7 @@ public interface ELProcessorFactory {
             try {
                 return cl.loadClass(clazz).newInstance();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                throw new IllegalStateException("ELProcessorFactory implementation not found: " + value);
+                throw new IllegalStateException("ELProcessorFactory cannot be instantiated: " + value, e);
             }
         } else {
             throw new IllegalStateException("Unsupported value type: " + value);
