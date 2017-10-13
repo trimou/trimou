@@ -3,6 +3,7 @@ package org.trimou.handlebars;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +26,29 @@ import org.trimou.util.ImmutableMap;
  * @author Martin Kouba
  */
 public class EvalHelperTest extends AbstractTest {
+
+    // see #117
+    @Test
+    public void testHelperHandleNulls() {
+        final MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+                .registerHelpers(HelpersBuilder.empty().addEval().build())
+                .build();
+
+        Map<String, Object> mappings = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("_mappings", mappings);
+        assertEquals("", engine.compileMustache("{{eval '_mappings.language' locale}}").render(data));
+
+        Map<String, Object> languages = new HashMap<>();
+        mappings.put("language", languages);
+        assertEquals("", engine.compileMustache("{{eval '_mappings.language' locale}}").render(data));
+
+        languages.put("de", "deu");
+        assertEquals("", engine.compileMustache("{{eval '_mappings.language' locale}}").render(data));
+
+        data.put("locale", "de");
+        assertEquals("deu", engine.compileMustache("{{eval '_mappings.language' locale}}").render(data));
+    }
 
     @Test
     public void testHelper() {

@@ -30,11 +30,11 @@ import org.trimou.util.Strings;
  * Then the helper attempts to find the value from the context. If the helper
  * represents a section and the value is not null the value is pushed on the
  * context stack and the section is rendered. If the helper represents a
- * variable and the value is null, the current {@link MissingValueHandler} is
+ * variable and the value or one of the key parts is null, the current {@link MissingValueHandler} is
  * used. If the helper represents a variable and the final value is not null the
  * the value's {@link Object#toString()} is rendered.
  * </p>
- *
+ * 
  * <pre>
  * {{eval "foo" "bar"}}
  * </pre>
@@ -87,11 +87,16 @@ public class EvalHelper extends BasicHelper {
 
     @Override
     public void execute(Options options) {
-        StringBuilder key = new StringBuilder();
+        final StringBuilder key = new StringBuilder();
+        boolean resolved = true;
         for (final Object o : options.getParameters()) {
+            if (o == null) {
+                resolved = false;
+                break;
+            }
             notation.append(key, o.toString());
         }
-        Object value = options.getValue(key.toString());
+        Object value = resolved ? options.getValue(key.toString()) : null;
         if (isSection(options)) {
             if (value != null) {
                 options.push(value);
