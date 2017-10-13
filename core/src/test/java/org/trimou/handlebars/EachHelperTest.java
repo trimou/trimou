@@ -58,6 +58,8 @@ public class EachHelperTest extends AbstractEngineTest {
     public void testIterateOverPeek() {
         assertEquals("123", engine.compileMustache("each_peek_1", "{{#with this}}{{#each}}{{this}}{{/each}}{{/with}}")
                 .render(ImmutableList.of("1", "2", "3")));
+        assertEquals("", engine.compileMustache("each_peek_2", "{{#with this}}{{#each}}foo{{/each}}{{/with}}")
+                .render(null));
     }
 
     @Test

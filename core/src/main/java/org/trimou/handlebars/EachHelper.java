@@ -155,13 +155,10 @@ public class EachHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
-        if (options.getParameters().isEmpty()) {
-            // No params - try the object at the top of the context stack
-            Object head = options.peek();
-            processParameter(head, options, 1, getSize(head), isOmitMeta(options));
-        } else if (options.getParameters().size() == 1) {
-            // Single param
-            Object param = options.getParameters().get(0);
+        int numberOfParams = options.getParameters().size();
+        if (numberOfParams < 2) {
+            // Single param or no params (try the object at the top of the context stack)
+            Object param = numberOfParams == 1 ? options.getParameters().get(0) : options.peek();
             if (param == null) {
                 // Treat null values as empty objects
                 return;
@@ -185,6 +182,7 @@ public class EachHelper extends BasicSectionHelper {
                 }
             }
             if (!omitMeta) {
+                // Collect total size
                 for (Iterator<Object> iterator = params.iterator(); iterator.hasNext();) {
                     Object param = iterator.next();
                     int paramSize = 0;
