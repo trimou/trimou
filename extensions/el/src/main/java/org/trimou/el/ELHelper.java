@@ -38,7 +38,7 @@ import org.trimou.handlebars.Options;
  * </pre>
  *
  * <pre>
- * {{#el "item1.price > item2.price ? item1 : item2'}}
+ * {{#el 'item1.price > item2.price ? item1 : item2'}}
  *  Name of item with higher price: {{name}}
  * {{/el}}
  * </pre>

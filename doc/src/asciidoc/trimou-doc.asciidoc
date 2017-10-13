@@ -1511,5 +1511,30 @@ If the helper represents a variable and the final value is not `null` the the va
 
 NOTE: The `ELHelper` is automatically registered if you place the extension on the class path.
 
+==== ELEachHelper
+
+`org.trimou.el.EachHelper` extends the built-in `EachHelper` in the sense that a `String` param is evaluated as EL expression:
+
+[source,Handlebars]
+----
+{{#each "[1,2,3]"}}
+  {{this}}
+{{/each}}
+----
+
+NOTE: The `ELEachHelper` is automatically registered if you place the extension on the class path.
+
+==== ELSetHelper
+
+`org.trimou.el.ELSetHelper` extends the built-in `SetHelper` in the sense that a `String` param is evaluated as EL expression:
+
+[source,Handlebars]
+----
+{{#set couple='["foo","bar"]'}}
+  {{couple.0}}:{{couple.1}}
+{{/set}}
+----
+
+NOTE: The `ELSetHelper` is automatically registered if you place the extension on the class path.
 
 '''

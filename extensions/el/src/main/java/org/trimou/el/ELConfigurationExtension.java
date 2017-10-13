@@ -32,6 +32,7 @@ public class ELConfigurationExtension implements ConfigurationExtension {
         registerHelper(builder, ELHelper.DEFAULT_NAME, new ELHelper());
         registerHelper(builder, HelpersBuilder.IF, new ELIfHelper());
         registerHelper(builder, HelpersBuilder.EACH, new ELEachHelper());
+        registerHelper(builder, HelpersBuilder.SET, new ELSetHelper());
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package org.trimou.handlebars;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -39,7 +40,11 @@ public class SetHelper extends BasicSectionHelper {
 
     @Override
     public void execute(Options options) {
-        options.pushAnd(options.getHash()).fnAnd().pop();
+        options.pushAnd(getMap(options)).fnAnd().pop();
+    }
+
+    protected Map<String, Object> getMap(Options options) {
+        return options.getHash();
     }
 
     @Override
