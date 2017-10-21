@@ -32,16 +32,11 @@ import org.trimou.engine.config.SimpleConfigurationKey;
 public interface ELProcessorFactory {
 
     /**
-     * The default factory.
-     */
-    static ELProcessorFactory DEFAULT_ELP_FACTORY = (c) -> new ELProcessor();
-
-    /**
      * This configuration key can be used to specify a custom
      * {@link ELProcessorFactory}.
      */
     static ConfigurationKey EL_PROCESSOR_FACTORY_KEY = new SimpleConfigurationKey(ELProcessorFactory.class.getName(),
-            DEFAULT_ELP_FACTORY, ELProcessorFactory::convert);
+            defaultFactory(), ELProcessorFactory::convert);
 
     /**
      * The returned processor is used to evaluate a single EL expression.
@@ -50,6 +45,14 @@ public interface ELProcessorFactory {
      * @return a new EL processor instance
      */
     ELProcessor createELProcessor(Configuration configuration);
+
+    /**
+     *
+     * @return the default factory
+     */
+    static ELProcessorFactory defaultFactory() {
+        return c -> new ELProcessor();
+    }
 
     /**
      * If the value is an instance of {@link ELProcessorFactory} it's returned. If
