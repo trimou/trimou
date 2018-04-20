@@ -42,6 +42,8 @@ public class ELHelperTest extends AbstractTest {
         assertEquals("no", engine.compileMustache("elhelper_07", "{{el 'this ? \"yes\" : \"no\"'}}").render(false));
         assertEquals("10", engine.compileMustache("elhelper_08", "{{#el 'foo < bar ? foo : bar'}}{{this}}{{/el}}")
                 .render(ImmutableMap.of("foo", 10, "bar", 20)));
+        assertEquals("a1", engine.compileMustache("elhelper_09", "{{#el 'foo += bar'}}{{this}}{{/el}}")
+                .render(ImmutableMap.of("foo", "a", "bar", 1)));
     }
 
     @Test
