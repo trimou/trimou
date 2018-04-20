@@ -25,7 +25,7 @@ import org.trimou.util.Strings;
  * Allows to build the key dynamically and evaluate it afterwards.
  *
  * <p>
- * First a key is built from the params, or rather their
+ * First of all, a key is built from the params, or rather their
  * {@link Object#toString()} representations, by default dot notation is used.
  * Then the helper attempts to find the value from the context. If the helper
  * represents a section and the value is not null the value is pushed on the
@@ -34,7 +34,7 @@ import org.trimou.util.Strings;
  * used. If the helper represents a variable and the final value is not null the
  * the value's {@link Object#toString()} is rendered.
  * </p>
- * 
+ *
  * <pre>
  * {{eval "foo" "bar"}}
  * </pre>

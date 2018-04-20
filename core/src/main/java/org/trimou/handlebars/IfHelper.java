@@ -63,6 +63,7 @@ import org.trimou.util.Checker;
  * </pre>
  *
  * @author Martin Kouba
+ * @see UnlessHelper
  */
 public class IfHelper extends MatchingSectionHelper {
 
