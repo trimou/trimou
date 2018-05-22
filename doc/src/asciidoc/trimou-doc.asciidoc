@@ -428,6 +428,10 @@ Trimou provides some useful helpers which are not registered automatically:
 |Allows to easily render tags which make use of the same delimiters as Trimou does (i.e. would be normally parsed as mustache tags).
 |tag
 
+|`org.trimou.handlebars.DecoratorHelper`
+|Allows to decorate a delegate instance (first param or the object at the top of the context stack), e.g. add a computed property.
+|N/A
+
 |===
 
 ==== Example of ResourceBundleHelper
@@ -522,22 +526,18 @@ And now for something completely different...
 ----
 String data = "Hello world!";
 String template = "{{this}}";
-MustacheEngine engine = MustacheEngineBuilder.newBuilder().build(); <1>
-Mustache mustache = engine.compileMustache("myTemplateName", template); <2>
-String output = mustache.render(data); <3>
+MustacheEngine engine = MustacheEngineBuilder.newBuilder().build(); // Build the engine
+Mustache mustache = engine.compileMustache(template); // Compile the template
+String output = mustache.render(data); // Render the template
 
-<1> <2> <3>
-String output = MustacheEngineBuilder
+output = MustacheEngineBuilder
                   .newBuilder()
                   .build()
-                  .compileMustache("myTemplateName", template)
-                  .render(data);
+                  .compileMustache("{{this}}")
+                  .render("Hello world!");
 
 // Both snippets will render "Hello world!"
 ----
-<1> Build the engine
-<2> Compile the template
-<3> Render the template
 
 NOTE: Instances of `MustacheEngineBuilder` are not reusable. The builder is considered immutable once the
  `build()` method is called - subsequent invocations of any modifying method or `build()` methods result in `IllegalStateException`.
@@ -547,7 +547,7 @@ NOTE: Instances of `MustacheEngineBuilder` are not reusable. The builder is cons
 [source,java]
 ----
 MustacheEngine engine = MustacheEngineBuilder.newBuilder().build();
-Mustache mustache = engine.compileMustache("fooTemplate", "{{foo}}");
+Mustache mustache = engine.compileMustache("{{foo}}");
 
 // It's possible to pass a java.lang.Appendable impl, e.g. any java.io.Writer
 StringWriter writer = new StringWriter();
