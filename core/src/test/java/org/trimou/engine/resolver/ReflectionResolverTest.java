@@ -5,7 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.trimou.AbstractEngineTest;
@@ -29,9 +32,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         ReflectionResolver resolver = new ReflectionResolver();
 
         // Just to init the resolver
-        MustacheEngineBuilder.newBuilder()
-                .omitServiceLoaderConfigurationExtensions()
-                .addResolver(resolver).build();
+        MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions().addResolver(resolver).build();
 
         Hammer hammer = new Hammer();
         assertNull(resolver.resolve(null, "whatever", null));
@@ -44,31 +45,22 @@ public class ReflectionResolverTest extends AbstractEngineTest {
     @Test
     public void testInterpolation() {
         int[] array = new int[] { 1, 2 };
-        Map<String, Object> data = ImmutableMap.of("hammer",
-                new Hammer(), "type", ArchiveType.class, "array", array);
-        assertEquals("Hello Edgar of age 10, persistent: false and !",
-                engine.compileMustache("reflection_resolver",
-                        "Hello {{hammer.name}} of age {{hammer.age}}, persistent: {{hammer.persistent}} and {{hammer.invalidName}}!")
+        Map<String, Object> data = ImmutableMap.of("hammer", new Hammer(), "type", ArchiveType.class, "array", array);
+        assertEquals("Hello Edgar of age 10, persistent: false and !", engine.compileMustache("reflection_resolver",
+                "Hello {{hammer.name}} of age {{hammer.age}}, persistent: {{hammer.persistent}} and {{hammer.invalidName}}!")
                 .render(data));
-        assertEquals(
-                "NAIL|jar", engine
-                        .compileMustache("reflection_resolver_fields",
-                                "{{hammer.nail}}|{{type.JAR.suffix}}")
-                        .render(data));
-        assertEquals("jar,war,ear,",
-                engine.compileMustache("reflection_resolver_static_method",
-                        "{{#type.values}}{{this.suffix}},{{/type.values}}")
-                .render(data));
+        assertEquals("NAIL|jar", engine
+                .compileMustache("reflection_resolver_fields", "{{hammer.nail}}|{{type.JAR.suffix}}").render(data));
+        assertEquals("jar,war,ear,", engine.compileMustache("reflection_resolver_static_method",
+                "{{#type.values}}{{this.suffix}},{{/type.values}}").render(data));
         assertEquals("" + array.length,
-                engine.compileMustache("reflection_resolver_array",
-                        "{{array.length}}").render(data));
+                engine.compileMustache("reflection_resolver_array", "{{array.length}}").render(data));
     }
 
     @Test
     public void testPublicMethodOnPackagePrivateClass() {
         Hammer data = new Hammer();
-        Mustache mustache = engine.compileMustache(
-                "reflection_resolver_accessibility",
+        Mustache mustache = engine.compileMustache("reflection_resolver_accessibility",
                 "{{#this.map.entrySet}}{{key}}={{value}}{{/this.map.entrySet}}");
         assertEquals("foo=10", mustache.render(data));
         assertEquals("foo=10", mustache.render(data));
@@ -80,9 +72,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         final ReflectionResolver resolver = new ReflectionResolver();
 
         // Just to init the resolver
-        MustacheEngineBuilder.newBuilder()
-                .omitServiceLoaderConfigurationExtensions()
-                .addResolver(resolver).build();
+        MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions().addResolver(resolver).build();
 
         Hammer hammer = new Hammer();
         assertNotNull(resolver.resolve(hammer, "age", null));
@@ -101,9 +91,7 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         ReflectionResolver resolver = new ReflectionResolver();
 
         // Just to init the resolver
-        MustacheEngineBuilder.newBuilder()
-                .omitServiceLoaderConfigurationExtensions()
-                .addResolver(resolver).build();
+        MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions().addResolver(resolver).build();
 
         resolver.init(null);
     }
@@ -112,18 +100,14 @@ public class ReflectionResolverTest extends AbstractEngineTest {
     public void testGetMembers() {
         assertNotNull(ReflectionResolver.findMethod(Charlie.class, "name"));
         assertNotNull(ReflectionResolver.findMethod(Charlie.class, "old"));
-        assertNotNull(
-                ReflectionResolver.findMethod(Charlie.class, "hasSomething"));
-        assertNotNull(
-                ReflectionResolver.findMethod(Charlie.class, "getAnotherName"));
-        assertNotNull(
-                ReflectionResolver.findMethod(Charlie.class, "anotherName"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "hasSomething"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "getAnotherName"));
+        assertNotNull(ReflectionResolver.findMethod(Charlie.class, "anotherName"));
         assertNotNull(ReflectionResolver.findMethod(Charlie.class, "isOk"));
         assertNotNull(ReflectionResolver.findMethod(Charlie.class, "ok"));
         assertNotNull(ReflectionResolver.findMethod(Charlie.class, "info"));
         assertNull(ReflectionResolver.findMethod(Charlie.class, "getPrice"));
-        assertNotNull(
-                ReflectionResolver.findField(Charlie.class, "publicField"));
+        assertNotNull(ReflectionResolver.findField(Charlie.class, "publicField"));
         assertNull(ReflectionResolver.findField(Charlie.class, "privateField"));
     }
 
@@ -135,6 +119,35 @@ public class ReflectionResolverTest extends AbstractEngineTest {
         assertEquals(Integer.class.getSimpleName() + ":" + ArchiveType.class.getSimpleName(),
                 engine.compileMustache("testTemplate", "{{this.0.simpleName}}:{{this.1.simpleName}}")
                         .render(ImmutableList.of(Integer.class, ArchiveType.class)));
+    }
+
+    @Test
+    public void testHintFallbackDisabled() {
+        MustacheEngine engine = MustacheEngineBuilder.newBuilder().omitServiceLoaderConfigurationExtensions()
+                // If a runtime class differs (ArrayList vs HashSet) and fallback is disabled
+                // then the resolver chain is used to resolve the value
+                // This resolver has higher priority than ReflectionResolver and so it should be
+                // used for HashSet
+                .addResolver(new Resolver() {
+                    @Override
+                    public Object resolve(Object contextObject, String name, ResolutionContext context) {
+                        if (contextObject instanceof Set && name.equals("size")) {
+                            return 1;
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public int getPriority() {
+                        return ReflectionResolver.REFLECTION_RESOLVER_PRIORITY + 1;
+                    }
+                }).addResolver(new ReflectionResolver())
+                .setProperty(ReflectionResolver.HINT_FALLBACK_ENABLED_KEY, false).build();
+
+        Mustache mustache = engine.compileMustache("{{size}}");
+        assertEquals("0", mustache.render(new ArrayList<>()));
+        // Fallback is disabled and runtime class is different
+        assertEquals("1", mustache.render(new HashSet<>()));
     }
 
     public static class Alpha {

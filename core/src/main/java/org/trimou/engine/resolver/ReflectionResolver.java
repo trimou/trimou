@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -35,6 +34,7 @@ import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
 import org.trimou.exception.MustacheException;
 import org.trimou.exception.MustacheProblem;
+import org.trimou.util.ImmutableSet;
 import org.trimou.util.Reflections;
 
 /**
@@ -152,7 +152,7 @@ public class ReflectionResolver extends AbstractResolver {
 
     @Override
     public Set<ConfigurationKey> getConfigurationKeys() {
-        return Collections.singleton(MEMBER_CACHE_MAX_SIZE_KEY);
+        return ImmutableSet.of(MEMBER_CACHE_MAX_SIZE_KEY, HINT_FALLBACK_ENABLED_KEY);
     }
 
     /**
