@@ -79,7 +79,7 @@ public abstract class IndexResolver extends AbstractResolver {
         } catch (NumberFormatException e) {
             // Index is not an integer
             LOGGER.warn("Index '{}' is not a valid integer value, key: '{}'",
-                    name, maxSize, key != null ? key : "n/a");
+                    name, key != null ? key : "n/a");
             return null;
         }
 

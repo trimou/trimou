@@ -155,7 +155,7 @@ public class EnhancedStatsCollector extends AbstractStatsCollector {
                 errors += 1;
             }
         }
-        long meanTime = (totalTime / finished);
+        long meanTime = finished > 0 ? (totalTime / finished) : 0;
         return new Stats(mustacheId, mustacheName, finished, errors, totalTime,
                 meanTime, minTime, maxTime);
     }

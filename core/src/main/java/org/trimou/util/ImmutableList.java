@@ -29,6 +29,9 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class ImmutableList {
 
+    private ImmutableList() {
+    }
+
     /**
      *
      * @param list

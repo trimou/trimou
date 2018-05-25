@@ -29,6 +29,9 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class ImmutableSet {
 
+    private ImmutableSet() {
+    }
+
     /**
      *
      * @param set

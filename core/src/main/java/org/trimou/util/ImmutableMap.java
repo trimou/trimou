@@ -30,6 +30,9 @@ import org.trimou.annotations.Internal;
 @Internal
 public final class ImmutableMap {
 
+    private ImmutableMap() {
+    }
+
     /**
      *
      * @param map

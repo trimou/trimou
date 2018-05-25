@@ -25,22 +25,19 @@ import org.trimou.engine.resolver.Resolver;
  */
 public final class ExecutionContexts {
 
+    private ExecutionContexts() {
+    }
+
     /**
-    *
-    * @param configuration
-    * @return a new global execution context for the given configuration
-    */
-   public static ExecutionContext newGlobalExecutionContext(
-           Configuration configuration) {
-       return new DefaultExecutionContext(
-               null,
-               configuration,
-               configuration.getGlobalData(),
-               null,
-               configuration
-                       .getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT),
-               null, configuration.getResolvers().toArray(
-                       new Resolver[configuration.getResolvers().size()]));
-   }
+     *
+     * @param configuration
+     * @return a new global execution context for the given configuration
+     */
+    public static ExecutionContext newGlobalExecutionContext(Configuration configuration) {
+        return new DefaultExecutionContext(null, configuration, configuration.getGlobalData(), null,
+                configuration.getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT), null,
+                configuration.getResolvers().toArray(new Resolver[configuration.getResolvers().size()]),
+                configuration.getContextConverters());
+    }
 
 }
