@@ -17,11 +17,13 @@ package org.trimou.engine.context;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.trimou.engine.config.Configuration;
 import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.convert.ContextConverter;
 import org.trimou.engine.parser.Template;
 import org.trimou.engine.resolver.EnhancedResolver;
 import org.trimou.engine.resolver.EnhancedResolver.Hint;
@@ -52,6 +54,8 @@ final class DefaultExecutionContext implements ExecutionContext {
 
     protected final Resolver[] resolvers;
 
+    private final List<ContextConverter> converters;
+
     /**
      *
      * @param parent
@@ -62,11 +66,12 @@ final class DefaultExecutionContext implements ExecutionContext {
      * @param invocationLimitCounter
      * @param definingSections
      * @param resolvers
+     * @param converters
      */
     DefaultExecutionContext(DefaultExecutionContext parent,
             Configuration configuration, Object contextObject,
             Template templateInvocation, int invocationLimitCounter,
-            Map<String, Segment> definingSections, Resolver[] resolvers) {
+            Map<String, Segment> definingSections, Resolver[] resolvers, List<ContextConverter> converters) {
         this.parent = parent;
         this.configuration = configuration;
         this.contextObject = contextObject;
@@ -74,6 +79,7 @@ final class DefaultExecutionContext implements ExecutionContext {
         this.invocationLimitCounter = invocationLimitCounter;
         this.definingSections = definingSections;
         this.resolvers = resolvers;
+        this.converters = converters;
     }
 
     @Override
@@ -130,8 +136,17 @@ final class DefaultExecutionContext implements ExecutionContext {
 
     @Override
     public ExecutionContext setContextObject(Object object) {
+        if (!converters.isEmpty()) {
+            for (ContextConverter converter : converters) {
+                Object result = converter.convert(object);
+                if (result != null) {
+                    object = result;
+                    break;
+                }
+            }
+        }
         return new DefaultExecutionContext(this, configuration, object, null,
-                invocationLimitCounter, null, resolvers);
+                invocationLimitCounter, null, resolvers, converters);
     }
 
     @Override
@@ -158,7 +173,7 @@ final class DefaultExecutionContext implements ExecutionContext {
                     invocationLimitCounter, templateInvocation);
         }
         return new DefaultExecutionContext(this, configuration, null, template,
-                invocationLimitCounter - 1, null, resolvers);
+                invocationLimitCounter - 1, null, resolvers, converters);
     }
 
     @Override
@@ -173,7 +188,7 @@ final class DefaultExecutionContext implements ExecutionContext {
             }
         }
         return new DefaultExecutionContext(this, configuration, null, null,
-                invocationLimitCounter, definingSections, resolvers);
+                invocationLimitCounter, definingSections, resolvers, converters);
     }
 
     @Override
@@ -259,18 +274,14 @@ final class DefaultExecutionContext implements ExecutionContext {
         return leading;
     }
 
-    private Object resolve(Object contextObject, String name,
-            ValueWrapper value, boolean createHint) {
+    private Object resolve(Object contextObject, String name, ValueWrapper value, boolean createHint) {
         Object resolved = null;
         for (final Resolver resolver : resolvers) {
             resolved = resolver.resolve(contextObject, name, value);
             if (resolved != null) {
-                if (createHint) {
+                if (createHint && resolver instanceof EnhancedResolver) {
                     // Initialize a new hint if possible
-                    if (resolver instanceof EnhancedResolver) {
-                        value.setHint(((EnhancedResolver) resolver).createHint(
-                                contextObject, name, value));
-                    }
+                    value.setHint(((EnhancedResolver) resolver).createHint(contextObject, name, value));
                 }
                 break;
             }

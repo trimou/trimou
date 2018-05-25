@@ -120,6 +120,11 @@ public class Decorator<T> implements Mapper {
         }
     }
 
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
+
     private ReflectionResolver getReflectionResolver(Configuration configuration) {
         for (Resolver resolver : configuration.getResolvers()) {
             if (resolver instanceof ReflectionResolver) {
@@ -129,55 +134,18 @@ public class Decorator<T> implements Mapper {
         throw new IllegalStateException("Decorator can only be used if ReflectionResolver is available");
     }
 
-    public static class Builder<T> {
-
-        private String delegateKey;
+    public static class Builder<T> extends AbstractBuilder<T, Builder<T>> {
 
         private final T delegate;
 
-        private final Map<String, Function<T, Object>> mappings;
-
         private Builder(T delegate) {
+            super();
             Checker.checkArgumentNotNull(delegate);
             this.delegate = delegate;
-            this.mappings = new HashMap<>();
         }
 
-        /**
-         * Associates the specified value with the specified key.
-         *
-         * @param key
-         * @param value
-         * @return self
-         */
-        public Builder<T> put(String key, Object value) {
-            return compute(key, delegate -> value);
-        }
-
-        /**
-         * Associates the specified mapping function with the specified key. The input
-         * to the function is the delegate instance. The function is applied each time a
-         * value for the given key is requested.
-         *
-         * @param key
-         * @param mapper
-         * @return self
-         */
-        public Builder<T> compute(String key, Function<T, Object> mapper) {
-            Checker.checkArgumentsNotNull(key, mapper);
-            mappings.put(key, mapper);
-            return this;
-        }
-
-        /**
-         * The specified key can be used to obtain the undelying delegate instance.
-         *
-         * @param key
-         * @return self
-         * @see Decorator#KEY_GET_DELEGATE
-         */
-        public Builder<T> delegateKey(String key) {
-            this.delegateKey = key;
+        @Override
+        protected Builder<T> self() {
             return this;
         }
 
@@ -206,6 +174,12 @@ public class Decorator<T> implements Mapper {
 
     }
 
+    /**
+     * This version is used for delegates that are arrays or implement an iterable
+     * type.
+     *
+     * @param <T>
+     */
     private static class IterableDecorator<T> extends Decorator<T> implements Iterable<Object> {
 
         static boolean isIterable(Object delegate) {
@@ -241,6 +215,64 @@ public class Decorator<T> implements Mapper {
                 throw new MustacheException(delegate + "is not iterable");
             }
         }
+
+    }
+
+    /**
+     * Logic shared accross various decorator-related builders.
+     *
+     * @param <T>
+     * @param <B>
+     */
+    public abstract static class AbstractBuilder<T, B extends AbstractBuilder<T, B>> {
+
+        protected String delegateKey;
+
+        protected final Map<String, Function<T, Object>> mappings;
+
+        public AbstractBuilder() {
+            this.mappings = new HashMap<>();
+        }
+
+        /**
+         * Associates the specified value with the specified key.
+         *
+         * @param key
+         * @param value
+         * @return self
+         */
+        public B put(String key, Object value) {
+            return compute(key, delegate -> value);
+        }
+
+        /**
+         * Associates the specified mapping function with the specified key. The input
+         * to the function is the delegate instance. The function is applied each time a
+         * value for the given key is requested.
+         *
+         * @param key
+         * @param mapper
+         * @return self
+         */
+        public B compute(String key, Function<T, Object> mapper) {
+            Checker.checkArgumentsNotNull(key, mapper);
+            mappings.put(key, mapper);
+            return self();
+        }
+
+        /**
+         * The specified key can be used to obtain the undelying delegate instance.
+         *
+         * @param key
+         * @return self
+         * @see Decorator#KEY_GET_DELEGATE
+         */
+        public B delegateKey(String key) {
+            this.delegateKey = key;
+            return self();
+        }
+
+        protected abstract B self();
 
     }
 
