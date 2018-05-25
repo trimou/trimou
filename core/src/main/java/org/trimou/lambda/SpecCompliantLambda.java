@@ -24,6 +24,7 @@ package org.trimou.lambda;
  *
  * @author Martin Kouba
  * @see Lambda
+ * @deprecated This class will be removed in the next minor version.
  */
 public abstract class SpecCompliantLambda extends InputLiteralLambda {
 

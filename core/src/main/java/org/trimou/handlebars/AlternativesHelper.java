@@ -187,8 +187,6 @@ public class AlternativesHelper extends BasicHelper {
      */
     public static class MinSelector implements Selector {
 
-        public static final String DEFAULT_NAME = "min";
-
         @Override
         public Object select(Options options) {
             BigDecimal min = null;
@@ -216,8 +214,6 @@ public class AlternativesHelper extends BasicHelper {
      *
      */
     public static class MaxSelector implements Selector {
-
-        public static final String DEFAULT_NAME = "max";
 
         @Override
         public Object select(Options options) {

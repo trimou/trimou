@@ -60,17 +60,16 @@ public final class Strings {
 
     public static final String UNDERSCORE = "_";
 
-    public static final String EQUALS = "=";
-
     public static final String NOT_AVAILABLE = "N/A";
 
     public static final String URL_PROCOTOL_FILE = "file";
 
-    public static final String URI_PROCOTOL_JAR = "jar";
-
     public static final String THIS = "this";
 
     public static final String HASH = "#";
+
+    private Strings() {
+    }
 
     /**
      *

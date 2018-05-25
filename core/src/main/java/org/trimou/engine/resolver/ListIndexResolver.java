@@ -31,7 +31,7 @@ import java.util.List;
  * This resolver is not registered by default anymore.
  *
  * @author Martin Kouba
- * @see CombinedIndexResolver
+ * @deprecated Use {@link CombinedIndexResolver} instead. This class will be removed in the next minor version.
  */
 public class ListIndexResolver extends IndexResolver {
 

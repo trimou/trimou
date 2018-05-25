@@ -38,7 +38,6 @@ public final class SimpleLambdas {
      *
      * @param invokeCallback
      * @return a simple spec compliant lambda instance
-     * @see SpecCompliantLambda
      */
     public static Lambda invoke(Function<String, String> invokeCallback) {
         return builder().interpolateReturnValue().inputType(InputType.LITERAL)
