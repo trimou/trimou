@@ -960,6 +960,25 @@ Converters are mostly used in variable tags, e.g. `{{foo}}`.
 A converter has also a priority - converters with higher priority are called first.
 If no converter is able to convert an object, `Object#toString()` is used.
 
+[[contextConverter]]
+=== ContextConverter
+
+`org.trimou.engine.convert.ContextConverter` can be  used to convert context objects before they are processed by value resolvers.
+It has also priority - converters with higher priority are called first.
+When a converter is able to convert the value all other converters with lower priority are skipped.
+
+`org.trimou.engine.convert.DecoratorConverter` is a built-in converter that allows to decorate a context object, e.g. to add a computed property.
+The following snippet would render: "ooF":
+
+[source,java]
+----
+MustacheEngine engine = MustacheEngineBuilder.newBuilder()
+         .addContextConverter(
+                 decorate(String.class).compute("reverse", s -> new StringBuilder(s).reverse().toString()).build())
+         .build();
+engine.compileMustache("{{reverse}}").render("Foo");
+----
+
 [[extensions]]
 == Extensions
 
