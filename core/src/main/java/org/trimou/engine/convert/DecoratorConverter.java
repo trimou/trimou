@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trimou.handlebars;
+package org.trimou.engine.convert;
 
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.trimou.engine.config.AbstractConfigurationAware;
 import org.trimou.engine.resolver.Decorator;
 import org.trimou.engine.resolver.Decorator.AbstractBuilder;
 import org.trimou.engine.resolver.MapResolver;
@@ -27,23 +28,21 @@ import org.trimou.util.Checker;
 import org.trimou.util.ImmutableMap;
 
 /**
- * This section helper allows to decorate the first param or the object at the
- * top of the context stack, e.g. to add a computed property. The following
- * snippet would render: "ooF".
+ * This converter allows to decorate a context object, e.g. to add a computed
+ * property. The following snippet would render: "ooF".
  *
  * <pre>
  * MustacheEngine engine = MustacheEngineBuilder.newBuilder()
- *         .registerHelper("decorateStr",
+ *         .addContextConverter(
  *                 decorate(String.class).compute("reverse", s -> new StringBuilder(s).reverse().toString()).build())
  *         .build();
- * engine.compileMustache("{{#decorateStr}}{{reverse}}{{/decorateStr}}").render("Foo");
+ * engine.compileMustache("{{reverse}}").render("Foo");
  * </pre>
  *
  * <p>
- * By default, the helper throws {@link IllegalStateException} if the runtime
- * class of the context object is not assignable to the delegate type. A custom
- * predicate can be used but beware of generics pitfalls and
- * {@link ClassCastException}s.
+ * By default, the converter is applied if the runtime class of the context
+ * object is assignable to the delegate type. A custom predicate can be used but
+ * beware of generics pitfalls and {@link ClassCastException}s.
  * </p>
  *
  * <p>
@@ -53,21 +52,21 @@ import org.trimou.util.ImmutableMap;
  *
  * @author Martin Kouba
  */
-public class DecoratorHelper<T> extends BasicSectionHelper {
+public class DecoratorConverter<T> extends AbstractConfigurationAware implements ContextConverter {
 
     /**
-     * Returns a decorator helper builder for the specified delegate type.
+     * Returns a decorator converter builder for the specified delegate type.
      *
      * @param delegateType
      * @return a new builder instance
      */
     public static <T> Builder<T> decorate(Class<T> delegateType) {
-        return new Builder<>(o -> delegateType.isAssignableFrom(o.getClass()));
+        return decorate(o -> (delegateType.isAssignableFrom(o.getClass())));
     }
 
     /**
-     * Returns a decorator helper builder with the specified predicate used to test
-     * a context object.
+     * Returns a decorator converter builder with the specified predicate used to
+     * test a context object.
      *
      * @param delegateType
      * @return a new builder instance
@@ -76,39 +75,26 @@ public class DecoratorHelper<T> extends BasicSectionHelper {
         return new Builder<>(test);
     }
 
-    private final String delegateKey;
-
     private final Predicate<Object> test;
+
+    private final String delegateKey;
 
     private final Map<String, Function<T, Object>> mappings;
 
-    private DecoratorHelper(Predicate<Object> test, Map<String, Function<T, Object>> mappings, String delegateKey) {
+    private DecoratorConverter(Predicate<Object> test, String delegateKey, Map<String, Function<T, Object>> mappings) {
         this.test = test;
-        this.mappings = mappings;
         this.delegateKey = delegateKey;
+        this.mappings = mappings;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void execute(Options options) {
-        Object param = options.getParameters().size() == 1 ? options.getParameters().get(0) : options.peek();
-        if (param == null) {
-            // Treat null values as empty objects
-            return;
+    public Object convert(Object from) {
+        if (test.test(from)) {
+            return Decorator.decorate((T) from, mappings, delegateKey != null ? delegateKey.toString() : null,
+                    configuration);
         }
-        if (!test.test(param)) {
-            throw new IllegalStateException(
-                    "Param " + param.getClass() + " is not applicable: " + options.getTagInfo());
-        }
-        options.push(Decorator.decorate((T) param, mappings, delegateKey != null ? delegateKey.toString() : null,
-                configuration));
-        options.fn();
-        options.pop();
-    }
-
-    @Override
-    protected int numberOfRequiredParameters() {
-        return 0;
+        return null;
     }
 
     public static class Builder<T> extends AbstractBuilder<T, Builder<T>> {
@@ -116,6 +102,7 @@ public class DecoratorHelper<T> extends BasicSectionHelper {
         private final Predicate<Object> test;
 
         private Builder(Predicate<Object> test) {
+            super();
             Checker.checkArgumentNotNull(test);
             this.test = test;
         }
@@ -127,10 +114,10 @@ public class DecoratorHelper<T> extends BasicSectionHelper {
 
         /**
          *
-         * @return a new decorator helper instance
+         * @return a new decorator converter instance
          */
-        DecoratorHelper<T> build() {
-            return new DecoratorHelper<T>(test, ImmutableMap.copyOf(mappings), delegateKey);
+        DecoratorConverter<T> build() {
+            return new DecoratorConverter<T>(test, delegateKey, ImmutableMap.copyOf(mappings));
         }
 
     }

@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.trimou.Mustache;
 import org.trimou.engine.cache.ComputingCacheFactory;
+import org.trimou.engine.convert.ContextConverter;
 import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
@@ -168,4 +169,10 @@ public interface Configuration {
      */
     List<ValueConverter> getValueConverters();
 
+    /**
+    *
+    * @return the immutable list of converters
+    * @since 2.5
+    */
+   List<ContextConverter> getContextConverters();
 }

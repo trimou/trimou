@@ -35,6 +35,7 @@ import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.config.ConfigurationExtension;
 import org.trimou.engine.config.ConfigurationExtension.ConfigurationExtensionBuilder;
 import org.trimou.engine.config.ConfigurationKey;
+import org.trimou.engine.convert.ContextConverter;
 import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.id.IdentifierGenerator;
 import org.trimou.engine.interpolation.KeySplitter;
@@ -105,6 +106,8 @@ public final class MustacheEngineBuilder
 
     private final Set<ValueConverter> valueConverters;
 
+    private final Set<ContextConverter> contextConverters;
+
     /**
      * Don't create a new instance.
      *
@@ -120,6 +123,7 @@ public final class MustacheEngineBuilder
         this.helpers = new HashMap<>();
         this.engineReadyCallbacks = new ArrayList<>();
         this.valueConverters = new HashSet<>();
+        this.contextConverters = new HashSet<>();
     }
 
     /**
@@ -461,6 +465,19 @@ public final class MustacheEngineBuilder
     }
 
     /**
+     * Add a context converter.
+     *
+     * @param converter
+     * @return self
+     */
+    public MustacheEngineBuilder addContextConverter(ContextConverter converter) {
+        checkArgumentNotNull(converter);
+        checkNotBuilt();
+        this.contextConverters.add(converter);
+        return this;
+    }
+
+    /**
      *
      * @return a new instance of builder
      */
@@ -546,6 +563,10 @@ public final class MustacheEngineBuilder
 
     public Set<ValueConverter> buildValueConverters() {
         return ImmutableSet.copyOf(valueConverters);
+    }
+
+    public Set<ContextConverter> buildContextConverters() {
+        return ImmutableSet.copyOf(contextConverters);
     }
 
     private void checkNotBuilt() {

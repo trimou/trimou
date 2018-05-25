@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Martin Kouba
+ * Copyright 2018 Trimou team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,37 @@
  */
 package org.trimou.engine.convert;
 
+import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.config.ConfigurationAware;
 import org.trimou.engine.priority.WithPriority;
+import org.trimou.engine.resolver.Resolver;
 import org.trimou.engine.validation.Validateable;
 
 /**
- * A value converter can be used to convert an object to a string representation
- * before the value is appended to the result.
+ * This converter can be used to convert context objects before they are
+ * processed by resolvers.
  *
  * <p>
  * Any converter may validate itself - see also {@link Validateable}. The
  * validation is performed before a {@link org.trimou.engine.MustacheEngine} is
  * built. An invalid converter is not put into service, i.e. it's not included
  * in the final list of converters returned by
- * {@link org.trimou.engine.config.Configuration#getValueConverters()}.
+ * {@link org.trimou.engine.config.Configuration#getContextConverters()}.
  * </p>
  *
  * <p>
  * This component has also priority - converters with higher priority are called
- * first. When a converter is able to convert the value other components with
- * lower priority are skipped. If no component is able to convert an object,
- * {@link Object#toString()} is used.
+ * first. When a converter is able to convert the value all other converters
+ * with lower priority are skipped.
  * </p>
  *
  * @author Martin Kouba
- * @since 2.1
+ * @since 2.5
+ * @see Resolver#resolve(Object, String,
+ *      org.trimou.engine.resolver.ResolutionContext)
+ * @see MustacheEngineBuilder#addContextConverter(ContextConverter)
  */
 @FunctionalInterface
-public interface ValueConverter extends Converter<Object, String>, WithPriority, Validateable, ConfigurationAware {
+public interface ContextConverter extends Converter<Object, Object>, WithPriority, Validateable, ConfigurationAware {
 
 }

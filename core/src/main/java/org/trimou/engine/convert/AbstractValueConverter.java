@@ -29,6 +29,7 @@ public abstract class AbstractValueConverter implements ValueConverter {
 
     public AbstractValueConverter() {
         this(DEFAULT_PRIORITY);
+        this.isEnabled = true;
     }
 
     /**

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.convert.ContextConverter;
 import org.trimou.engine.convert.ValueConverter;
 import org.trimou.engine.listener.MustacheListener;
 import org.trimou.engine.priority.WithPriority;
@@ -142,6 +143,15 @@ public interface ConfigurationExtension extends WithPriority {
          * @since 2.1
          */
         ConfigurationExtensionBuilder addValueConverter(ValueConverter converter);
+
+        /**
+         * Adds a context object converter.
+         *
+         * @param converter
+         * @return self
+         * @since 2.5
+         */
+        ConfigurationExtensionBuilder addContextConverter(ContextConverter converter);
 
     }
 }
