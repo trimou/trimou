@@ -223,9 +223,9 @@ public class EachHelper extends BasicSectionHelper {
         } else if (param instanceof Iterator) {
             return processIterator((Iterator<?>) param, options, index, size, true);
         } else if (param instanceof Spliterator) {
-            return processSpliterator((Spliterator<?>) param, options, index, size, true);
+            return processSpliterator((Spliterator<?>) param, options, size, true);
         } else if (param instanceof Stream) {
-            return processSpliterator(((Stream<?>) param).sequential().spliterator(), options, index, size, true);
+            return processSpliterator(((Stream<?>) param).sequential().spliterator(), options, size, true);
         } else {
             throw new MustacheException(MustacheProblem.RENDER_HELPER_INVALID_OPTIONS,
                     "%s is nor an Iterable nor an array [%s]", param, options.getTagInfo());
@@ -251,13 +251,11 @@ public class EachHelper extends BasicSectionHelper {
         return index;
     }
 
-    private int processSpliterator(Spliterator<?> spliterator, Options options, int index, int size,
+    private int processSpliterator(Spliterator<?> spliterator, Options options, int size,
             boolean isOmitMeta) {
         Function function = initFunction(options);
         String alias = initValueAlias(options);
-        spliterator.forEachRemaining((e) -> {
-            nextElement(options, e, size, Integer.MIN_VALUE, function, alias, isOmitMeta);
-        });
+        spliterator.forEachRemaining((e) -> nextElement(options, e, size, Integer.MIN_VALUE, function, alias, isOmitMeta));
         return Integer.MIN_VALUE;
     }
 

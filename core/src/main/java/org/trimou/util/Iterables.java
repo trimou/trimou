@@ -28,7 +28,10 @@ import org.trimou.annotations.Internal;
  *
  */
 @Internal
-public class Iterables {
+public final class Iterables {
+
+    private Iterables() {
+    }
 
     /**
      *
