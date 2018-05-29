@@ -84,6 +84,16 @@ public class Decorator<T> implements Mapper {
                 : new Decorator<>(delegate, ImmutableMap.copyOf(mappings), delegateKey, configuration);
     }
 
+    /**
+     * This method is recursive.
+     *
+     * @return the underlying delegate instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T unwrap(T instance) {
+        return instance instanceof Decorator ? unwrap(((Decorator<T>) instance).delegate) : instance;
+    }
+
     private final String delegateKey;
 
     protected final T delegate;
@@ -113,7 +123,9 @@ public class Decorator<T> implements Mapper {
         } else {
             Function<T, Object> mapping = mappings.get(key);
             if (mapping != null) {
-                return mapping.apply(delegate);
+                return mapping.apply(unwrap(delegate));
+            } else if (delegate instanceof Mapper) {
+                return ((Mapper) delegate).get(key);
             } else {
                 return reflectionResolver.resolve(delegate, key, null);
             }

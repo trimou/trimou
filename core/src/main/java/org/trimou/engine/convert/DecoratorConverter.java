@@ -61,7 +61,7 @@ public class DecoratorConverter<T> extends AbstractConfigurationAware implements
      * @return a new builder instance
      */
     public static <T> Builder<T> decorate(Class<T> delegateType) {
-        return decorate(o -> (delegateType.isAssignableFrom(o.getClass())));
+        return decorate(o -> (delegateType.isAssignableFrom(Decorator.unwrap(o).getClass())));
     }
 
     /**
@@ -116,7 +116,7 @@ public class DecoratorConverter<T> extends AbstractConfigurationAware implements
          *
          * @return a new decorator converter instance
          */
-        DecoratorConverter<T> build() {
+        public DecoratorConverter<T> build() {
             return new DecoratorConverter<T>(test, delegateKey, ImmutableMap.copyOf(mappings));
         }
 

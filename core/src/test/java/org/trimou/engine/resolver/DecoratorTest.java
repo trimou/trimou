@@ -57,4 +57,14 @@ public class DecoratorTest extends AbstractEngineTest {
                 decorate(hammer).delegateKey("foo").compute("name", h -> h.getName().toUpperCase()).build(engine)));
     }
 
+    @Test
+    public void testNestedDecorator() {
+        Hammer hammer = new Hammer(5);
+        assertEquals("5:Edgar:bar",
+                engine.compileMustache("{{age}}:{{foo}}:{{bar}}")
+                        .render(decorate(decorate(hammer).compute("foo", h -> h.getName()).build(engine))
+                                .put("bar", "bar").build(engine)));
+
+    }
+
 }

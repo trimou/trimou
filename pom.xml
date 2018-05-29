@@ -156,6 +156,18 @@
          </modules>
       </profile>
       <profile>
+         <id>examples</id>
+         <activation>
+            <activeByDefault>false</activeByDefault>
+         </activation>
+         <modules>
+            <module>examples/simple</module>
+            <module>examples/decorator</module>
+            <module>examples/ping</module>
+            <module>examples/spring-boot</module>
+         </modules>
+      </profile>
+      <profile>
          <id>generate-doc</id>
          <modules>
             <module>doc</module>

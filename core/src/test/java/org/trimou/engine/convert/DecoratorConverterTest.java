@@ -2,6 +2,7 @@ package org.trimou.engine.convert;
 
 import static org.junit.Assert.assertEquals;
 import static org.trimou.engine.convert.DecoratorConverter.decorate;
+import static org.trimou.engine.resolver.Decorator.decorate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +37,14 @@ public class DecoratorConverterTest extends AbstractTest {
 
         // javadoc example
         assertEquals("ooF", engine.compileMustache("{{reverse}}").render("Foo"));
+
         assertEquals("kladivo EDGAR 10", engine.compileMustache("{{translate}} {{name}} {{age}}").render(new Hammer()));
         assertEquals("bravo:charlie:alpha:", engine.compileMustache("{{#each this.reversed}}{{.}}:{{/each}}")
                 .render(ImmutableList.of("alpha", "charlie", "bravo")));
+
+        // Test cooperation of DecoratorConverter and Decorator
+        assertEquals("EDGAR 1000", engine.compileMustache("{{name}} {{age}}")
+                .render(decorate(new Hammer()).put("age", 1000).build(engine)));
     }
 
     @Test

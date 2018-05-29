@@ -129,7 +129,7 @@ public class DecoratorHelper<T> extends BasicSectionHelper {
          *
          * @return a new decorator helper instance
          */
-        DecoratorHelper<T> build() {
+        public DecoratorHelper<T> build() {
             return new DecoratorHelper<T>(test, ImmutableMap.copyOf(mappings), delegateKey);
         }
 
