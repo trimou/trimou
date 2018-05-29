@@ -37,7 +37,7 @@ public final class ExecutionContexts {
         return new DefaultExecutionContext(null, configuration, configuration.getGlobalData(), null,
                 configuration.getIntegerPropertyValue(EngineConfigurationKey.TEMPLATE_RECURSIVE_INVOCATION_LIMIT), null,
                 configuration.getResolvers().toArray(new Resolver[configuration.getResolvers().size()]),
-                configuration.getContextConverters());
+                configuration.getContextConverters().isEmpty() ? null : configuration.getContextConverters());
     }
 
 }

@@ -25,24 +25,20 @@ public class DecoratorConverterTest extends AbstractTest {
     public void testInterpolation() {
         MustacheEngine engine = MustacheEngineBuilder.newBuilder()
                 .addContextConverter(decorate(String.class)
-                        .compute("reverse", s -> new StringBuilder(s).reverse().toString()).build())
+                        .compute("reverse", string -> new StringBuilder(string).reverse().toString()).build())
                 .addContextConverter(decorate(Hammer.class).put("translate", "kladivo")
-                        .compute("name", h -> h.getName().toUpperCase()).build())
-                .addContextConverter(decorate(List.class).compute("reversed", l -> {
-                    List<?> list = new ArrayList<>(l);
-                    list.sort(Collections.reverseOrder());
-                    return list;
-                }).build()).addContextConverter(decorate(List.class).compute("reversed", l -> {
-                    List<?> list = new ArrayList<Object>(l);
-                    list.sort(Collections.reverseOrder());
-                    return list;
+                        .compute("name", hammer -> hammer.getName().toUpperCase()).build())
+                .addContextConverter(decorate(List.class).compute("reversed", list -> {
+                    List<?> reversed = new ArrayList<>(list);
+                    Collections.reverse(reversed);
+                    return reversed;
                 }).build()).build();
 
         // javadoc example
         assertEquals("ooF", engine.compileMustache("{{reverse}}").render("Foo"));
         assertEquals("kladivo EDGAR 10", engine.compileMustache("{{translate}} {{name}} {{age}}").render(new Hammer()));
-        assertEquals("cba",
-                engine.compileMustache("{{#each reversed}}{{.}}{{/each}}").render(ImmutableList.of("a", "b", "c")));
+        assertEquals("bravo:charlie:alpha:", engine.compileMustache("{{#each this.reversed}}{{.}}:{{/each}}")
+                .render(ImmutableList.of("alpha", "charlie", "bravo")));
     }
 
     @Test

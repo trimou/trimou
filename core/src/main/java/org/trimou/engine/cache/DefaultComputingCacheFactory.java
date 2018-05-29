@@ -209,8 +209,7 @@ public class DefaultComputingCacheFactory extends AbstractConfigurationAware
             switch (maxSizeStrategy) {
             case CLEAR:
                 // Clearing the whole map is not quite elegant, but exceeding
-                // the
-                // limit should be an exteme situation
+                // the limit should be an exteme situation
                 LOGGER.debug(
                         "Max size limit of {} exceeded - removing all entries from the cache",
                         maxSize);

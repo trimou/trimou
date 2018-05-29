@@ -136,7 +136,7 @@ final class DefaultExecutionContext implements ExecutionContext {
 
     @Override
     public ExecutionContext setContextObject(Object object) {
-        if (!converters.isEmpty()) {
+        if (converters != null) {
             for (ContextConverter converter : converters) {
                 Object result = converter.convert(object);
                 if (result != null) {
