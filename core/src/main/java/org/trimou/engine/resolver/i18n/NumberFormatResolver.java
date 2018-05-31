@@ -19,7 +19,7 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.text.NumberFormat;
 
-import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.CombinedIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.TransformResolver;
 
@@ -39,7 +39,7 @@ import org.trimou.engine.resolver.TransformResolver;
  */
 public class NumberFormatResolver extends TransformResolver {
 
-    public static final int NUMBER_FORMAT_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int NUMBER_FORMAT_RESOLVER_PRIORITY = rightAfter(CombinedIndexResolver.INDEX_RESOLVER_PRIORITY);
 
     static final String NAME_FORMAT = "format";
 

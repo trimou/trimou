@@ -15,6 +15,8 @@
  */
 package org.trimou.engine.resolver;
 
+import static org.trimou.engine.priority.Priorities.after;
+
 import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +38,8 @@ import org.trimou.engine.validation.Validateable;
  */
 public class CombinedIndexResolver extends IndexResolver implements Validateable {
 
+    public static final int INDEX_RESOLVER_PRIORITY = after(MapResolver.MAP_RESOLVER_PRIORITY, 3);
+
     private boolean isEnabled;
 
     /**
@@ -48,7 +52,7 @@ public class CombinedIndexResolver extends IndexResolver implements Validateable
      *
      */
     public CombinedIndexResolver() {
-        this(ListIndexResolver.LIST_RESOLVER_PRIORITY);
+        this(INDEX_RESOLVER_PRIORITY);
     }
 
     /**

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.config.ConfigurationKey;
 import org.trimou.engine.config.SimpleConfigurationKey;
-import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.CombinedIndexResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.engine.resolver.TransformResolver;
 
@@ -50,7 +50,7 @@ public class DateTimeFormatResolver extends TransformResolver {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(DateTimeFormatResolver.class);
 
-    public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY);
+    public static final int DATE_TIME_FORMAT_RESOLVER_PRIORITY = rightAfter(CombinedIndexResolver.INDEX_RESOLVER_PRIORITY);
 
     public static final ConfigurationKey CUSTOM_PATTERN_KEY = new SimpleConfigurationKey(
             DateTimeFormatResolver.class.getName() + ".customPattern",

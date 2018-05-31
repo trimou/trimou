@@ -19,7 +19,7 @@ import static org.trimou.engine.priority.Priorities.rightAfter;
 
 import java.util.ResourceBundle;
 
-import org.trimou.engine.resolver.ArrayIndexResolver;
+import org.trimou.engine.resolver.CombinedIndexResolver;
 import org.trimou.engine.resolver.DummyTransformResolver;
 import org.trimou.engine.resolver.ResolutionContext;
 import org.trimou.handlebars.i18n.ResourceBundleHelper;
@@ -43,7 +43,7 @@ public class ResourceBundleResolver extends DummyTransformResolver {
      *            The base name of the resource bundle
      */
     public ResourceBundleResolver(String baseName) {
-        this(baseName, rightAfter(ArrayIndexResolver.ARRAY_RESOLVER_PRIORITY));
+        this(baseName, rightAfter(CombinedIndexResolver.INDEX_RESOLVER_PRIORITY));
     }
 
     /**

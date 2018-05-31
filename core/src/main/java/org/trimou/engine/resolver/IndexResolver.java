@@ -23,8 +23,6 @@ import org.trimou.util.Strings;
  * Abstract index-based resolver.
  *
  * @author Martin Kouba
- * @see ListIndexResolver
- * @see ArrayIndexResolver
  */
 public abstract class IndexResolver extends AbstractResolver {
 
