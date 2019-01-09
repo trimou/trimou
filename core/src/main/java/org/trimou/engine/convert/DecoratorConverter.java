@@ -28,7 +28,7 @@ import org.trimou.util.Checker;
 import org.trimou.util.ImmutableMap;
 
 /**
- * This converter allows to decorate a context object, e.g. to add a computed
+ * This converter allows you to decorate a context object, e.g. to add a computed
  * property. The following snippet would render: "ooF".
  *
  * <pre>

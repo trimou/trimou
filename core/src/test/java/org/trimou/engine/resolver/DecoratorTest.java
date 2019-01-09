@@ -6,6 +6,7 @@ import static org.trimou.engine.resolver.Decorator.decorate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -25,10 +26,20 @@ public class DecoratorTest extends AbstractEngineTest {
                 decorate("Foo").compute("reverse", s -> new StringBuilder(s).reverse().toString()).build(engine)));
 
         Hammer hammer = new Hammer();
+        AtomicInteger counter = new AtomicInteger(0);
+        Decorator<Hammer> decorated = decorate(hammer).put("translate", "kladivo")
+                .compute("name", h -> h.getName().toUpperCase())
+                .computeOnce("name2x", h -> {
+                    counter.incrementAndGet();
+                    return h.getName() + h.getName();
+                }).build(engine);
         assertEquals("kladivo EDGAR 10",
-                engine.compileMustache("{{translate}} {{name}} {{age}}").render(decorate(hammer)
-                        .put("translate", "kladivo").compute("name", h -> h.getName().toUpperCase()).build(engine)));
-
+                engine.compileMustache("{{translate}} {{name}} {{age}}")
+                        .render(decorated));
+        assertEquals(0, counter.get());
+        assertEquals("EdgarEdgarEdgarEdgar", engine.compileMustache("{{name2x}}{{name2x}}").render(decorated));
+        assertEquals(1, counter.get());
+        
         List<Hammer> hammers = new ArrayList<>();
         hammers.add(new Hammer(0));
         hammers.add(new Hammer(1));

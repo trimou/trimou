@@ -271,6 +271,39 @@ public class Decorator<T> implements Mapper {
             mappings.put(key, mapper);
             return self();
         }
+        
+        /**
+         * Associates the specified mapping function with the specified key. The input
+         * to the function is the delegate instance. The function is only applied once -
+         * when a value for the given key is requested the result is cached.
+         *
+         * @param key
+         * @param mapper
+         * @return self
+         */
+        public B computeOnce(String key, Function<T, Object> mapper) {
+            Checker.checkArgumentsNotNull(key, mapper);
+            mappings.put(key, new Function<T, Object>() {
+
+                private volatile Object value;
+
+                @Override
+                public Object apply(T delegate) {
+                    Object ret = value;
+                    if (ret == null) {
+                        synchronized (this) {
+                            ret = value;
+                            if (ret == null) {
+                                ret = mapper.apply(delegate);
+                                value = ret;
+                            }
+                        }
+                    }
+                    return ret;
+                }
+            });
+            return self();
+        }
 
         /**
          * The specified key can be used to obtain the undelying delegate instance.
