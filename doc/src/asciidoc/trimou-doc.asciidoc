@@ -762,7 +762,7 @@ Trimou has a basic i18n support. There are some optional components provided to 
 
 |*Helper*
 |`org.trimou.handlebars.i18n.DateTimeFormatHelper`
-|This is an alternative to `DateTimeFormatResolver`. The main advantage lies in the ability to specify custom pattern per tag: `{{formatTime now pattern="DD-MM-yyyy HH:mm"}}`.
+|This is an alternative to `DateTimeFormatResolver`. The main advantage lies in the ability to specify custom pattern per tag: `{{formatTime now pattern="dd-MM-yyyy HH:mm"}}`.
 
 |*Helper*
 |`org.trimou.handlebars.i18n.ResourceBundleHelper`
@@ -780,7 +780,7 @@ Trimou has a basic i18n support. There are some optional components provided to 
 ----
 MustacheEngine engine = MustacheEngineBuilder
                            .newBuilder()
-                           .setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY, "DD-MM-YYYY HH:mm") <1>
+                           .setProperty(DateTimeFormatResolver.CUSTOM_PATTERN_KEY, "dd-MM-YYYY HH:mm") <1>
                            .addResolver(new DateTimeFormatResolver()) <2>
                            .build();
 Mustache mustache = engine.getMustache("foo");
