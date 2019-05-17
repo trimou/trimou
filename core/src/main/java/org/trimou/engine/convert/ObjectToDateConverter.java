@@ -15,6 +15,7 @@
  */
 package org.trimou.engine.convert;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -60,6 +61,8 @@ public class ObjectToDateConverter implements Converter<Object, Date> {
                     .atStartOfDay(ZoneId.systemDefault()).toInstant());
         } else if (value instanceof Long) {
             converted = new Date((Long) value);
+        } else if (value instanceof BigDecimal) {
+            converted = new Date(((BigDecimal) value).longValue());
         } else if (value instanceof String && pattern != null) {
             try {
                 converted = new SimpleDateFormat(pattern).parse((String) value);
