@@ -35,8 +35,8 @@ public class ObjectToDateConverterTest {
                 ZoneId.systemDefault());
         LocalDate date = LocalDateTime.ofInstant(midnight.toInstant(),
                 ZoneId.systemDefault()).toLocalDate();
-        
-        assertEquals(now, BigDecimal.valueOf(now.getTime()));
+
+        assertEquals(now, converter.convert(BigDecimal.valueOf(now.getTime())));
         assertEquals(now, converter.convert(now));
         assertEquals(now, converter.convert(now.getTime()));
         assertEquals(cal.getTime(), converter.convert(cal));
