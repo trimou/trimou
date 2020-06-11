@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
+import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.interpolation.LiteralSupport;
@@ -75,7 +76,7 @@ class HelperExecutionHandler {
     /**
      *
      * @param name
-     * @param configuration
+     * @param engine
      * @param segment
      * @return a handler for the given name or <code>null</code> if no such
      *         helper exists
@@ -84,7 +85,9 @@ class HelperExecutionHandler {
             HelperAwareSegment segment) {
 
         // Split the name and detect unterminated literals
-        Iterator<String> parts = splitHelperName(name, segment);
+        Boolean parseLiteralCorrectly = engine.getConfiguration()
+                .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING);
+        Iterator<String> parts = splitHelperName(name, segment, parseLiteralCorrectly);
 
         Helper helper = engine.getConfiguration().getHelpers()
                 .get(parts.next());
@@ -111,6 +114,12 @@ class HelperExecutionHandler {
                 if (equalsPosition != -1) {
                     String value = part.substring(equalsPosition + 1,
                             part.length());
+                    if (value.isEmpty()) {
+                        throw new MustacheException(
+                                MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
+                                "Missing second operand of equals in part %s",
+                                part);
+                    }
                     if (Strings.isListLiteral(value)) {
                         hash.put(part.substring(0, equalsPosition),
                                 new ListValuePlaceholder(value, engine,
@@ -164,45 +173,68 @@ class HelperExecutionHandler {
      * @throws MustacheException
      *             If a compilation problem occurs
      */
-    static Iterator<String> splitHelperName(String name, Segment segment) {
+    static Iterator<String> splitHelperName(String name, Segment segment,
+                                            boolean parseLiteralCorrectly) {
 
-        boolean stringLiteral = false;
+        // stringLiteral contains the character that opened the
+        // literal (' or "). null if not in a literal
+        Character stringLiteral = null;
         boolean arrayLiteral = false;
         boolean space = false;
         List<String> parts = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < name.length(); i++) {
-            if (name.charAt(i) == ' ') {
+            char character = name.charAt(i);
+            if (character == ' ') {
                 if (!space) {
-                    if (!stringLiteral && !arrayLiteral) {
+                    if (stringLiteral == null && !arrayLiteral) {
                         if (buffer.length() > 0) {
                             parts.add(buffer.toString());
                             buffer = new StringBuilder();
                         }
                         space = true;
                     } else {
-                        buffer.append(name.charAt(i));
+                        buffer.append(character);
                     }
                 }
             } else {
                 if (!arrayLiteral
-                        && Strings.isStringLiteralSeparator(name.charAt(i))) {
-                    stringLiteral = !stringLiteral;
-                } else if (!stringLiteral
-                        && Strings.isListLiteralStart(name.charAt(i))) {
+                        && Strings.isStringLiteralSeparator(character)) {
+                    if (parseLiteralCorrectly) {
+                        // only the same character as the one that opened the literal can close it.
+                        // break compatibility with 2.5.0- parsing, so
+                        // parseLiteralCorrectly is false by default.
+                        if (stringLiteral != null) {
+                            if (character == stringLiteral.charValue()) {
+                                stringLiteral = null;
+                            }
+                        } else {
+                            stringLiteral = character;
+                        }
+                    } else {
+                        // " or ' may close indistinctly literal opened with ' or "
+                        // retro compatible behavior with 2.5.0-
+                        if (stringLiteral == null) {
+                            stringLiteral = character;
+                        } else {
+                            stringLiteral = null;
+                        }
+                    }
+                } else if (stringLiteral == null
+                        && Strings.isListLiteralStart(character)) {
                     arrayLiteral = true;
-                } else if (!stringLiteral
-                        && Strings.isListLiteralEnd(name.charAt(i))) {
+                } else if (stringLiteral == null
+                        && Strings.isListLiteralEnd(character)) {
                     arrayLiteral = false;
                 }
                 space = false;
-                buffer.append(name.charAt(i));
+                buffer.append(character);
             }
         }
 
         if (buffer.length() > 0) {
-            if (stringLiteral || arrayLiteral) {
+            if (stringLiteral != null || arrayLiteral) {
                 throw new MustacheException(
                         MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE,
                         "Unterminated string or array literal detected: %s",
@@ -643,9 +675,11 @@ class HelperExecutionHandler {
                 }
             }
             if (pushed > 0) {
+                Boolean parseLiteralCorrectly = engine.getConfiguration()
+                        .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING);
                 LOGGER.info(
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
-                        pushed, splitHelperName(segment.getTagInfo().getText(), segment).next(),
+                        pushed, splitHelperName(segment.getTagInfo().getText(), segment, parseLiteralCorrectly).next(),
                         segment.getTagInfo().getTemplateName());
             }
         }

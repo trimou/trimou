@@ -50,6 +50,45 @@ public class HelperExecutionHandlerTest {
                 .check(() -> assertHelperNameParts("name key=value' foo"))
                 .check(() -> assertHelperNameParts("'name key=value"))
                 .check(() -> assertHelperNameParts("key=\"value \" and\""));
+
+        // this behavior was somehow working if the literal inside literal did not contains spaces,
+        // and is still working with both literal parsing mode :
+        // old
+        assertHelperNameParts("if \"var eq 'value_without_space'\"", false,
+                "if", "\"var eq 'value_without_space'\"");
+        // new
+        assertHelperNameParts("if \"var eq 'value_without_space'\"", true,
+                "if", "\"var eq 'value_without_space'\"");
+
+        // assert on diverging behavior between correctLiteralParsing = false | true
+        // 1. you cannot close anymore ' with a " (they are not considered the same anymore).
+        // example : foo='bar"
+        // old : working
+        assertHelperNameParts("foo='bar\"", false, "foo='bar\"");
+        // new : not valid
+        MustacheExceptionAssert
+                .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
+                .check(() -> assertHelperNameParts("foo='bar\"", true));
+
+        // 2. you may use the other literal closing/opening inside a literal, without closing it
+        // example : key='value" foo=' 'bar'
+        // old : invalid
+        MustacheExceptionAssert
+                .expect(MustacheProblem.COMPILE_HELPER_VALIDATION_FAILURE)
+                .check(() -> assertHelperNameParts("key='value\" foo=' 'bar'", false));
+        // new : working
+        assertHelperNameParts("key='value\" foo=' 'bar'", true, "key='value\" foo='",
+                "'bar'");
+
+        // 3. you may use space inside a literal of literal
+        // example : if "var eq 'value with space'"
+        // old : unexpected parsing (4 parts, cutting on spaces inside the literal)
+        assertHelperNameParts("if \"var eq 'value with space'\"", false,
+                "if", "\"var eq 'value", "with", "space'\"");
+        // new : expected, 2 parts (if + condition)
+        assertHelperNameParts("if \"var eq 'value with space'\"", true,
+                "if", "\"var eq 'value with space'\"");
+
     }
 
     @Test
@@ -71,9 +110,13 @@ public class HelperExecutionHandlerTest {
     }
 
     private void assertHelperNameParts(String name, String... parts) {
+        assertHelperNameParts(name, false, parts);
+    }
+
+    private void assertHelperNameParts(String name, boolean correctLiteralParsing, String... parts) {
         List<String> result = new ArrayList<>();
         Iterator<String> iterator = HelperExecutionHandler.splitHelperName(name,
-                null);
+                null, correctLiteralParsing);
         while (iterator.hasNext()) {
             result.add(iterator.next());
         }
@@ -82,5 +125,4 @@ public class HelperExecutionHandlerTest {
         assertTrue("Parts: " + expected + " != " + result,
                 expected.containsAll(result) && result.containsAll(expected));
     }
-
 }
