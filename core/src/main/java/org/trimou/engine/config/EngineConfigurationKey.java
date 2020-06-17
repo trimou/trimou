@@ -137,11 +137,6 @@ public enum EngineConfigurationKey implements ConfigurationKey {
      * @see MustacheEngine#getMustacheSource(String)
      */
     TEMPLATE_CACHE_USED_FOR_SOURCE(false),
-    /**
-     * If set to <code>true</code> the tag literal parsing accept alternating ' and ".
-     * Otherwise they are considered the same (retro compatible behavior)
-     */
-    TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING(false),
     ;
 
     private Object defaultValue;

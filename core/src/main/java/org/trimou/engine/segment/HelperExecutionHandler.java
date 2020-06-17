@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheTagInfo;
-import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.engine.context.ExecutionContext;
 import org.trimou.engine.context.ValueWrapper;
 import org.trimou.engine.interpolation.LiteralSupport;
@@ -85,9 +84,7 @@ class HelperExecutionHandler {
             HelperAwareSegment segment) {
 
         // Split the name and detect unterminated literals
-        Boolean parseLiteralCorrectly = engine.getConfiguration()
-                .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING);
-        Iterator<String> parts = splitHelperName(name, segment, parseLiteralCorrectly);
+        Iterator<String> parts = splitHelperName(name, segment);
 
         Helper helper = engine.getConfiguration().getHelpers()
                 .get(parts.next());
@@ -173,8 +170,7 @@ class HelperExecutionHandler {
      * @throws MustacheException
      *             If a compilation problem occurs
      */
-    static Iterator<String> splitHelperName(String name, Segment segment,
-                                            boolean parseLiteralCorrectly) {
+    static Iterator<String> splitHelperName(String name, Segment segment) {
 
         // stringLiteral contains the character that opened the
         // literal (' or "). null if not in a literal
@@ -201,25 +197,12 @@ class HelperExecutionHandler {
             } else {
                 if (!arrayLiteral
                         && Strings.isStringLiteralSeparator(character)) {
-                    if (parseLiteralCorrectly) {
-                        // only the same character as the one that opened the literal can close it.
-                        // break compatibility with 2.5.0- parsing, so
-                        // parseLiteralCorrectly is false by default.
-                        if (stringLiteral != null) {
-                            if (character == stringLiteral.charValue()) {
-                                stringLiteral = null;
-                            }
-                        } else {
-                            stringLiteral = character;
-                        }
-                    } else {
-                        // " or ' may close indistinctly literal opened with ' or "
-                        // retro compatible behavior with 2.5.0-
-                        if (stringLiteral == null) {
-                            stringLiteral = character;
-                        } else {
+                    if (stringLiteral != null) {
+                        if (character == stringLiteral.charValue()) {
                             stringLiteral = null;
                         }
+                    } else {
+                        stringLiteral = character;
                     }
                 } else if (stringLiteral == null
                         && Strings.isListLiteralStart(character)) {
@@ -675,11 +658,9 @@ class HelperExecutionHandler {
                 }
             }
             if (pushed > 0) {
-                Boolean parseLiteralCorrectly = engine.getConfiguration()
-                        .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING);
                 LOGGER.info(
                         "{} remaining objects pushed on the context stack will be automatically garbage collected [helperName: {}, template: {}]",
-                        pushed, splitHelperName(segment.getTagInfo().getText(), segment, parseLiteralCorrectly).next(),
+                        pushed, splitHelperName(segment.getTagInfo().getText(), segment).next(),
                         segment.getTagInfo().getTemplateName());
             }
         }

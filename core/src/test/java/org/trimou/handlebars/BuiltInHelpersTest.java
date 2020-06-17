@@ -14,7 +14,6 @@ import org.trimou.Hammer;
 import org.trimou.MustacheExceptionAssert;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.EngineConfigurationKey;
 import org.trimou.exception.MustacheProblem;
 import org.trimou.util.ImmutableList;
 import org.trimou.util.ImmutableMap;
@@ -138,20 +137,6 @@ public class BuiltInHelpersTest extends AbstractEngineTest {
                         .render(new Object[] { "without_space" }));
         assertEquals("true",
                 engine.compileMustache("if_helper10",
-                        "{{#if \"this.0 eq 'with_a_space'\" else='false'}}true{{/if}}")
-                        .render(new Object[] { "with a space" }));
-
-        // old unexpected behavior (' and " are considered the same)
-        assertEquals("false",
-                engine.compileMustache("if_helper11",
-                        "{{#if \"this.0 eq 'with a space'\" else='false'}}true{{/if}}")
-                        .render(new Object[] { "with a space" }));
-
-        MustacheEngine newEngine = MustacheEngineBuilder.newBuilder()
-                .setProperty(EngineConfigurationKey.TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING, true)
-                .build();
-        assertEquals("true",
-                newEngine.compileMustache("if_helper12",
                         "{{#if \"this.0 eq 'with a space'\" else='false'}}true{{/if}}")
                         .render(new Object[] { "with a space" }));
 
