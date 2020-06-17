@@ -124,12 +124,10 @@ public class SectionSegment extends AbstractSectionSegment
                 getTagLiteral(getType().getTagType().getCommand() + getText()));
         literal.append(getContentLiteralBlock());
         if (helperHandler != null) {
-            Boolean parseLiteralCorrectly = getEngine().getConfiguration()
-                    .getBooleanPropertyValue(EngineConfigurationKey.TEMPLATE_ALTERNATE_LITERAL_CORRECT_PARSING);
             literal.append(
                     getTagLiteral(MustacheTagType.SECTION_END.getCommand()
                             + HelperExecutionHandler
-                                    .splitHelperName(getText(), this, parseLiteralCorrectly).next()));
+                                    .splitHelperName(getText(), this).next()));
         } else {
             literal.append(getTagLiteral(
                     MustacheTagType.SECTION_END.getCommand() + getText()));
