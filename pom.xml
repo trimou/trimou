@@ -85,7 +85,7 @@
       <version.jersey>2.22.2</version.jersey>
       <version.jersey.test.framework>1.18.1</version.jersey.test.framework>
       <version.jetty>9.3.7.v20160115</version.jetty>
-      <version.junit>4.12</version.junit>
+      <version.junit>4.13.1</version.junit>
       <version.mockito>1.9.5</version.mockito>
       <version.mvc-api>1.0-edr2</version.mvc-api>
       <version.ozark>1.0.0-m02</version.ozark>
