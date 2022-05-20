@@ -74,7 +74,7 @@
       <version.el-api>3.0.0</version.el-api>
       <version.glassfish-json-p>1.0.4</version.glassfish-json-p>
       <version.glassfish-el>3.0.0</version.glassfish-el>
-      <version.gson>2.8.1</version.gson>
+      <version.gson>2.8.9</version.gson>
       <version.hamcrest>1.3.RC2</version.hamcrest>
       <version.htmlcompressor>1.5.2</version.htmlcompressor>
       <version.htmlunit>2.37.0</version.htmlunit>
