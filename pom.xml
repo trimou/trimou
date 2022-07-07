@@ -84,7 +84,7 @@
       <version.jboss-servlet-api>1.0.2.Final</version.jboss-servlet-api>
       <version.jersey>2.22.2</version.jersey>
       <version.jersey.test.framework>1.18.1</version.jersey.test.framework>
-      <version.jetty>9.3.7.v20160115</version.jetty>
+      <version.jetty>9.4.48.v20220622</version.jetty>
       <version.junit>4.12</version.junit>
       <version.mockito>1.9.5</version.mockito>
       <version.mvc-api>1.0-edr2</version.mvc-api>
