@@ -1,7 +1,6 @@
 # Trimou - Trim Your Mustache Templates!
 
 [![Trimou site](https://img.shields.io/badge/www-trimou.org-orange.svg)](http://trimou.org/)
-[![Travis CI Build Status](https://travis-ci.org/trimou/trimou.png)](https://travis-ci.org/trimou/trimou)
 [![Maven Central](http://img.shields.io/maven-central/v/org.trimou/trimou-core.svg)](http://search.maven.org/#search|ga|1|trimou-core)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/trimou/trimou)
 [![License](https://img.shields.io/badge/license-Apache%20License%202.0-yellow.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
